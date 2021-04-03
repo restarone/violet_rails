@@ -27,6 +27,7 @@ gem 'jbuilder', '~> 2.7'
 
 gem 'ros-apartment', require: 'apartment'
 gem 'devise'
+gem "comfortable_mexican_sofa"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false
