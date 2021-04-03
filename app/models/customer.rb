@@ -7,13 +7,10 @@ class Customer < ApplicationRecord
   end
 
   def create_cms_site
-    byebug
-    Apartment::Tenant.switch(self.subdomain) do
-      site = Comfy::Cms::Site.create!(
-        identifier: self.subdomain,
-        # this is only for local testing
-        hostname:   "#{self.subdomain}.lvh.me:3000",
-      )
-    end
+    site = Comfy::Cms::Site.create!(
+      identifier: self.subdomain,
+      # this is only for local testing
+      hostname:   "#{self.subdomain}.lvh.me:3000",
+    )
   end
 end
