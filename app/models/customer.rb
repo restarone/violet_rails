@@ -12,11 +12,12 @@ class Customer < ApplicationRecord
   end
 
   def create_cms_site
+    hostname = "#{self.subdomain}.lvh.me:3000"
     Apartment::Tenant.switch(self.subdomain) do
       site = Comfy::Cms::Site.create!(
         identifier: self.subdomain,
         # this is only for local testing
-        hostname:   "#{self.subdomain}.lvh.me:3000",
+        hostname:   hostname,
       )
       layout = site.layouts.create(
         label: self.name,
@@ -31,7 +32,13 @@ class Customer < ApplicationRecord
         identifier: 'content',
         record: page,
         tag: 'wysiwyg',
-        content: "<h1>Hello from #{self.name}</h1>"
+        content: "
+          <div>
+            <h1>Hello from #{self.name}</h1>
+            To access the admin panel for your website, 
+            <a href='http://#{hostname}/admin' target='_blank'>click here</a>
+          </div>
+        "
       )
     end
   end
