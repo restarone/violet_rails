@@ -25,7 +25,7 @@ class CustomersController < ApplicationController
 
     respond_to do |format|
       if @customer.save
-        format.html { redirect_to @customer, notice: "Customer was successfully created." }
+        format.html { redirect_to root_url(subdomain: @customer.subdomain), notice: "Customer was successfully created." }
         format.json { render :show, status: :created, location: @customer }
       else
         format.html { render :new, status: :unprocessable_entity }
