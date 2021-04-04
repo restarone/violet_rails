@@ -25,13 +25,13 @@ class Customer < ApplicationRecord
         hostname:   hostname,
       )
       layout = site.layouts.create(
-        label: self.name,
-        identifier: self.name,
+        label: 'default',
+        identifier: 'default',
         content: "{{cms:wysiwyg content}}"
       )
       page = layout.pages.create(
         site_id: site.id,
-        label: self.name,
+        label: 'root',
       )
       Comfy::Cms::Fragment.create!(
         identifier: 'content',
