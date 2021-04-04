@@ -6,13 +6,23 @@ class SubdomainConstraint
 end
 
 Rails.application.routes.draw do
-  devise_for :customers
+  devise_for :customers, controllers: {
+    confirmations: 'customers/confirmations',
+    #omniauth_callbacks: 'users/omniauth_callbacks',
+    passwords: 'customers/passwords',
+    registrations: 'customers/registrations',
+    sessions: 'customers/sessions',
+    unlocks: 'customers/unlocks',
+    invitations: 'customers/invitations'
+  }
+  
   constraints SubdomainConstraint do
     resources :users
     # default, username password
     comfy_route :cms_admin, path: "/admin"
     comfy_route :cms, path: "/"
   end
+
   root to: 'content#index'
   resources :customers
 
