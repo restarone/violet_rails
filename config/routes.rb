@@ -20,7 +20,10 @@ Rails.application.routes.draw do
     resources :users
     # default, username password
     comfy_route :cms_admin, path: "/admin"
+    comfy_route :blog, path: "blog"
+    comfy_route :blog_admin, path: "admin"
     comfy_route :cms, path: "/"
+
   end
 
   root to: 'content#index'
