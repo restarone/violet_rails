@@ -8,12 +8,22 @@ module RSolutions::DeviseAuth
     end
   end
 end
+
+module RSolutions::ComfyAdminAuthorization
+  def authorize
+    if (self.class.name == "Comfy::Admin::Cms::SitesController")
+      redirect_back(fallback_location: root_url(subdomain: current_customer.subdomain))
+    else
+      return true 
+    end
+  end
+end
 ComfortableMexicanSofa.configure do |config|
   # Title of the admin area
-  #   config.cms_title = 'ComfortableMexicanSofa CMS Engine'
+    config.cms_title = 'μOffice by R-Solutions'
 
   # Controller that is inherited from CmsAdmin::BaseController
-  #   config.admin_base_controller = 'ApplicationController'
+  config.admin_base_controller = 'Customers::BaseController'
 
   # Controller that Comfy::Cms::BaseController will inherit from
   #   config.public_base_controller = 'ApplicationController'
@@ -25,7 +35,7 @@ ComfortableMexicanSofa.configure do |config|
   # Module responsible for authorization on admin side. It should have #authorize
   # method that returns true or false based on params and loaded instance
   # variables available for a given controller.
-  #   config.admin_authorization = 'ComfyAdminAuthorization'
+    config.admin_authorization = 'RSolutions::ComfyAdminAuthorization'
 
   # Module responsible for public authentication. Similar to the above. You also
   # will have access to @cms_site, @cms_layout, @cms_page so you can use them in
@@ -87,7 +97,7 @@ ComfortableMexicanSofa.configure do |config|
 
   # Reveal partials that can be overwritten in the admin area.
   # Default is false.
-  #   config.reveal_cms_partials = false
+    config.reveal_cms_partials = true
   #
   # Customize the returned content json data
   # include fragments in content json
@@ -95,11 +105,6 @@ ComfortableMexicanSofa.configure do |config|
   #     include: [:fragments]
   #   }
 end
-
-# Default credentials for ComfortableMexicanSofa::AccessControl::AdminAuthentication
-# YOU REALLY WANT TO CHANGE THIS BEFORE PUTTING YOUR SITE LIVE
-#ComfortableMexicanSofa::AccessControl::AdminAuthentication.username = "username"
-#ComfortableMexicanSofa::AccessControl::AdminAuthentication.password = "password"
 
 # Uncomment this module and `config.admin_auth` above to use custom admin authentication
 # module ComfyAdminAuthentication
