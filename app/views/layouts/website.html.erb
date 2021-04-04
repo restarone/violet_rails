@@ -23,6 +23,11 @@
       </ul>
     </div>
   <% end %>
+<% if current_customer %>
+  <div>
+    <%= link_to "Logout", destroy_customer_session_path, method: :delete %>
+  </div>
+<% end %>
   <body>
     <%= yield %>
   </body>
