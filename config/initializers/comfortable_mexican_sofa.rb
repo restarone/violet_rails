@@ -1,5 +1,13 @@
 # frozen_string_literal: true
-
+module RSolutions::DeviseAuth
+  def authenticate
+    if current_customer
+      return true if current_customer.subdomain     
+    else
+      redirect_to new_customer_session_path
+    end
+  end
+end
 ComfortableMexicanSofa.configure do |config|
   # Title of the admin area
   #   config.cms_title = 'ComfortableMexicanSofa CMS Engine'
@@ -9,7 +17,7 @@ ComfortableMexicanSofa.configure do |config|
 
   # Controller that Comfy::Cms::BaseController will inherit from
   #   config.public_base_controller = 'ApplicationController'
-
+  config.admin_auth = 'RSolutions::DeviseAuth'
   # Module responsible for authentication. You can replace it with your own.
   # It simply needs to have #authenticate method. See http_auth.rb for reference.
   #   config.admin_auth = 'ComfyAdminAuthentication'
@@ -90,8 +98,8 @@ end
 
 # Default credentials for ComfortableMexicanSofa::AccessControl::AdminAuthentication
 # YOU REALLY WANT TO CHANGE THIS BEFORE PUTTING YOUR SITE LIVE
-ComfortableMexicanSofa::AccessControl::AdminAuthentication.username = "username"
-ComfortableMexicanSofa::AccessControl::AdminAuthentication.password = "password"
+#ComfortableMexicanSofa::AccessControl::AdminAuthentication.username = "username"
+#ComfortableMexicanSofa::AccessControl::AdminAuthentication.password = "password"
 
 # Uncomment this module and `config.admin_auth` above to use custom admin authentication
 # module ComfyAdminAuthentication

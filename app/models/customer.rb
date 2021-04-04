@@ -1,4 +1,9 @@
 class Customer < ApplicationRecord
+  # Include default devise modules. Others available are:
+  # :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable, :confirmable, :lockable, :timeoutable, :trackable
+
   after_create :create_tenant
   after_create_commit :create_cms_site
 
@@ -20,13 +25,13 @@ class Customer < ApplicationRecord
         hostname:   hostname,
       )
       layout = site.layouts.create(
-        label: self.name,
-        identifier: self.name,
+        label: 'default',
+        identifier: 'default',
         content: "{{cms:wysiwyg content}}"
       )
       page = layout.pages.create(
         site_id: site.id,
-        label: self.name,
+        label: 'root',
       )
       Comfy::Cms::Fragment.create!(
         identifier: 'content',
