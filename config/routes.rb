@@ -6,6 +6,7 @@ class SubdomainConstraint
 end
 
 Rails.application.routes.draw do
+  devise_for :customers
   constraints SubdomainConstraint do
     resources :users
     # default, username password
