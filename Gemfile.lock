@@ -91,6 +91,8 @@ GEM
       rails (>= 5.2.0)
       rails-i18n (>= 5.0.0)
       sassc-rails (>= 2.0.0)
+    comfy_blog (2.0.7)
+      comfortable_mexican_sofa (>= 2.0.14)
     comfy_bootstrap_form (4.0.9)
       rails (>= 5.0.0)
     concurrent-ruby (1.1.8)
@@ -274,6 +276,7 @@ DEPENDENCIES
   byebug
   capybara (>= 3.26)
   comfortable_mexican_sofa
+  comfy_blog
   devise
   jbuilder (~> 2.7)
   listen (~> 3.3)
