@@ -28,7 +28,7 @@ gem 'jbuilder', '~> 2.7'
 gem 'ros-apartment', require: 'apartment'
 gem 'devise'
 gem "comfortable_mexican_sofa"
-gem "comfy_blog"
+gem "comfy_blog", git: 'https://github.com/restarone/comfy-blog', branch: 'master'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false
