@@ -27,7 +27,8 @@ class Customer < ApplicationRecord
       layout = site.layouts.create(
         label: 'default',
         identifier: 'default',
-        content: "{{cms:wysiwyg content}}"
+        content: "{{cms:wysiwyg content}}",
+        app_layout: 'website'
       )
       page = layout.pages.create(
         site_id: site.id,
