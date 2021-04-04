@@ -1,9 +1,12 @@
+
+= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
 = stylesheet_link_tag comfy_cms_render_css_path(@cms_site.id, @cms_layout.identifier)
 = javascript_include_tag comfy_cms_render_js_path(@cms_site.id, @cms_layout.identifier)
-%h1= @cms_post.title
-%p
-  - label = Comfy::Blog::Post.human_attribute_name(:published_on)
-  - time  = @cms_post.published_at.to_formatted_s(:short)
-  = "#{label}: #{time}"
+.container.py-5
+  %h1= @cms_post.title
+  %p
+    - label = Comfy::Blog::Post.human_attribute_name(:published_on)
+    - time  = @cms_post.published_at.to_formatted_s(:short)
+    = "#{label}: #{time}"
 
-= @cms_post.content_cache.html_safe
+  = @cms_post.content_cache.html_safe
