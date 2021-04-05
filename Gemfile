@@ -23,11 +23,11 @@ gem 'jbuilder', '~> 2.7'
 # gem 'bcrypt', '~> 3.1.7'
 
 # Use Active Storage variant
-# gem 'image_processing', '~> 1.2'
+gem 'image_processing', '~> 1.2'
 
 gem 'ros-apartment', require: 'apartment'
 gem 'devise'
-gem "comfortable_mexican_sofa"
+gem "comfortable_mexican_sofa",git: 'https://github.com/restarone/comfortable-mexican-sofa', branch: 'master'
 gem "comfy_blog", git: 'https://github.com/restarone/comfy-blog', branch: 'master'
 
 # Reduces boot times through caching; required in config/boot.rb
