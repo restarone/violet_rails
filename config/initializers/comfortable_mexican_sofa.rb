@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 module RSolutions::DeviseAuth
   def authenticate
-    if current_customer
+    if current_customer  && current_customer.subdomain == Apartment::Tenant.current
       return true if current_customer.subdomain     
     else
-      redirect_to new_customer_session_path
+      redirect_to root_path(subdomain: current_customer.subdomain)
     end
   end
 end

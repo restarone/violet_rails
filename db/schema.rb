@@ -204,6 +204,7 @@ ActiveRecord::Schema.define(version: 2021_04_04_181829) do
     t.index ["confirmation_token"], name: "index_customers_on_confirmation_token", unique: true
     t.index ["email"], name: "index_customers_on_email", unique: true
     t.index ["reset_password_token"], name: "index_customers_on_reset_password_token", unique: true
+    t.index ["subdomain"], name: "index_customers_on_subdomain"
     t.index ["unlock_token"], name: "index_customers_on_unlock_token", unique: true
   end
 

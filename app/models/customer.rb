@@ -4,6 +4,11 @@ class Customer < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :confirmable, :lockable, :timeoutable, :trackable
 
+
+  validates :subdomain, format: {
+    with: %r{\A[a-z](?:[a-z0-9-]*[a-z0-9])?\z}i, message: "not a valid subdomain"
+  }, length: { in: 1..63 }, uniqueness: true
+
   after_create :create_tenant
   after_create_commit :create_cms_site
 

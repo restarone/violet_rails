@@ -1,9 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  subdomain: MyString
-  email: MyString
+public:
+  subdomain: public
+  email: hello-world@restarone.solutions
 
-two:
-  subdomain: MyString
-  email: MyString
+restarone:
+  subdomain: restarone
+  email: don@restarone.solutions
+
+ts:
+  subdomain: trisha
+  email: trisha@restarone.solutions
