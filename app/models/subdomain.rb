@@ -10,7 +10,7 @@ class Subdomain < ApplicationRecord
   private 
 
   def create_cms_site
-    hostname = "#{self.name}.lvh.me:3000"
+    hostname = "#{self.name}.#{ENV['APP_HOST']}"
     Apartment::Tenant.switch(self.name) do
       site = Comfy::Cms::Site.create!(
         identifier: self.name,

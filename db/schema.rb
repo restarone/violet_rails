@@ -207,7 +207,7 @@ ActiveRecord::Schema.define(version: 2021_04_06_124048) do
   end
 
   create_table "subdomains", force: :cascade do |t|
-    t.string "name"
+    t.string "name", null: false
     t.datetime "deleted_at"
     t.bigint "customer_id", null: false
     t.datetime "created_at", precision: 6, null: false
