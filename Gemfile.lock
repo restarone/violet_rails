@@ -110,10 +110,6 @@ GEM
       rails (>= 5.0.0)
     concurrent-ruby (1.1.8)
     crass (1.0.6)
-    database_cleaner-active_record (2.0.0)
-      activerecord (>= 5.a)
-      database_cleaner-core (~> 2.0.0)
-    database_cleaner-core (2.0.1)
     devise (4.7.3)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -306,7 +302,6 @@ DEPENDENCIES
   capybara (>= 3.26)
   comfortable_mexican_sofa!
   comfy_blog!
-  database_cleaner-active_record
   devise
   image_processing (~> 1.2)
   jbuilder (~> 2.7)
