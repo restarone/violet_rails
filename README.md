@@ -88,7 +88,7 @@ sudo systemctl status puma.service
 setup the server block for restarone.solutions
 ``` bash
 server {
-    listen 80;
+
     location / {
         proxy_pass http://localhost:3000;
         proxy_set_header Host $host;
@@ -97,7 +97,23 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
     client_max_body_size 4G;
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/restarone.solutions/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/restarone.solutions/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 }
+
+
+server {
+    listen      80;
+
+
+    #Rewrite all nonssl requests to ssl.
+    return 301 https://$host$request_uri;
+}
+
 ```
 then symlink it and restart nginx
 ``` bash
@@ -113,8 +129,9 @@ sudo chown -R ubuntu /var/www
 setup SSL and certbot
 ``` bash
 sudo apt-get install python3-certbot-nginx
-sudo certbot --nginx -d restarone.solutions
+sudo certbot certonly --manual --preferred-challenges=dns --email contact@restarone.com --server https://acme-v02.api.letsencrypt.org/directory  --agree-tos --manual-public-ip-logging-ok -d "*.restarone.solutions" -d "restarone.solutions"
 sudo certbot renew
+more info on renewing available here: https://community.letsencrypt.org/t/an-authentication-script-must-be-provided-with-manual-auth-hook/74301/2
 ```
 ## setup the postgres user
 connect to the server
@@ -130,6 +147,11 @@ ALTER USER  violet_staging_ubuntu  WITH PASSWORD 'passwordhere';
 ```
 
 ## make env variables available to the app (for rbenv and rbenv vars)
+clone the rbenv repo:
+``` bash
+git clone https://github.com/rbenv/rbenv-vars.git $(rbenv root)/plugins/rbenv-vars
+```
+
 to load env variables in rails console put this in in ~/.bashrc
 ``` bash
 export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$HOME/.rbenv/bin:$PATH"
