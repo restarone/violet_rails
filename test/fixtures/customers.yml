@@ -3,11 +3,3 @@
 public:
   subdomain: public
   email: hello-world@restarone.solutions
-
-restarone:
-  subdomain: restarone
-  email: don@restarone.solutions
-
-ts:
-  subdomain: trisha
-  email: trisha@restarone.solutions
