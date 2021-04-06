@@ -1,0 +1,93 @@
+version: '3'
+networks:
+  development:
+  test:
+volumes:
+  db_data:
+  gem_cache:
+  shared_data:
+services:
+  solutions_redis:
+    image: 'redis:4.0-alpine'
+    command: redis-server
+    container_name: solutions_redis
+    networks:
+      - development
+      - test
+    volumes:
+      - 'shared_data:/var/shared/redis'
+  solutions_db:
+    image: postgres:12.5-alpine
+    container_name: solutions_db
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - shared_data:/var/shared
+    networks:
+      - development
+      - test
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - 6000:5432
+  solutions_sidekiq:
+    depends_on:
+      - solutions_db
+      - solutions_redis
+    image: r-solutions_solutions_app
+    container_name: solutions_sidekiq
+    command: sidekiq -c 1
+    volumes:
+      - .:/var/app
+      - shared_data:/var/shared
+      - gem_cache:/usr/local/bundle/gems
+    env_file: .env.development
+    networks:
+      - development
+      - test
+    ports:
+      - 5251:5251
+  solutions_app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: solutions_app
+    volumes:
+      - .:/var/app
+      - shared_data:/var/shared
+      - gem_cache:/usr/local/bundle/gems
+    networks:
+      - development
+    ports:
+      - 5250:5250
+    stdin_open: true
+    tty: true
+    env_file: .env.development
+    entrypoint: entrypoint.sh
+    command: ['rails', 'server', '-p', '5250', '-b', '0.0.0.0']
+    environment:
+      RAILS_ENV: development
+    depends_on:
+      - solutions_db
+      - solutions_redis
+  solutions_test:
+    image: r-solutions_solutions_app
+    container_name: solutions_test
+    volumes:
+      - .:/var/app
+      - shared_data:/var/shared
+      - gem_cache:/usr/local/bundle/gems
+    networks:
+      - test
+    ports:
+      - 3001:3000
+    stdin_open: true
+    tty: true
+    env_file: .env.test
+    entrypoint: test-entrypoint.sh
+    command: ["rails", "-v"]
+    environment:
+      RAILS_ENV: test
+    depends_on:
+      - solutions_db
+      
