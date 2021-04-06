@@ -1,0 +1,6 @@
+public:
+  label: public
+  identifier: public
+  hostname: public.test.com
+  path:
+  locale: en

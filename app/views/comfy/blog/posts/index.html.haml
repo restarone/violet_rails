@@ -1,0 +1,28 @@
+.container
+  .row
+    .col-md-8
+      %h1 Blog Posts
+
+      - @blog_posts.each do |post|
+
+        %h2
+          = link_to post.title, comfy_blog_post_path(@cms_site.path, post.year, post.month, post.slug)
+        .date
+          = post.published_at.to_s(:db)
+
+      = comfy_paginate @blog_posts
+
+    .col-md-4
+
+      %h3 Archive
+      - dates_with_counts = @cms_site.blog_posts.published.group(:year, :month).order(year: :desc, month: :desc).count
+      - dates_with_counts.each do |(year, month), count|
+        %li
+          - date = [I18n.t("date.month_names")[month.to_i], year].join(" ")
+          - site_path = @cms_site.url(relative: true)
+          = link_to date, comfy_blog_posts_of_month_path(site_path, year: year, month: month)
+          %small (#{count})
+
+      %h3 Tags
+      - Comfy::Cms::Category.of_type('Comfy::Blog::Post').all.each do |tag|
+        = link_to tag.label, category: tag.label
