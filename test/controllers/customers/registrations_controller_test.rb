@@ -8,7 +8,7 @@ class Customers::RegistrationsControllerTest < ActionDispatch::IntegrationTest
 
   test "should initialize tenant schema and public site" do
     payload = {
-      sign_up: {
+      customer: {
         subdomain: 'tester',
         email: 'test@tester.com',
         password: '123456',
@@ -16,12 +16,11 @@ class Customers::RegistrationsControllerTest < ActionDispatch::IntegrationTest
       }
     }
     assert_difference "Customer.all.reload.size", +1 do
-      skip
-      Apartment::Tenant.switch(Customer.last.subdomain) do
-        assert_difference "Comfy::Cms::Site.all.reload.size", +1 do
-          post customer_registration_path, params: payload
-        end
-      end
+      # assert_difference "Comfy::Cms::Site.all.reload.size", +1 do
+        post customer_registration_url, params: payload
+        assert_response :redirect
+        assert_redirected_to root_url(subdomain: Subdomain.last.name)
+      # end
     end
   end
 end
