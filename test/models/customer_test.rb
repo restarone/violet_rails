@@ -5,19 +5,20 @@ class CustomerTest < ActiveSupport::TestCase
     @customer = customers(:public)
   end
 
-  test "initializes only if subdomain name is safe" do
-    refute Customer.new(
-      subdomain: '.voo.',
+  test "can be initialized" do
+    assert Customer.new(
       email: 'foo@bar.com',
       password: '123456',
       password_confirmation: '123456'
     ).valid?
     refute Customer.new(
-      subdomain: @customer.subdomain,
-      email: 'foo@bar.com',
+      email: @customer.email,
       password: '123456',
       password_confirmation: '123456'
     ).valid?
-    
+  end
+
+  test "can have many subdomains" do
+    assert @customer.subdomains.any?
   end
 end

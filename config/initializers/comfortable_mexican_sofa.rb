@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 module RSolutions::DeviseAuth
   def authenticate
-    if current_customer  && current_customer.subdomain == Apartment::Tenant.current
-      return true if current_customer.subdomain     
+    owned_subdomains = current_customer.subdomains.pluck(:name)
+    if current_customer && owned_subdomains.include?(Apartment::Tenant.current)
+      return true
     else
-      redirect_to root_path(subdomain: current_customer.subdomain)
+      redirect_to root_path(subdomain: owned_subdomains.first)
     end
   end
 end
@@ -12,7 +13,7 @@ end
 module RSolutions::ComfyAdminAuthorization
   def authorize
     if (self.class.name == "Comfy::Admin::Cms::SitesController")
-      redirect_back(fallback_location: root_url(subdomain: current_customer.subdomain))
+      redirect_back(fallback_location: root_url)
     else
       return true 
     end
