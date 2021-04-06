@@ -4,16 +4,15 @@ class Customer < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :confirmable, :lockable, :timeoutable, :trackable
 
+  attr_accessor :subdomain
 
-  validates :subdomain, format: {
-    with: %r{\A[a-z](?:[a-z0-9-]*[a-z0-9])?\z}i, message: "not a valid subdomain"
-  }, length: { in: 1..63 }, uniqueness: true
+  has_many :subdomains
 
-  after_create :create_tenant
-  after_create_commit :create_cms_site
+  after_create :create_tenant, :create_first_subdomain
+  
 
   def name
-    self.subdomain
+    self.subdomains.first.name
   end
 
   private
@@ -21,36 +20,7 @@ class Customer < ApplicationRecord
     Apartment::Tenant.create(self.subdomain)
   end
 
-  def create_cms_site
-    hostname = "#{self.subdomain}.lvh.me:3000"
-    Apartment::Tenant.switch(self.subdomain) do
-      site = Comfy::Cms::Site.create!(
-        identifier: self.subdomain,
-        # this is only for local testing
-        hostname:   hostname,
-      )
-      layout = site.layouts.create(
-        label: 'default',
-        identifier: 'default',
-        content: "{{cms:wysiwyg content}}",
-        app_layout: 'website'
-      )
-      page = layout.pages.create(
-        site_id: site.id,
-        label: 'root',
-      )
-      Comfy::Cms::Fragment.create!(
-        identifier: 'content',
-        record: page,
-        tag: 'wysiwyg',
-        content: "
-          <div>
-            <h1>Hello from #{self.name}</h1>
-            To access the admin panel for your website, 
-            <a href='http://#{hostname}/admin' target='_blank'>click here</a>
-          </div>
-        "
-      )
-    end
+  def create_first_subdomain
+    self.subdomains.create(name: self.subdomain)
   end
 end

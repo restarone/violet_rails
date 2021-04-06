@@ -3,7 +3,7 @@ require "test_helper"
 class Customers::RegistrationsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @customer = customers(:public)
-    @restarone_customer = Customer.find_by(subdomain: 'restarone')
+    @restarone_customer = Subdomain.find_by(name: 'restarone').customer
   end
 
   test "should initialize tenant schema and public site" do
