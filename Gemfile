@@ -29,7 +29,7 @@ gem 'ros-apartment', require: 'apartment'
 gem 'devise'
 gem "comfortable_mexican_sofa",git: 'https://github.com/restarone/comfortable-mexican-sofa', branch: 'master'
 gem "comfy_blog", git: 'https://github.com/restarone/comfy-blog', branch: 'master'
-
+gem 'thredded'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false
 
