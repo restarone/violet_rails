@@ -13,5 +13,8 @@
  *= require_tree .
  *= require_self
  */
- 
+//  base styles
  @import "bootstrap/scss/bootstrap";
+
+//  forum
+ @import "thredded";
