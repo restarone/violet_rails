@@ -1,9 +1,10 @@
-.container
-  %h1 Content#index
-  %p Find me in app/views/content/index.html.haml
 
-  %ul
-    %li
-      = link_to "Sign up", new_customer_registration_path
-    %li
-      = link_to "Sign in", new_customer_session_path
+%h1 Welcome to Violet Solutions
+%p Brought to you by Restarone Inc.
+
+
+.card
+  .card-body
+    = link_to "Sign up", new_customer_registration_path, class: 'btn btn-primary'
+  
+    = link_to "Sign in", new_customer_session_path, class: 'btn btn-primary'
