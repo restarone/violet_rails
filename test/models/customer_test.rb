@@ -18,6 +18,17 @@ class CustomerTest < ActiveSupport::TestCase
     ).valid?
   end
 
+  test "can be destroyed" do
+    customer = Customer.new(
+      email: 'foo@bar.com',
+      password: '123456',
+      password_confirmation: '123456',
+      subdomain: 'foo'
+    )
+    assert customer.save
+    customer.destroy
+  end
+
   test "can have many subdomains" do
     assert @customer.subdomains.any?
   end
