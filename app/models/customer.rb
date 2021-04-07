@@ -10,6 +10,10 @@ class Customer < ApplicationRecord
 
   after_create :create_tenant, :create_first_subdomain
   after_destroy :drop_tenant
+
+  def confirm_email!
+    self.update(confirmed_at: Time.now)
+  end
   
 
   def name
