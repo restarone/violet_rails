@@ -6,9 +6,10 @@ class Customer < ApplicationRecord
 
   attr_accessor :subdomain
 
-  has_many :subdomains
+  has_many :subdomains, dependent: :destroy
 
   after_create :create_tenant, :create_first_subdomain
+  after_destroy :drop_tenant
   
 
   def name
@@ -16,6 +17,13 @@ class Customer < ApplicationRecord
   end
 
   private
+
+  def drop_tenant
+    self.subdomains.each do |subdomain|
+      Apartment::Tenant.drop(subdomain.name)
+    end
+  end
+
   def create_tenant
     Apartment::Tenant.create(self.subdomain)
   end
