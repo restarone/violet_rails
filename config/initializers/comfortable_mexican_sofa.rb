@@ -5,7 +5,7 @@ module RSolutions::DeviseAuth
     if current_customer && owned_subdomains.include?(Apartment::Tenant.current)
       return true
     else
-      redirect_to root_path(subdomain: owned_subdomains.first)
+      redirect_to root_url(subdomain: owned_subdomains.first)
     end
   end
 end

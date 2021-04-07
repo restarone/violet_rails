@@ -19,7 +19,7 @@ class Comfy::Admin::Cms::BaseControllerTest < ActionDispatch::IntegrationTest
   test "should not get admin index if not logged in (redirects to public site)" do
     get comfy_admin_cms_site_layouts_url(subdomain: @customer_subdomain, site_id: Comfy::Cms::Site.first.id)
     assert_response :redirect
-    assert_redirected_to root_path(subdomain: @customer_subdomain)
+    assert_redirected_to root_url(subdomain: @restarone_subdomain)
   end
 
   test "should get admin index" do
