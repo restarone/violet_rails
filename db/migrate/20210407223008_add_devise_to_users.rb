@@ -38,6 +38,8 @@ class AddDeviseToUsers < ActiveRecord::Migration[6.1]
       t.boolean :moderator
       # for forum, website, and blog
       t.boolean :admin
+      # 
+      t.boolean :belongs_to_customer
     end
 
     add_index :users, :email,                unique: true

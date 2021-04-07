@@ -4,4 +4,13 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
          :confirmable, :lockable, :timeoutable, :trackable
+
+  def self.create_clone_for(customer)
+    user = self.new(
+      email: customer.email, 
+      encrypted_password: customer.encrypted_password
+    )
+    user.save(validate: false)
+    return user
+  end
 end

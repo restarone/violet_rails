@@ -15,11 +15,6 @@ class Customer < ApplicationRecord
     self.update(confirmed_at: Time.now)
   end
   
-
-  def name
-    self.subdomains.first.name
-  end
-
   private
 
   def drop_tenant
@@ -30,6 +25,9 @@ class Customer < ApplicationRecord
 
   def create_tenant
     Apartment::Tenant.create(self.subdomain)
+    Apartment::Tenant.switch(self.subdomain) do
+      User.create_clone_for(self)
+    end
   end
 
   def create_first_subdomain

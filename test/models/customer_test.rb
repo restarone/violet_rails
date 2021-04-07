@@ -32,4 +32,16 @@ class CustomerTest < ActiveSupport::TestCase
   test "can have many subdomains" do
     assert @customer.subdomains.any?
   end
+
+  test 'cannot be cloned more than once' do
+    user = User.create_clone_for(@customer)
+    assert user
+    assert_equal user.email, @customer.email
+    assert_equal user.encrypted_password, @customer.encrypted_password
+    begin
+      User.create_clone_for(@customer)
+    rescue ActiveRecord::RecordNotUnique => e
+        # yay db unique constraint works
+    end
+  end
 end

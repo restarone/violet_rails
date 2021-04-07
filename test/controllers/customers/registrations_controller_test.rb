@@ -32,6 +32,7 @@ class Customers::RegistrationsControllerTest < ActionDispatch::IntegrationTest
             default_page = default_layout.pages.first
             assert default_page
             assert default_page.fragments.any?
+            assert User.first
           end
         end
       end

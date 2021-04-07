@@ -10,7 +10,7 @@ Thredded.user_class = 'User'
 
 # User name column, used in @mention syntax and *must* be unique.
 # This is the column used to search for users' names if/when someone is @ mentioned.
-Thredded.user_name_column = :email
+Thredded.user_name_column = :name
 
 # User display name method, by default thredded uses the user_name_column defined above
 # You may want to use :to_s or some more elaborate method
@@ -37,7 +37,7 @@ Thredded.avatar_url = ->(user) { Gravatar.src(user.email, 156, 'mm') }
 # and admins and moderators are determined by a flag on the users table.
 
 # The name of the moderator flag column on the users table.
-Thredded.moderator_column = :admin
+Thredded.moderator_column = :moderator
 # The name of the admin flag column on the users table.
 Thredded.admin_column = :admin
 
@@ -82,7 +82,7 @@ Thredded.layout = 'thredded/application'
 # ==> Email Configuration
 # Email "From:" field will use the following
 # (this is also used as the "To" address for both email notifcations, as all the recipients are on bcc)
-# Thredded.email_from = 'no-reply@example.com'
+Thredded.email_from = 'changeme@config-initializers-thredded.com'
 
 # Emails going out will prefix the "Subject:" with the following string
 # Thredded.email_outgoing_prefix = '[My Forum] '
