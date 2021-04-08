@@ -1,3 +1,4 @@
 %li{class: 'nav-item'}
-  = link_to "Your Landing page", root_path(subdomain: Apartment::Tenant.current), class: 'nav-link', target: '_blank'
-  = link_to "Your Blog", '/blog', class: 'nav-link', target: '_blank'
+  = link_to Apartment::Tenant.current, root_path(subdomain: Apartment::Tenant.current), class: 'nav-link', target: '_blank'
+  = link_to "Blog", '/blog', class: 'nav-link', target: '_blank'
+  = link_to "Logout", destroy_customer_session_path, class: 'nav-link text-danger', method: :delete
