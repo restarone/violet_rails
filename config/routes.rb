@@ -31,6 +31,8 @@ Rails.application.routes.draw do
     comfy_route :cms_admin, path: "/admin"
     comfy_route :blog, path: "blog"
     comfy_route :blog_admin, path: "admin"
+    mount SimpleDiscussion::Engine => "/forum"
+    # cms comes last because its a catch all
     comfy_route :cms, path: "/"
   end
 
