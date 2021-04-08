@@ -15,4 +15,3 @@ Turbolinks.start()
 ActiveStorage.start()
 
 require("jquery")
-require('thredded_imports.js');
