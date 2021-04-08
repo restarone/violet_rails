@@ -1,4 +1,31 @@
 GIT
+  remote: https://github.com/mission-met/thredded
+  revision: e0c00d4142092dfcdbf5e7e3c39ec1bae8ff2188
+  branch: master
+  specs:
+    thredded (0.16.16)
+      active_record_union (>= 1.3.0)
+      autoprefixer-rails
+      db_text_search (~> 0.3.0)
+      friendly_id
+      html-pipeline
+      htmlentities
+      inline_svg (>= 1.6.0)
+      kaminari
+      kramdown (>= 2.0.0)
+      kramdown-parser-gfm
+      nokogiri
+      onebox (~> 1.8, >= 1.8.99)
+      pundit (>= 1.1.0)
+      rails (>= 4.2.10, != 6.0.0.rc2)
+      rails_gravatar
+      rinku
+      sanitize
+      sassc-rails (>= 2.0.0)
+      sprockets-es6
+      timeago_js (>= 3.0.2.2)
+
+GIT
   remote: https://github.com/restarone/comfortable-mexican-sofa
   revision: fd230aee88a072634d9771521d6b4bf8ce49335d
   branch: master
@@ -283,6 +310,8 @@ GEM
     rails-i18n (6.0.0)
       i18n (>= 0.7, < 2)
       railties (>= 6.0.0, < 7)
+    rails_gravatar (1.0.0)
+      actionview
     railties (6.1.3.1)
       actionpack (= 6.1.3.1)
       activesupport (= 6.1.3.1)
@@ -352,27 +381,6 @@ GEM
       net-ssh (>= 2.8.0)
     temple (0.8.2)
     thor (1.1.0)
-    thredded (0.16.16)
-      active_record_union (>= 1.3.0)
-      autoprefixer-rails
-      db_text_search (~> 0.3.0)
-      friendly_id
-      html-pipeline
-      htmlentities
-      inline_svg (>= 1.6.0)
-      kaminari
-      kramdown (>= 2.0.0)
-      kramdown-parser-gfm
-      nokogiri
-      onebox (~> 1.8, >= 1.8.99)
-      pundit (>= 1.1.0)
-      rails (>= 4.2.10, != 6.0.0.rc2)
-      rb-gravatar
-      rinku
-      sanitize
-      sassc-rails (>= 2.0.0)
-      sprockets-es6
-      timeago_js (>= 3.0.2.2)
     tilt (2.0.10)
     timeago_js (3.0.2.2)
     turbolinks (5.2.1)
@@ -426,12 +434,13 @@ DEPENDENCIES
   rack-mini-profiler (~> 2.0)
   rails (~> 6.1.3, >= 6.1.3.1)
   rails-controller-testing
+  rb-gravatar
   ros-apartment
   sass-rails (>= 6)
   selenium-webdriver
   simplecov
   spring
-  thredded
+  thredded!
   turbolinks (~> 5)
   tzinfo-data
   web-console (>= 4.1.0)
