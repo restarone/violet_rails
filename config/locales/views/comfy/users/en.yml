@@ -1,0 +1,8 @@
+en:
+  views:
+    comfy:
+      users:
+        index:
+          header:
+            title: Users
+            action: Invite

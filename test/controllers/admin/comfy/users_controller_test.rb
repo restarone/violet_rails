@@ -14,5 +14,7 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     get users_url(subdomain: @public_subdomain.name)
     assert_response :success
     assert_template :index
+    assert response.body.include? I18n.t('views.comfy.users.index.header.title')
+    assert response.body.include? I18n.t('views.comfy.users.index.header.action')
   end
 end
