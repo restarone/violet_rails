@@ -1,4 +1,5 @@
 %li{class: 'nav-item'}
+  = active_link_to "Users", users_path, class: 'nav-link'
   = link_to Apartment::Tenant.current, root_path(subdomain: Apartment::Tenant.current), class: 'nav-link', target: '_blank'
   = link_to "Blog", '/blog', class: 'nav-link', target: '_blank'
   = link_to "Logout", destroy_customer_session_path, class: 'nav-link text-danger', method: :delete
