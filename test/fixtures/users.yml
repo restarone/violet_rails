@@ -1,7 +1,5 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  email: test@restarone.com
-
-two:
-  email: test@testarone.com
+public:
+  email: hello-world@restarone.solutions
+  encrypted_password: $2a$12$PFNZqtrPOFmq6kouyeZTOutdHEb/nqOsZzJiIM.3XmpDYj8IglbXy # 123456
+  confirmed_at: <%= Time.now %>

@@ -9,6 +9,11 @@ class Comfy::Admin::Cms::BaseControllerTest < ActionDispatch::IntegrationTest
     sign_in(@restarone_customer)
   end
 
+  test "get comfy root" do
+    get comfy_admin_cms_url(subdomain: @restarone_subdomain)
+    assert_redirected_to comfy_admin_cms_site_pages_path(subdomain: @restarone_subdomain, site_id: 1)
+  end
+
   test "should not get admin index if not logged in" do
     sign_out(@restarone_customer)
     get comfy_admin_cms_site_layouts_url(subdomain: @customer_subdomain, site_id: Comfy::Cms::Site.first.id)
@@ -17,9 +22,10 @@ class Comfy::Admin::Cms::BaseControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should not get admin index if not logged in (redirects to public site)" do
+    sign_out(@restarone_customer)
     get comfy_admin_cms_site_layouts_url(subdomain: @customer_subdomain, site_id: Comfy::Cms::Site.first.id)
     assert_response :redirect
-    assert_redirected_to root_url(subdomain: @restarone_subdomain)
+    assert_redirected_to new_customer_session_path(subdomain: @restarone_subdomain)
   end
 
   test "should get admin index" do
