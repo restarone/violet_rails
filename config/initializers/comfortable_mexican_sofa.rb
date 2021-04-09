@@ -1,18 +1,10 @@
 # frozen_string_literal: true
 module RSolutions::DeviseAuth
   def authenticate
-    if current_customer || current_user
-      if current_customer
-        owned_subdomains = current_customer.subdomains.pluck(:name)
-        valid_customer = current_customer && owned_subdomains.include?(Apartment::Tenant.current)
-        return valid_customer
-      end
-      if current_user
-        return true
-      end
-      return false
+    if current_user
+      return true
     else
-      redirect_to root_url(subdomain: owned_subdomains.first)
+      redirect_to root_url(subdomain: Apartment::Tenant.current)
     end
   end
 end

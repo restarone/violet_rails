@@ -6,26 +6,17 @@ class SubdomainConstraint
 end
 
 Rails.application.routes.draw do
-  devise_for :users, controllers: {
-    confirmations: 'users/confirmations',
-    #omniauth_callbacks: 'users/omniauth_callbacks',
-    passwords: 'users/passwords',
-    registrations: 'users/registrations',
-    sessions: 'users/sessions',
-    unlocks: 'users/unlocks',
-    invitations: 'users/invitations'
-  }
-  devise_for :customers, controllers: {
-    confirmations: 'customers/confirmations',
-    #omniauth_callbacks: 'customers/omniauth_callbacks',
-    passwords: 'customers/passwords',
-    registrations: 'customers/registrations',
-    sessions: 'customers/sessions',
-    unlocks: 'customers/unlocks',
-    invitations: 'customers/invitations'
-  }
-  
+
   constraints SubdomainConstraint do
+    devise_for :users, controllers: {
+      confirmations: 'users/confirmations',
+      #omniauth_callbacks: 'users/omniauth_callbacks',
+      registrations: 'users/registrations',
+      passwords: 'users/passwords',
+      sessions: 'users/sessions',
+      unlocks: 'users/unlocks',
+      invitations: 'users/invitations'
+    }
     resources :users, controller: 'comfy/admin/users'
     comfy_route :cms_admin, path: "/admin"
     comfy_route :blog, path: "blog"

@@ -3,7 +3,7 @@ class Subdomain < ApplicationRecord
     with: %r{\A[a-z](?:[a-z0-9-]*[a-z0-9])?\z}i, message: "not a valid subdomain"
   }, length: { in: 1..63 }, uniqueness: true
 
-  belongs_to :customer
+  before_create :create_tenant
 
   after_create_commit :create_cms_site
 
@@ -11,7 +11,12 @@ class Subdomain < ApplicationRecord
     "#{self.name}.#{ENV['APP_HOST']}"
   end
 
-  private 
+  private
+
+
+  def create_tenant
+    Apartment::Tenant.create(self.name)
+  end
 
   def create_cms_site
     hostname = self.hostname

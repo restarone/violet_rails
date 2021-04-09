@@ -4,4 +4,10 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
          :confirmable, :lockable, :timeoutable, :trackable
+
+  attr_accessor :canonical_subdomain
+  
+  def subdomain
+    Apartment::Tenant.current
+  end
 end
