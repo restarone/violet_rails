@@ -187,8 +187,12 @@ ActiveRecord::Schema.define(version: 2021_04_10_145054) do
     t.boolean "requires_web", default: true
     t.boolean "requires_blog", default: true
     t.boolean "requires_forum", default: true
+    t.datetime "deleted_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["deleted_at"], name: "index_subdomain_requests_on_deleted_at"
+    t.index ["email"], name: "index_subdomain_requests_on_email"
+    t.index ["subdomain_name"], name: "index_subdomain_requests_on_subdomain_name"
   end
 
   create_table "subdomains", force: :cascade do |t|
