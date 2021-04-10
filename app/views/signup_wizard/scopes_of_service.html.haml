@@ -3,5 +3,20 @@
   .card-header  
     = render partial: 'header', locals: { heading: I18n.t('views.signup_wizard.scopes_of_service.title') }
   .card-body
+    %h5
+      = I18n.t('views.signup_wizard.scopes_of_service.body.title')
+    %ul.list-group.my-5
+      %li.list-group-item.d-flex.justify-content-between.align-items.center
+        = I18n.t('views.signup_wizard.scopes_of_service.body.options.web.title')
+        = check_box_tag "web", 'true', true
+      %li.list-group-item.d-flex.justify-content-between.align-items.center
+        = I18n.t('views.signup_wizard.scopes_of_service.body.options.blog.title')
+        = check_box_tag "blog", 'true', true
+      %li.list-group-item.d-flex.justify-content-between.align-items.center
+        = I18n.t('views.signup_wizard.scopes_of_service.body.options.forum.title')
+        = check_box_tag "forum", 'true', true
   .card-footer
-    = link_to 'skip', next_wizard_path
+    .float-left
+      = link_to I18n.t('views.signup_wizard.scopes_of_service.controls.back'), root_path, class: 'btn btn-sm btn-info'
+    .float-right
+      = link_to I18n.t('views.signup_wizard.scopes_of_service.controls.next'), next_wizard_path, class: 'btn btn-sm btn-info'

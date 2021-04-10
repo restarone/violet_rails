@@ -5,6 +5,10 @@ class SignupWizardController < ApplicationController
   steps :scopes_of_service, :subdomain_name, :sign_up
 
   def show
+    case step
+    when :scopes_of_service
+      @subdomain_request = SubdomainRequest.new
+    end
     render_wizard
   end
 

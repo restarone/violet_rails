@@ -3,7 +3,21 @@ en:
     signup_wizard:
       scopes_of_service:
         title: Scopes of Service
-      sign_up:
-        title: Create User Account
+        body:
+          title: What kind of functionality does your organization need?
+          options:
+            web: 
+              title: 'Web'
+            blog: 
+              title: 'Blog'
+            forum: 
+              title: 'Forum'
+        controls:
+          back: Back to Home
+          next: Skip
       subdomain_name:
         title: Select a Subdomain
+        body:
+          title: This will be where your landing page will be available
+      sign_up:
+        title: Create User Account

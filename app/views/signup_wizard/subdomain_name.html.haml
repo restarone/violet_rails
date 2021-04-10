@@ -3,6 +3,15 @@
   .card-header  
     = render partial: 'header', locals: { heading: I18n.t('views.signup_wizard.subdomain_name.title') }
   .card-body
-    
+    %h5
+      = I18n.t('views.signup_wizard.subdomain_name.body.title')
+    .input-group.my-5
+      %input.form-control{"aria-describedby" => "subdomain name input", "aria-label" => "User's subdomain name", :placeholder => "myawesomecompany", :type => "text"}/
+      .input-group-append
+        %span.input-group-text
+          = ENV['APP_HOST']
+    .input-group.text-center
+      = button_tag "Lets Go!", class: 'btn btn-primary btn-lg'
   .card-footer
-    = link_to 'Previous', previous_wizard_path
+    .float-left
+      = link_to 'Back', previous_wizard_path, class: 'btn btn-sm btn-info'
