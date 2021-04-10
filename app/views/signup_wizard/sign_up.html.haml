@@ -3,6 +3,14 @@
   .card-header  
     = render partial: 'header', locals: { heading: I18n.t('views.signup_wizard.sign_up.title') }
   .card-body
-    
+    %h5
+      = I18n.t('views.signup_wizard.sign_up.body.title')
+    = form_for @subdomain_request, url: signup_wizard_path(subdomain_request_id: @subdomain_request.id), method: :put do |f|
+      .input-group.my-5
+        = f.email_field :email, placeholder: 'john@appleseed.com', required: true
+      = render partial: 'errors', locals: { f: f }
+      .input-group.text-center
+        = f.submit I18n.t('views.signup_wizard.subdomain_name.buttons.next'), class: 'btn btn-primary btn-lg'
   .card-footer
-    = link_to 'skip', next_wizard_path
+    .float-left
+      = link_to I18n.t('views.signup_wizard.subdomain_name.buttons.previous'), previous_wizard_path(subdomain_request_id: @subdomain_request.id), class: 'btn btn-sm btn-info'

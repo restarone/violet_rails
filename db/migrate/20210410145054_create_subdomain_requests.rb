@@ -1,8 +1,8 @@
 class CreateSubdomainRequests < ActiveRecord::Migration[6.1]
   def change
     create_table :subdomain_requests do |t|
-      t.string :subdomain_name, null: false
-      t.string :email, null: false
+      t.string :subdomain_name
+      t.string :email
       t.boolean :approved, default: false
       t.boolean :requires_web, default: true
       t.boolean :requires_blog, default: true

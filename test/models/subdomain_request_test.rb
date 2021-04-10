@@ -28,4 +28,9 @@ class SubdomainRequestTest < ActiveSupport::TestCase
     )
     refute subdomain_request.save
   end
+
+  test 'allows incremental build' do
+    subdomain_request = SubdomainRequest.new
+    assert subdomain_request.save
+  end
 end

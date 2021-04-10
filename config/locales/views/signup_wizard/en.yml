@@ -12,12 +12,18 @@ en:
               title: 'Blog'
             forum: 
               title: 'Forum'
-        controls:
+        buttons:
           back: Back to Home
           next: Skip
+          confirm: Next
       subdomain_name:
         title: Select a Subdomain
         body:
-          title: This will be where your landing page will be available
+          title: This is where your landing page will be available
+        buttons:
+          next: Next
+          previous: Back
       sign_up:
         title: Create User Account
+        body:
+          title: Give us your email address and we will send you a login link!

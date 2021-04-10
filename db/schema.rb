@@ -181,8 +181,8 @@ ActiveRecord::Schema.define(version: 2021_04_10_145054) do
   end
 
   create_table "subdomain_requests", force: :cascade do |t|
-    t.string "subdomain_name", null: false
-    t.string "email", null: false
+    t.string "subdomain_name"
+    t.string "email"
     t.boolean "approved", default: false
     t.boolean "requires_web", default: true
     t.boolean "requires_blog", default: true

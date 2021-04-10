@@ -5,13 +5,16 @@
   .card-body
     %h5
       = I18n.t('views.signup_wizard.subdomain_name.body.title')
-    .input-group.my-5
-      %input.form-control{"aria-describedby" => "subdomain name input", "aria-label" => "User's subdomain name", :placeholder => "myawesomecompany", :type => "text"}/
-      .input-group-append
-        %span.input-group-text
-          = ENV['APP_HOST']
-    .input-group.text-center
-      = button_tag "Lets Go!", class: 'btn btn-primary btn-lg'
+    = form_for @subdomain_request, url: signup_wizard_path(subdomain_request_id: @subdomain_request.id), method: :put do |f|
+      .my-5
+        .input-group
+          = f.text_field :subdomain_name, placeholder: 'myawesomecompany', required: true
+          .input-group-append
+            %span.input-group-text
+              = ".#{ENV['APP_HOST']}"
+        = render partial: 'errors', locals: { f: f }
+      .input-group.text-center
+        = f.submit I18n.t('views.signup_wizard.subdomain_name.buttons.next'), class: 'btn btn-primary btn-lg'
   .card-footer
     .float-left
-      = link_to 'Back', previous_wizard_path, class: 'btn btn-sm btn-info'
+      = link_to I18n.t('views.signup_wizard.subdomain_name.buttons.previous'), previous_wizard_path, class: 'btn btn-sm btn-info'
