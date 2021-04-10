@@ -7,7 +7,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     @restarone_subdomain = Subdomain.find_by(name: 'restarone').name
   end
 
-  test "should allow create" do
+  test "should allow create (within subdomain scope)" do
     subdomain = 'tester'
     email = 'test@tester.com'
     password = '123456'
@@ -35,7 +35,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'unconfirmed login results in redirect to subdomain landing page' do
+  test 'unconfirmed login results in redirect to subdomain landing page (within subdomain scope)' do
     subdomain = 'tester'
     email = 'test@tester.com'
     password = '123456'
@@ -61,7 +61,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_equal flash.alert, "You have to confirm your email address before continuing."
   end
 
-  test 'confirmed login results in redirect to comfy admin panel' do
+  test 'confirmed login results in redirect to comfy admin panel (within subdomain scope)' do
     get comfy_admin_cms_url(subdomain: @public_subdomain)
     assert_response :redirect
     email = 'hello-world@restarone.solutions'
@@ -77,7 +77,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to comfy_admin_cms_url(subdomain: @public_subdomain)
   end
 
-  test 'login to comfy admin panel' do
+  test 'login to comfy admin panel (within subdomain scope)' do
     sign_in(@user)
     Apartment::Tenant.switch @public_subdomain do
       get comfy_admin_cms_url(subdomain: @public_subdomain)
@@ -85,7 +85,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "should initialize tenant schema and public site (along with default layout, page and fragment) and send email confirmation" do
+  test "should initialize tenant schema and public site (along with default layout, page and fragment) and send email confirmation (within subdomain scope)" do
     subdomain = 'tester'
     email = 'test@tester.com'
     password = '123456'

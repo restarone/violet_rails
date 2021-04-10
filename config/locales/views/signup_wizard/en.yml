@@ -1,0 +1,9 @@
+en:
+  views:
+    signup_wizard:
+      scopes_of_service:
+        title: Scopes of Service
+      sign_up:
+        title: Create User Account
+      subdomain_name:
+        title: Select a Subdomain

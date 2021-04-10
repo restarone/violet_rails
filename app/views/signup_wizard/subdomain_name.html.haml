@@ -1,0 +1,8 @@
+.card
+  = render partial: 'progress'
+  .card-header  
+    = render partial: 'header', locals: { heading: I18n.t('views.signup_wizard.subdomain_name.title') }
+  .card-body
+    
+  .card-footer
+    = link_to 'Previous', previous_wizard_path

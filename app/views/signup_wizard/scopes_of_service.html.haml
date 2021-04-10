@@ -1,0 +1,7 @@
+.card
+  = render partial: 'progress'
+  .card-header  
+    = render partial: 'header', locals: { heading: I18n.t('views.signup_wizard.scopes_of_service.title') }
+  .card-body
+  .card-footer
+    = link_to 'skip', next_wizard_path
