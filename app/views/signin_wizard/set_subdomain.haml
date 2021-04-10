@@ -1,0 +1,21 @@
+.card
+  = render partial: 'wizards/progress'
+  .card-header  
+    = render partial: 'wizards/header', locals: { heading: I18n.t('views.signin_wizard.set_subdomain.title') }
+  .card-body
+    %h5
+      = I18n.t('views.signin_wizard.set_subdomain.body.title')
+    = form_for SubdomainRequest.new, url: wizard_path, method: :put do |f|
+      .input-group.my-5
+        = f.text_field :subdomain_name, placeholder: 'myawesomecompany', required: true
+        .input-group-append
+          %span.input-group-text
+            = ".#{ENV['APP_HOST']}"
+      = render partial: 'wizards/errors', locals: { f: f }
+      .input-group.text-center
+        = f.submit I18n.t('views.signin_wizard.set_subdomain.buttons.next'), class: 'btn btn-primary btn-lg'
+  .card-footer
+    .float-left
+      = link_to I18n.t('views.signin_wizard.set_subdomain.buttons.previous'), root_path, class: 'btn btn-sm btn-info'
+    .float-right
+      HAVE A GREAT DAY ! - Your friends at Restarone Inc.

@@ -7,6 +7,7 @@ end
 
 Rails.application.routes.draw do
   resources :signup_wizard
+  resources :signin_wizard
   constraints SubdomainConstraint do
     devise_for :users, controllers: {
       confirmations: 'users/confirmations',
