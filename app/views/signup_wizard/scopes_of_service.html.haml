@@ -1,7 +1,7 @@
 .card
-  = render partial: 'progress'
+  = render partial: 'wizards/progress'
   .card-header  
-    = render partial: 'header', locals: { heading: I18n.t('views.signup_wizard.scopes_of_service.title') }
+    = render partial: 'wizards/header', locals: { heading: I18n.t('views.signup_wizard.scopes_of_service.title') }
   .card-body
     %h5
       = I18n.t('views.signup_wizard.scopes_of_service.body.title')
