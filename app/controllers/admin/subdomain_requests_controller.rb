@@ -1,6 +1,6 @@
 class Admin::SubdomainRequestsController < Admin::BaseController
   def index
-
+    @subdomain_requests = SubdomainRequest.all
   end
 
   def edit
