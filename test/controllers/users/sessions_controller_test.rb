@@ -48,4 +48,18 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_template :new
     assert_equal flash.alert, "Invalid Email or password."
   end
+
+  test '#create allows login for global admin' do
+    @user.update(global_admin: true)
+    payload = {
+      user: {
+        email: @user.email,
+        password: '123456'
+      }
+    }
+    post users_sign_in_url, params: payload
+    assert_redirected_to admin_subdomain_requests_url
+    follow_redirect!
+    assert_template :index
+  end
 end

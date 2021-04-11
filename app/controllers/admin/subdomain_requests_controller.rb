@@ -1,7 +1,4 @@
-class Admin::SubdomainRequestsController < ApplicationController
-  before_action :authenticate_user!
-
-
+class Admin::SubdomainRequestsController < Admin::BaseController
   def index
 
   end
