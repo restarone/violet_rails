@@ -207,6 +207,7 @@ ActiveRecord::Schema.define(version: 2021_04_10_145054) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.boolean "global_admin", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "email", default: "", null: false
