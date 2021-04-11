@@ -6,7 +6,7 @@ class Comfy::Admin::Cms::BaseControllerTest < ActionDispatch::IntegrationTest
     @user_subdomain = @user.subdomain
     @restarone_subdomain = Subdomain.find_by(name: 'restarone')
     Apartment::Tenant.switch @restarone_subdomain.name do
-      @unauthorized_user = User.create!(email: 'contact@restarone.com', password: '123456', password_confirmation: '123456')
+      @unauthorized_user = User.create!(email: 'design@restarone.com', password: '123456', password_confirmation: '123456')
       @unauthorized_user.update(confirmed_at: Time.now)
     end
     sign_in(@user)

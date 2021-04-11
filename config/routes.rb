@@ -25,6 +25,13 @@ Rails.application.routes.draw do
     comfy_route :cms, path: "/"
   end
 
+  # system admin panel login
+  devise_scope :user do
+    get 'sign_in', to: 'users/sessions#new', as: :new_global_admin_session
+    post 'users/sign_in', to: 'users/sessions#create'
+    delete 'global_login', to: 'users/sessions#destroy'
+  end
+
   root to: 'content#index'
   
 
