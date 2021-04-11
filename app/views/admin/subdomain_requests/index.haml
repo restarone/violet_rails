@@ -2,12 +2,13 @@
   Hello from index
 .my-5.list-group
   - @subdomain_requests.each do |subdomain_request|
-    = link_to admin_subdomain_request_path(id: subdomain_request.id), class: 'list-group-item list-group-item-action flex-column align-items-start' do
-      .d-flex.w-100.justify-content-between
-        %h5 
-          = "#{subdomain_request.subdomain_name}.#{ENV['APP_HOST']}"
-        %small
-          = subdomain_request.created_at
-      %p
-        = subdomain_request.email
+    - if subdomain_request.subdomain_name
+      = link_to admin_subdomain_request_path(id: subdomain_request.slug), class: 'list-group-item list-group-item-action flex-column align-items-start' do
+        .d-flex.w-100.justify-content-between
+          %h5 
+            = display_subdomain_name(subdomain_request.subdomain_name)
+          %small
+            = subdomain_request.created_at
+        %p
+          = subdomain_request.email
 

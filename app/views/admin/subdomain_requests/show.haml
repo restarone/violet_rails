@@ -1,2 +1,8 @@
-%h1
-  Hello from admin show
+.card
+  .card-header
+    = display_subdomain_name(@subdomain_request.subdomain_name)
+  .card-body
+    %h5.card-title 
+      = @subdomain_request.email
+    = link_to "Approve", approve_admin_subdomain_request_path(id: @subdomain_request.slug), class: 'btn btn-primary'
+    = link_to "Deny", disapprove_admin_subdomain_request_path(id: @subdomain_request.slug), class: 'btn btn-danger'

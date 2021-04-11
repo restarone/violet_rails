@@ -34,7 +34,12 @@ Rails.application.routes.draw do
   # system admin panel authentication (ensure public schema as well)
   authenticate :user, lambda { |u| u.global_admin? && Apartment::Tenant.current == 'public' } do
     namespace :admin do
-      resources :subdomain_requests, except: [:new, :create]
+      resources :subdomain_requests, except: [:new, :create] do
+        member do
+          get 'approve'
+          get 'disapprove'
+        end
+      end
     end
   end
 

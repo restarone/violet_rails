@@ -7,3 +7,4 @@ default:
   requires_web: true
   requires_blog: true
   requires_forum: true
+  slug: lenny

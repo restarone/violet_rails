@@ -50,7 +50,7 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
 
   test 'allows #edit if global admin' do
     sign_in(@user)
-    get edit_admin_subdomain_request_url(id: @subdomain_request.id)
+    get edit_admin_subdomain_request_url(id: @subdomain_request.slug)
     assert_response :success
     assert_template :edit
   end
@@ -60,7 +60,7 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
     begin
       refute @user.global_admin
       sign_in(@user)
-      get edit_admin_subdomain_request_url(id: @subdomain_request.id)
+      get edit_admin_subdomain_request_url(id: @subdomain_request.slug)
       rescue ActionController::RoutingError => e
         assert e.message
     else
@@ -70,7 +70,7 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
 
   test 'allows #show if global admin' do
     sign_in(@user)
-    get admin_subdomain_request_url(id: @subdomain_request.id)
+    get admin_subdomain_request_url(id: @subdomain_request.slug)
     assert_response :success
     assert_template :show
   end
@@ -80,7 +80,7 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
     begin
       refute @user.global_admin
       sign_in(@user)
-      get admin_subdomain_request_url(id: @subdomain_request.id)
+      get admin_subdomain_request_url(id: @subdomain_request.slug)
       rescue ActionController::RoutingError => e
         assert e.message
     else
@@ -90,7 +90,7 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
 
   test 'allows #update if global admin' do
     sign_in(@user)
-    patch admin_subdomain_request_url(id: @subdomain_request.id)
+    patch admin_subdomain_request_url(id: @subdomain_request.slug)
     assert_response :success
     assert_template :update
   end
@@ -99,7 +99,7 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
     @user.update(global_admin: false)
     begin
       sign_in(@user)
-      patch admin_subdomain_request_url(id: @subdomain_request.id)
+      patch admin_subdomain_request_url(id: @subdomain_request.slug)
       rescue ActionController::RoutingError => e
         assert e.message
     else
@@ -109,7 +109,7 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
 
   test 'allows #destroy if global admin' do
     sign_in(@user)
-    delete admin_subdomain_request_url(id: @subdomain_request.id)
+    delete admin_subdomain_request_url(id: @subdomain_request.slug)
     assert_response :success
   end
 
@@ -117,7 +117,7 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
     @user.update(global_admin: false)
     begin
       sign_in(@user)
-      delete admin_subdomain_request_url(id: @subdomain_request.id)
+      delete admin_subdomain_request_url(id: @subdomain_request.slug)
       rescue ActionController::RoutingError => e
         assert e.message
     else
