@@ -32,7 +32,7 @@ class SignupWizardControllerTest < ActionDispatch::IntegrationTest
       }
     }
     assert_changes "subdomain_request.reload.subdomain_name" do
-      patch signup_wizard_path(id: 'subdomain_name', subdomain_request_id: subdomain_request.id), params: payload
+      patch signup_wizard_path(id: 'subdomain_name', subdomain_request_id: subdomain_request.slug), params: payload
       assert_response :redirect
       follow_redirect!
       assert_template :sign_up
@@ -43,7 +43,7 @@ class SignupWizardControllerTest < ActionDispatch::IntegrationTest
       }
     }
     assert_changes "subdomain_request.reload.email" do
-      patch signup_wizard_path(id: 'sign_up', subdomain_request_id: subdomain_request.id), params: payload
+      patch signup_wizard_path(id: 'sign_up', subdomain_request_id: subdomain_request.slug), params: payload
       assert_response :redirect
       follow_redirect!
       assert_redirected_to root_url

@@ -8,10 +8,12 @@ class CreateSubdomainRequests < ActiveRecord::Migration[6.1]
       t.boolean :requires_blog, default: true
       t.boolean :requires_forum, default: true
       t.datetime :deleted_at
+      t.string :slug
       t.timestamps
     end
     add_index :subdomain_requests, :deleted_at
     add_index :subdomain_requests, :subdomain_name
     add_index :subdomain_requests, :email
+    add_index :subdomain_requests, :slug
   end
 end

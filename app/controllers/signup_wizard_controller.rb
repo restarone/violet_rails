@@ -2,26 +2,26 @@ class SignupWizardController < ApplicationController
   include Wicked::Wizard
   before_action :set_progress, only: [:show]
 
+  before_action :load_subdomain_request, only: [:show, :update]
+
   steps :scopes_of_service, :subdomain_name, :sign_up
 
   def show
-    @subdomain_request = SubdomainRequest.find_by(id: params[:subdomain_request_id])
     render_wizard
   end
 
   def create
     @subdomain_request = SubdomainRequest.new(subdomain_request_params)
     if @subdomain_request.save
-      redirect_to wizard_path(:subdomain_name, {subdomain_request_id: @subdomain_request.id})
+      redirect_to wizard_path(:subdomain_name, {subdomain_request_id: @subdomain_request.slug})
     end
   end
 
   def update
-    @subdomain_request = SubdomainRequest.find_by(id: params[:subdomain_request_id])
     case step
     when :subdomain_name
       if @subdomain_request.update(subdomain_request_params)
-        redirect_to wizard_path(:sign_up, {subdomain_request_id: @subdomain_request.id})
+        redirect_to wizard_path(:sign_up, {subdomain_request_id: @subdomain_request.slug})
       else
         render_wizard
       end
@@ -40,10 +40,17 @@ class SignupWizardController < ApplicationController
   end
 
   private 
+  
+  def load_subdomain_request
+    if params[:subdomain_request_id]
+      @subdomain_request = SubdomainRequest.friendly.find(params[:subdomain_request_id])
+    end
+  end
 
   def subdomain_request_params
     params.require(:subdomain_request).permit(:requires_web, :requires_blog, :requires_forum, :email, :subdomain_name)
   end
+
 
   def set_progress
     if wizard_steps.any? && wizard_steps.index(step).present?
