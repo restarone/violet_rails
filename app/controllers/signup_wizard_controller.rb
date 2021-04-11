@@ -43,7 +43,7 @@ class SignupWizardController < ApplicationController
   
   def load_subdomain_request
     if params[:subdomain_request_id]
-      @subdomain_request = SubdomainRequest.friendly.find(params[:subdomain_request_id])
+      @subdomain_request = SubdomainRequest.find_by(slug: params[:subdomain_request_id])
     end
   end
 
