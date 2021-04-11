@@ -5,6 +5,10 @@ class SubdomainRequest < ApplicationRecord
 
   friendly_id :obfuscation_slugger, use: :slugged
 
+  validate :can_be_approved?, if: -> { self.approved_changed? }
+
+  after_save :spawn_subdomain, if: -> { self.approved? }
+
   def self.pending
     self.where(approved: false)
   end
@@ -18,6 +22,22 @@ class SubdomainRequest < ApplicationRecord
   end
 
   private
+
+  def spawn_subdomain
+    Subdomain.create! name: self.subdomain_name
+    self.destroy
+  end
+
+  def can_be_approved?
+    subdomain = Subdomain.new(name: self.subdomain_name)
+    unless subdomain.valid?
+      errors.add(:subdomain_name, "A subdomain cannot be created with this request!")
+    end
+
+    unless self.email
+      errors.add(:email, "A subdomain cannot be assigned without a canonical user!")
+    end
+  end
 
   def obfuscation_slugger
     SecureRandom.hex(10)

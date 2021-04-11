@@ -126,7 +126,7 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'allows #approve if global admin' do
-    assert_changes "@subdomain_request.reload.approved" do
+    assert_difference "SubdomainRequest.all.size", -1 do
       sign_in(@user)
       get approve_admin_subdomain_request_url(id: @subdomain_request.slug)
       assert_redirected_to admin_subdomain_requests_path
