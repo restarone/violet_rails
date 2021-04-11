@@ -18,6 +18,14 @@ Rails.application.configure do
 
   config.action_mailer.raise_delivery_errors = false
 
+  config.action_mailer.default_url_options = { host: ENV['APP_HOST'] }
+  config.action_mailer.perform_deliveries = true 
+  config.action_mailer.delivery_method = :mailgun
+  config.action_mailer.mailgun_settings = {
+    api_key: ENV["MAILGUN_API_KEY"],
+    domain: 'mg.restarone.solutions',
+  }
+
 
   # Ensures that a master key has been made available in either ENV["RAILS_MASTER_KEY"]
   # or in config/master.key. This key is used to decrypt credentials (and other encrypted files).
