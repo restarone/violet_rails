@@ -11,18 +11,36 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'allows #index if global admin' do
-    sign_in(@restarone_user)
-    get admin_subdomain_requests_path
+
+  test 'allows #index if global admin from public schema' do
+    @user.update(global_admin: true)
+    assert @user.global_admin
+    sign_in(@user)
+    get admin_subdomain_requests_url
     assert_response :success
     assert_template :index
+  end
+
+  test 'denies #index if spoofed global admin' do
+    Apartment::Tenant.switch @restarone_subdomain do
+      begin
+        sign_in(@restarone_user)
+        get admin_subdomain_requests_url
+        assert_response :success
+        assert_template :index
+        rescue ActionController::RoutingError => e
+          assert e.message
+      else
+        raise StandardError.new "ActionController::RoutingError NOT RAISED!"
+      end
+    end
   end
 
   test 'denies #index if not global admin' do      
     begin
         refute @user.global_admin
         sign_in(@user)
-        get admin_subdomain_requests_path
+        get admin_subdomain_requests_url
         assert_response :success
         assert_template :index
     rescue ActionController::RoutingError => e

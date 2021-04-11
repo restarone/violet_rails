@@ -31,8 +31,8 @@ Rails.application.routes.draw do
     post 'users/sign_in', to: 'users/sessions#create'
     delete 'global_login', to: 'users/sessions#destroy'
   end
-  # system admin panel authentication
-  authenticate :user, lambda { |u| u.global_admin? } do
+  # system admin panel authentication (ensure public schema as well)
+  authenticate :user, lambda { |u| u.global_admin? && Apartment::Tenant.current == 'public' } do
     namespace :admin do
       resources :subdomain_requests, except: [:new, :create]
     end
