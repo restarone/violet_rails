@@ -8,7 +8,7 @@ class ActiveSupport::TestCase
   # Run tests in parallel with specified workers
   # parallelize(workers: :number_of_processors)
   setup do
-    Customer.create!(subdomain: 'restarone', email: 'contact@restarone.com', password: '123456', password_confirmation: '123456', confirmed_at: Time.now)
+    Subdomain.create!(name: 'restarone')
   end
 
   teardown do

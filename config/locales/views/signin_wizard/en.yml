@@ -1,0 +1,10 @@
+en:
+  views:
+    signin_wizard:
+      set_subdomain:
+        title: Lets Get Started
+        body:
+          title: Enter your company's subdomain name
+        buttons:
+          next: Lets Go!
+          previous: Back

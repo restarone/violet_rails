@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 module RSolutions::DeviseAuth
   def authenticate
-    owned_subdomains = current_customer.subdomains.pluck(:name)
-    if current_customer && owned_subdomains.include?(Apartment::Tenant.current)
+    if current_user
       return true
     else
-      redirect_to root_url(subdomain: owned_subdomains.first)
+      redirect_to root_url(subdomain: Apartment::Tenant.current)
     end
   end
 end
@@ -24,7 +23,7 @@ ComfortableMexicanSofa.configure do |config|
     config.cms_title = 'μOffice by R-Solutions'
 
   # Controller that is inherited from CmsAdmin::BaseController
-  config.admin_base_controller = 'Customers::BaseController'
+  config.admin_base_controller = 'Subdomains::BaseController'
 
   # Controller that Comfy::Cms::BaseController will inherit from
   #   config.public_base_controller = 'ApplicationController'

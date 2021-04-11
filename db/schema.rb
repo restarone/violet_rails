@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_06_124048) do
+ActiveRecord::Schema.define(version: 2021_04_10_145054) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -180,7 +180,33 @@ ActiveRecord::Schema.define(version: 2021_04_06_124048) do
     t.index ["page_id"], name: "index_comfy_cms_translations_on_page_id"
   end
 
-  create_table "customers", force: :cascade do |t|
+  create_table "subdomain_requests", force: :cascade do |t|
+    t.string "subdomain_name"
+    t.string "email"
+    t.boolean "approved", default: false
+    t.boolean "requires_web", default: true
+    t.boolean "requires_blog", default: true
+    t.boolean "requires_forum", default: true
+    t.datetime "deleted_at"
+    t.string "slug"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["deleted_at"], name: "index_subdomain_requests_on_deleted_at"
+    t.index ["email"], name: "index_subdomain_requests_on_email"
+    t.index ["slug"], name: "index_subdomain_requests_on_slug"
+    t.index ["subdomain_name"], name: "index_subdomain_requests_on_subdomain_name"
+  end
+
+  create_table "subdomains", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
+    t.index ["name"], name: "index_subdomains_on_name"
+  end
+
+  create_table "users", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "email", default: "", null: false
@@ -200,30 +226,12 @@ ActiveRecord::Schema.define(version: 2021_04_06_124048) do
     t.integer "failed_attempts", default: 0, null: false
     t.string "unlock_token"
     t.datetime "locked_at"
-    t.index ["confirmation_token"], name: "index_customers_on_confirmation_token", unique: true
-    t.index ["email"], name: "index_customers_on_email", unique: true
-    t.index ["reset_password_token"], name: "index_customers_on_reset_password_token", unique: true
-    t.index ["unlock_token"], name: "index_customers_on_unlock_token", unique: true
-  end
-
-  create_table "subdomains", force: :cascade do |t|
-    t.string "name", null: false
-    t.datetime "deleted_at"
-    t.bigint "customer_id", null: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["customer_id"], name: "index_subdomains_on_customer_id"
-    t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
-    t.index ["name"], name: "index_subdomains_on_name"
-  end
-
-  create_table "users", force: :cascade do |t|
-    t.string "email"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "subdomains", "customers"
 end

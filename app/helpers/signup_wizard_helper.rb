@@ -1,0 +1,2 @@
+module SignupWizardHelper
+end

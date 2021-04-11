@@ -23,9 +23,9 @@
       </ul>
     </div>
   <% end %>
-<% if current_customer %>
+<% if current_user %>
   <div>
-    <%= link_to "Logout", destroy_customer_session_path, method: :delete %>
+    <%= link_to "Logout", destroy_user_session_path, method: :delete %>
   </div>
 <% end %>
   <body>
