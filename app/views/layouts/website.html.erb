@@ -13,16 +13,7 @@
       <%= javascript_include_tag comfy_cms_render_js_path(@cms_site.id, @cms_layout.identifier) %>
     <% end %>
   </head>
-  <% flash.each do |key, value| %>
-    <div class="alert alert-<%= key %>">
-      <a href="#" data-dismiss="alert" class="close">×</a>
-      <ul>
-        <li>
-          <%= value %>
-        </li>
-      </ul>
-    </div>
-  <% end %>
+<%= render partial: 'shared/flash' %>
 <% if current_user %>
   <div>
     <%= link_to "Logout", destroy_user_session_path, method: :delete %>

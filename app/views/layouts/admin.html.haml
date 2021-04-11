@@ -8,12 +8,7 @@
     = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
     = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
   %body
-    - flash.each do |key, value|
-      %div{:class => "alert alert-#{key}"}
-        %a.close{"data-dismiss" => "alert", :href => "#"} ×
-        %ul
-          %li
-            = value
     = render partial: 'admin/shared/navbar'
+    = render partial: 'shared/flash'
     .container.mt-5
       = yield
