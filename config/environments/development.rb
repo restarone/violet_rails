@@ -69,6 +69,8 @@ Rails.application.configure do
     domain: 'mg.restarone.solutions',
   }
 
+  config.active_job.queue_adapter = :sidekiq
+
   # Suppress logger output for asset requests.
   config.assets.quiet = true
 
