@@ -16,7 +16,7 @@ Rails.application.routes.draw do
       passwords: 'users/passwords',
       sessions: 'users/sessions',
       unlocks: 'users/unlocks',
-      invitations: 'users/invitations'
+      invitations: 'devise/invitations'
     }
     resources :users, controller: 'comfy/admin/users'
     comfy_route :cms_admin, path: "/admin"
