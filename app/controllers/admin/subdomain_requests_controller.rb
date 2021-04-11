@@ -1,8 +1,8 @@
 class Admin::SubdomainRequestsController < Admin::BaseController
-  before_action :load_subdomain_request, only: [:edit, :show, :update, :destroy]
+  before_action :load_subdomain_request, except: [:index]
 
   def index
-    @subdomain_requests = SubdomainRequest.all
+    @subdomain_requests = SubdomainRequest.pending
   end
 
   def edit
@@ -22,11 +22,15 @@ class Admin::SubdomainRequestsController < Admin::BaseController
   end
 
   def approve
-
+    @subdomain_request.approve!
+    flash.notice = "Approved #{@subdomain_request.subdomain_name}!"
+    redirect_to admin_subdomain_requests_path 
   end
 
   def disapprove
-
+    flash.notice = "Disapproved #{@subdomain_request.subdomain_name}!"
+    @subdomain_request.disapprove!
+    redirect_to admin_subdomain_requests_path 
   end
 
   private 

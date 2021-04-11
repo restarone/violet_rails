@@ -124,4 +124,44 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
       raise StandardError.new "ActionController::RoutingError NOT RAISED!"
     end
   end
+
+  test 'allows #approve if global admin' do
+    assert_changes "@subdomain_request.reload.approved" do
+      sign_in(@user)
+      get approve_admin_subdomain_request_url(id: @subdomain_request.slug)
+      assert_redirected_to admin_subdomain_requests_path
+    end
+  end
+
+  test 'denies #approve if global admin' do
+    @user.update(global_admin: false)
+    begin
+      sign_in(@user)
+      get approve_admin_subdomain_request_url(id: @subdomain_request.slug)
+      rescue ActionController::RoutingError => e
+        assert e.message
+    else
+      raise StandardError.new "ActionController::RoutingError NOT RAISED!"
+    end
+  end
+
+  test 'allows #disapprove if global admin' do
+    assert_difference "SubdomainRequest.all.size", -1 do
+      sign_in(@user)
+      get disapprove_admin_subdomain_request_url(id: @subdomain_request.slug)
+      assert_redirected_to admin_subdomain_requests_path
+    end
+  end
+
+  test 'denies #disapprove if global admin' do
+    @user.update(global_admin: false)
+    begin
+      sign_in(@user)
+      get disapprove_admin_subdomain_request_url(id: @subdomain_request.slug)
+      rescue ActionController::RoutingError => e
+        assert e.message
+    else
+      raise StandardError.new "ActionController::RoutingError NOT RAISED!"
+    end
+  end
 end

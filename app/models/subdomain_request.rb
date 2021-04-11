@@ -5,6 +5,18 @@ class SubdomainRequest < ApplicationRecord
 
   friendly_id :obfuscation_slugger, use: :slugged
 
+  def self.pending
+    self.where(approved: false)
+  end
+
+  def approve!
+    self.update(approved: true)
+  end
+
+  def disapprove!
+    self.destroy
+  end
+
   private
 
   def obfuscation_slugger
