@@ -129,7 +129,9 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
     assert_difference "SubdomainRequest.all.size", -1 do
       assert_difference "Subdomain.all.size", +1 do
         sign_in(@user)
-        get approve_admin_subdomain_request_url(id: @subdomain_request.slug)
+        assert_changes "Devise.mailer.deliveries.size" do
+          get approve_admin_subdomain_request_url(id: @subdomain_request.slug)
+        end
         Apartment::Tenant.switch Subdomain.last.name do
           assert User.all.size > 0
         end
