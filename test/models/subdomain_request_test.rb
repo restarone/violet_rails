@@ -33,4 +33,10 @@ class SubdomainRequestTest < ActiveSupport::TestCase
     subdomain_request = SubdomainRequest.new
     assert subdomain_request.save
   end
+
+  test 'runs validations before approval' do
+    subdomain_request = SubdomainRequest.new
+    assert subdomain_request.save
+    subdomain_request.update(approved: true)
+  end
 end

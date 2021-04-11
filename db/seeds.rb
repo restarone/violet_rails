@@ -6,5 +6,6 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-Customer.create!(subdomain: 'test', email: 'test@tester.com')
-Customer.create!(subdomain: 'restarone', email: 'contact@restarone.com')
+Apartment::Tenant.switch('public') do
+  User.create!(email: 'contact@restarone.com', password: '123456', password_confirmation: '123456', global_admin: true, confirmed_at: Time.now)
+end

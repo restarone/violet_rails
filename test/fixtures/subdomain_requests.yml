@@ -1,17 +1,10 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  subdomain_name: MyString
-  email: MyString
+default:
+  subdomain_name: lenny
+  email: admin@lenny.mobi
   approved: false
-  requires_web: false
-  requires_blog: false
-  requires_forum: false
-
-two:
-  subdomain_name: MyString
-  email: MyString
-  approved: false
-  requires_web: false
-  requires_blog: false
-  requires_forum: false
+  requires_web: true
+  requires_blog: true
+  requires_forum: true
+  slug: lenny

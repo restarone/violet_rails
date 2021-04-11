@@ -25,6 +25,24 @@ Rails.application.routes.draw do
     comfy_route :cms, path: "/"
   end
 
+  # system admin panel login
+  devise_scope :user do
+    get 'sign_in', to: 'users/sessions#new', as: :new_global_admin_session
+    post 'users/sign_in', to: 'users/sessions#create'
+    delete 'global_login', to: 'users/sessions#destroy'
+  end
+  # system admin panel authentication (ensure public schema as well)
+  authenticate :user, lambda { |u| u.global_admin? && Apartment::Tenant.current == 'public' } do
+    namespace :admin do
+      resources :subdomain_requests, except: [:new, :create] do
+        member do
+          get 'approve'
+          get 'disapprove'
+        end
+      end
+    end
+  end
+
   root to: 'content#index'
   
 

@@ -6,9 +6,14 @@ require "rails/test_help"
 
 class ActiveSupport::TestCase
   # Run tests in parallel with specified workers
-  # parallelize(workers: :number_of_processors)
+  if ENV['PARALLEL_MINITEST']
+    parallelize(workers: :number_of_processors)
+  end
   setup do
-    Subdomain.create!(name: 'restarone')
+    subdomain = Subdomain.create!(name: 'restarone')
+    Apartment::Tenant.switch subdomain.name do
+      User.create!(email: 'contact@restarone.com', password: '123456', password_confirmation: '123456', confirmed_at: Time.now)
+    end
   end
 
   teardown do
