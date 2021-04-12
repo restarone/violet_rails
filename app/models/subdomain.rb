@@ -11,6 +11,15 @@ class Subdomain < ApplicationRecord
     "#{self.name}.#{ENV['APP_HOST']}"
   end
 
+  def db_configuration
+    {
+      adapter: 'postgresql',
+      host: ENV['DATABASE_HOST'],
+      port: ENV['DATABASE_PORT'],
+      database: 'postgres'
+    }
+  end
+
   private
 
 

@@ -50,7 +50,11 @@ Apartment.configure do |config|
   #   end
   # end
   #
-  config.tenant_names = -> { Subdomain.pluck :name }
+  config.tenant_names = lambda do
+    Subdomain.all.each_with_object({}) do |subdomain, hash|
+      hash[subdomain.name] = subdomain.db_configuration
+    end
+  end
 
   # PostgreSQL:
   #   Specifies whether to use PostgreSQL schemas or create a new database per Tenant.
