@@ -11,9 +11,6 @@ Rails.application.configure do
   # Do not eager load code on boot.
   config.eager_load = false
 
-  config.hosts << "*.lvh.me"
-  config.hosts << "lvh.me"
-
   # Show full error reports.
   config.consider_all_requests_local = true
 
@@ -61,6 +58,11 @@ Rails.application.configure do
   # number of complex assets.
   config.assets.debug = true
 
+
+  config.hosts << "*.lvh.me"
+  config.hosts << "lvh.me"
+  config.hosts << "violet.ngrok.io"
+  
   config.action_mailer.default_url_options = { host: ENV['APP_HOST'] }
   config.action_mailer.perform_deliveries = true 
   config.action_mailer.delivery_method = :mailgun
@@ -68,7 +70,7 @@ Rails.application.configure do
     api_key: ENV["MAILGUN_API_KEY"],
     domain: 'mg.restarone.solutions',
   }
-
+  config.action_mailbox.ingress = :mailgun
   config.active_job.queue_adapter = :sidekiq
 
   # Suppress logger output for asset requests.

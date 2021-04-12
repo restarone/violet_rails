@@ -25,7 +25,7 @@ Rails.application.configure do
     api_key: ENV["MAILGUN_API_KEY"],
     domain: 'mg.restarone.solutions',
   }
-
+  config.action_mailbox.ingress = :mailgun
 
   # Ensures that a master key has been made available in either ENV["RAILS_MASTER_KEY"]
   # or in config/master.key. This key is used to decrypt credentials (and other encrypted files).
