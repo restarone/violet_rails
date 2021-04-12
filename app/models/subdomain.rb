@@ -3,7 +3,7 @@ class Subdomain < ApplicationRecord
     with: %r{\A[a-z](?:[a-z0-9-]*[a-z0-9])?\z}i, message: "not a valid subdomain"
   }, length: { in: 1..63 }, uniqueness: true
 
-  before_create :create_tenant
+  before_create :downcase_subdomain_name, :create_tenant
 
   after_create_commit :create_cms_site
 
@@ -13,6 +13,9 @@ class Subdomain < ApplicationRecord
 
   private
 
+  def downcase_subdomain_name
+    self.name = self.name.downcase
+  end
 
   def create_tenant
     Apartment::Tenant.create(self.name)

@@ -1,6 +1,9 @@
-require 'simplecov'
-SimpleCov.start 'rails'
 ENV['RAILS_ENV'] ||= 'test'
+require 'simplecov'
+SimpleCov.start 'rails' do
+  # filtering out models because it doesnt track coverage on models for some reason (i suspect the apartment gem is to blame)
+  add_filter "app/models/"
+end
 require_relative "../config/environment"
 require "rails/test_help"
 
