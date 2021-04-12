@@ -31,9 +31,14 @@ gem "comfortable_mexican_sofa",git: 'https://github.com/restarone/comfortable-me
 gem "comfy_blog", git: 'https://github.com/restarone/comfy-blog', branch: 'master'
 gem 'wicked' # for multi-step forms
 gem 'friendly_id'
+gem 'devise_invitable'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false
+gem 'mailgun-ruby'
+
+gem 'apartment-sidekiq'
+gem 'sinatra', require: false
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

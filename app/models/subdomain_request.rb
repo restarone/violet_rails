@@ -24,7 +24,10 @@ class SubdomainRequest < ApplicationRecord
   private
 
   def spawn_subdomain
-    Subdomain.create! name: self.subdomain_name
+    subdomain = Subdomain.create! name: self.subdomain_name
+    Apartment::Tenant.switch subdomain.name do 
+      User.invite!(email: self.email)
+    end
     self.destroy
   end
 

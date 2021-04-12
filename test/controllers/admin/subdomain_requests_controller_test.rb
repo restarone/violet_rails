@@ -127,9 +127,16 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
 
   test 'allows #approve if global admin' do
     assert_difference "SubdomainRequest.all.size", -1 do
-      sign_in(@user)
-      get approve_admin_subdomain_request_url(id: @subdomain_request.slug)
-      assert_redirected_to admin_subdomain_requests_path
+      assert_difference "Subdomain.all.size", +1 do
+        sign_in(@user)
+        assert_changes "Devise.mailer.deliveries.size" do
+          get approve_admin_subdomain_request_url(id: @subdomain_request.slug)
+        end
+        Apartment::Tenant.switch Subdomain.last.name do
+          assert User.all.size > 0
+        end
+        assert_redirected_to admin_subdomain_requests_path
+      end
     end
   end
 
