@@ -8,4 +8,18 @@ class EMailboxTest < ActionMailbox::TestCase
       subject: "Hello world!",
       body: "Hello?"
   end
+
+  test "inbound multipart mail routes to correct schema" do
+    create_inbound_email_from_mail do      
+      to '"Don Restarone" <restarone@restarone.solutions>'
+      from '"else" <else@example.com>'
+      subject "Hello world!"
+      text_part do
+        body "hello this is the body"
+      end
+      html_part do
+        body "<h1>Please join us for a party at Bag End</h1>"
+      end
+    end 
+  end
 end
