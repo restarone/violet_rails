@@ -11,13 +11,12 @@ class EMailboxTest < ActionMailbox::TestCase
 
   test "inbound multipart mail routes to correct schema" do
     Apartment::Tenant.switch 'restarone' do      
-      Mail::Message.any_instance.stubs(:multipart).returns(true)
-      Mail::Message.any_instance.stubs(:html_part).returns(true)
+      Mail::Message.stubs(:multipart).returns(true)
+      Mail::Message.stubs(:html_part).returns(true)
       create_inbound_email_from_mail do      
         to '"Don Restarone" <restarone@restarone.solutions>'
         from '"else" <else@example.com>'
         subject "Hello world!"
-        multipart true
         text_part do
           body "hello this is the body"
         end
