@@ -21,7 +21,11 @@ Rails.application.routes.draw do
       invitations: 'devise/invitations'
     }
     resources :users, controller: 'comfy/admin/users'
-    resources :messages
+    resource :mailbox, only: [:show] do
+      resources :message_threads do
+        resources :messages
+      end
+    end
     comfy_route :cms_admin, path: "/admin"
     comfy_route :blog, path: "blog"
     comfy_route :blog_admin, path: "admin"
