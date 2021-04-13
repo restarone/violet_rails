@@ -1,6 +1,7 @@
 class EMailbox < ApplicationMailbox
   def process
     recipient = mail.to
+    p "### #{recipient}  ###"
     subdomain = recipient[0].split('@')[0]
     Apartment::Tenant.switch subdomain do
       if mail.multipart?
