@@ -32,6 +32,7 @@ gem "comfy_blog", git: 'https://github.com/restarone/comfy-blog', branch: 'maste
 gem 'wicked' # for multi-step forms
 gem 'friendly_id'
 gem 'devise_invitable'
+gem 'mocha'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false

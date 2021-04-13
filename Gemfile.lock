@@ -203,6 +203,7 @@ GEM
     mini_mime (1.0.3)
     mini_portile2 (2.5.0)
     minitest (5.14.4)
+    mocha (1.12.0)
     msgpack (1.4.2)
     mustermann (1.1.1)
       ruby2_keywords (~> 0.0.1)
@@ -390,6 +391,7 @@ DEPENDENCIES
   jbuilder (~> 2.7)
   listen (~> 3.3)
   mailgun-ruby
+  mocha
   pg (~> 1.1)
   puma (~> 5.0)
   rack-mini-profiler (~> 2.0)

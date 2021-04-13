@@ -1,13 +1,12 @@
 class EMailbox < ApplicationMailbox
   def process
-    p "### #{mail}  ###"
     recipient = mail.to
-    p "### #{recipient}  ###"
     subdomain = recipient[0].split('@')[0]
+    byebug
     Apartment::Tenant.switch subdomain do
-      if mail.multipart?
+      if mail.multipart? && mail.html_part
         document = Nokogiri::HTML(mail.html_part.body.decoded)
-        mail.attachments.map do |attachment|
+        attachments.attachments.map do |attachment|
           blob = ActiveStorage::Blob.create_after_upload!(
             io: StringIO.new(attachment.body.to_s),
             filename: attachment.filename,
@@ -20,7 +19,6 @@ class EMailbox < ApplicationMailbox
             element.replace "<action-text-attachment sgid=\"#{blob.attachable_sgid}\" content-type=\"#{attachment.content_type}\" filename=\"#{attachment.filename}\"></action-text-attachment>"
           end
         end
-        
         message = Message.create(
           title: mail.subject,
           content: document.at_css('body').inner_html.encode('utf-8')
