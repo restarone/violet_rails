@@ -7,6 +7,7 @@ class SubdomainConstraint
 end
 
 Rails.application.routes.draw do
+  resources :messages
   resources :signup_wizard
   resources :signin_wizard
   constraints SubdomainConstraint do
