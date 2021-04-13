@@ -18,7 +18,8 @@ class EMailbox < ApplicationMailbox
             element.replace "<action-text-attachment sgid=\"#{blob.attachable_sgid}\" content-type=\"#{attachment.content_type}\" filename=\"#{attachment.filename}\"></action-text-attachment>"
           end
         end
-        Message.create(
+        
+        message = Message.create(
           title: mail.subject,
           content: document.at_css('body').inner_html.encode('utf-8')
         )

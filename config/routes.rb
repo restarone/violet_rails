@@ -7,7 +7,7 @@ class SubdomainConstraint
 end
 
 Rails.application.routes.draw do
-  resources :messages
+
   resources :signup_wizard
   resources :signin_wizard
   constraints SubdomainConstraint do
@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       invitations: 'devise/invitations'
     }
     resources :users, controller: 'comfy/admin/users'
+    resources :messages
     comfy_route :cms_admin, path: "/admin"
     comfy_route :blog, path: "blog"
     comfy_route :blog_admin, path: "admin"
