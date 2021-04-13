@@ -27,7 +27,6 @@ class EMailbox < ApplicationMailbox
   def body
     if mail.multipart? && mail.html_part
       document = Nokogiri::HTML(mail.html_part.body.decoded)
-      byebug
       attachments.map do |attachment_hash|
         attachment = attachment_hash[:original]
         blob = attachment_hash[:blob]
