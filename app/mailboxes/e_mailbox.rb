@@ -7,13 +7,13 @@ class EMailbox < ApplicationMailbox
         title: mail.subject,
         content: body,
         from: mail.from[0],
-        attachments: attachments.map{ |a| a[:blob] }
+        attachments: (attachments + multipart_attached).map{ |a| a[:blob] }
       )
     end
   end
 
   def attachments
-    @_attachments = mail.attachments.map do |attachment|
+    return mail.attachments.map do |attachment|
       blob = ActiveStorage::Blob.create_after_upload!(
         io: StringIO.new(attachment.body.to_s),
         filename: attachment.filename,
@@ -21,6 +21,21 @@ class EMailbox < ApplicationMailbox
       )
       { original: attachment, blob: blob }
     end
+  end
+
+  def multipart_attached
+    blobs = Array.new
+    mail.parts.each do |part|
+      if !part.text?
+        blob = ActiveStorage::Blob.create_after_upload!(
+          io: StringIO.new(part.body.to_s),
+          filename: part.filename,
+          content_type: part.content_type,
+        )
+        blobs  << { original: part, blob: blob }
+      end
+    end
+    return blobs
   end
 
 
@@ -39,7 +54,7 @@ class EMailbox < ApplicationMailbox
         end
       end
       document.at_css("body").inner_html.encode('utf-8')
-    elsif mail.multipart? && mail.text_part
+    elsif mail.multipart? && mail.text_part 
       mail.text_part.body.decoded
     else
       mail.decoded
