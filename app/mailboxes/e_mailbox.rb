@@ -1,5 +1,6 @@
 class EMailbox < ApplicationMailbox
   def process
+    p "### #{mail}  ###"
     recipient = mail.to
     p "### #{recipient}  ###"
     subdomain = recipient[0].split('@')[0]
