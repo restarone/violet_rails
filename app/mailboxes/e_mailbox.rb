@@ -25,14 +25,16 @@ class EMailbox < ApplicationMailbox
 
   def multipart_attached
     blobs = Array.new
-    mail.parts.each do |part|
-      if !part.text?
-        blob = ActiveStorage::Blob.create_after_upload!(
-          io: StringIO.new(part.body.to_s),
-          filename: part.filename,
-          content_type: part.content_type,
-        )
-        blobs  << { original: part, blob: blob }
+    if mail.multipart?
+      mail.parts.each do |part|
+        if !part.text?
+          blob = ActiveStorage::Blob.create_after_upload!(
+            io: StringIO.new(part.body.to_s),
+            filename: part.filename,
+            content_type: part.content_type,
+          )
+          blobs  << { original: part, blob: blob }
+        end
       end
     end
     return blobs
