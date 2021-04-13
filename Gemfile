@@ -37,7 +37,7 @@ gem 'devise_invitable'
 gem 'bootsnap', '>= 1.4.4', require: false
 gem 'mailgun-ruby'
 
-gem 'apartment-sidekiq'
+gem 'ros-apartment-sidekiq', require: 'apartment-sidekiq'
 gem 'sinatra', require: false
 
 group :development, :test do
