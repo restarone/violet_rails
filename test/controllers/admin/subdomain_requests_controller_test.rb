@@ -134,6 +134,13 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
         end
         Apartment::Tenant.switch Subdomain.last.name do
           assert User.all.size > 0
+          public_site = Comfy::Cms::Site.find_by(hostname: Subdomain.last.hostname)
+          assert public_site
+          default_layout = public_site.layouts.first
+          assert default_layout
+          default_page = default_layout.pages.first
+          assert default_page
+          assert default_page.fragments.any?
         end
         assert_redirected_to admin_subdomain_requests_path
       end
