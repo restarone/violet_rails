@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_13_013402) do
+ActiveRecord::Schema.define(version: 2021_04_13_223534) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -199,9 +199,27 @@ ActiveRecord::Schema.define(version: 2021_04_13_013402) do
     t.index ["page_id"], name: "index_comfy_cms_translations_on_page_id"
   end
 
+  create_table "mailboxes", force: :cascade do |t|
+    t.boolean "unread"
+    t.boolean "enabled"
+    t.integer "threads_count"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "message_threads", force: :cascade do |t|
+    t.boolean "unread"
+    t.datetime "deleted_at"
+    t.string "recipients", default: [], array: true
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "messages", force: :cascade do |t|
     t.text "title"
     t.string "from"
+    t.string "message_thread_type", null: false
+    t.bigint "message_thread_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
