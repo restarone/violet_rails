@@ -3,7 +3,7 @@ class EMailbox < ApplicationMailbox
     recipient = mail.to
     subdomain = recipient[0].split('@')[0]
     Apartment::Tenant.switch subdomain do
-      message = Message.create(
+      message = Message.create!(
         title: mail.subject,
         content: body,
         from: mail.from[0],
@@ -14,7 +14,7 @@ class EMailbox < ApplicationMailbox
 
   def attachments
     return mail.attachments.map do |attachment|
-      blob = ActiveStorage::Blob.create_after_upload!(
+      blob = ActiveStorage::Blob.create_and_upload!(
         io: StringIO.new(attachment.body.to_s),
         filename: attachment.filename,
         content_type: attachment.content_type,
@@ -27,9 +27,9 @@ class EMailbox < ApplicationMailbox
     blobs = Array.new
     if mail.multipart?
       mail.parts.each do |part|
-        if !part.text?
-          blob = ActiveStorage::Blob.create_after_upload!(
-            io: StringIO.new(part.body.to_s),
+        if !part.text? && part.has_content_id?
+          blob = ActiveStorage::Blob.create_and_upload!(
+            io: StringIO.new(part.body.decoded),
             filename: part.filename,
             content_type: part.content_type,
           )

@@ -42,23 +42,10 @@ class EMailboxTest < ActionMailbox::TestCase
     end
   end
 
-  test "from file" do
-    skip
-    Apartment::Tenant.switch 'restarone' do      
-      Mail::Message.any_instance.stubs(:multipart).returns(true)
-      Mail::Message.any_instance.stubs(:html_part).returns(true)
-      email = create_inbound_email_from_fixture('template.eml')
-      receive_inbound_email_from_mail email
-    end
-  end
-
   test "from multipart file" do
-    skip
     Apartment::Tenant.switch 'restarone' do      
-      Mail::Message.any_instance.stubs(:multipart).returns(true)
-      Mail::Message.any_instance.stubs(:html_part).returns(true)
       email = create_inbound_email_from_fixture('multipart-with-files.eml')
-      receive_inbound_email_from_mail email
+      email.tap(&:route)
     end
   end
 end
