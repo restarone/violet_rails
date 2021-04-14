@@ -1,9 +1,20 @@
+.jumbotron
+  %h1.display-4 Welcome to Violet Solutions
+  %p.lead
+    Brought to you by 
+    %a{href: 'https://restarone.com', target: '_blank'}
+      Restarone Inc.
+  %hr.my-4/
+  %p.lead
+    Violet Solutions is a web, blog and email platform powered by 
+    %code
+      ultraviolet_rails
+    that is offered both as a "software package" for independent deployments or as a managed, "software as a service".
+  = link_to "Register", signup_wizard_index_path, class: 'btn btn-primary'
+  = link_to "Sign into your subdomain", signin_wizard_index_path, class: 'btn btn-secondary'
+  %hr.my-4/
+  %small
+    For support or to inquire about independent deployments please email 
+    %a{href: 'mailto:contact@restarone.com'}
+      contact@restarone.com
 
-%h1 Welcome to Violet Solutions
-%p Brought to you by Restarone Inc.
-
-
-.card
-  .card-body
-    = link_to "Get started", signup_wizard_index_path, class: 'btn btn-primary'
-    = link_to "Sign into your base", signin_wizard_index_path, class: 'btn btn-primary'

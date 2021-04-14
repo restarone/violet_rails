@@ -26,6 +26,8 @@ gem 'jbuilder', '~> 2.7'
 gem 'image_processing', '~> 1.2'
 
 gem 'ros-apartment', require: 'apartment'
+gem 'ros-apartment-sidekiq', require: 'apartment-sidekiq'
+gem 'apartment-activejob'
 gem 'devise'
 gem "comfortable_mexican_sofa",git: 'https://github.com/restarone/comfortable-mexican-sofa', branch: 'master'
 gem "comfy_blog", git: 'https://github.com/restarone/comfy-blog', branch: 'master'
@@ -37,9 +39,8 @@ gem 'mocha'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false
 gem 'mailgun-ruby'
-
-gem 'ros-apartment-sidekiq', require: 'apartment-sidekiq'
 gem 'sinatra', require: false
+
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
