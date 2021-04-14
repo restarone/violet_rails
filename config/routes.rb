@@ -21,7 +21,7 @@ Rails.application.routes.draw do
       invitations: 'devise/invitations'
     }
     resources :users, controller: 'comfy/admin/users'
-    resource :mailbox, only: [:show] do
+    resource :mailbox, only: [:show], controller: 'mailbox/mailbox' do
       resources :message_threads do
         resources :messages
       end
