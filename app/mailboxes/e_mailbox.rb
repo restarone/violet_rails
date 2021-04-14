@@ -51,8 +51,9 @@ class EMailbox < ApplicationMailbox
           # Remove the beginning and end < >
           content_id = attachment.content_id[1...-1]
           element = document.at_css "img[src='cid:#{content_id}']"
-
-          element.replace "<action-text-attachment sgid=\"#{blob.attachable_sgid}\" content-type=\"#{attachment.content_type}\" filename=\"#{attachment.filename}\"></action-text-attachment>"
+          if element
+            element.replace "<action-text-attachment sgid=\"#{blob.attachable_sgid}\" content-type=\"#{attachment.content_type}\" filename=\"#{attachment.filename}\"></action-text-attachment>"
+          end
         end
       end
       document.at_css("body").inner_html.encode('utf-8')
