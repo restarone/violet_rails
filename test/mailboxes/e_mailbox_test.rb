@@ -9,7 +9,7 @@ class EMailboxTest < ActionMailbox::TestCase
       body: "Hello?"
   end
 
-  test 'new way' do
+  test 'direct attachment' do
     Apartment::Tenant.switch 'restarone' do      
       mail = Mail.new(
         from: 'else@example.com',
@@ -19,7 +19,6 @@ class EMailboxTest < ActionMailbox::TestCase
       )
       mail.add_file filename: 'template.eml', content: StringIO.new('Sample Logo')
       create_inbound_email_from_source(mail.to_s).tap(&:route)
-      byebug
     end
   end
 
@@ -44,8 +43,11 @@ class EMailboxTest < ActionMailbox::TestCase
 
   test "from multipart file" do
     Apartment::Tenant.switch 'restarone' do      
-      email = create_inbound_email_from_fixture('multipart-with-files.eml')
-      email.tap(&:route)
+      assert_changes "ActiveStorage::Blob.all.reload.size" do
+        email = create_inbound_email_from_fixture('multipart-with-files.eml')
+        email.tap(&:route)
+        assert Message.last.content
+      end
     end
   end
 end

@@ -29,7 +29,7 @@ class EMailbox < ApplicationMailbox
       mail.parts.each do |part|
         if !part.text? && part.has_content_id?
           blob = ActiveStorage::Blob.create_and_upload!(
-            io: StringIO.new(part.body.decoded),
+            io: StringIO.new(part.decoded),
             filename: part.filename,
             content_type: part.content_type,
           )
