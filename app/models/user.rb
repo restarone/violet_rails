@@ -10,4 +10,8 @@ class User < ApplicationRecord
   def subdomain
     Apartment::Tenant.current
   end
+
+  def self.global_admins
+    self.where(global_admin: true)
+  end
 end
