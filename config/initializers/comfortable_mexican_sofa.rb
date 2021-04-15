@@ -20,7 +20,7 @@ module RSolutions::ComfyAdminAuthorization
 end
 ComfortableMexicanSofa.configure do |config|
   # Title of the admin area
-    config.cms_title = "#{Apartment::Tenant.current}/WebAdmin"
+    config.cms_title = "WebAdmin"
 
   # Controller that is inherited from CmsAdmin::BaseController
   config.admin_base_controller = 'Subdomains::BaseController'
