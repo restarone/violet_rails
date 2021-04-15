@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/restarone/comfortable-mexican-sofa
-  revision: fd230aee88a072634d9771521d6b4bf8ce49335d
+  revision: b3fadd44078e48afd9a71865cd0c2e1b79864ea8
   branch: master
   specs:
     comfortable_mexican_sofa (2.0.19)
@@ -284,7 +284,7 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-    rexml (3.2.4)
+    rexml (3.2.5)
     ros-apartment (2.9.0)
       activerecord (>= 5.0.0, < 6.2)
       parallel (< 2.0)
