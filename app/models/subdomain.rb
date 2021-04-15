@@ -7,8 +7,19 @@ class Subdomain < ApplicationRecord
 
   after_create_commit :create_cms_site
 
+  # max 1GB by default storage allowance
+  MAXIMUM_STORAGED_ALLOWANCE = 1073741824
+
   def hostname
     "#{self.name}.#{ENV['APP_HOST']}"
+  end
+
+  def storage_used
+    if ActiveStorage::Blob.any?
+      return ActiveStorage::Blob.all.pluck(:byte_size).sum
+    else
+      return 0
+    end
   end
 
   private

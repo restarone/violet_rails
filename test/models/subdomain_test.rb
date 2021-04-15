@@ -25,4 +25,8 @@ class SubdomainTest < ActiveSupport::TestCase
     subdomain.save
     assert_equal name.downcase, subdomain.name
   end
+
+  test 'sums storage usage' do
+    assert @subdomain.storage_used < Subdomain::MAXIMUM_STORAGED_ALLOWANCE
+  end
 end
