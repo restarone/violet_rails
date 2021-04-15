@@ -10,8 +10,16 @@ class Subdomain < ApplicationRecord
   # max 1GB by default storage allowance
   MAXIMUM_STORAGED_ALLOWANCE = 1073741824
 
+  def self.current
+    Subdomain.find_by(name: Apartment::Tenant.current)
+  end
+
   def hostname
     "#{self.name}.#{ENV['APP_HOST']}"
+  end
+
+  def has_enough_storage?
+    Subdomain::MAXIMUM_STORAGED_ALLOWANCE - self.storage_used > 0
   end
 
   def storage_used
