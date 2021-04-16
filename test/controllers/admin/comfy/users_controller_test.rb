@@ -7,6 +7,7 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     @restarone_subdomain = Subdomain.find_by(name: 'restarone')
     @user = users(:public)
     @domain = @user.subdomain
+    @user.update(can_manage_users: true)
   end
 
   test "get #index by authorized personnel" do
@@ -30,10 +31,11 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "denies #new if not permissioned" do
-    skip('implement soon, with granular permissions')
+    @user.update(can_manage_users: false)
     sign_in(@user)
     get new_admin_user_url(subdomain: @domain)
-    assert_response :success
+    assert_response :redirect
+    assert flash.alert
   end
 
   test "#edit" do
@@ -43,10 +45,11 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "denies #edit if not permissioned" do
-    skip('implement soon, with granular permissions')
+    @user.update(can_manage_users: false)
     sign_in(@user)
     get edit_admin_user_url(subdomain: @domain, id: @user.id)
-    assert_response :success
+    assert_response :redirect
+    assert flash.alert
   end
 
   test "#update" do
@@ -58,6 +61,7 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     }
     assert_changes "@user.reload.can_manage_users" do      
       patch admin_user_url(subdomain: @domain, id: @user.id), params: payload
+      byebug
       assert flash.notice
       refute flash.alert
       assert_redirected_to admin_users_url(subdomain: @domain)
@@ -65,17 +69,16 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "denies #update if not permissioned" do
-    skip('implement soon, with granular permissions')
+    @user.update(can_manage_users: false)
     sign_in(@user)
     payload = {
       user: {
         can_manage_users: 1
       }
     }
-    assert_changes "@user.reload.can_manage_users" do      
+    assert_no_changes "@user.reload.can_manage_users" do      
       patch admin_user_url(subdomain: @domain, id: @user.id), params: payload
-      assert flash.notice
-      refute flash.alert
+      assert flash.alert
       assert_redirected_to admin_users_url(subdomain: @domain)
     end
   end
@@ -94,15 +97,16 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "denies #invite if not permissioned" do
-    skip('implement soon, with granular permissions')
+    @user.update(can_manage_users: false)
     sign_in(@user)
     payload = {
       user: {
         email: 'testemail@tester.com'
       }
     }
-    assert_difference "User.all.size", +1 do      
+    assert_no_difference "User.all.size" do      
       post invite_admin_users_url(subdomain: @domain, params: payload)
+      assert flash.alert
       assert_redirected_to admin_users_url(subdomain: @domain)
     end
   end
@@ -118,12 +122,12 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "denies #destroy if not permissioned" do
-    skip('implement soon, with granular permissions')
-    assert_difference "User.all.size", -1 do
+    @user.update(can_manage_users: false)
+    assert_no_difference "User.all.size" do
       sign_in(@user)
       delete admin_user_url(subdomain: @domain, id: @user.id)
-      assert flash.notice
-      refute flash.alert
+      refute flash.notice
+      assert flash.alert
       assert_redirected_to admin_users_url(subdomain: @domain)
     end
   end
