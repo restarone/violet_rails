@@ -1,7 +1,5 @@
 require "test_helper"
 
-
-
 class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
   setup do
     @restarone_subdomain = Subdomain.find_by(name: 'restarone')
@@ -56,12 +54,11 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     sign_in(@user)
     payload = {
       user: {
-        can_manage_users: 1
+        can_manage_users: 0
       }
     }
     assert_changes "@user.reload.can_manage_users" do      
       patch admin_user_url(subdomain: @domain, id: @user.id), params: payload
-      byebug
       assert flash.notice
       refute flash.alert
       assert_redirected_to admin_users_url(subdomain: @domain)

@@ -10,12 +10,41 @@ module RSolutions::DeviseAuth
 end
 
 module RSolutions::ComfyAdminAuthorization
-  def authorize
+
+  def perform_default_lockout
     if (self.class.name == "Comfy::Admin::Cms::SitesController")
       redirect_back(fallback_location: root_url)
     else
       return true 
     end
+  end
+
+  def ensure_webmaster
+    if (!current_user.can_manage_web)
+      redirect_back(fallback_location: root_url)
+    else
+      return true 
+    end
+  end
+
+  def enforce_authorized_actions
+    restricted_actions = [
+      :new,
+      :create,
+      :edit,
+      :show,
+      :update,
+      :destroy
+    ]
+    if restricted_actions.include? action_name.to_sym
+      ensure_webmaster
+    end
+  end
+
+
+  def authorize
+    perform_default_lockout
+    enforce_authorized_actions
   end
 end
 ComfortableMexicanSofa.configure do |config|
