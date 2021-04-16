@@ -21,6 +21,7 @@ module RSolutions::ComfyAdminAuthorization
 
   def ensure_webmaster
     if (!current_user.can_manage_web)
+      flash.alert = "You do not have the permission to do that. Only users who can_manage_web are allowed to perform that action."
       redirect_back(fallback_location: root_url)
     else
       return true 

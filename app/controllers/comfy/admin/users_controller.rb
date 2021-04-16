@@ -16,6 +16,7 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
       flash.notice = "#{user.email} was invited"
       redirect_to admin_users_path
     else
+      redirect_to admin_users_path
       flash.alert = "User could not be invited"
     end
   end
@@ -28,6 +29,7 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
       flash.notice = "#{@user.email} was successfully updated!"
       redirect_to admin_users_path
     else
+      redirect_to admin_users_path
       flash.alert = "User could not be updated"
     end
   end
@@ -38,6 +40,7 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
       flash.notice = "#{@user.email} was removed!"
       redirect_to admin_users_path
     else
+      redirect_to admin_users_path
       flash.alert = "User could not be destroyed"
     end
   end
