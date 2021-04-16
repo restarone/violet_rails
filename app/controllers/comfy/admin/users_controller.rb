@@ -63,7 +63,7 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
   end
 
   def update_params
-    params.require(:user).permit(:can_manage_web, :can_manage_email, :can_manage_users)
+    params.require(:user).permit(:can_manage_web, :can_manage_blog, :can_manage_email, :can_manage_users)
   end
 
   def invite_params
