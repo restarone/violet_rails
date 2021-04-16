@@ -6,3 +6,6 @@ en:
           header:
             title: Users
             action: Invite
+        new:
+          header:
+              title: Invite user

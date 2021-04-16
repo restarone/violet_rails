@@ -30,16 +30,6 @@ class Subdomain < ApplicationRecord
     end
   end
 
-  private
-
-  def downcase_subdomain_name
-    self.name = self.name.downcase
-  end
-
-  def create_tenant
-    Apartment::Tenant.create(self.name)
-  end
-
   def create_cms_site
     hostname = self.hostname
     Apartment::Tenant.switch(self.name) do
@@ -71,5 +61,15 @@ class Subdomain < ApplicationRecord
         "
       )
     end
+  end
+
+  private
+
+  def downcase_subdomain_name
+    self.name = self.name.downcase
+  end
+
+  def create_tenant
+    Apartment::Tenant.create(self.name)
   end
 end

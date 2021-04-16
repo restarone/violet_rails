@@ -13,12 +13,9 @@
       <%= javascript_include_tag comfy_cms_render_js_path(@cms_site.id, @cms_layout.identifier) %>
     <% end %>
   </head>
-<%= render partial: 'shared/flash' %>
-<% if current_user %>
-  <div>
-    <%= link_to "Logout", destroy_user_session_path, method: :delete %>
-  </div>
-<% end %>
+  <%= render partial: 'shared/flash' %>
+  <%= render partial: 'shared/navbars/web_admin' %>
+
   <body>
     <%= yield %>
   </body>

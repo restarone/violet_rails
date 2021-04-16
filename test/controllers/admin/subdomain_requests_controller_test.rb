@@ -134,6 +134,8 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
         end
         Apartment::Tenant.switch Subdomain.last.name do
           assert User.all.size > 0
+          user = User.first
+          User::FULL_PERMISSIONS.keys.each{|k, v| assert user.send(k) }
           public_site = Comfy::Cms::Site.find_by(hostname: Subdomain.last.hostname)
           assert public_site
           default_layout = public_site.layouts.first
