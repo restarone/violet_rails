@@ -29,7 +29,21 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "denies #new if not permissioned" do
+    skip('implement soon, with granular permissions')
+    sign_in(@user)
+    get new_admin_user_url(subdomain: @domain)
+    assert_response :success
+  end
+
   test "#edit" do
+    sign_in(@user)
+    get edit_admin_user_url(subdomain: @domain, id: @user.id)
+    assert_response :success
+  end
+
+  test "denies #edit if not permissioned" do
+    skip('implement soon, with granular permissions')
     sign_in(@user)
     get edit_admin_user_url(subdomain: @domain, id: @user.id)
     assert_response :success
@@ -37,8 +51,33 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "#update" do
     sign_in(@user)
-    patch admin_user_url(subdomain: @domain, id: @user.id)
-    assert_response :success
+    payload = {
+      user: {
+        can_manage_users: 1
+      }
+    }
+    assert_changes "@user.reload.can_manage_users" do      
+      patch admin_user_url(subdomain: @domain, id: @user.id), params: payload
+      assert flash.notice
+      refute flash.alert
+      assert_redirected_to admin_users_url(subdomain: @domain)
+    end
+  end
+
+  test "denies #update if not permissioned" do
+    skip('implement soon, with granular permissions')
+    sign_in(@user)
+    payload = {
+      user: {
+        can_manage_users: 1
+      }
+    }
+    assert_changes "@user.reload.can_manage_users" do      
+      patch admin_user_url(subdomain: @domain, id: @user.id), params: payload
+      assert flash.notice
+      refute flash.alert
+      assert_redirected_to admin_users_url(subdomain: @domain)
+    end
   end
 
   test "#invite" do
@@ -54,9 +93,38 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "#destroy" do
+  test "denies #invite if not permissioned" do
+    skip('implement soon, with granular permissions')
     sign_in(@user)
-    delete admin_user_url(subdomain: @domain, id: @user.id)
-    assert_response :success
+    payload = {
+      user: {
+        email: 'testemail@tester.com'
+      }
+    }
+    assert_difference "User.all.size", +1 do      
+      post invite_admin_users_url(subdomain: @domain, params: payload)
+      assert_redirected_to admin_users_url(subdomain: @domain)
+    end
+  end
+
+  test "#destroy" do
+    assert_difference "User.all.size", -1 do
+      sign_in(@user)
+      delete admin_user_url(subdomain: @domain, id: @user.id)
+      assert flash.notice
+      refute flash.alert
+      assert_redirected_to admin_users_url(subdomain: @domain)
+    end
+  end
+
+  test "denies #destroy if not permissioned" do
+    skip('implement soon, with granular permissions')
+    assert_difference "User.all.size", -1 do
+      sign_in(@user)
+      delete admin_user_url(subdomain: @domain, id: @user.id)
+      assert flash.notice
+      refute flash.alert
+      assert_redirected_to admin_users_url(subdomain: @domain)
+    end
   end
 end

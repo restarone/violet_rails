@@ -1,5 +1,6 @@
 class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
   layout "comfy/admin/cms"
+  before_action :load_user, only: [:edit, :update, :destroy]
   
   def index
     @users = User.all
@@ -19,19 +20,40 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
   end
 
   def edit
-
   end
 
   def update
-
+    if @user.update(update_params)
+      flash.notice = "#{@user.email} was successfully updated!"
+      redirect_to admin_users_path
+    else
+      flash.alert = "User could not be updated"
+    end
   end
 
 
   def destroy
-  
+    if @user.destroy
+      flash.notice = "#{@user.email} was removed!"
+      redirect_to admin_users_path
+    else
+      flash.alert = "User could not be destroyed"
+    end
   end
 
   private 
+
+  def load_user
+    @user = User.find_by(id: params[:id])
+    unless @user
+      flash.alert = 'User could not be found'
+      redirect_to admin_users_path
+    end
+  end
+
+  def update_params
+    params.require(:user).permit(:can_manage_web, :can_manage_email, :can_manage_users)
+  end
 
   def invite_params
     params.require(:user).permit(:email)
