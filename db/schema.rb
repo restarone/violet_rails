@@ -238,6 +238,7 @@ ActiveRecord::Schema.define(version: 2021_04_16_121748) do
     t.boolean "can_manage_web", default: false
     t.boolean "can_manage_email", default: false
     t.boolean "can_manage_users", default: false
+    t.boolean "can_manage_blog", default: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true

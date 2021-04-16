@@ -4,6 +4,7 @@ class AddPermissionColumnsToUser < ActiveRecord::Migration[6.1]
       t.boolean :can_manage_web, default: false
       t.boolean :can_manage_email, default: false
       t.boolean :can_manage_users, default: false
+      t.boolean :can_manage_blog, default: false
     end
   end
 end

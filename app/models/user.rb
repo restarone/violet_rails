@@ -13,6 +13,7 @@ class User < ApplicationRecord
     can_manage_web: true,
     can_manage_email: true,
     can_manage_users: true,
+    can_manage_blog: true,
   }
   
   def subdomain

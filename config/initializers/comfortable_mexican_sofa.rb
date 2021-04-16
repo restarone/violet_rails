@@ -28,24 +28,41 @@ module RSolutions::ComfyAdminAuthorization
     end
   end
 
-  def enforce_authorized_actions
+  def ensure_blogmaster
+    if (!current_user.can_manage_blog)
+      flash.alert = "You do not have the permission to do that. Only users who can_manage_blog are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
+    else
+      return true 
+    end
+  end
+
+  def enforce_web_authorization
     restricted_actions = [
       :new,
       :create,
       :edit,
       :show,
       :update,
-      :destroy
+      :destroy,
     ]
-    if restricted_actions.include? action_name.to_sym
+    # because some users would be current_user.can_manage_blog instead of web
+    exception = 'posts'
+    if (controller_name != exception) && restricted_actions.include?(action_name.to_sym)
       ensure_webmaster
     end
   end
 
+  def enforce_blog_authorization
+    if controller_name == 'posts'
+      ensure_blogmaster
+    end
+  end
 
   def authorize
     perform_default_lockout
-    enforce_authorized_actions
+    enforce_web_authorization
+    enforce_blog_authorization
   end
 end
 ComfortableMexicanSofa.configure do |config|
