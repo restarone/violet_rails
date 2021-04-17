@@ -26,7 +26,7 @@ Apartment.configure do |config|
   # - a hash which keys are tenant names, and values custom db config
   # (must contain all key/values required in database.yml)
   #
-  config.tenant_names = lambda{ Subdomain.pluck(:name) }
+  # config.tenant_names = lambda{ Subdomain.pluck(:name) }
   # config.tenant_names = ['tenant1', 'tenant2']
   # config.tenant_names = {
   #   'tenant1' => {
@@ -52,7 +52,11 @@ Apartment.configure do |config|
   #
   config.tenant_names = lambda do
     Subdomain.all.each_with_object({}) do |subdomain, hash|
-      hash[subdomain.name] = subdomain.db_configuration
+      if subdomain.name == 'shashike'
+        hash[subdomain.name] = subdomain.db_configuration
+      end
+      # remove above and uncomment line below to migrate all 
+      # hash[subdomain.name] = subdomain.db_configuration
     end
   end
 
