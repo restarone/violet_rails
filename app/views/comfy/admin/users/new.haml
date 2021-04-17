@@ -1,0 +1,7 @@
+.page-header
+  .h2
+    = I18n.t('views.comfy.users.new.header.title')
+  .form-group.my-5
+    = form_for User.new, url: invite_admin_users_path, method: :post do |f|
+      = f.email_field :email, placeholder: 'john@appleseed.com'
+      = f.submit "Invite", class: 'btn btn-success'

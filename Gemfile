@@ -35,6 +35,7 @@ gem 'wicked' # for multi-step forms
 gem 'friendly_id'
 gem 'devise_invitable'
 gem 'mocha'
+gem "aws-sdk-s3", require: false
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false
@@ -73,6 +74,7 @@ group :test do
   gem 'webdrivers'
   gem 'simplecov', require: false, group: :test
   gem 'rails-controller-testing'
+  gem 'mocha'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

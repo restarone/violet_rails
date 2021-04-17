@@ -10,17 +10,64 @@ module RSolutions::DeviseAuth
 end
 
 module RSolutions::ComfyAdminAuthorization
-  def authorize
+
+  def perform_default_lockout
     if (self.class.name == "Comfy::Admin::Cms::SitesController")
       redirect_back(fallback_location: root_url)
     else
       return true 
     end
   end
+
+  def ensure_webmaster
+    if (!current_user.can_manage_web)
+      flash.alert = "You do not have the permission to do that. Only users who can_manage_web are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
+    else
+      return true 
+    end
+  end
+
+  def ensure_blogmaster
+    if (!current_user.can_manage_blog)
+      flash.alert = "You do not have the permission to do that. Only users who can_manage_blog are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
+    else
+      return true 
+    end
+  end
+
+  def enforce_web_authorization
+    restricted_actions = [
+      :new,
+      :create,
+      :edit,
+      :show,
+      :update,
+      :destroy,
+    ]
+    # because some users would be current_user.can_manage_blog instead of web
+    exception = 'posts'
+    if (controller_name != exception) && restricted_actions.include?(action_name.to_sym)
+      ensure_webmaster
+    end
+  end
+
+  def enforce_blog_authorization
+    if controller_name == 'posts'
+      ensure_blogmaster
+    end
+  end
+
+  def authorize
+    perform_default_lockout
+    enforce_web_authorization
+    enforce_blog_authorization
+  end
 end
 ComfortableMexicanSofa.configure do |config|
   # Title of the admin area
-    config.cms_title = 'μOffice by R-Solutions'
+    config.cms_title = "Violet WebAdmin"
 
   # Controller that is inherited from CmsAdmin::BaseController
   config.admin_base_controller = 'Subdomains::BaseController'

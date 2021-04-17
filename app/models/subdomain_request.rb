@@ -26,7 +26,9 @@ class SubdomainRequest < ApplicationRecord
   def spawn_subdomain
     subdomain = Subdomain.create! name: self.subdomain_name
     Apartment::Tenant.switch subdomain.name do 
-      User.invite!(email: self.email)
+      user = User.invite!(email: self.email)
+      # confer default ownership rights of that subdomain
+      user.update(User::FULL_PERMISSIONS)
     end
     self.destroy
   end

@@ -20,10 +20,15 @@ Rails.application.routes.draw do
       unlocks: 'users/unlocks',
       invitations: 'devise/invitations'
     }
-    resources :users, controller: 'comfy/admin/users'
+    
     resource :mailbox, only: [:show], controller: 'mailbox/mailbox' do
       resources :message_threads do
         resources :messages
+      end
+    end
+    resources :users, controller: 'comfy/admin/users', as: :admin_users, except: [:create, :show] do
+      collection do 
+        post 'invite'
       end
     end
     comfy_route :cms_admin, path: "/admin"
