@@ -5,8 +5,13 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :confirmable, :lockable, :timeoutable, :trackable
 
+
+  has_many :email_aliases, dependent: :destroy
+  has_one :mailbox, dependent: :destroy
+
   attr_accessor :canonical_subdomain
 
+  after_save :initialize_mailbox, if: -> { self.can_manage_email }
   before_destroy :ensure_final_user
 
   FULL_PERMISSIONS = {
@@ -21,6 +26,13 @@ class User < ApplicationRecord
   end
 
   private
+
+  def initialize_mailbox
+    if self.can_manage_email
+      mailbox = Mailbox.first_or_create(user_id: self.id)
+      mailbox.update(enabled: true)
+    end
+  end
 
   def ensure_final_user
     if Rails.env != 'test'

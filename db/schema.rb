@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_16_121748) do
+ActiveRecord::Schema.define(version: 2021_04_17_131202) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -199,29 +199,42 @@ ActiveRecord::Schema.define(version: 2021_04_16_121748) do
     t.index ["page_id"], name: "index_comfy_cms_translations_on_page_id"
   end
 
-  create_table "mailboxes", force: :cascade do |t|
-    t.boolean "unread"
-    t.boolean "enabled"
-    t.integer "threads_count"
+  create_table "email_aliases", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["name"], name: "index_email_aliases_on_name", unique: true
+    t.index ["user_id"], name: "index_email_aliases_on_user_id"
+  end
+
+  create_table "mailboxes", force: :cascade do |t|
+    t.boolean "unread", default: false
+    t.boolean "enabled", default: false
+    t.integer "threads_count", default: 0
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_mailboxes_on_user_id"
   end
 
   create_table "message_threads", force: :cascade do |t|
     t.boolean "unread"
     t.datetime "deleted_at"
+    t.string "subject"
     t.string "recipients", default: [], array: true
+    t.bigint "mailbox_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["mailbox_id"], name: "index_message_threads_on_mailbox_id"
   end
 
   create_table "messages", force: :cascade do |t|
-    t.text "title"
     t.string "from"
-    t.string "message_thread_type", null: false
     t.bigint "message_thread_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["message_thread_id"], name: "index_messages_on_message_thread_id"
   end
 
   create_table "subdomain_requests", force: :cascade do |t|
@@ -294,4 +307,8 @@ ActiveRecord::Schema.define(version: 2021_04_16_121748) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "email_aliases", "users"
+  add_foreign_key "mailboxes", "users"
+  add_foreign_key "message_threads", "mailboxes"
+  add_foreign_key "messages", "message_threads"
 end

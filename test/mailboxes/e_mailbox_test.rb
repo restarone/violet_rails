@@ -1,23 +1,31 @@
 require "test_helper"
 
 class EMailboxTest < ActionMailbox::TestCase
+
   setup do
-    skip('REVISIT THIS AS PART OF EMAIL IMPLEMENTATION')
+    @restarone_subdomain = Subdomain.find_by(name: 'restarone').name
+    Apartment::Tenant.switch @restarone_subdomain do
+      @user = User.first
+      @user.update(can_manage_email: true)
+      @user.email_aliases.create!(name: 'hello')
+    end
   end
 
   test "inbound mail routes to correct schema" do
-    receive_inbound_email_from_mail \
-      to: '"Don Restarone" <restarone@restarone.solutions>',
-      from: '"else" <else@example.com>',
-      subject: "Hello world!",
-      body: "Hello?"
+    Apartment::Tenant.switch 'restarone' do 
+      receive_inbound_email_from_mail \
+        to: '"Don Restarone" <hello@restarone.restarone.solutions>',
+        from: '"else" <else@example.com>',
+        subject: "Hello world!",
+        body: "Hello?"
+    end
   end
 
   test 'direct attachment' do
     Apartment::Tenant.switch 'restarone' do      
       mail = Mail.new(
         from: 'else@example.com',
-        to: 'restarone@restarone.solutions',
+        to: 'hello@restarone.restarone.solutions',
         subject: 'Logo',
         body: 'Hi, See the logo attached.',
       )
@@ -27,11 +35,10 @@ class EMailboxTest < ActionMailbox::TestCase
   end
 
   test "inbound multipart mail routes to correct schema" do
-    skip
     Apartment::Tenant.switch 'restarone' do      
-      email = create_inbound_email_from_mail do      
-        to '"Don Restarone" <restarone@restarone.solutions>'
+      create_inbound_email_from_mail do      
         from '"else" <else@example.com>'
+        to '"Don Restarone" <hello@restarone.restarone.solutions>'
         subject "Hello world!"
         text_part do
           body "hello this is the body"
@@ -40,8 +47,6 @@ class EMailboxTest < ActionMailbox::TestCase
           body "<h1>Please join us for a party at Bag End</h1>"
         end
       end 
-
-      receive_inbound_email_from_mail email
     end
   end
 

@@ -1,14 +1,33 @@
 class EMailbox < ApplicationMailbox
+
   def process
     recipient = mail.to
     subdomain = recipient[0].split('@')[0]
-    Apartment::Tenant.switch subdomain do
-      message = Message.create!(
-        title: mail.subject,
-        content: body,
-        from: mail.from[0],
-        attachments: (attachments + multipart_attached).map{ |a| a[:blob] }
-      )
+    subject = mail.subject
+    recipients = recipient.map{|email| Mail::Address.new(email)}
+    recipients.each do |address|
+      schema_domain = address.domain.split('.')[0]
+      local_user = address.local
+      Apartment::Tenant.switch schema_domain do
+        email_alias = EmailAlias.find_by(name: local_user)
+        user = email_alias.user
+        mailbox = user.mailbox
+        if email_alias
+          message_thread = MessageThread.first_or_create(
+            subject: subject,
+            mailbox: mailbox,
+          )
+          message_thread.update(recipients: mail.from)
+          message = Message.create!(
+            message_thread: message_thread,
+            content: body,
+            from: mail.from[0],
+            attachments: (attachments + multipart_attached).map{ |a| a[:blob] }
+          )
+        else
+          # this is a bounce (came up to the correct subdomain, but nonexistant local name)
+        end
+      end
     end
   end
 
