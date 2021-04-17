@@ -25,14 +25,16 @@ class User < ApplicationRecord
     Apartment::Tenant.current
   end
 
-  private
-
+  
   def initialize_mailbox
     if self.can_manage_email
       mailbox = Mailbox.first_or_create(user_id: self.id)
       mailbox.update(enabled: true)
     end
   end
+
+  private
+
 
   def ensure_final_user
     if Rails.env != 'test'

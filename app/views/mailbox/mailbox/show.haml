@@ -1,2 +1,12 @@
-%h1
-  Mailbox
+.page-header
+  = link_to I18n.t('views.mailbox.index.header.action'), new_mailbox_message_thread_path, class: 'btn btn-secondary float-right'
+  .h2
+    = I18n.t('views.mailbox.index.header.title')
+- @message_threads.each do |message_thread|
+  = link_to mailbox_message_thread_path(id: message_thread.id) do
+    .card.my-3
+      .card-body 
+        .card-title
+          = user.email
+        .card-subtitle.mb-2.text-muted
+          = user.created_at

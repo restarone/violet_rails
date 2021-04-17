@@ -1,0 +1,10 @@
+en:
+  views:
+    mailbox:
+      index:
+        header:
+          title: Mailbox
+          action: New Email
+      new:
+        header:
+            title: Email Draft
