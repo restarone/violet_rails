@@ -8,7 +8,7 @@
       .form-group
         = f.text_field :name, class: 'form-input', placeholder: "hello"
         %label
-          = "@#{Subdomain.current.hostname}"
+          = "@#{ENV['APP_HOST']}"
       .form-group
         = f.select :user_id,  options_from_collection_for_select(User.all, "id", "email"), multiple: false, required: true, class: 'form-control'
       = f.submit "Provision Email Address", class: 'btn btn-success'
