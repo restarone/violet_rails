@@ -4,7 +4,9 @@ en:
       index:
         header:
           title: Mailbox
-          action: New Email
+          actions: 
+            new: New Email
+            index: Addresses
       new:
         header:
             title: Email Draft

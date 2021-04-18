@@ -12,7 +12,7 @@ class EMailbox < ApplicationMailbox
         email_alias = EmailAlias.find_by(name: local_user)
         user = email_alias.user
         mailbox = user.mailbox
-        if email_alias
+        if email_alias && user && mailbox
           message_thread = MessageThread.first_or_create(
             subject: subject,
             mailbox: mailbox,

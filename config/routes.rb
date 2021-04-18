@@ -26,6 +26,7 @@ Rails.application.routes.draw do
         resources :messages
       end
     end
+    resources :email_aliases
     resources :users, controller: 'comfy/admin/users', as: :admin_users, except: [:create, :show] do
       collection do 
         post 'invite'
