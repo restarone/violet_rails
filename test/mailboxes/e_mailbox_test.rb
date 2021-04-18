@@ -81,4 +81,37 @@ class EMailboxTest < ActionMailbox::TestCase
       end
     end
   end
+
+  test 'message threads' do
+    Apartment::Tenant.switch 'restarone' do      
+      assert_difference "MessageThread.all.reload.size" , +1 do        
+        subject_line = "Hello world!"
+        receive_inbound_email_from_mail \
+        to: '"Don Restarone" <restarone@restarone.solutions>',
+        from: '"else" <else@example.com>',
+        subject: subject_line,
+        body: "Hello?"
+
+        receive_inbound_email_from_mail \
+          to: '"Don Restarone" <restarone@restarone.solutions>',
+          from: '"else" <else@example.com>',
+          subject: subject_line,
+          body: "Hello?"
+      end
+  
+      assert_difference "MessageThread.all.reload.size" , +2 do        
+        receive_inbound_email_from_mail \
+        to: '"Don Restarone" <restarone@restarone.solutions>',
+        from: '"else" <else@example.com>',
+        subject: 'subject_line',
+        body: "Hello?"
+
+        receive_inbound_email_from_mail \
+          to: '"Don Restarone" <restarone@restarone.solutions>',
+          from: '"else" <else@example.com>',
+          subject: 'subject_line 22',
+          body: "Hello?"
+      end
+    end
+  end
 end

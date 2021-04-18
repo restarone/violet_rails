@@ -11,10 +11,7 @@ class EMailbox < ApplicationMailbox
         user = email_alias.user
         mailbox = user.mailbox
         if email_alias && user && mailbox
-          message_thread = MessageThread.first_or_create(
-            subject: subject,
-            mailbox: mailbox,
-          )
+          message_thread = MessageThread.find_or_create_by(subject: subject, mailbox: mailbox, recipients: mail.from)
           message_thread.update(recipients: mail.from)
           message = Message.create!(
             message_thread: message_thread,
