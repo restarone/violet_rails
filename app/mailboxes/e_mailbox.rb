@@ -2,14 +2,12 @@ class EMailbox < ApplicationMailbox
 
   def process
     recipient = mail.to
-    subdomain = recipient[0].split('@')[0]
     subject = mail.subject
     recipients = recipient.map{|email| Mail::Address.new(email)}
     recipients.each do |address|
-      schema_domain = address.domain.split('.')[0]
-      local_user = address.local
+      schema_domain = address.local
       Apartment::Tenant.switch schema_domain do
-        email_alias = EmailAlias.find_by(name: local_user)
+        email_alias = EmailAlias.find_by(name: schema_domain)
         user = email_alias.user
         mailbox = user.mailbox
         if email_alias && user && mailbox
