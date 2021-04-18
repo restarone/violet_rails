@@ -22,7 +22,7 @@ Rails.application.routes.draw do
     }
     
     resource :mailbox, only: [:show], controller: 'mailbox/mailbox' do
-      resources :message_threads do
+      resources :message_threads, controller: 'mailbox/message_threads' do
         resources :messages
       end
     end

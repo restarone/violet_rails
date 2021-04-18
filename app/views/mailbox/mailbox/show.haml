@@ -3,14 +3,12 @@
   .h2
     = I18n.t('views.mailbox.index.header.title')
 - @message_threads.each do |message_thread|
-  = link_to mailbox_message_thread_path(id: message_thread.id) do
+  = link_to mailbox_message_thread_path(id: message_thread.id), class: 'text-reset text-decoration-none' do
     .card.my-3
       .card-body 
         .card-title
           = message_thread.subject
         .card-subtitle.mb-2.text-muted
-          = message_thread.recipients
-      %hr
-      .card-body
-        .text-muted
+          = message_thread.recipients.join(', ')
+        .card-text.bg-light.p-2
           = message_thread.messages.first.content
