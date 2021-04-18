@@ -9,14 +9,14 @@ class EMailboxTest < ActionMailbox::TestCase
       @user = User.first
       @user.update(can_manage_email: true)
       @user.initialize_mailbox
-      @user.email_aliases.create!(name: 'hello')
+      @user.email_aliases.create!(name: 'restarone')
     end
   end
 
   test "inbound mail routes to correct schema" do
     Apartment::Tenant.switch 'restarone' do 
       receive_inbound_email_from_mail \
-        to: '"Don Restarone" <hello@restarone.restarone.solutions>',
+        to: '"Don Restarone" <restarone@restarone.solutions>',
         from: '"else" <else@example.com>',
         subject: "Hello world!",
         body: "Hello?"
@@ -27,7 +27,7 @@ class EMailboxTest < ActionMailbox::TestCase
     Apartment::Tenant.switch 'restarone' do      
       mail = Mail.new(
         from: 'else@example.com',
-        to: 'hello@restarone.restarone.solutions',
+        to: 'restarone@restarone.solutions',
         subject: 'Logo',
         body: 'Hi, See the logo attached.',
       )
@@ -40,7 +40,7 @@ class EMailboxTest < ActionMailbox::TestCase
     Apartment::Tenant.switch 'restarone' do      
       create_inbound_email_from_mail do      
         from '"else" <else@example.com>'
-        to '"Don Restarone" <hello@restarone.restarone.solutions>'
+        to '"Don Restarone" <restarone@restarone.solutions>'
         subject "Hello world!"
         text_part do
           body "hello this is the body"
