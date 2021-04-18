@@ -7,6 +7,7 @@ class User < ApplicationRecord
 
 
   has_many :email_aliases, dependent: :destroy
+  accepts_nested_attributes_for :email_aliases
   has_one :mailbox, dependent: :destroy
 
   attr_accessor :canonical_subdomain

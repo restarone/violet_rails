@@ -38,4 +38,20 @@ class EmailAliasesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_template :new
   end
+
+  test 'allows #create' do
+    payload = {
+      email_alias: {
+        name: 'foobar',
+        user_id: @user.id
+      }
+    }
+    assert_difference "EmailAlias.all.size", +1 do
+      post email_aliases_url(subdomain: @domain), params: payload
+      assert_response :redirect
+      assert_redirected_to email_aliases_url(subdomain: @domain)
+    end
+    get email_aliases_url(subdomain: @domain)
+    assert_response :success
+  end
 end

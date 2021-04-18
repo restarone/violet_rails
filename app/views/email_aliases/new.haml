@@ -1,0 +1,14 @@
+#email_alises_new
+  .page-header
+    
+    .h2
+      = I18n.t('views.email_alias.new.header.title')
+  = form_for @email_alias, url: email_aliases_path, method: :post do |f|
+    .form-group
+      .form-group
+        = f.text_field :name, class: 'form-input', placeholder: "hello"
+        %label
+          = "@#{Subdomain.current.hostname}"
+      .form-group
+        = f.select :user_id,  options_from_collection_for_select(User.all, "id", "email"), multiple: false, required: true, class: 'form-control'
+      = f.submit "Provision Email Address", class: 'btn btn-success'

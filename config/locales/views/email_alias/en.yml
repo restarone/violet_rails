@@ -1,0 +1,11 @@
+en:
+  views:
+    email_alias:
+      index:
+        header:
+          title: Email Aliases
+          actions: 
+            new: New Email Alias
+      new:
+        header:
+            title: New Email Alias

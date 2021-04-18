@@ -8,6 +8,7 @@ class EMailboxTest < ActionMailbox::TestCase
       EmailAlias.all.destroy_all
       @user = User.first
       @user.update(can_manage_email: true)
+      @user.initialize_mailbox
       @user.email_aliases.create!(name: 'hello')
     end
   end
