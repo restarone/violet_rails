@@ -7,3 +7,9 @@
       .card-body 
         .card-text.bg-light.px-2.py-3
           = message.content
+        - if message.attachments.any?
+          .card-text.bg-dark.px-2.py-3.text-white
+            Attachments
+            %ul{class: 'list-group'}
+              - message.attachments.each do |attachment|
+                = link_to attachment.filename, rails_blob_path(attachment, disposition: 'attachment')
