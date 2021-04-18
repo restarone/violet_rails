@@ -7,6 +7,10 @@
     .card.my-3
       .card-body 
         .card-title
-          = user.email
+          = message_thread.subject
         .card-subtitle.mb-2.text-muted
-          = user.created_at
+          = message_thread.recipients
+      %hr
+      .card-body
+        .text-muted
+          = message_thread.messages.first.content

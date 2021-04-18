@@ -71,4 +71,14 @@ class EMailboxTest < ActionMailbox::TestCase
       end
     end
   end
+
+  test "from multipart file (thread)" do
+    Apartment::Tenant.switch 'restarone' do      
+      assert_changes "ActiveStorage::Blob.all.reload.size" do
+        email = create_inbound_email_from_fixture('thread.eml')
+        email.tap(&:route)
+        assert Message.last.content
+      end
+    end
+  end
 end
