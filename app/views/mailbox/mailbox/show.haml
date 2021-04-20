@@ -10,5 +10,6 @@
           = message_thread.subject
         .card-subtitle.mb-2.text-muted
           = message_thread.recipients.join(', ')
-        .card-text.bg-light.p-2
-          = message_thread.messages.first.content
+        - if message_thread.messages.any?
+          .card-text.bg-light.p-2
+            = message_thread.messages.first.content
