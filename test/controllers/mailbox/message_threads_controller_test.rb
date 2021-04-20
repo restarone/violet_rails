@@ -33,4 +33,10 @@ class Mailbox::MessageThreadsControllerTest < ActionDispatch::IntegrationTest
     get mailbox_message_thread_url(subdomain: @subdomain.name, id: @message_thread.id)
     assert_response :success
   end
+
+  test 'renders #new' do
+    sign_in(@user)
+    get new_mailbox_message_thread_url(subdomain: @subdomain.name)
+    assert_response :success
+  end
 end

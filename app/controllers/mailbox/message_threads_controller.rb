@@ -1,8 +1,11 @@
 class Mailbox::MessageThreadsController < Mailbox::BaseController
-  before_action :load_mailbox, :load_thread
+  before_action :load_mailbox
+  before_action :load_thread, except: [:new]
 
   def show
+  end
 
+  def new
   end
 
   private
