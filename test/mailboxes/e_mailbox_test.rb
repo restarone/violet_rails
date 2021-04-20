@@ -5,11 +5,9 @@ class EMailboxTest < ActionMailbox::TestCase
   setup do
     @restarone_subdomain = Subdomain.find_by(name: 'restarone').name
     Apartment::Tenant.switch @restarone_subdomain do
-      EmailAlias.all.destroy_all
       @user = User.first
       @user.update(can_manage_email: true)
-      @user.initialize_mailbox
-      @user.email_aliases.create!(name: 'restarone')
+      mailbox = Subdomain.find_by(name: 'restarone').initialize_mailbox
     end
   end
 

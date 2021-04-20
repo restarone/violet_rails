@@ -7,10 +7,8 @@ class EMailbox < ApplicationMailbox
     recipients.each do |address|
       schema_domain = address.local
       Apartment::Tenant.switch schema_domain do
-        email_alias = EmailAlias.find_by(name: schema_domain)
-        user = email_alias.user
-        mailbox = user.mailbox
-        if email_alias && user && mailbox
+        mailbox = Mailbox.first
+        if mailbox
           message_thread = MessageThread.find_or_create_by(subject: subject, mailbox: mailbox, recipients: mail.from)
           message_thread.update(recipients: mail.from)
           message = Message.create!(

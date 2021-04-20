@@ -13,6 +13,6 @@ class Mailbox::MailboxController < Mailbox::BaseController
   private
 
   def load_mailbox
-    @mailbox = current_user.mailbox
+    @mailbox = Mailbox.first
   end
 end

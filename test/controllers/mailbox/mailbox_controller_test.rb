@@ -4,8 +4,8 @@ class Mailbox::MailboxControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
     @user.update(can_manage_email: true)
-    @user.initialize_mailbox
     @subdomain = subdomains(:public)
+    @subdomain.initialize_mailbox
     @restarone_subdomain = Subdomain.find_by(name: 'restarone').name
   end
 

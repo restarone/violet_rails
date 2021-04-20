@@ -14,6 +14,11 @@ class Subdomain < ApplicationRecord
     Subdomain.find_by(name: Apartment::Tenant.current)
   end
 
+  def initialize_mailbox
+    mailbox = Mailbox.first_or_create
+    mailbox.update(enabled: true)
+  end
+
   def hostname
     "#{self.name}.#{ENV['APP_HOST']}"
   end

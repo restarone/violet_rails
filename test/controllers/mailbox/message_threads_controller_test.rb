@@ -4,9 +4,9 @@ class Mailbox::MessageThreadsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
     @user.update(can_manage_email: true)
-    @user.initialize_mailbox
     @message_thread = message_threads(:public)
     @subdomain = subdomains(:public)
+    @subdomain.initialize_mailbox
     @restarone_subdomain = Subdomain.find_by(name: 'restarone').name
     Apartment::Tenant.switch @restarone_subdomain do
       @unauthorized_user = User.first

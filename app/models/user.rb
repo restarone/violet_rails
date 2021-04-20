@@ -5,14 +5,8 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :confirmable, :lockable, :timeoutable, :trackable
 
-
-  has_many :email_aliases, dependent: :destroy
-  accepts_nested_attributes_for :email_aliases
-  has_one :mailbox, dependent: :destroy
-
   attr_accessor :canonical_subdomain
 
-  after_save :initialize_mailbox, if: -> { self.can_manage_email }
   before_destroy :ensure_final_user
 
   FULL_PERMISSIONS = {
@@ -24,14 +18,6 @@ class User < ApplicationRecord
   
   def subdomain
     Apartment::Tenant.current
-  end
-
-  
-  def initialize_mailbox
-    if self.can_manage_email
-      mailbox = Mailbox.first_or_create(user_id: self.id)
-      mailbox.update(enabled: true)
-    end
   end
 
   private
