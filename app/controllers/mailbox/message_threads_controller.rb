@@ -6,6 +6,7 @@ class Mailbox::MessageThreadsController < Mailbox::BaseController
   end
 
   def new
+    @message_thread = MessageThread.new
   end
 
   private
