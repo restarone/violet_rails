@@ -1,0 +1,7 @@
+public:
+  unread: true,
+  subject: foo
+  recipients: 
+   - contact@restarone.com
+  mailbox: public
+  
