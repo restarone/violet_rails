@@ -137,6 +137,7 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
           user = User.first
           User::FULL_PERMISSIONS.keys.each{|k, v| assert user.send(k) }
           public_site = Comfy::Cms::Site.find_by(hostname: Subdomain.last.hostname)
+          assert Mailbox.first
           assert public_site
           default_layout = public_site.layouts.first
           assert default_layout
