@@ -39,4 +39,15 @@ class Mailbox::MessageThreadsControllerTest < ActionDispatch::IntegrationTest
     get new_mailbox_message_thread_url(subdomain: @subdomain.name)
     assert_response :success
   end
+
+  test '#create' do
+    payload = {
+      message_thread: {
+        recipient: 'contact@restarone.com',
+        message: {
+          content: 'foo'
+        }
+      }
+    }
+  end
 end

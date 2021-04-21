@@ -2,6 +2,7 @@
   .h2
     = I18n.t('views.message_threads.new.header.title')
 = form_for @message_thread, url: mailbox_message_threads_path, method: :post do |f|
+  = f.select :recipients, multiple: true
   = f.fields_for Message.new do |message_form|
     = message_form.rich_text_area :content
-    = message_form.submit
+  = f.submit
