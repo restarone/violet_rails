@@ -11,6 +11,7 @@ class Mailbox::MessageThreadsController < Mailbox::BaseController
 
   def create
     @message_thread = MessageThread.new(message_thread_params)
+    byebug
     if @message_thread.save
       flash.notice = "Sent to #{@message_thread.messages.first.to}"
       redirect_to mailbox_message_threads_path
@@ -20,12 +21,14 @@ class Mailbox::MessageThreadsController < Mailbox::BaseController
   end
 
   private
+  def message_params
+
+  end
 
   def message_thread_params
     params.require(:message_thread).permit(
-      message: [
-        :content
-      ]
+      :recipients,
+      :subject,
     )
   end
 
