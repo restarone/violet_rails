@@ -1,4 +1,6 @@
 class Message < ApplicationRecord
+  validates :content, presence: true
+
   belongs_to :message_thread
   accepts_nested_attributes_for :message_thread
 
@@ -6,4 +8,12 @@ class Message < ApplicationRecord
   has_many_attached :attachments
 
   default_scope { order(created_at: 'DESC') }
+
+  after_create_commit :deliver
+
+  private
+
+  def deliver
+    # byebug
+  end
 end

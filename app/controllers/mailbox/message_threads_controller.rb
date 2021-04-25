@@ -10,25 +10,34 @@ class Mailbox::MessageThreadsController < Mailbox::BaseController
   end
 
   def create
-    @message_thread = MessageThread.new(message_thread_params)
-    byebug
-    if @message_thread.save
-      flash.notice = "Sent to #{@message_thread.messages.first.to}"
-      redirect_to mailbox_message_threads_path
+    @message_thread = MessageThread.new(message_thread_params.merge!(mailbox: Mailbox.first))
+    @message = Message.new(message_params[:message].merge!(message_thread: @message_thread))
+    if @message_thread.save && @message.save
+      flash.notice = "Sent to #{@message_thread.recipients.join(', ')}"
+      redirect_to mailbox_message_thread_path(id: @message_thread.id)
     else
-      flash.alert = @message_thread.errors.full_messages.to_sentence
+      flash.alert = "errors: #{@message_thread.errors.full_messages.to_sentence}  #{@message.errors.full_messages.to_sentence}"
+      if @message_thread.persisted?
+        redirect_to mailbox_message_thread_path(id: @message_thread.id)
+      else
+        redirect_back(fallback_location: root_path)
+      end
     end
   end
 
   private
   def message_params
-
+    params.require(:message_thread).permit(
+      message: [
+        :content
+      ]
+    )
   end
 
   def message_thread_params
     params.require(:message_thread).permit(
-      :recipients,
       :subject,
+      recipients: []
     )
   end
 

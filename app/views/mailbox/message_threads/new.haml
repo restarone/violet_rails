@@ -4,7 +4,7 @@
 = form_for @message_thread, url: mailbox_message_threads_path, method: :post do |f|
   %label
     recipients: 
-  = f.text_field :recipients
+  = f.text_field :recipients, multiple: true, required: true
   %label
     Subject: 
   = f.text_field :subject
