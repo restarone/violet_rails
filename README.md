@@ -22,20 +22,8 @@ After the subdomain request has been granted by the App/Domain owner
 * If you are the first user in a subdomain, you are conferred maximum permissions
 
 ## Deployment
-To keep costs low, the demo version of `violet_rails` is deployed on EC2 & requires a decent bit of manual setup. Every step is outlined here: https://github.com/restarone/violet_rails/wiki/Deploying-to-EC2-(Staging-with-Capistrano)
+The [Demo](https://violet.restarone.solutions/) of `violet_rails` is deployed on AWS EC2 (using Ubuntu 20.04LTS) & requires some server setup/automation with Capistrano. The steps are outlined in-detail here: https://github.com/restarone/violet_rails/wiki/Deploying-to-EC2-(Staging-with-Capistrano)
 
 ## Hacking on top of Violet
 The local development environment is supported by docker. After installing `docker` and `docker-compose` take a look at the development cheatsheet for setting up the development environment along with useful scripts: https://github.com/restarone/violet_rails/wiki/development-cheatsheet
-
-
-
-
-
-
-
-
-
-
-
-<!-- new -->
 
