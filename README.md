@@ -1,4 +1,7 @@
 # Welcome to Violet Rails ![Ruby](https://github.com/restarone/violet_rails/workflows/Ruby/badge.svg)
+![alt text](https://user-images.githubusercontent.com/35935196/116006240-49867680-a5d8-11eb-82f6-aea6e333942b.png)
+
+
 ## What's Violet Rails?
 `violet_rails` is a Ruby on Rails template that implements a web CMS & blog along with a lightweight email client and server. Violet ships with a two tier authorizatiion strategy that makes building SaaS and XaaS products quickly. 
 ## An opinionated template (built on top of an opinionated framework)
