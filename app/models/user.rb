@@ -22,6 +22,8 @@ class User < ApplicationRecord
 
   def self.global_admins
     self.where(global_admin: true)
+  end
+  
   private
 
   def ensure_final_user
