@@ -25,6 +25,16 @@ class Mailbox::MessageThreadsController < Mailbox::BaseController
     end
   end
 
+  def send_message
+    @message = Message.new(message_params[:message].merge!(message_thread: @message_thread))
+    if @message.save
+      flash.notice = "Sent to #{@message_thread.recipients.join(', ')}"
+    else
+      flash.alert = @message.errors.full_messages.to_sentence
+    end
+    redirect_back(fallback_location: root_path)
+  end
+
   private
   def message_params
     params.require(:message_thread).permit(

@@ -24,6 +24,9 @@ Rails.application.routes.draw do
     resource :mailbox, only: [:show], controller: 'mailbox/mailbox' do
       resources :message_threads, controller: 'mailbox/message_threads' do
         resources :messages
+        member do
+          post 'send_message'
+        end
       end
     end
     resources :users, controller: 'comfy/admin/users', as: :admin_users, except: [:create, :show] do
