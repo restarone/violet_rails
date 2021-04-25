@@ -1,5 +1,5 @@
 # Welcome to Violet Rails ![Ruby](https://github.com/restarone/violet_rails/workflows/Ruby/badge.svg)
-![alt text](https://user-images.githubusercontent.com/35935196/116006215-2b207b00-a5d8-11eb-8e10-f97c2a48a55d.png)
+![alt text](https://user-images.githubusercontent.com/35935196/116006240-49867680-a5d8-11eb-82f6-aea6e333942b.png)
 
 
 ## What's Violet Rails?
