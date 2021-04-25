@@ -19,7 +19,11 @@ Rails.application.routes.draw do
       unlocks: 'users/unlocks',
       invitations: 'devise/invitations'
     }
-    resources :users, controller: 'comfy/admin/users'
+    resources :users, controller: 'comfy/admin/users', as: :admin_users, except: [:create, :show] do
+      collection do 
+        post 'invite'
+      end
+    end
     comfy_route :cms_admin, path: "/admin"
     comfy_route :blog, path: "blog"
     comfy_route :blog_admin, path: "admin"

@@ -74,6 +74,7 @@ group :test do
   gem 'webdrivers'
   gem 'simplecov', require: false, group: :test
   gem 'rails-controller-testing'
+  gem 'mocha'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

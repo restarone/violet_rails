@@ -7,18 +7,27 @@ class Subdomain < ApplicationRecord
 
   after_create_commit :create_cms_site
 
+  # max 1GB by default storage allowance
+  MAXIMUM_STORAGED_ALLOWANCE = 1073741824
+
+  def self.current
+    Subdomain.find_by(name: Apartment::Tenant.current)
+  end
+
   def hostname
     "#{self.name}.#{ENV['APP_HOST']}"
   end
 
-  private
-
-  def downcase_subdomain_name
-    self.name = self.name.downcase
+  def has_enough_storage?
+    Subdomain::MAXIMUM_STORAGED_ALLOWANCE - self.storage_used > 0
   end
 
-  def create_tenant
-    Apartment::Tenant.create(self.name)
+  def storage_used
+    if ActiveStorage::Blob.any?
+      return ActiveStorage::Blob.all.pluck(:byte_size).sum
+    else
+      return 0
+    end
   end
 
   def create_cms_site
@@ -52,5 +61,15 @@ class Subdomain < ApplicationRecord
         "
       )
     end
+  end
+
+  private
+
+  def downcase_subdomain_name
+    self.name = self.name.downcase
+  end
+
+  def create_tenant
+    Apartment::Tenant.create(self.name)
   end
 end
