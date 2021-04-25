@@ -1,5 +1,6 @@
-%ul.nav.justify-content-center
-  %li.nav-item
-    = link_to "Admin", comfy_admin_cms_path, class:  'nav-link'
-  %li.nav-item
-    = link_to "Logout", destroy_user_session_path, method: :delete, class:  'nav-link text-danger'
+- if current_user
+  %ul.nav.justify-content-center
+    %li.nav-item
+      = link_to "Admin", comfy_admin_cms_path, class:  'nav-link'
+    %li.nav-item
+      = link_to "Logout", destroy_user_session_path, method: :delete, class:  'nav-link text-danger'

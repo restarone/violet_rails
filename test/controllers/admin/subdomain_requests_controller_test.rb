@@ -19,6 +19,7 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
     get admin_subdomain_requests_url
     assert_response :success
     assert_template :index
+    assert_template layout: "admin"
   end
 
   test 'denies #index if spoofed global admin' do
