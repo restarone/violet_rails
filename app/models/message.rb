@@ -14,6 +14,6 @@ class Message < ApplicationRecord
   private
 
   def deliver
-    # byebug
+    EMailer.with(message: self, message_thread: self.message_thread).ship.deliver_later
   end
 end

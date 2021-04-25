@@ -2,5 +2,5 @@ public:
   unread: true,
   subject: foo
   recipients: 
-   - contact@restarone.com
+   - contact2@restarone.com
   mailbox: public
