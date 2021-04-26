@@ -213,8 +213,10 @@ ActiveRecord::Schema.define(version: 2021_04_16_121748) do
     t.string "subject"
     t.string "recipients", default: [], array: true
     t.bigint "mailbox_id", null: false
+    t.string "email_message_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["email_message_id"], name: "index_message_threads_on_email_message_id"
     t.index ["mailbox_id"], name: "index_message_threads_on_mailbox_id"
   end
 

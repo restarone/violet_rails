@@ -9,7 +9,10 @@ class EMailbox < ApplicationMailbox
       Apartment::Tenant.switch schema_domain do
         mailbox = Mailbox.first
         if mailbox
-          message_thread = MessageThread.find_or_create_by(subject: subject, mailbox: mailbox, recipients: mail.from)
+          message_thread = MessageThread.find_or_create_by(
+            mailbox: mailbox, 
+            email_message_id: mail.message_id
+          )
           message_thread.update(recipients: mail.from)
           message = Message.create!(
             message_thread: message_thread,

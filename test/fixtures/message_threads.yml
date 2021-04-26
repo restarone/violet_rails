@@ -4,3 +4,4 @@ public:
   recipients: 
    - contact2@restarone.com
   mailbox: public
+  email_message_id: foobarbaz@restarone.quux

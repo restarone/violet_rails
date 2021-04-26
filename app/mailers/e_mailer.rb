@@ -9,6 +9,7 @@ class EMailer < ApplicationMailer
         to: recipient, 
         subject: @message_thread.subject,
         from: @from,
+        message_id: @message_thread.message_id
       )
     end
   end
