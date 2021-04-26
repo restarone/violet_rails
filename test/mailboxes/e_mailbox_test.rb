@@ -82,7 +82,7 @@ class EMailboxTest < ActionMailbox::TestCase
 
   test 'message threads' do
     Apartment::Tenant.switch 'restarone' do      
-      assert_difference "MessageThread.all.reload.size" , +1 do        
+      assert_difference "MessageThread.all.reload.size" , +2 do        
         subject_line = "Hello world!"
         receive_inbound_email_from_mail \
         to: '"Don Restarone" <restarone@restarone.solutions>',
