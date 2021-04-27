@@ -9,7 +9,10 @@
         .card-title
           = message_thread.subject
         .card-subtitle.mb-2.text-muted
-          = message_thread.recipients.join(', ')
+          %strong
+            %span= message_thread.recipients.join(', ')
+          %div
+            %small= "#{distance_of_time_in_words(Time.now, message_thread.updated_at)} ago (#{message_thread.updated_at})"
         - if message_thread.messages.any?
           .card-text.bg-light.p-2
             = message_thread.messages.first.content
