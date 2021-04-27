@@ -32,7 +32,7 @@ class Mailbox::MessageThreadsController < Mailbox::BaseController
     else
       flash.alert = @message.errors.full_messages.to_sentence
     end
-    redirect_back(fallback_location: root_path)
+    redirect_back(fallback_location: mailbox_message_thread_path(id: @message_thread.id))
   end
 
   private

@@ -5,14 +5,14 @@ class EMailboxTest < ActionMailbox::TestCase
   setup do
     @restarone_subdomain = Subdomain.find_by(name: 'restarone').name
     Apartment::Tenant.switch @restarone_subdomain do
-      mailbox = Subdomain.find_by(name: 'restarone').initialize_mailbox
+      mailbox = Subdomain.find_by(name: @restarone_subdomain).initialize_mailbox
       @user = User.first
       @user.update(can_manage_email: true)
     end
   end
 
   test "inbound mail routes to correct schema" do
-    Apartment::Tenant.switch 'restarone' do 
+    Apartment::Tenant.switch @restarone_subdomain do 
       receive_inbound_email_from_mail \
         to: '"Don Restarone" <restarone@restarone.solutions>',
         from: '"else" <else@example.com>',
@@ -22,7 +22,7 @@ class EMailboxTest < ActionMailbox::TestCase
   end
 
   test 'direct attachment' do
-    Apartment::Tenant.switch 'restarone' do      
+    Apartment::Tenant.switch @restarone_subdomain do      
       mail = Mail.new(
         from: 'else@example.com',
         to: 'restarone@restarone.solutions',
@@ -35,7 +35,7 @@ class EMailboxTest < ActionMailbox::TestCase
   end
 
   test "inbound multipart mail routes to correct schema" do
-    Apartment::Tenant.switch 'restarone' do      
+    Apartment::Tenant.switch @restarone_subdomain do      
       create_inbound_email_from_mail do      
         from '"else" <else@example.com>'
         to '"Don Restarone" <restarone@restarone.solutions>'
@@ -51,7 +51,7 @@ class EMailboxTest < ActionMailbox::TestCase
   end
 
   test "from multipart file" do
-    Apartment::Tenant.switch 'restarone' do      
+    Apartment::Tenant.switch @restarone_subdomain do      
       assert_changes "ActiveStorage::Blob.all.reload.size" do
         email = create_inbound_email_from_fixture('multipart-with-files.eml')
         email.tap(&:route)
@@ -61,7 +61,7 @@ class EMailboxTest < ActionMailbox::TestCase
   end
 
   test "from video attachment" do
-    Apartment::Tenant.switch 'restarone' do      
+    Apartment::Tenant.switch @restarone_subdomain do      
       assert_changes "ActiveStorage::Blob.all.reload.size" do
         email = create_inbound_email_from_fixture('with-video-attachment.eml')
         email.tap(&:route)
@@ -71,7 +71,7 @@ class EMailboxTest < ActionMailbox::TestCase
   end
 
   test "from multipart file (thread)" do
-    Apartment::Tenant.switch 'restarone' do      
+    Apartment::Tenant.switch @restarone_subdomain do      
       assert_changes "ActiveStorage::Blob.all.reload.size" do
         email = create_inbound_email_from_fixture('thread.eml')
         email.tap(&:route)
@@ -81,7 +81,7 @@ class EMailboxTest < ActionMailbox::TestCase
   end
 
   test 'message threads' do
-    Apartment::Tenant.switch 'restarone' do      
+    Apartment::Tenant.switch @restarone_subdomain do      
       assert_difference "MessageThread.all.reload.size" , +2 do        
         subject_line = "Hello world!"
         receive_inbound_email_from_mail \
