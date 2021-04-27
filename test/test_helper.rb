@@ -27,10 +27,15 @@ class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
 
-
+  # custom config for mocking out actionmailer mailgun config without actually setting it as the delivary method
+  Rails.application.config.action_mailer.mailgun_settings = {
+    api_key: 'hardcodedapikey',
+    domain: 'mg.restarone.solutions',
+  }
 
   class ActionDispatch::IntegrationTest
     include Devise::Test::IntegrationHelpers
+    include ActiveJob::TestHelper
   end
   # Add more helper methods to be used by all tests here...
 end

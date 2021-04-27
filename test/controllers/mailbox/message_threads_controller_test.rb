@@ -52,11 +52,13 @@ class Mailbox::MessageThreadsControllerTest < ActionDispatch::IntegrationTest
       }
     }
     Apartment::Tenant.switch @subdomain.name do
-      assert_difference "MessageThread.all.size", +1 do
-        assert_difference "Message.all.size", +1 do
-          post mailbox_message_threads_url(subdomain: @subdomain.name), params: payload
-          assert_redirected_to mailbox_message_thread_url(subdomain: @subdomain.name, id: MessageThread.last.id)
-          assert flash.notice
+      perform_enqueued_jobs do
+        assert_difference "MessageThread.all.size", +1 do
+          assert_difference "Message.all.size", +1 do
+            post mailbox_message_threads_url(subdomain: @subdomain.name), params: payload
+            assert_redirected_to mailbox_message_thread_url(subdomain: @subdomain.name, id: MessageThread.last.id)
+            assert flash.notice
+          end
         end
       end
     end
@@ -72,11 +74,13 @@ class Mailbox::MessageThreadsControllerTest < ActionDispatch::IntegrationTest
       }
     }
     Apartment::Tenant.switch @subdomain.name do
-      assert_no_difference "MessageThread.all.size" do
-        assert_difference "Message.all.size", +1 do
-          post send_message_mailbox_message_thread_url(subdomain: @subdomain.name, id: @message_thread.id), params: payload
-          assert_redirected_to mailbox_message_thread_url(subdomain: @subdomain.name, id: @message_thread.id)
-          assert flash.notice
+      perform_enqueued_jobs do        
+        assert_no_difference "MessageThread.all.size" do
+          assert_difference "Message.all.size", +1 do
+            post send_message_mailbox_message_thread_url(subdomain: @subdomain.name, id: @message_thread.id), params: payload
+            assert_redirected_to mailbox_message_thread_url(subdomain: @subdomain.name, id: @message_thread.id)
+            assert flash.notice
+          end
         end
       end
     end

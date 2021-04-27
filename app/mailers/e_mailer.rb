@@ -1,5 +1,4 @@
 class EMailer < ApplicationMailer
-  include Rails.application.routes.url_helpers
   def ship
     @message = params[:message]
     @message_thread = params[:message_thread]
