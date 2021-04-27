@@ -89,7 +89,7 @@ class EMailboxTest < ActionMailbox::TestCase
         from: '"else" <else@example.com>',
         subject: subject_line,
         body: "Hello?"
-
+        assert MessageThread.all.last.subject
         receive_inbound_email_from_mail \
           to: '"Don Restarone" <restarone@restarone.solutions>',
           from: '"else" <else@example.com>',
