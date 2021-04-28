@@ -2,6 +2,7 @@
   = link_to I18n.t('views.mailbox.index.header.actions.new'), new_mailbox_message_thread_path, class: 'btn btn-success float-right mx-1'
   .h2
     = I18n.t('views.mailbox.index.header.title')
+    = Subdomain.current.mailing_address
 - @message_threads.each do |message_thread|
   = link_to mailbox_message_thread_path(id: message_thread.id), class: 'text-reset text-decoration-none' do
     .card.my-3

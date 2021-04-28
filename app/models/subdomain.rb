@@ -19,6 +19,10 @@ class Subdomain < ApplicationRecord
     mailbox.update(enabled: true)
   end
 
+  def mailing_address
+    "#{Apartment::Tenant.current}@#{ENV['APP_HOST']}"
+  end
+
   def hostname
     "#{self.name}.#{ENV['APP_HOST']}"
   end

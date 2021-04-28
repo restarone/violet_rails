@@ -3,7 +3,7 @@ en:
     mailbox:
       index:
         header:
-          title: Mailbox
+          title: Mailbox -
           actions: 
             new: New Email
             index: Addresses
