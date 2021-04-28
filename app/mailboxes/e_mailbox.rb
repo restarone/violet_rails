@@ -3,7 +3,7 @@ class EMailbox < ApplicationMailbox
   def process
     recipient = mail.to
     subject = mail.subject
-    recipients = recipient.map{|email| Mail::Address.new(email)}
+    recipients = Array.wrap(recipient).map{|email| Mail::Address.new(email)}
     recipients.each do |address|
       schema_domain = address.local
       Apartment::Tenant.switch schema_domain do
