@@ -212,19 +212,17 @@ ActiveRecord::Schema.define(version: 2021_04_16_121748) do
     t.datetime "deleted_at"
     t.string "subject"
     t.string "recipients", default: [], array: true
-    t.bigint "mailbox_id", null: false
-    t.string "email_message_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["email_message_id"], name: "index_message_threads_on_email_message_id"
-    t.index ["mailbox_id"], name: "index_message_threads_on_mailbox_id"
   end
 
   create_table "messages", force: :cascade do |t|
     t.string "from"
     t.bigint "message_thread_id", null: false
+    t.string "email_message_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["email_message_id"], name: "index_messages_on_email_message_id"
     t.index ["message_thread_id"], name: "index_messages_on_message_thread_id"
   end
 
@@ -298,6 +296,5 @@ ActiveRecord::Schema.define(version: 2021_04_16_121748) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "message_threads", "mailboxes"
   add_foreign_key "messages", "message_threads"
 end

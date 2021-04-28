@@ -83,7 +83,7 @@ class EMailboxTest < ActionMailbox::TestCase
   test 'message threads' do
     Apartment::Tenant.switch @restarone_subdomain do      
       perform_enqueued_jobs do
-        assert_difference "MessageThread.all.reload.size" , +2 do        
+        assert_difference "MessageThread.all.reload.size" , +1 do        
           assert_difference "Message.all.reload.size", +2 do          
             subject_line = "Hello world!"
             receive_inbound_email_from_mail \

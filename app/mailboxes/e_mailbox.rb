@@ -10,11 +10,11 @@ class EMailbox < ApplicationMailbox
         mailbox = Mailbox.first
         if mailbox
           message_thread = MessageThread.find_or_create_by(
-            mailbox: mailbox, 
-            email_message_id: mail.message_id,
+            subject: subject
           )
-          message_thread.update(recipients: mail.from, subject: subject)
+          message_thread.update(recipients: mail.from)
           message = Message.create!(
+            email_message_id: mail.message_id,
             message_thread: message_thread,
             content: body,
             from: mail.from.join(', '),

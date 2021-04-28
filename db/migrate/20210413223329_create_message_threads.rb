@@ -5,8 +5,6 @@ class CreateMessageThreads < ActiveRecord::Migration[6.1]
       t.datetime :deleted_at
       t.string :subject
       t.string :recipients, array: true, default: []
-      t.references :mailbox, null: false, foreign_key: true
-      t.string :email_message_id, index: true
 
       t.timestamps
     end
