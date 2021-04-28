@@ -82,37 +82,39 @@ class EMailboxTest < ActionMailbox::TestCase
 
   test 'message threads' do
     Apartment::Tenant.switch @restarone_subdomain do      
-      assert_difference "MessageThread.all.reload.size" , +2 do        
-        assert_difference "Message.all.reload.size", +2 do          
-          subject_line = "Hello world!"
-          receive_inbound_email_from_mail \
-          to: '"Don Restarone" <restarone@restarone.solutions>',
-          from: '"else" <else@example.com>',
-          subject: subject_line,
-          body: "Hello?"
-          assert MessageThread.all.last.subject
-          assert Message.last.from
-          receive_inbound_email_from_mail \
+      perform_enqueued_jobs do
+        assert_difference "MessageThread.all.reload.size" , +2 do        
+          assert_difference "Message.all.reload.size", +2 do          
+            subject_line = "Hello world!"
+            receive_inbound_email_from_mail \
             to: '"Don Restarone" <restarone@restarone.solutions>',
             from: '"else" <else@example.com>',
             subject: subject_line,
             body: "Hello?"
+            assert MessageThread.all.last.subject
+            assert Message.last.from
+            receive_inbound_email_from_mail \
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"else" <else@example.com>',
+              subject: subject_line,
+              body: "Hello?"
+          end
         end
-      end
-  
-      assert_difference "MessageThread.all.reload.size" , +2 do        
-        assert_difference "Message.all.reload.size", +2 do
-          receive_inbound_email_from_mail \
-          to: '"Don Restarone" <restarone@restarone.solutions>',
-          from: '"else" <else@example.com>',
-          subject: 'subject_line',
-          body: "Hello?"
-
-          receive_inbound_email_from_mail \
+    
+        assert_difference "MessageThread.all.reload.size" , +2 do        
+          assert_difference "Message.all.reload.size", +2 do
+            receive_inbound_email_from_mail \
             to: '"Don Restarone" <restarone@restarone.solutions>',
             from: '"else" <else@example.com>',
-            subject: 'subject_line 22',
+            subject: 'subject_line',
             body: "Hello?"
+
+            receive_inbound_email_from_mail \
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"else" <else@example.com>',
+              subject: 'subject_line 22',
+              body: "Hello?"
+          end
         end
       end
     end

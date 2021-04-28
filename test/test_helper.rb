@@ -37,5 +37,9 @@ class ActiveSupport::TestCase
     include Devise::Test::IntegrationHelpers
     include ActiveJob::TestHelper
   end
-  # Add more helper methods to be used by all tests here...
+  
+
+  class ActionMailbox::TestCase
+    include ActiveJob::TestHelper
+  end
 end
