@@ -1,19 +1,21 @@
 .page-header
   .h2
     = @message_thread.subject
+  %small= @message_thread.recipients.join(', ')
+  .form-group.justify-content-end.d-flex
+    = link_to "Delete", mailbox_message_thread_path(id: @message_thread.id), class: 'btn btn-danger', method: :delete, data: { confirm: 'Are you sure you want to destroy this email thread? This cannot be undone' }
 = form_for @message_thread, url: send_message_mailbox_message_thread_path(id: @message_thread.id), method: :post do |f|
   = render partial: 'messages/form', locals: { f: f }
 - @message_thread.messages.each do |message|
-  = link_to mailbox_message_thread_message_path(message_thread_id: @message_thread.id, id: message.id), class: 'text-reset text-decoration-none my-3' do
-    .card.my-3
-      .card-body 
-        .card-subtitle.mb-2.text-muted
-          = message.from
-        .card-text.bg-light.px-2.py-3
-          = message.content
-        - if message.attachments.any?
-          .card-text.bg-dark.px-2.py-3.text-white
-            Attachments
-            %ul{class: 'list-group'}
-              - message.attachments.each do |attachment|
-                = link_to attachment.filename, rails_blob_path(attachment, disposition: 'attachment')
+  .card.my-3
+    .card-body 
+      .card-subtitle.mb-2.text-muted
+        = message.from
+      .card-text.bg-light.px-2.py-3
+        = message.content
+      - if message.attachments.any?
+        .card-text.bg-dark.px-2.py-3.text-white
+          Attachments
+          %ul{class: 'list-group'}
+            - message.attachments.each do |attachment|
+              = link_to attachment.filename, rails_blob_path(attachment, disposition: 'attachment')

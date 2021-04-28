@@ -1,5 +1,4 @@
 class Mailbox::MessageThreadsController < Mailbox::BaseController
-  before_action :load_mailbox
   before_action :load_thread, except: [:new, :create]
 
   def show
@@ -35,6 +34,15 @@ class Mailbox::MessageThreadsController < Mailbox::BaseController
     redirect_back(fallback_location: mailbox_message_thread_path(id: @message_thread.id))
   end
 
+  def destroy
+    if @message_thread.destroy
+      flash.notice = 'Email thread deleted!'
+    else
+      flash.alert = 'Email thread could not be deleted. Please try again later'
+    end
+    redirect_to mailbox_path
+  end
+
   private
   def message_params
     params.require(:message_thread).permit(
@@ -57,9 +65,5 @@ class Mailbox::MessageThreadsController < Mailbox::BaseController
       flash.alert = 'Could not find thread'
       redirect_back(fallback_location: root_path)
     end
-  end
-
-  def load_mailbox
-    @mailbox = Mailbox.first
   end
 end
