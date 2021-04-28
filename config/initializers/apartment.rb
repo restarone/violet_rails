@@ -52,11 +52,7 @@ Apartment.configure do |config|
   #
   config.tenant_names = lambda do
     Subdomain.all.each_with_object({}) do |subdomain, hash|
-      if subdomain.name == 'shashike'
-        hash[subdomain.name] = subdomain.db_configuration
-      end
-      # remove above and uncomment line below to migrate all 
-      # hash[subdomain.name] = subdomain.db_configuration
+      hash[subdomain.name] = subdomain.db_configuration
     end
   end
 
