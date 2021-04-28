@@ -58,6 +58,7 @@ class Mailbox::MessageThreadsControllerTest < ActionDispatch::IntegrationTest
             post mailbox_message_threads_url(subdomain: @subdomain.name), params: payload
             assert_redirected_to mailbox_message_thread_url(subdomain: @subdomain.name, id: MessageThread.last.id)
             assert flash.notice
+            refute Message.last.from
           end
         end
       end
@@ -80,6 +81,7 @@ class Mailbox::MessageThreadsControllerTest < ActionDispatch::IntegrationTest
             post send_message_mailbox_message_thread_url(subdomain: @subdomain.name, id: @message_thread.id), params: payload
             assert_redirected_to mailbox_message_thread_url(subdomain: @subdomain.name, id: @message_thread.id)
             assert flash.notice
+            refute Message.last.from
           end
         end
       end

@@ -14,6 +14,9 @@ class Message < ApplicationRecord
   private
 
   def deliver
-    EMailer.with(message: self, message_thread: self.message_thread).ship.deliver_later
+    if !self.from
+      # if there is no from attribute, we can assume that its an outgoing message
+      EMailer.with(message: self, message_thread: self.message_thread).ship.deliver_later
+    end
   end
 end

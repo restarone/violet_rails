@@ -17,7 +17,7 @@ class EMailbox < ApplicationMailbox
           message = Message.create!(
             message_thread: message_thread,
             content: body,
-            from: mail.from[0],
+            from: mail.from.join(', '),
             attachments: (attachments + multipart_attached).map{ |a| a[:blob] }
           )
         else
