@@ -212,8 +212,10 @@ ActiveRecord::Schema.define(version: 2021_04_16_121748) do
     t.datetime "deleted_at"
     t.string "subject"
     t.string "recipients", default: [], array: true
+    t.string "current_email_message_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["current_email_message_id"], name: "index_message_threads_on_current_email_message_id"
   end
 
   create_table "messages", force: :cascade do |t|

@@ -13,24 +13,32 @@ class EMailboxTest < ActionMailbox::TestCase
 
   test "inbound mail routes to correct schema" do
     Apartment::Tenant.switch @restarone_subdomain do 
-      receive_inbound_email_from_mail \
-        to: '"Don Restarone" <restarone@restarone.solutions>',
-        from: '"else" <else@example.com>',
-        subject: "Hello world!",
-        body: "Hello?"
+      assert_difference "MessageThread.all.reload.size" , +1 do 
+        assert_difference "Message.all.reload.size", +1 do
+          receive_inbound_email_from_mail \
+            to: '"Don Restarone" <restarone@restarone.solutions>',
+            from: '"else" <else@example.com>',
+            subject: "Hello world!",
+            body: "Hello?"
+        end
+      end
     end
   end
 
   test 'direct attachment' do
     Apartment::Tenant.switch @restarone_subdomain do      
-      mail = Mail.new(
-        from: 'else@example.com',
-        to: 'restarone@restarone.solutions',
-        subject: 'Logo',
-        body: 'Hi, See the logo attached.',
-      )
-      mail.add_file filename: 'template.eml', content: StringIO.new('Sample Logo')
-      create_inbound_email_from_source(mail.to_s).tap(&:route)
+      assert_difference "MessageThread.all.reload.size" , +1 do
+        assert_difference "Message.all.reload.size", +1 do
+          mail = Mail.new(
+            from: 'else@example.com',
+            to: 'restarone@restarone.solutions',
+            subject: 'Logo',
+            body: 'Hi, See the logo attached.',
+          )
+          mail.add_file filename: 'template.eml', content: StringIO.new('Sample Logo')
+          create_inbound_email_from_source(mail.to_s).tap(&:route)
+        end
+      end
     end
   end
 
@@ -101,7 +109,7 @@ class EMailboxTest < ActionMailbox::TestCase
           end
         end
     
-        assert_difference "MessageThread.all.reload.size" , +2 do        
+        assert_no_difference "MessageThread.all.reload.size" do        
           assert_difference "Message.all.reload.size", +2 do
             receive_inbound_email_from_mail \
             to: '"Don Restarone" <restarone@restarone.solutions>',

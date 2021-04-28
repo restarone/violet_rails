@@ -5,6 +5,7 @@ class CreateMessageThreads < ActiveRecord::Migration[6.1]
       t.datetime :deleted_at
       t.string :subject
       t.string :recipients, array: true, default: []
+      t.string :current_email_message_id, index: true
 
       t.timestamps
     end

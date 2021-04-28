@@ -1,18 +1,17 @@
 class EMailbox < ApplicationMailbox
 
   def process
-    recipient = mail.to
     subject = mail.subject
-    recipients = Array.wrap(recipient).map{|email| Mail::Address.new(email)}
+    recipients = mail.to.map{|email| Mail::Address.new(email)}
     recipients.each do |address|
       schema_domain = address.local
       Apartment::Tenant.switch schema_domain do
         mailbox = Mailbox.first
         if mailbox
           message_thread = MessageThread.find_or_create_by(
-            subject: subject
+            current_email_message_id: mail.in_reply_to
           )
-          message_thread.update(recipients: mail.from)
+          message_thread.update(recipients: mail.from, subject: subject)
           message = Message.create!(
             email_message_id: mail.message_id,
             message_thread: message_thread,
