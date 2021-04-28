@@ -16,7 +16,7 @@ Rails.application.configure do
   config.consider_all_requests_local       = false
   config.action_controller.perform_caching = true
 
-  config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.raise_delivery_errors = true
 
   config.action_mailer.default_url_options = { host: ENV['APP_HOST'] }
   config.action_mailer.perform_deliveries = true 
@@ -25,7 +25,7 @@ Rails.application.configure do
     api_key: ENV["MAILGUN_API_KEY"],
     domain: 'mg.restarone.solutions',
   }
-
+  config.action_mailbox.ingress = :mailgun
 
   # Ensures that a master key has been made available in either ENV["RAILS_MASTER_KEY"]
   # or in config/master.key. This key is used to decrypt credentials (and other encrypted files).
@@ -80,12 +80,12 @@ Rails.application.configure do
   # for devise sending emails
   config.action_mailer.default_url_options = { host: ENV['APP_HOST'] }
 
-  # config.action_mailer.perform_deliveries = true 
-  # config.action_mailer.delivery_method = :mailgun
-  # config.action_mailer.mailgun_settings = {
-  #   api_key: ENV["MAILGUN_API_KEY"],
-  #   domain: 'mg.forthspace.co',
-  # }
+  config.action_mailer.perform_deliveries = true 
+  config.action_mailer.delivery_method = :mailgun
+  config.action_mailer.mailgun_settings = {
+    api_key: ENV["MAILGUN_API_KEY"],
+    domain: "#{ENV["APP_HOST"]}",
+  }
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.

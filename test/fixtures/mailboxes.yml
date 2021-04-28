@@ -1,0 +1,4 @@
+public_mailbox:
+  unread: false
+  enabled: true
+  threads_count: 1

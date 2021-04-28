@@ -14,8 +14,26 @@ class Subdomain < ApplicationRecord
     Subdomain.find_by(name: Apartment::Tenant.current)
   end
 
+  def initialize_mailbox
+    mailbox = Mailbox.first_or_create
+    mailbox.update(enabled: true)
+  end
+
+  def mailing_address
+    "#{Apartment::Tenant.current}@#{ENV['APP_HOST']}"
+  end
+
   def hostname
     "#{self.name}.#{ENV['APP_HOST']}"
+  end
+
+  def db_configuration
+    {
+      adapter: 'postgresql',
+      host: ENV['DATABASE_HOST'],
+      port: ENV['DATABASE_PORT'],
+      database: 'postgres'
+    }
   end
 
   def has_enough_storage?
@@ -28,6 +46,12 @@ class Subdomain < ApplicationRecord
     else
       return 0
     end
+  end
+
+  private
+
+  def downcase_subdomain_name
+    self.name = self.name.downcase
   end
 
   def create_cms_site
@@ -61,12 +85,6 @@ class Subdomain < ApplicationRecord
         "
       )
     end
-  end
-
-  private
-
-  def downcase_subdomain_name
-    self.name = self.name.downcase
   end
 
   def create_tenant

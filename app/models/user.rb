@@ -26,6 +26,7 @@ class User < ApplicationRecord
   
   private
 
+
   def ensure_final_user
     if Rails.env != 'test'
       if User.all.size - 1 == 0

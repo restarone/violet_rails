@@ -7,7 +7,7 @@ class SubdomainRequest < ApplicationRecord
 
   validate :can_be_approved?, if: -> { self.approved_changed? }
 
-  after_save :spawn_subdomain, if: -> { self.approved? }
+  after_save :spawn_subdomain, :destroy_request, if: -> { self.approved? }
 
   def self.pending
     self.where(approved: false)
@@ -29,7 +29,18 @@ class SubdomainRequest < ApplicationRecord
       user = User.invite!(email: self.email)
       # confer default ownership rights of that subdomain
       user.update(User::FULL_PERMISSIONS)
+      spawn_emailbox
     end
+  end
+
+  def spawn_emailbox
+    subdomain = Subdomain.find_by(name: self.subdomain_name)
+    Apartment::Tenant.switch subdomain.name do 
+      mailbox = subdomain.initialize_mailbox
+    end
+  end
+
+  def destroy_request
     self.destroy
   end
 
