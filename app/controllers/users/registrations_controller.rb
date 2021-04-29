@@ -6,12 +6,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # GET /resource/sign_up
   def new
-    redirect_to signup_wizard_index_path
+    redirect_to signup_wizard_index_url(subdomain: '')
   end
 
   # POST /resource
   def create
-    redirect_to signup_wizard_index_path
+    redirect_to signup_wizard_index_url(subdomain: '')
   end
 
   # GET /resource/edit
