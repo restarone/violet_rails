@@ -42,10 +42,12 @@ class Subdomain < ApplicationRecord
   end
 
   def storage_used
-    if ActiveStorage::Blob.any?
-      return ActiveStorage::Blob.all.pluck(:byte_size).sum
-    else
-      return 0
+    Apartment::Tenant.switch self.name do      
+      if ActiveStorage::Blob.any?
+        return ActiveStorage::Blob.all.pluck(:byte_size).sum
+      else
+        return 0
+      end
     end
   end
 
