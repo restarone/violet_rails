@@ -1,0 +1,12 @@
+%h1
+  Active Subdomains
+.my-5.list-group
+  - @subdomains.each do |subdomain|
+    - if subdomain.name
+      = link_to edit_admin_subdomain_path(id: subdomain.id), class: 'list-group-item list-group-item-action flex-column align-items-start' do
+        .d-flex.w-100.justify-content-between
+          %h5 
+            = display_subdomain_name(subdomain.name)
+          %small
+            = subdomain.created_at
+

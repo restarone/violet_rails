@@ -1,0 +1,14 @@
+.card.mb-4.box-shadow
+  .card-header
+    %h4.my-0.font-weight-normal
+    = link_to @subdomain.name, root_url(subdomain: @subdomain.name), target: :_blank
+  .card-body
+    %h1.card-title.pricing-card-title
+      = number_to_human_size(@subdomain.storage_used)
+      %small.text-muted storage used
+    %ul.list-unstyled.mt-3.mb-4
+      %li= "#{pluralize(users_count(@subdomain), 'User')}"
+      %li= "#{pluralize(emails_count(@subdomain), 'Email')}"
+      %li= "#{pluralize(web_pages_count(@subdomain), 'Web Page')}"
+      %li= "#{pluralize(blog_posts_count(@subdomain), 'Blog Post')}"
+    = link_to "Destroy Domain (Irreversible)", admin_subdomain_path(id: @subdomain), method: :delete, class: 'btn btn-lg btn-block btn-danger', data: { confirm: 'are you sure? This cannot be undone' }
