@@ -6,7 +6,7 @@ class EMailbox < ApplicationMailbox
     recipients.each do |address|
       schema_domain = address.local
       Apartment::Tenant.switch schema_domain do
-        mailbox = Mailbox.first
+        mailbox = MessageThread.first_or_create
         if mailbox
           message_thread = MessageThread.find_or_create_by(
             current_email_message_id: mail.in_reply_to
