@@ -6,6 +6,7 @@ class Subdomain < ApplicationRecord
   before_create :downcase_subdomain_name, :create_tenant
 
   after_create_commit :create_cms_site
+  before_destroy :drop_tenant
 
   # max 1GB by default storage allowance
   MAXIMUM_STORAGED_ALLOWANCE = 1073741824
@@ -49,6 +50,10 @@ class Subdomain < ApplicationRecord
   end
 
   private
+
+  def drop_tenant
+    Apartment::Tenant.drop(self.name)
+  end
 
   def downcase_subdomain_name
     self.name = self.name.downcase

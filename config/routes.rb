@@ -56,6 +56,7 @@ Rails.application.routes.draw do
           get 'disapprove'
         end
       end
+      resources :subdomains
     end
   end
 
