@@ -16,8 +16,10 @@ class Subdomain < ApplicationRecord
   end
 
   def initialize_mailbox
-    mailbox = Mailbox.first_or_create
-    mailbox.update(enabled: true)
+    Apartment::Tenant.switch self.name do
+      mailbox = Mailbox.first_or_create
+      mailbox.update(enabled: true)
+    end
   end
 
   def mailing_address
@@ -42,10 +44,12 @@ class Subdomain < ApplicationRecord
   end
 
   def storage_used
-    if ActiveStorage::Blob.any?
-      return ActiveStorage::Blob.all.pluck(:byte_size).sum
-    else
-      return 0
+    Apartment::Tenant.switch self.name do
+      if ActiveStorage::Blob.any?
+        return ActiveStorage::Blob.all.pluck(:byte_size).sum
+      else
+        return 0
+      end
     end
   end
 
