@@ -56,7 +56,11 @@ Rails.application.routes.draw do
           get 'disapprove'
         end
       end
-      resources :subdomains
+      resources :subdomains do
+        member do
+          get 'dump_cms_site'
+        end
+      end
     end
   end
 

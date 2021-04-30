@@ -22,6 +22,10 @@ class Admin::SubdomainsController < Admin::BaseController
     redirect_to admin_subdomains_path
   end
 
+  def dump_cms_site
+    @subdomain.dump_cms_site
+  end
+
   private 
 
   def load_subdomain

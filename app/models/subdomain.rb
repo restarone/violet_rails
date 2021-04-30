@@ -1,3 +1,6 @@
+require 'rake'
+RSolutions::Application.load_tasks
+
 class Subdomain < ApplicationRecord
   validates :name, format: {
     with: %r{\A[a-z](?:[a-z0-9-]*[a-z0-9])?\z}i, message: "not a valid subdomain"
@@ -50,6 +53,12 @@ class Subdomain < ApplicationRecord
       else
         return 0
       end
+    end
+  end
+
+  def dump_cms_site
+    Apartment::Tenant.switch self.name do
+      Rake::Task['comfy:cms_seeds:export'].invoke(self.name, self.name)
     end
   end
 
