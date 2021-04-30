@@ -1,15 +1,24 @@
 .jumbotron
-  %h1.display-4 Welcome to Violet Solutions
+  %h1.display-4 
+    %span
+      Welcome to Violet
   %p.lead
     Brought to you by 
     %a{href: 'https://restarone.com', target: '_blank'}
       Restarone Inc.
   %hr.my-4/
   %p.lead
-    Violet Solutions is a web, blog and email platform powered by 
+    %span
+      You are looking at an open-source web, blog and email platform powered by 
     %code
-      ultraviolet_rails
-    that is offered both as a "software package" for independent deployments or as a managed, "software as a service".
+      %a{href: 'https://github.com/restarone/violet_rails', target: '_blank'}
+        ultraviolet_rails (View on GitHub)
+  %p.lead
+    %span
+      To learn more, 
+      %a{href: 'https://violet.restarone.solutions', target: '_blank'}
+        view the FAQ 
+      or take Violet for a spin by registering below  
   = link_to "Register", signup_wizard_index_path, class: 'btn btn-primary'
   = link_to "Sign into your subdomain", signin_wizard_index_path, class: 'btn btn-secondary'
   %hr.my-4/
