@@ -1,0 +1,6 @@
+en:
+  views:
+    message_threads:
+      new:
+        header:
+            title: New Email Message

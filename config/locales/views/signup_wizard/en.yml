@@ -1,0 +1,29 @@
+en:
+  views:
+    signup_wizard:
+      scopes_of_service:
+        title: Scopes of Service
+        body:
+          title: What kind of functionality does your organization need?
+          options:
+            web: 
+              title: 'Web'
+            blog: 
+              title: 'Blog'
+            forum: 
+              title: 'Forum'
+        buttons:
+          back: Back to Home
+          next: Skip
+          confirm: Next
+      subdomain_name:
+        title: Select a Subdomain
+        body:
+          title: This is where your landing page will be available
+        buttons:
+          next: Next
+          previous: Back
+      sign_up:
+        title: Create User Account
+        body:
+          title: Give us your email address and we will send you a login link!

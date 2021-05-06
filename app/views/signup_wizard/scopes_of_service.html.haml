@@ -1,0 +1,23 @@
+.card
+  = render partial: 'wizards/progress'
+  .card-header  
+    = render partial: 'wizards/header', locals: { heading: I18n.t('views.signup_wizard.scopes_of_service.title') }
+  .card-body
+    %h5
+      = I18n.t('views.signup_wizard.scopes_of_service.body.title')
+    = form_for SubdomainRequest.new, url: signup_wizard_index_path, method: :post do |f|
+      %ul.list-group.my-5
+        %li.list-group-item.d-flex.justify-content-between.align-items.center
+          = I18n.t('views.signup_wizard.scopes_of_service.body.options.web.title')
+          = f.check_box :requires_web, {checked: true}
+        %li.list-group-item.d-flex.justify-content-between.align-items.center
+          = I18n.t('views.signup_wizard.scopes_of_service.body.options.blog.title')
+          = f.check_box :requires_blog, {checked: true}
+        %li.list-group-item.d-flex.justify-content-between.align-items.center
+          = I18n.t('views.signup_wizard.scopes_of_service.body.options.forum.title')
+          = f.check_box :requires_forum, {checked: true}
+      .input-group.text-center
+        = f.submit I18n.t('views.signup_wizard.scopes_of_service.buttons.confirm'), class: 'btn btn-primary btn-lg' 
+  .card-footer
+    .float-left
+      = link_to I18n.t('views.signup_wizard.scopes_of_service.buttons.back'), root_path, class: 'btn btn-sm btn-info'

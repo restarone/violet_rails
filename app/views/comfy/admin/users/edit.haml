@@ -1,0 +1,23 @@
+.page-header
+  .h2
+    = @user.email
+  .form-group.my-5
+    = form_with model: @user, url: admin_user_path, method: :patch do |f|
+      .form-group
+        = f.check_box :can_manage_web
+        %label 
+          Can manage website
+      .form-group
+        = f.check_box :can_manage_blog
+        %label 
+          Can manage blog
+      .form-group
+        = f.check_box :can_manage_email
+        %label 
+          Can manage emailbox
+      .form-group
+        = f.check_box :can_manage_users
+        %label 
+          Can manage and invite users
+      = f.submit "Update", class: 'btn btn-success'
+      = link_to "Remove", admin_user_path(id: @user.id), method: :delete, class: 'btn btn-sm btn-danger', data: { confirm: 'Are you sure you want to remove this user? This cannot be undone' }

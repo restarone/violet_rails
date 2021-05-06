@@ -1,0 +1,5 @@
+- if f.object.errors.any?
+  %ul.list-group.my-2
+    - f.object.errors.each do |error|
+      %li.list-group-item.list-group-item-danger
+        = error.message

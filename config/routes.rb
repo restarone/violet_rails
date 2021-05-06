@@ -1,3 +1,4 @@
+require 'sidekiq/web'
 class SubdomainConstraint
   def self.matches?(request)
     subdomains = ['www', 'admin', 'help', 'info', 'contact']
@@ -7,32 +8,57 @@ end
 
 Rails.application.routes.draw do
 
-  devise_for :customers, controllers: {
-    confirmations: 'customers/confirmations',
-    #omniauth_callbacks: 'customers/omniauth_callbacks',
-    passwords: 'customers/passwords',
-    registrations: 'customers/registrations',
-    sessions: 'customers/sessions',
-    unlocks: 'customers/unlocks',
-    invitations: 'customers/invitations'
-  }
-  
+  resources :signup_wizard
+  resources :signin_wizard
   constraints SubdomainConstraint do
     devise_for :users, controllers: {
       confirmations: 'users/confirmations',
       #omniauth_callbacks: 'users/omniauth_callbacks',
-      passwords: 'users/passwords',
       registrations: 'users/registrations',
+      passwords: 'users/passwords',
       sessions: 'users/sessions',
       unlocks: 'users/unlocks',
-      invitations: 'users/invitations'    
+      invitations: 'devise/invitations'
     }
-    resources :users
+    
+    resource :mailbox, only: [:show], controller: 'mailbox/mailbox' do
+      resources :message_threads, controller: 'mailbox/message_threads' do
+        resources :messages
+        member do
+          post 'send_message'
+        end
+      end
+    end
+    resources :users, controller: 'comfy/admin/users', as: :admin_users, except: [:create, :show] do
+      collection do 
+        post 'invite'
+      end
+    end
     comfy_route :cms_admin, path: "/admin"
     comfy_route :blog, path: "blog"
     comfy_route :blog_admin, path: "admin"
     mount Thredded::Engine => '/forum'
     comfy_route :cms, path: "/"
+  end
+
+  # system admin panel login
+  devise_scope :user do
+    get 'sign_in', to: 'users/sessions#new', as: :new_global_admin_session
+    post 'users/sign_in', to: 'users/sessions#create'
+    delete 'global_login', to: 'users/sessions#destroy'
+  end
+  # system admin panel authentication (ensure public schema as well)
+  authenticate :user, lambda { |u| u.global_admin? && Apartment::Tenant.current == 'public' } do
+    namespace :admin do
+      mount Sidekiq::Web => '/sidekiq'
+      resources :subdomain_requests, except: [:new, :create] do
+        member do
+          get 'approve'
+          get 'disapprove'
+        end
+      end
+      resources :subdomains
+    end
   end
 
   root to: 'content#index'

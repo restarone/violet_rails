@@ -1,0 +1,11 @@
+en:
+  views:
+    comfy:
+      users:
+        index:
+          header:
+            title: Users
+            action: Invite
+        new:
+          header:
+              title: Invite user

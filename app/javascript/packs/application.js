@@ -8,6 +8,8 @@ import Turbolinks from "turbolinks"
 import * as ActiveStorage from "@rails/activestorage"
 import "channels"
 import "bootstrap"
+import 'select2'
+import 'select2/dist/css/select2.css'
 
 
 Rails.start()
@@ -16,3 +18,5 @@ ActiveStorage.start()
 
 require("jquery")
 require('thredded_imports.js');
+require("trix")
+require("@rails/actiontext")
