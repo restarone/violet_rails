@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_17_131202) do
+ActiveRecord::Schema.define(version: 2021_05_07_120500) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -539,6 +539,9 @@ ActiveRecord::Schema.define(version: 2021_04_17_131202) do
     t.boolean "can_manage_email", default: false
     t.boolean "can_manage_users", default: false
     t.boolean "can_manage_blog", default: false
+    t.string "name"
+    t.boolean "moderator"
+    t.boolean "admin"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true

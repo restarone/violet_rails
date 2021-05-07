@@ -19,5 +19,13 @@
         = f.check_box :can_manage_users
         %label 
           Can manage and invite users
+      .form-group
+        = f.check_box :moderator
+        %label 
+          Forum moderator
+      .form-group
+        = f.check_box :admin
+        %label 
+          Forum admin
       = f.submit "Update", class: 'btn btn-success'
       = link_to "Remove", admin_user_path(id: @user.id), method: :delete, class: 'btn btn-sm btn-danger', data: { confirm: 'Are you sure you want to remove this user? This cannot be undone' }
