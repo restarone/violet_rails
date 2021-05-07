@@ -31,15 +31,6 @@ class AddDeviseToUsers < ActiveRecord::Migration[6.1]
       t.integer  :failed_attempts, default: 0, null: false # Only if lock strategy is :failed_attempts
       t.string   :unlock_token # Only if unlock strategy is :email or :both
       t.datetime :locked_at
-
-      # custom fields
-      t.string :name
-      # for forum only
-      t.boolean :moderator
-      # for forum, website, and blog
-      t.boolean :admin
-      # 
-      t.boolean :belongs_to_customer
     end
 
     add_index :users, :email,                unique: true
