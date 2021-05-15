@@ -111,13 +111,24 @@ end
 # Setup a custom Tenant switching middleware. The Proc should return the name of the Tenant that
 # you want to switch to.
 # Rails.application.config.middleware.use Apartment::Elevators::Generic, lambda { |request|
-#   request.host.split('.').first
+#     "www"
 # }
 
+
+class CatchApartmentNotFound < ::Apartment::Elevators::Subdomain
+  def call(env)
+    super
+  rescue ::Apartment::TenantNotFound
+    [301, {'Location' => "http://#{ENV['APP_HOST']}"}, ['redirect']]
+  end
+end
+
+
+
 # Rails.application.config.middleware.use Apartment::Elevators::Domain
+Rails.application.config.middleware.use CatchApartmentNotFound
 Rails.application.config.middleware.use Apartment::Elevators::Subdomain
 # plug in exclusions model here
 Apartment::Elevators::Subdomain.excluded_subdomains = []
 # Rails.application.config.middleware.use Apartment::Elevators::FirstSubdomain
 # Rails.application.config.middleware.use Apartment::Elevators::Host
-
