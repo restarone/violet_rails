@@ -160,10 +160,8 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
     @user.update(global_admin: false)
     sign_in(@user)
     assert_no_difference "SubdomainRequest.all.size" do
-
       get disapprove_admin_subdomain_request_url(id: @subdomain_request.slug)
     end
-    
     assert flash.alert
     assert_response :redirect
   end
