@@ -16,6 +16,8 @@ services:
       - test
     volumes:
       - 'shared_data:/var/shared/redis'
+    ports:
+      - 6380:6379
   solutions_db:
     image: postgres:12.5-alpine
     container_name: solutions_db
