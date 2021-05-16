@@ -10,10 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_08_121018) do
+ActiveRecord::Schema.define(version: 2021_05_16_184325) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "action_mailbox_inbound_emails", force: :cascade do |t|
+    t.integer "status", default: 0, null: false
+    t.string "message_id", null: false
+    t.string "message_checksum", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["message_id", "message_checksum"], name: "index_action_mailbox_inbound_emails_uniqueness", unique: true
+  end
+
+  create_table "action_text_rich_texts", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "body"
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
+  end
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -180,32 +199,6 @@ ActiveRecord::Schema.define(version: 2021_04_08_121018) do
     t.index ["page_id"], name: "index_comfy_cms_translations_on_page_id"
   end
 
-  create_table "customers", force: :cascade do |t|
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
-    t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
-    t.integer "sign_in_count", default: 0, null: false
-    t.datetime "current_sign_in_at"
-    t.datetime "last_sign_in_at"
-    t.string "current_sign_in_ip"
-    t.string "last_sign_in_ip"
-    t.string "confirmation_token"
-    t.datetime "confirmed_at"
-    t.datetime "confirmation_sent_at"
-    t.string "unconfirmed_email"
-    t.integer "failed_attempts", default: 0, null: false
-    t.string "unlock_token"
-    t.datetime "locked_at"
-    t.index ["confirmation_token"], name: "index_customers_on_confirmation_token", unique: true
-    t.index ["email"], name: "index_customers_on_email", unique: true
-    t.index ["reset_password_token"], name: "index_customers_on_reset_password_token", unique: true
-    t.index ["unlock_token"], name: "index_customers_on_unlock_token", unique: true
-  end
-
   create_table "forum_categories", id: :serial, force: :cascade do |t|
     t.string "name", null: false
     t.string "slug", null: false
@@ -243,18 +236,63 @@ ActiveRecord::Schema.define(version: 2021_04_08_121018) do
     t.datetime "updated_at"
   end
 
+  create_table "mailboxes", force: :cascade do |t|
+    t.boolean "unread", default: false
+    t.boolean "enabled", default: false
+    t.integer "threads_count", default: 0
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "message_threads", force: :cascade do |t|
+    t.boolean "unread"
+    t.datetime "deleted_at"
+    t.string "subject"
+    t.string "recipients", default: [], array: true
+    t.string "current_email_message_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["current_email_message_id"], name: "index_message_threads_on_current_email_message_id"
+  end
+
+  create_table "messages", force: :cascade do |t|
+    t.string "from"
+    t.bigint "message_thread_id", null: false
+    t.string "email_message_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["email_message_id"], name: "index_messages_on_email_message_id"
+    t.index ["message_thread_id"], name: "index_messages_on_message_thread_id"
+  end
+
+  create_table "subdomain_requests", force: :cascade do |t|
+    t.string "subdomain_name"
+    t.string "email"
+    t.boolean "approved", default: false
+    t.boolean "requires_web", default: true
+    t.boolean "requires_blog", default: true
+    t.boolean "requires_forum", default: true
+    t.datetime "deleted_at"
+    t.string "slug"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["deleted_at"], name: "index_subdomain_requests_on_deleted_at"
+    t.index ["email"], name: "index_subdomain_requests_on_email"
+    t.index ["slug"], name: "index_subdomain_requests_on_slug"
+    t.index ["subdomain_name"], name: "index_subdomain_requests_on_subdomain_name"
+  end
+
   create_table "subdomains", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "deleted_at"
-    t.bigint "customer_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["customer_id"], name: "index_subdomains_on_customer_id"
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
     t.index ["name"], name: "index_subdomains_on_name"
   end
 
   create_table "users", force: :cascade do |t|
+    t.boolean "global_admin", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "email", default: "", null: false
@@ -274,12 +312,25 @@ ActiveRecord::Schema.define(version: 2021_04_08_121018) do
     t.integer "failed_attempts", default: 0, null: false
     t.string "unlock_token"
     t.datetime "locked_at"
+    t.string "invitation_token"
+    t.datetime "invitation_created_at"
+    t.datetime "invitation_sent_at"
+    t.datetime "invitation_accepted_at"
+    t.integer "invitation_limit"
+    t.string "invited_by_type"
+    t.bigint "invited_by_id"
+    t.integer "invitations_count", default: 0
+    t.boolean "can_manage_web", default: false
+    t.boolean "can_manage_email", default: false
+    t.boolean "can_manage_users", default: false
+    t.boolean "can_manage_blog", default: false
     t.string "name"
     t.boolean "moderator"
-    t.boolean "admin"
-    t.boolean "belongs_to_customer"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
+    t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
+    t.index ["invited_by_type", "invited_by_id"], name: "index_users_on_invited_by"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
@@ -292,5 +343,5 @@ ActiveRecord::Schema.define(version: 2021_04_08_121018) do
   add_foreign_key "forum_subscriptions", "users"
   add_foreign_key "forum_threads", "forum_categories"
   add_foreign_key "forum_threads", "users"
-  add_foreign_key "subdomains", "customers"
+  add_foreign_key "messages", "message_threads"
 end

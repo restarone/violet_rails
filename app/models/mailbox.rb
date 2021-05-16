@@ -1,0 +1,3 @@
+class Mailbox < ApplicationRecord
+
+end
