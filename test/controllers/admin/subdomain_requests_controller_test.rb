@@ -159,7 +159,9 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
   test 'denies #disapprove if not global admin' do
     @user.update(global_admin: false)
     sign_in(@user)
-    get disapprove_admin_subdomain_request_url(id: @subdomain_request.slug)
+    assert_no_difference "SubdomainRequest.all.size" do
+      get disapprove_admin_subdomain_request_url(id: @subdomain_request.slug)
+    end
     assert flash.alert
     assert_response :redirect
   end

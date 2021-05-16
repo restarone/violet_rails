@@ -1,6 +1,6 @@
 class SigninWizardController < ApplicationController
   include Wicked::Wizard
-  steps :set_subdomain
+  steps :set_subdomain, :update
 
   def show
     render_wizard
