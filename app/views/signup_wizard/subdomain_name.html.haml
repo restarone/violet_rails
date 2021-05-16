@@ -1,0 +1,20 @@
+.card
+  = render partial: 'wizards/progress'
+  .card-header  
+    = render partial: 'wizards/header', locals: { heading: I18n.t('views.signup_wizard.subdomain_name.title') }
+  .card-body
+    %h5
+      = I18n.t('views.signup_wizard.subdomain_name.body.title')
+    = form_for @subdomain_request, url: signup_wizard_path(subdomain_request_id: @subdomain_request.slug), method: :put do |f|
+      .my-5
+        .input-group
+          = f.text_field :subdomain_name, placeholder: 'myawesomecompany', required: true
+          .input-group-append
+            %span.input-group-text
+              = ".#{ENV['APP_HOST']}"
+        = render partial: 'wizards/errors', locals: { f: f }
+      .input-group.text-center
+        = f.submit I18n.t('views.signup_wizard.subdomain_name.buttons.next'), class: 'btn btn-primary btn-lg'
+  .card-footer
+    .float-left
+      = link_to I18n.t('views.signup_wizard.subdomain_name.buttons.previous'), previous_wizard_path, class: 'btn btn-sm btn-info'

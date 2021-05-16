@@ -1,0 +1,12 @@
+.page-header
+  = link_to I18n.t('views.comfy.users.index.header.action'), new_admin_user_path, class: 'btn btn-secondary float-right'
+  .h2
+    = I18n.t('views.comfy.users.index.header.title')
+- @users.each do |user|
+  = link_to edit_admin_user_path(id: user.id) do
+    .card.my-3
+      .card-body 
+        .card-title
+          = user.email
+        .card-subtitle.mb-2.text-muted
+          = user.created_at

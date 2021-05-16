@@ -17,7 +17,7 @@ Apartment.configure do |config|
   # Add any models that you do not want to be multi-tenanted, but remain in the global (public) namespace.
   # A typical example would be a Customer or Tenant model that stores each Tenant's information.
   #
-  config.excluded_models = %w{ Customer Subdomain }
+  config.excluded_models = %w{ Subdomain SubdomainRequest}
 
   # In order to migrate all of your Tenants you need to provide a list of Tenant names to Apartment.
   # You can make this dynamic by providing a Proc object to be called on migrations.
@@ -26,7 +26,7 @@ Apartment.configure do |config|
   # - a hash which keys are tenant names, and values custom db config
   # (must contain all key/values required in database.yml)
   #
-  # config.tenant_names = lambda{ Customer.pluck(:tenant_name) }
+  # config.tenant_names = lambda{ Subdomain.pluck(:name) }
   # config.tenant_names = ['tenant1', 'tenant2']
   # config.tenant_names = {
   #   'tenant1' => {
@@ -50,7 +50,11 @@ Apartment.configure do |config|
   #   end
   # end
   #
-  config.tenant_names = -> { Subdomain.pluck :name }
+  config.tenant_names = lambda do
+    Subdomain.all.each_with_object({}) do |subdomain, hash|
+      hash[subdomain.name] = subdomain.db_configuration
+    end
+  end
 
   # PostgreSQL:
   #   Specifies whether to use PostgreSQL schemas or create a new database per Tenant.

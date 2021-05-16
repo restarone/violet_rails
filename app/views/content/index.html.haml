@@ -1,10 +1,29 @@
+.jumbotron
+  %h1.display-4 
+    %span
+      Welcome to Violet
+  %p.lead
+    Brought to you by 
+    %a{href: 'https://restarone.com', target: '_blank'}
+      Restarone Inc.
+  %hr.my-4/
+  %p.lead
+    %span
+      You are looking at an open-source web, blog and email platform powered by 
+    %code
+      %a{href: 'https://github.com/restarone/violet_rails', target: '_blank'}
+        ultraviolet_rails (View on GitHub)
+  %p.lead
+    %span
+      To learn more, 
+      %a{href: 'https://violet.restarone.solutions', target: '_blank'}
+        view the FAQ 
+      or take Violet for a spin by registering below  
+  = link_to "Register", signup_wizard_index_path, class: 'btn btn-primary'
+  = link_to "Sign into your subdomain", signin_wizard_index_path, class: 'btn btn-secondary'
+  %hr.my-4/
+  %small
+    For support or to inquire about independent deployments please email 
+    %a{href: 'mailto:contact@restarone.com'}
+      contact@restarone.com
 
-%h1 Welcome to Violet Solutions
-%p Brought to you by Restarone Inc.
-
-
-.card
-  .card-body
-    = link_to "Sign up", new_customer_registration_path, class: 'btn btn-primary'
-  
-    = link_to "Sign in", new_customer_session_path, class: 'btn btn-primary'
