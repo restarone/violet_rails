@@ -49,6 +49,15 @@ services:
       - test
     ports:
       - 5251:5251
+  mailcatcher:
+    container_name: mailcatcher
+    image: yappabe/mailcatcher
+    networks:
+      - development
+      - test
+    ports:
+      - 1025:1025
+      - 1080:1080
   solutions_app:
     build:
       context: .

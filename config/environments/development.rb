@@ -65,12 +65,9 @@ Rails.application.configure do
   
   config.action_mailer.default_url_options = { host: ENV['APP_HOST'] }
   config.action_mailer.perform_deliveries = true 
-  config.action_mailer.delivery_method = :mailgun
-  config.action_mailer.mailgun_settings = {
-    api_key: ENV["MAILGUN_API_KEY"],
-    domain: 'mg.restarone.solutions',
-  }
-  config.action_mailbox.ingress = :mailgun
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = { :address => 'mailcatcher', :port => 1025 }
+  config.action_mailer.raise_delivery_errors = true
   config.active_job.queue_adapter = :sidekiq
 
   # Suppress logger output for asset requests.
