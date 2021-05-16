@@ -22,31 +22,34 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
     assert_template layout: "admin"
   end
 
-  test 'denies #index if spoofed global admin' do
+  test 'allows #index if not global admin (restarone)' do
     @restarone_user.update(global_admin: true)
     Apartment::Tenant.switch @restarone_subdomain do
-      begin
-        sign_in(@restarone_user)
-        get admin_subdomain_requests_url
-        rescue ActionController::RoutingError => e
-          assert e.message
-      else
-        raise StandardError.new "ActionController::RoutingError NOT RAISED!"
-      end
+      sign_in(@restarone_user)
+      get admin_subdomain_requests_url
+      assert_response :success
+      assert_template :index
+      assert_template layout: "admin"
     end
   end
 
-  test 'denies #index if not global admin' do      
-    @user.update(global_admin: false)
-    begin
-        refute @user.global_admin
-        sign_in(@user)
-        get admin_subdomain_requests_url
-    rescue ActionController::RoutingError => e
-        assert e.message
-    else
-      raise StandardError.new "ActionController::RoutingError NOT RAISED!"
+  test 'denies #index if not global admin (restarone)' do
+    @restarone_user.update(global_admin: false)
+    Apartment::Tenant.switch @restarone_subdomain do
+      sign_in(@restarone_user)
+      get admin_subdomain_requests_url
+      assert flash.alert
+      assert_response :redirect
     end
+  end
+
+  test 'denies #index if not global admin' do   
+    @user.update(global_admin: false)
+    refute @user.global_admin
+    sign_in(@user)
+    get admin_subdomain_requests_url
+    assert flash.alert
+    assert_response :redirect
   end
 
   test 'allows #edit if global admin' do
@@ -58,15 +61,11 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
 
   test 'denies #edit if not global admin' do
     @user.update(global_admin: false)
-    begin
-      refute @user.global_admin
-      sign_in(@user)
-      get edit_admin_subdomain_request_url(id: @subdomain_request.slug)
-      rescue ActionController::RoutingError => e
-        assert e.message
-    else
-      raise StandardError.new "ActionController::RoutingError NOT RAISED!"
-    end
+    refute @user.global_admin
+    sign_in(@user)
+    get edit_admin_subdomain_request_url(id: @subdomain_request.slug)
+    assert flash.alert
+    assert_response :redirect
   end
 
   test 'allows #show if global admin' do
@@ -78,15 +77,11 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
 
   test 'denies #show if not global admin' do
     @user.update(global_admin: false)
-    begin
-      refute @user.global_admin
-      sign_in(@user)
-      get admin_subdomain_request_url(id: @subdomain_request.slug)
-      rescue ActionController::RoutingError => e
-        assert e.message
-    else
-      raise StandardError.new "ActionController::RoutingError NOT RAISED!"
-    end
+    refute @user.global_admin
+    sign_in(@user)
+    get admin_subdomain_request_url(id: @subdomain_request.slug)
+    assert flash.alert
+    assert_response :redirect
   end
 
   test 'allows #update if global admin' do
@@ -98,14 +93,10 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
 
   test 'denies #update if not global admin' do
     @user.update(global_admin: false)
-    begin
-      sign_in(@user)
-      patch admin_subdomain_request_url(id: @subdomain_request.slug)
-      rescue ActionController::RoutingError => e
-        assert e.message
-    else
-      raise StandardError.new "ActionController::RoutingError NOT RAISED!"
-    end
+    sign_in(@user)
+    patch admin_subdomain_request_url(id: @subdomain_request.slug)
+    assert flash.alert
+    assert_response :redirect
   end
 
   test 'allows #destroy if global admin' do
@@ -116,14 +107,10 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
 
   test 'denies #destroy if not global admin' do
     @user.update(global_admin: false)
-    begin
-      sign_in(@user)
-      delete admin_subdomain_request_url(id: @subdomain_request.slug)
-      rescue ActionController::RoutingError => e
-        assert e.message
-    else
-      raise StandardError.new "ActionController::RoutingError NOT RAISED!"
-    end
+    sign_in(@user)
+    delete admin_subdomain_request_url(id: @subdomain_request.slug)
+    assert flash.alert
+    assert_response :redirect
   end
 
   test 'allows #approve if global admin' do
@@ -151,15 +138,13 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'denies #approve if global admin' do
+  test 'denies #approve if not global admin' do
     @user.update(global_admin: false)
-    begin
-      sign_in(@user)
+    sign_in(@user)
+    assert_no_difference "Subdomain.all.size" do
       get approve_admin_subdomain_request_url(id: @subdomain_request.slug)
-      rescue ActionController::RoutingError => e
-        assert e.message
-    else
-      raise StandardError.new "ActionController::RoutingError NOT RAISED!"
+      assert flash.alert
+      assert_response :redirect
     end
   end
 
@@ -171,15 +156,11 @@ class Admin::SubdomainRequestsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'denies #disapprove if global admin' do
+  test 'denies #disapprove if not global admin' do
     @user.update(global_admin: false)
-    begin
-      sign_in(@user)
-      get disapprove_admin_subdomain_request_url(id: @subdomain_request.slug)
-      rescue ActionController::RoutingError => e
-        assert e.message
-    else
-      raise StandardError.new "ActionController::RoutingError NOT RAISED!"
-    end
+    sign_in(@user)
+    get disapprove_admin_subdomain_request_url(id: @subdomain_request.slug)
+    assert flash.alert
+    assert_response :redirect
   end
 end
