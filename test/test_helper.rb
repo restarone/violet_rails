@@ -3,6 +3,11 @@ require 'simplecov'
 SimpleCov.start 'rails' do
   # filtering out models because it doesnt track coverage on models for some reason (i suspect the apartment gem is to blame)
   add_filter "app/models/"
+  # these arent customized. so these dont need to be integration tested
+  add_filter "app/controllers/users/confirmations_controller.rb"
+  add_filter "app/controllers/users/omniauth_callbacks_controller.rb"
+  add_filter "app/controllers/users/passwords_controller.rb"
+  add_filter "app/controllers/users/unlocks_controller.rb"
 end
 require_relative "../config/environment"
 require "rails/test_help"
