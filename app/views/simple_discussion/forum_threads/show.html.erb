@@ -5,11 +5,12 @@
 
   <% if is_moderator_or_owner?(@forum_thread) %>
     <div class="col-md-1">
-      <%= link_to icon("fas","pencil"), simple_discussion.edit_forum_thread_path(@forum_thread),
+      <%= link_to "edit", simple_discussion.edit_forum_thread_path(@forum_thread),
         class: "text-muted",
         data: { toggle: "tooltip", placement: "left" },
         title: t('edit_this_thread') %>
     </div>
+    
   <% end %>
 
 </div>
