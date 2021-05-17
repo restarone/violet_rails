@@ -1,7 +1,7 @@
 class SimpleDiscussion::ForumThreadsController < SimpleDiscussion::ApplicationController
   before_action :authenticate_user!, only: [:mine, :participating, :new, :create]
-  before_action :set_forum_thread, only: [:show, :edit, :update]
-  before_action :require_mod_or_author_for_thread!, only: [:edit, :update]
+  before_action :set_forum_thread, only: [:show, :edit, :update, :destroy]
+  before_action :require_mod_or_author_for_thread!, only: [:edit, :update, :destroy]
 
   def index
     @forum_threads = ForumThread.pinned_first.sorted.includes(:user, :forum_category).paginate(page: page_number)
@@ -58,6 +58,15 @@ class SimpleDiscussion::ForumThreadsController < SimpleDiscussion::ApplicationCo
     else
       render action: :edit
     end
+  end
+
+  def destroy
+    if @forum_thread.destroy
+      flash.notice = "Thread destroyed!"
+    else
+      flash.notice = "Thread could not be destroyed please try again later!"
+    end
+    redirect_to simple_discussion.forum_threads_path
   end
 
   private
