@@ -1,0 +1,19 @@
+%h2
+  Create/Edit a new forum category
+.mt-5
+  - if @category
+    -  if @category.errors.any?
+      #error_explanation
+        %h2
+          = pluralize(@category.errors.count, "error")
+          prohibited this forum_category from being saved:
+        %ul
+          - @category.errors.full_messages.each do |message|
+            %li= message
+    = form_for @category, url: (@category.persisted? ? simple_discussion.update_forum_category_forum_threads_path(@category) : simple_discussion.create_forum_category_forum_threads_path) do |f|
+      .form-group
+        = f.text_field :name, placeholder: :name
+        = f.text_field :slug, placeholder: :defaults_to_name
+        = f.text_field :color
+      .form-group
+      = f.submit "Save", class: 'btn btn-primary'

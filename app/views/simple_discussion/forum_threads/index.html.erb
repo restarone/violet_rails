@@ -1,8 +1,19 @@
+<div>
+  <div>
+    <% if @category && current_user.moderator %>
+      <strong>Mod Controls</strong>
+      <%= render partial: 'simple_discussion/forum_categories/form' %>
+      <%= link_to "Delete", simple_discussion.destroy_forum_category_forum_threads_path(@category), method: :delete, class: 'btn btn-danger' %>
+    <% end %>
+  </div>
+</div>
 <% if @forum_threads.none? %>
 
     <div><%= t('search_not_found') %>. <%= t('check_out') %> <%= link_to t('latest_questions'), simple_discussion.forum_threads_path %> <%= t('instead') %> </div>
 
 <% else %>
+
+
 
     <%= render partial: "simple_discussion/forum_threads/forum_thread", collection: @forum_threads, spacer_template: "shared/spacer" %>
 

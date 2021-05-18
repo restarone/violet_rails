@@ -17,6 +17,12 @@ class SimpleDiscussion::ApplicationController < ::ApplicationController
   end
   helper_method :is_moderator?
 
+  def require_mod!
+    unless current_user.moderator
+      redirect_to_root
+    end
+  end
+
   def require_mod_or_author_for_post!
     unless is_moderator_or_owner?(@forum_post)
       redirect_to_root
