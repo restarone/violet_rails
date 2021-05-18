@@ -12,10 +12,10 @@ class Comfy::Admin::Cms::SnippetsControllerTest < ActionDispatch::IntegrationTes
     end
   end
 
-  test 'allows #index if not permissioned' do
+  test 'disallows #index if not permissioned' do
     sign_in(@user)
     get comfy_admin_cms_site_snippets_url(subdomain: @restarone_subdomain, site_id: @site.id)
-    assert_redirected_to new_comfy_admin_cms_site_snippet_url(subdomain: @restarone_subdomain, site_id: @site.id)
+    assert_response :redirect
   end
 
   test 'denies #new if not permissioned' do

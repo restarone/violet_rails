@@ -76,7 +76,7 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     assert_no_changes "@user.reload.can_manage_users" do      
       patch admin_user_url(subdomain: @domain, id: @user.id), params: payload
       assert flash.alert
-      assert_redirected_to admin_users_url(subdomain: @domain)
+      assert_response :redirect
     end
   end
 
@@ -104,7 +104,7 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference "User.all.size" do      
       post invite_admin_users_url(subdomain: @domain, params: payload)
       assert flash.alert
-      assert_redirected_to admin_users_url(subdomain: @domain)
+      assert_response :redirect
     end
   end
 
@@ -125,7 +125,7 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
       delete admin_user_url(subdomain: @domain, id: @user.id)
       refute flash.notice
       assert flash.alert
-      assert_redirected_to admin_users_url(subdomain: @domain)
+      assert_response :redirect
     end
   end
 end
