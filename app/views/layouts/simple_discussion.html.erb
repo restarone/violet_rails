@@ -58,7 +58,7 @@
             <%= t('.by_category') %>
           </strong>
         </h6>
-        <% if current_user.moderator %>
+        <% if current_user && current_user.moderator %>
           <div><%= forum_link_to simple_discussion.new_forum_category_forum_threads_path do %><%= icon "fa-fw fas", "plus" %> New<% end %></div>
         <% end %>
         <div><%= forum_link_to simple_discussion.forum_threads_path, exact: true do %><%= icon "fa-fw fas", "circle" %> All<% end %></div>

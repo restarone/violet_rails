@@ -1,6 +1,6 @@
 <div class="m-5">
   <div>
-    <% if @category && current_user.moderator %>
+    <% if @category && current_user && current_user.moderator %>
       <strong>Mod Controls</strong>
       <%= render partial: 'simple_discussion/forum_categories/form' %>
       <% if @forum_threads.none? %>
