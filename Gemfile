@@ -35,7 +35,6 @@ gem 'simple_discussion', git: 'https://github.com/restarone/simple_discussion', 
 gem 'wicked' # for multi-step forms
 gem 'friendly_id'
 gem 'devise_invitable'
-gem 'mocha'
 gem "aws-sdk-s3", require: false
 
 # Reduces boot times through caching; required in config/boot.rb
