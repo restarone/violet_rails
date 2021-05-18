@@ -1,7 +1,7 @@
 class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
   layout "comfy/admin/cms"
   before_action :load_user, only: [:edit, :update, :destroy]
-  before_action :ensure_authority_to_manage_users, only: [:new, :invite, :edit, :update, :destroy]
+  before_action :ensure_authority_to_manage_users, only: [:index, :new, :invite, :edit, :update, :destroy]
   
   def index
     @users = User.all
@@ -50,7 +50,7 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
   def ensure_authority_to_manage_users
     unless current_user.can_manage_users
       flash.alert = "You do not have the permission to do that. Only users who can-manage-users  are allowed to perform that action."
-      redirect_to admin_users_path
+      redirect_to comfy_admin_cms_path
     end
   end
 
