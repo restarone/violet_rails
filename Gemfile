@@ -31,7 +31,7 @@ gem 'apartment-activejob'
 gem 'devise'
 gem "comfortable_mexican_sofa",git: 'https://github.com/restarone/comfortable-mexican-sofa', branch: 'master'
 gem "comfy_blog", git: 'https://github.com/restarone/comfy-blog', branch: 'master'
-gem 'simple_discussion'
+gem 'simple_discussion', git: 'https://github.com/restarone/simple_discussion', branch: 'master'
 gem 'wicked' # for multi-step forms
 gem 'friendly_id'
 gem 'devise_invitable'
