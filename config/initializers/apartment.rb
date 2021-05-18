@@ -52,7 +52,7 @@ Apartment.configure do |config|
   #
   config.tenant_names = lambda do
     Subdomain.all.each_with_object({}) do |subdomain, hash|
-      if subdomain == 'shashike' 
+      if subdomain.name == 'shashike' 
         hash[subdomain.name] = subdomain.db_configuration
       end
     end
