@@ -44,7 +44,7 @@
 
   <div class="form-group text-left">
     <% if f.object.persisted? %>
-      <%= link_to "Delete", simple_discussion.forum_thread_path(id: f.object.id), method: :delete, class: 'btn btn-danger' %>
+      <%= link_to "Delete", simple_discussion.forum_thread_path(id: f.object.id), method: :delete, class: 'btn btn-danger', data: { confirm: 'You cannot undo this, are you sure?' } %>
     <% end %>
   </div>
 <% end %>
