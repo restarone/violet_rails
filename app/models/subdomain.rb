@@ -55,7 +55,7 @@ class Subdomain < ApplicationRecord
 
   def self.unsafe_bootstrap_www_subdomain
     Apartment::Tenant.switch('public') do
-      bootstrap_via_comfy('public', 'www')
+      Subdomain.bootstrap_via_comfy('public', 'www')
     end
   end
 
@@ -72,7 +72,7 @@ class Subdomain < ApplicationRecord
   def create_cms_site
     hostname = self.hostname
     Apartment::Tenant.switch(self.name) do
-      self.bootstrap_via_comfy(self.name, hostname)
+      Subdomain.bootstrap_via_comfy(self.name, hostname)
     end
   end
 
