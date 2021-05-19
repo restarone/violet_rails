@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  include SimpleDiscussion::ForumUser
   # Include default devise modules. Others available are:
   #  and :omniauthable
   devise :invitable, :database_authenticatable, :registerable,
@@ -15,6 +16,10 @@ class User < ApplicationRecord
     can_manage_users: true,
     can_manage_blog: true,
   }
+
+  def name
+    self.email
+  end
   
   def subdomain
     Apartment::Tenant.current

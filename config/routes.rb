@@ -38,6 +38,8 @@ Rails.application.routes.draw do
     comfy_route :cms_admin, path: "/admin"
     comfy_route :blog, path: "blog"
     comfy_route :blog_admin, path: "admin"
+    mount SimpleDiscussion::Engine => "/forum"
+    # cms comes last because its a catch all
     comfy_route :cms, path: "/"
   end
 
@@ -48,18 +50,18 @@ Rails.application.routes.draw do
     delete 'global_login', to: 'users/sessions#destroy'
   end
   # system admin panel authentication (ensure public schema as well)
-  authenticate :user, lambda { |u| u.global_admin? && Apartment::Tenant.current == 'public' } do
-    namespace :admin do
-      mount Sidekiq::Web => '/sidekiq'
-      resources :subdomain_requests, except: [:new, :create] do
-        member do
-          get 'approve'
-          get 'disapprove'
-        end
+  get 'admin', to: 'admin/subdomain_requests#index'
+  namespace :admin do
+    mount Sidekiq::Web => '/sidekiq'
+    resources :subdomain_requests, except: [:new, :create] do
+      member do
+        get 'approve'
+        get 'disapprove'
       end
-      resources :subdomains
     end
+    resources :subdomains
   end
+  
 
   root to: 'content#index'
   

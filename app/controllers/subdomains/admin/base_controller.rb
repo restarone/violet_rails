@@ -12,4 +12,4 @@ class Subdomains::Admin::BaseController < Subdomains::BaseController
       end
     end
   end
-end
+end 

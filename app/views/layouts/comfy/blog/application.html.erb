@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= Apartment::Tenant.current %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <% if @cms_site && @cms_layout %>
+      <%= stylesheet_link_tag comfy_cms_render_css_path(@cms_site.id, @cms_layout.identifier) %>
+      <%= javascript_include_tag comfy_cms_render_js_path(@cms_site.id, @cms_layout.identifier) %>
+    <% end %>
+  </head>
+  <%= render partial: 'shared/flash' %>
+  <%= render partial: 'shared/navbars/web_admin' %>
+
+  <body>
+    <%= cms_snippet_content('navbar').html_safe %>
+    <%= yield %>
+    <%= cms_snippet_content('footer').html_safe %>
+  </body>
+</html>
