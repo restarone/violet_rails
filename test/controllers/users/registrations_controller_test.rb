@@ -7,8 +7,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     @restarone_subdomain = Subdomain.find_by(name: 'restarone').name
   end
 
-  test "should not allow create (within subdomain scope)" do
-    subdomain = 'tester'
+  test "should allow create (within subdomain scope)" do
     email = 'test@tester.com'
     password = '123456'
     payload = {
@@ -19,26 +18,23 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
       }
     }
     Apartment::Tenant.switch(@public_subdomain) do
-      assert_no_difference "User.all.reload.size", +1 do
+      assert_difference "User.all.reload.size", +1 do
         post user_registration_url(subdomain: @public_subdomain), params: payload
         assert_response :redirect
-        assert_redirected_to signup_wizard_index_url(subdomain: '')
       end
     end
 
     Apartment::Tenant.switch(@restarone_subdomain) do
-      assert_no_difference "User.all.reload.size" do
+      assert_difference "User.all.reload.size", +1 do
         post user_registration_url(subdomain: @restarone_subdomain), params: payload
         assert_response :redirect
-        assert_redirected_to signup_wizard_index_url(subdomain: '')
       end
     end
   end
 
-  test "should not allow #new (within subdomain scope)" do
+  test "should allow #new (within subdomain scope)" do
     get new_user_registration_url(subdomain: @public_subdomain)
-    assert_response :redirect
-    assert_redirected_to signup_wizard_index_url(subdomain: '')
+    assert_response :success
   end
 
   test 'unconfirmed login results in redirect to subdomain landing page (within subdomain scope)' do

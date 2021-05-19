@@ -46,9 +46,9 @@ module RSolutions::ComfyAdminAuthorization
       :update,
       :destroy,
     ]
-    # because some users would be current_user.can_manage_blog instead of web
-    exception = 'posts'
-    if (controller_name != exception) && restricted_actions.include?(action_name.to_sym)
+    restricted_controllers = ['files', 'snippets']
+    
+    if (restricted_controllers.include?(controller_name)) || restricted_actions.include?(action_name.to_sym)
       ensure_webmaster
     end
   end
