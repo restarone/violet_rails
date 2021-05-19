@@ -30,17 +30,12 @@ Rails.application.routes.draw do
         end
       end
     end
-    resources :users, controller: 'comfy/admin/users', as: :admin_users, except: [:create, :show] do
-      collection do 
-        post 'invite'
-      end
+  end
+
+  resources :users, controller: 'comfy/admin/users', as: :admin_users, except: [:create, :show] do
+    collection do 
+      post 'invite'
     end
-    comfy_route :cms_admin, path: "/admin"
-    comfy_route :blog, path: "blog"
-    comfy_route :blog_admin, path: "admin"
-    mount SimpleDiscussion::Engine => "/forum"
-    # cms comes last because its a catch all
-    comfy_route :cms, path: "/"
   end
 
   # system admin panel login
@@ -62,7 +57,13 @@ Rails.application.routes.draw do
     resources :subdomains
   end
   
-
+  comfy_route :cms_admin, path: "/admin"
+  comfy_route :blog, path: "blog"
+  comfy_route :blog_admin, path: "admin"
+  mount SimpleDiscussion::Engine => "/forum"
+  # cms comes last because its a catch all
+  comfy_route :cms, path: "/"
+  
   root to: 'content#index'
   
 
