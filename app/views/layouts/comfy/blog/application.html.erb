@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>RSolutions</title>
+    <title><%= Apartment::Tenant.current %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -14,7 +14,11 @@
     <% end %>
   </head>
   <%= render partial: 'shared/flash' %>
-  <body class="container">
+  <%= render partial: 'shared/navbars/web_admin' %>
+
+  <body>
+    <%= cms_snippet_content('navbar').html_safe %>
     <%= yield %>
+    <%= cms_snippet_content('footer').html_safe %>
   </body>
 </html>
