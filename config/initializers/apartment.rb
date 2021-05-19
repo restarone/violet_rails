@@ -115,8 +115,12 @@ end
 # }
 
 # Rails.application.config.middleware.use Apartment::Elevators::Domain
-
-Rails.application.config.middleware.use Apartment::Elevators::Subdomain
+Rails.application.config.middleware.use Apartment::Elevators::Generic,
+                      Proc.new { |request|
+                        hostname = request.host.split('.')[0]
+                        Apartment.tenant_names.include?(hostname) ? hostname : 'public'
+                      }
+# Rails.application.config.middleware.use Apartment::Elevators::Subdomain
 
 # plug in exclusions model here
 Apartment::Elevators::Subdomain.excluded_subdomains = []
