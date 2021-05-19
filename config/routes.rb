@@ -45,7 +45,7 @@ Rails.application.routes.draw do
     delete 'global_login', to: 'users/sessions#destroy'
   end
   # system admin panel authentication (ensure public schema as well)
-  get 'admin', to: 'admin/subdomain_requests#index'
+  get 'sysadmin', to: 'admin/subdomain_requests#index'
   namespace :admin do
     mount Sidekiq::Web => '/sidekiq'
     resources :subdomain_requests, except: [:new, :create] do
