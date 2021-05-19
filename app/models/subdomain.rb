@@ -53,6 +53,12 @@ class Subdomain < ApplicationRecord
     end
   end
 
+  def self.unsafe_bootstrap_www_subdomain
+    Apartment::Tenant.switch('public') do
+      bootstrap_via_comfy('public', 'www')
+    end
+  end
+
   private
 
   def drop_tenant
@@ -66,34 +72,38 @@ class Subdomain < ApplicationRecord
   def create_cms_site
     hostname = self.hostname
     Apartment::Tenant.switch(self.name) do
-      site = Comfy::Cms::Site.create!(
-        identifier: self.name,
-        # this is only for local testing
-        hostname:   hostname,
-      )
-      layout = site.layouts.create(
-        label: 'default',
-        identifier: 'default',
-        content: "{{cms:wysiwyg content}}",
-        app_layout: 'website'
-      )
-      page = layout.pages.create(
-        site_id: site.id,
-        label: 'root',
-      )
-      Comfy::Cms::Fragment.create!(
-        identifier: 'content',
-        record: page,
-        tag: 'wysiwyg',
-        content: "
-          <div>
-            <h1>Hello from #{self.name}</h1>
-            To access the admin panel for your website, 
-            <a href='http://#{hostname}/admin' target='_blank'>click here</a>
-          </div>
-        "
-      )
+      self.bootstrap_via_comfy(self.name, hostname)
     end
+  end
+
+  def self.bootstrap_via_comfy(name, hostname)
+
+    site = Comfy::Cms::Site.create!(
+      identifier: name,
+      hostname:   hostname,
+    )
+    layout = site.layouts.create(
+      label: 'default',
+      identifier: 'default',
+      content: "{{cms:wysiwyg content}}",
+      app_layout: 'website'
+    )
+    page = layout.pages.create(
+      site_id: site.id,
+      label: 'root',
+    )
+    Comfy::Cms::Fragment.create!(
+      identifier: 'content',
+      record: page,
+      tag: 'wysiwyg',
+      content: "
+        <div>
+          <h1>Hello from #{name}</h1>
+          To access the admin panel for your website, 
+          <a href='http://#{hostname}/admin' target='_blank'>click here</a>
+        </div>
+      "
+    )
   end
 
   def create_tenant
