@@ -8,11 +8,26 @@ class Subdomain < ApplicationRecord
   after_create_commit :create_cms_site
   before_destroy :drop_tenant
 
+  has_one_attached :logo
+  has_one_attached :favicon
+
   # max 1GB by default storage allowance
   MAXIMUM_STORAGED_ALLOWANCE = 1073741824
+  # root domain name schema name
+  ROOT_DOMAIN_NAME = 'root'
 
   def self.current
-    Subdomain.find_by(name: Apartment::Tenant.current)
+    subdomain = Subdomain.find_by(name: Apartment::Tenant.current)
+    if subdomain
+      subdomain
+    else
+      domain = Subdomain.find_by(name: Subdomain::ROOT_DOMAIN_NAME) 
+      if domain
+        domain
+      else
+        Subdomain.unsafe_bootstrap_root_domain
+      end
+    end
   end
 
   def initialize_mailbox
@@ -53,10 +68,26 @@ class Subdomain < ApplicationRecord
     end
   end
 
+  def destroy
+    raise "Cannot destroy root domain" if self.name == Subdomain::ROOT_DOMAIN_NAME
+    super
+  end
+
   def self.unsafe_bootstrap_www_subdomain
     Apartment::Tenant.switch('public') do
       Subdomain.bootstrap_via_comfy('public', 'www')
-    end
+    end 
+  end
+
+  def self.unsafe_bootstrap_root_domain
+    Subdomain.create!(
+      name: Subdomain::ROOT_DOMAIN_NAME,
+      html_title: ENV['APP_HOST_HTML_TITLE'] ? ENV['APP_HOST_HTML_TITLE'] : ENV['APP_HOST'],
+      blog_title: ENV['APP_HOST_BLOG_TITLE'] ? ENV['APP_HOST_BLOG_TITLE'] : ENV['APP_HOST'],
+      blog_html_title: ENV['APP_HOST_BLOG_HTML_TITLE'] ? ENV['APP_HOST_BLOG_HTML_TITLE'] : ENV['APP_HOST'],
+      forum_title: ENV['APP_HOST_FORUM_TITLE'] ? ENV['APP_HOST_FORUM_TITLE'] : ENV['APP_HOST'],
+      forum_html_title: ENV['APP_HOST_FORUM_HTML_TITLE'] ? ENV['APP_HOST_FORUM_HTML_TITLE'] : ENV['APP_HOST'],
+    )
   end
 
   private

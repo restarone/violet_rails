@@ -4,6 +4,10 @@
   .form-group.my-5
     = form_with model: @user, url: admin_user_path, method: :patch do |f|
       .form-group
+        %label 
+          Name
+        = f.text_field :name
+      .form-group
         = f.check_box :can_manage_web
         %label 
           Can manage website

@@ -17,10 +17,6 @@ class User < ApplicationRecord
     can_manage_blog: true,
   }
 
-  def name
-    self.email
-  end
-  
   def subdomain
     Apartment::Tenant.current
   end

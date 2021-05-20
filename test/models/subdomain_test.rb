@@ -53,4 +53,21 @@ class SubdomainTest < ActiveSupport::TestCase
       assert_equal attachment.errors.full_messages.to_sentence, 'Subdomain out of storage'
     end
   end
+
+  test 'does not allow destroy of root subdomain' do
+    # if subdomain named 'root' is destroyed, the domain apex (also the www) will page will crash
+    name = 'root'
+    subdomain = Subdomain.new(
+      name: name
+    )
+    assert subdomain.save
+    begin
+      subdomain.destroy
+    rescue RuntimeError => e
+      assert e
+    else
+      raise "error not raised when root domain was destroyed. This is a regression"
+    end
+    assert Subdomain.find_by(name: 'restarone').destroy
+  end
 end

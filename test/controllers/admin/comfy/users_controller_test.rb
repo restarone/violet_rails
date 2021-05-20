@@ -52,12 +52,13 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "#update" do
     sign_in(@user)
+    @user.update(can_manage_users: true)
     payload = {
       user: {
-        can_manage_users: 0
+        name: 'foobar'
       }
     }
-    assert_changes "@user.reload.can_manage_users" do      
+    assert_changes "@user.reload.name" do      
       patch admin_user_url(subdomain: @domain, id: @user.id), params: payload
       assert flash.notice
       refute flash.alert

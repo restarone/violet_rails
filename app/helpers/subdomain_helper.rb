@@ -22,4 +22,24 @@ module SubdomainHelper
       Comfy::Cms::Site.first.pages.size
     end
   end
+
+  def html_title(subdomain)
+    subdomain.html_title ? subdomain.html_title : subdomain.name
+  end
+
+  def blog_title(subdomain)
+    subdomain.blog_title ? subdomain.blog_title : subdomain.name
+  end
+
+  def blog_html_title(subdomain)
+    subdomain.blog_html_title ? subdomain.blog_html_title : subdomain.name
+  end
+
+  def forum_title(subdomain)
+    subdomain.forum_title ? subdomain.forum_title : subdomain.name
+  end
+
+  def forum_html_title(subdomain)
+    subdomain.forum_html_title ? subdomain.forum_html_title : subdomain.name
+  end
 end

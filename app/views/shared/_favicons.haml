@@ -1,0 +1,10 @@
+- if Subdomain.current.favicon.attached?
+  - path = rails_blob_path(Subdomain.current.favicon)
+  = favicon_link_tag path
+  = favicon_link_tag path, rel: 'apple-touch-icon', type:'image/png'
+
+  - %w(32 192 32 512).each do |size|
+    = favicon_link_tag path, rel: 'apple-touch-icon', type: 'image/png', sizes: "#{size}x#{size}"
+
+  - %w(32 192 32 512).each do |size|
+    = favicon_link_tag path, rel: 'icon', type: 'image/png', sizes: "#{size}x#{size}"

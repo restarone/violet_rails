@@ -1,7 +1,7 @@
 .container
   .row
     .col-md-8
-      %h1 Blog Posts
+      %h1= blog_title(Subdomain.current)
 
       - @blog_posts.each do |post|
 

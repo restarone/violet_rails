@@ -2,8 +2,8 @@ require 'sidekiq/web'
 class SubdomainConstraint
   def self.matches?(request)
     # plug in exclusions model here
-    subdomains = []
-    !subdomains.include?(request.subdomain)
+    restricted_subdomains = ['root']
+    !restricted_subdomains.include?(request.subdomain)
   end
 end
 
@@ -31,6 +31,8 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  resource :web_settings, controller: 'comfy/admin/web_settings', only: [:edit, :update]
 
   resources :users, controller: 'comfy/admin/users', as: :admin_users, except: [:create, :show] do
     collection do 

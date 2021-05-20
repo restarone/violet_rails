@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_16_184325) do
+ActiveRecord::Schema.define(version: 2021_05_20_012301) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -287,6 +287,11 @@ ActiveRecord::Schema.define(version: 2021_05_16_184325) do
     t.datetime "deleted_at"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "html_title"
+    t.string "blog_title"
+    t.string "blog_html_title"
+    t.string "forum_title"
+    t.string "forum_html_title"
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
     t.index ["name"], name: "index_subdomains_on_name"
   end
