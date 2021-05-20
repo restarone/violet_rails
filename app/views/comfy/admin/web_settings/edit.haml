@@ -1,0 +1,33 @@
+.page-header  
+  .h2
+    = I18n.t('views.comfy.web_settings.index.header.title')
+= form_for Subdomain.current, url: web_settings_path, method: :patch do |f|
+  .form-group
+    %label
+      HTML title:
+    = f.text_field :html_title
+  .form-group
+    %label
+      Blog title: 
+    = f.text_field :blog_title
+  .form-group
+    %label
+      Blog HTML title: 
+    = f.text_field :blog_html_title
+  .form-group
+    %label
+      Forum title: 
+    = f.text_field :forum_title
+  .form-group
+    %label
+      Forum HTML title: 
+    = f.text_field :forum_html_title
+  .form-group
+    %label
+      Company logo: 
+    = f.file_field :logo, required: false
+  .form-group
+    %label
+      Favicon: 
+    = f.file_field :favicon, required: false
+  = f.submit

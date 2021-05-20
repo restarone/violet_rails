@@ -8,6 +8,9 @@ class Subdomain < ApplicationRecord
   after_create_commit :create_cms_site
   before_destroy :drop_tenant
 
+  has_one_attached :logo
+  has_one_attached :favicon
+
   # max 1GB by default storage allowance
   MAXIMUM_STORAGED_ALLOWANCE = 1073741824
 

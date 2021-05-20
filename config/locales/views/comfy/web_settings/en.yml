@@ -1,0 +1,7 @@
+en:
+  views:
+    comfy:
+      web_settings:
+        index:
+          header:
+            title: Manage your website

@@ -32,6 +32,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resource :web_settings, controller: 'comfy/admin/web_settings', only: [:edit, :update]
+
   resources :users, controller: 'comfy/admin/users', as: :admin_users, except: [:create, :show] do
     collection do 
       post 'invite'
