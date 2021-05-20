@@ -1,8 +1,9 @@
 require 'sidekiq/web'
 class SubdomainConstraint
   def self.matches?(request)
-    subdomains = ['www', 'admin', 'help', 'info', 'contact']
-    request.subdomain.present? && !subdomains.include?(request.subdomain)
+    # plug in exclusions model here
+    subdomains = []
+    !subdomains.include?(request.subdomain)
   end
 end
 
@@ -29,17 +30,12 @@ Rails.application.routes.draw do
         end
       end
     end
-    resources :users, controller: 'comfy/admin/users', as: :admin_users, except: [:create, :show] do
-      collection do 
-        post 'invite'
-      end
+  end
+
+  resources :users, controller: 'comfy/admin/users', as: :admin_users, except: [:create, :show] do
+    collection do 
+      post 'invite'
     end
-    comfy_route :cms_admin, path: "/admin"
-    comfy_route :blog, path: "blog"
-    comfy_route :blog_admin, path: "admin"
-    mount SimpleDiscussion::Engine => "/forum"
-    # cms comes last because its a catch all
-    comfy_route :cms, path: "/"
   end
 
   # system admin panel login
@@ -49,7 +45,7 @@ Rails.application.routes.draw do
     delete 'global_login', to: 'users/sessions#destroy'
   end
   # system admin panel authentication (ensure public schema as well)
-  get 'admin', to: 'admin/subdomain_requests#index'
+  get 'sysadmin', to: 'admin/subdomain_requests#index'
   namespace :admin do
     mount Sidekiq::Web => '/sidekiq'
     resources :subdomain_requests, except: [:new, :create] do
@@ -61,7 +57,13 @@ Rails.application.routes.draw do
     resources :subdomains
   end
   
-
+  comfy_route :cms_admin, path: "/admin"
+  comfy_route :blog, path: "blog"
+  comfy_route :blog_admin, path: "admin"
+  mount SimpleDiscussion::Engine => "/forum"
+  # cms comes last because its a catch all
+  comfy_route :cms, path: "/"
+  
   root to: 'content#index'
   
 

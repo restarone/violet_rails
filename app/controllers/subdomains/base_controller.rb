@@ -4,11 +4,9 @@ class Subdomains::BaseController < ApplicationController
   layout "subdomains"
 
   def ensure_user_belongs_to_subdomain
-    Apartment::Tenant.switch request.subdomain do
-      unless User.find_by(id: current_user.id)
-        flash.alert = 'You arent not authorized to visit that page'
-        redirect_to root_url
-      end
+    unless User.find_by(id: current_user.id)
+      flash.alert = 'You arent not authorized to visit that page'
+      redirect_to root_url
     end
   end
 end

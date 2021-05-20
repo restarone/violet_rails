@@ -12,7 +12,7 @@ class Admin::BaseController < ApplicationController
   end
 
   def ensure_superuser
-    unless current_user.global_admin
+    unless current_user.global_admin && Apartment::Tenant.current  == 'public'
       flash.alert = 'you do not have permissions to access this'
       redirect_to root_path
     end
