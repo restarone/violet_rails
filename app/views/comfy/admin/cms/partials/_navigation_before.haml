@@ -1,5 +1,6 @@
 
 - if Subdomain.current.logo.attached?
-  = image_tag(Subdomain.current.logo, class: 'd-none d-lg-block img-fluid p-4')
+  = link_to root_path(subdomain: Apartment::Tenant.current), class: 'nav-link', target: '_blank' do
+    = image_tag(Subdomain.current.logo, class: 'd-none d-lg-block img-fluid p-4')
 - else 
   = link_to "Add your logo here", edit_web_settings_path
