@@ -40,6 +40,6 @@ module SubdomainHelper
   end
 
   def forum_html_title(subdomain)
-    subdomain.blog_html_title ? subdomain.blog_html_title : subdomain.name
+    subdomain.forum_html_title ? subdomain.forum_html_title : subdomain.name
   end
 end
