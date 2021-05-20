@@ -15,4 +15,11 @@ class ContentControllerTest < ActionDispatch::IntegrationTest
     get root_url(subdomain: @restarone_user.subdomain)
     assert_response :success
   end
+
+  test "should get index (www redirect)" do
+    get root_url(subdomain: 'www')
+    assert_response :success
+    get root_url(subdomain: @user.subdomain)
+    assert_response :success
+  end
 end
