@@ -9,7 +9,7 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
     if Subdomain.current.update(subdomain_params)
       flash.notice = 'Settings updated'
     else
-      flash.alert = 'Settings could not be updated'
+      flash.alert = 'Settings could not be updated please try again'
     end
     redirect_to edit_web_settings_path
   end

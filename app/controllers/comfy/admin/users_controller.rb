@@ -68,7 +68,8 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
       :can_manage_blog, 
       :can_manage_email, 
       :can_manage_users,
-      :moderator
+      :moderator,
+      :name
     )
   end
 
