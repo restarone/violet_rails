@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= html_title(Subdomain.current) %></title>
+    <title><%= forum_html_title(Subdomain.current) %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -12,12 +12,9 @@
       <%= stylesheet_link_tag comfy_cms_render_css_path(@cms_site.id, @cms_layout.identifier) %>
       <%= javascript_include_tag comfy_cms_render_js_path(@cms_site.id, @cms_layout.identifier) %>
     <% end %>
-    <%= render partial: 'shared/favicons' %>
   </head>
   <%= render partial: 'shared/flash' %>
-  <%= render partial: 'shared/navbars/web_admin' %>
-
-  <body>
+  <body class="container">
     <%= yield %>
   </body>
 </html>

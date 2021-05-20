@@ -17,7 +17,7 @@ class Subdomain < ApplicationRecord
   def self.current
     Subdomain.find_by(name: Apartment::Tenant.current)
   end
-
+  
   def initialize_mailbox
     Apartment::Tenant.switch self.name do
       mailbox = Mailbox.first_or_create
