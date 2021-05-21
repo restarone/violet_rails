@@ -27,7 +27,7 @@ jobs:
       redis:
         image: redis:4.0-alpine
         ports:
-          - 6380:6379
+          - 6379:6379
     steps:
     - name: Configure sysctl limits
       run: |
