@@ -71,10 +71,8 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "should initialize tenant schema and public site (along with default layout, page and fragment) and send email confirmation (within subdomain scope)" do
-    skip
-    subdomain = 'tester'
-    email = 'test@tester.com'
+  test "should allow sign up at subdomain scope" do
+    email = 'test1@tester.com'
     password = '123456'
     payload = {
       user: {
@@ -83,19 +81,18 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
         password_confirmation: password
       }
     }
-    Subdomain.create! name: subdomain
     assert_changes "Devise.mailer.deliveries.size" do          
-      post user_registration_url(subdomain: subdomain), params: payload
-      assert_response :redirect
-      assert_redirected_to root_url(subdomain: subdomain)
-      Apartment::Tenant.switch(subdomain) do
-        public_site = Comfy::Cms::Site.find_by(hostname: Subdomain.find_by(name: subdomain).hostname)
-        assert public_site
-        default_layout = public_site.layouts.first
-        assert default_layout
-        default_page = default_layout.pages.first
-        assert default_page
-        assert default_page.fragments.any?
+      assert_changes "User.all.size", +1 do
+        post user_registration_url(subdomain: @public_subdomain), params: payload
+        assert_response :redirect
+        assert_redirected_to root_url(subdomain: @public_subdomain)
+        latest_user = User.last
+        assert latest_user.email == email
+        refute latest_user.global_admin
+        refute latest_user.can_manage_web
+        refute latest_user.can_manage_email
+        refute latest_user.can_manage_users
+        refute latest_user.can_manage_blog
       end
     end
   end
