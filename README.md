@@ -32,7 +32,7 @@ Powered by ComfyBlog:
 * Ready to Deploy: Violet comes with a barebones App Owner UI that helps you hit the ground running by managing subdomain requests. Each subdomain has its own roster of Users and an automatically allocated email-box (eg: design@your-website.com), blog (eg: www.your-website.com/blog) and landing page (www.yourwebsite.com). Granular permissioning for users can be managed at the subdomain level.
 
 ## Authorization layers
-After Violet application deployment, you will be able to connect and setup your cannonical page and user account (from the Rails console)
+After deploying violet, you will be able to connect and setup your cannonical page and user account from the Rails console
 ### 1. App Owners (Violet Sys Admin)
 * If you are a domain owner (eg: https://yourdomain.com) you can find the Violet SysAdmin at https://www.yourdomain.com/sysadmin or https://yourdomain.com/sysadmin
 * Any subdomain name on your domain can be reserved for web hosting, blog and email functionality. For example, registering https://hello.yourdomain.com will automatically generate a website for https://hello.yourdomain.com , an email address at hello@yourdomain.com, a blog at https://hello.yourdomain.com/blog and a forum at https://hello.yourdomain.com/forum
