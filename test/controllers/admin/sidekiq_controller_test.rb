@@ -14,7 +14,7 @@ class Admin::SidekiqControllerTest < ActionDispatch::IntegrationTest
   test 'allows access if global admin from public schema' do
     assert @user.global_admin
     sign_in(@user)
-    get '/admin/sidekiq'
+    get admin_sidekiq_web_url
     assert_response :success
   end
 
@@ -22,7 +22,7 @@ class Admin::SidekiqControllerTest < ActionDispatch::IntegrationTest
     refute @restarone_user.global_admin
     sign_in(@restarone_user)
     begin
-      get '/admin/sidekiq'
+      get admin_sidekiq_web_url
     rescue ActionController::RoutingError => exception
       assert exception
     else
