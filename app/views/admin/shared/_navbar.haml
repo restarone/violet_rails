@@ -8,6 +8,8 @@
         = active_link_to "Subdomain Requests", admin_subdomain_requests_url, class: 'nav-link'
       %li.nav-item
       = active_link_to "Subdomains", admin_subdomains_url, class: 'nav-link'
+      %li.nav-item
+      = active_link_to "Sidekiq", admin_sidekiq_web_url, class: 'nav-link'
       %li.nav-item.dropdown
         %a#navbarDropdown.nav-link.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
           = current_user.email

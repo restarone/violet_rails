@@ -49,7 +49,9 @@ Rails.application.routes.draw do
   # system admin panel authentication (ensure public schema as well)
   get 'sysadmin', to: 'admin/subdomain_requests#index'
   namespace :admin do
-    mount Sidekiq::Web => '/sidekiq'
+    authenticate :user, lambda { |u| u.global_admin? } do
+      mount Sidekiq::Web => '/sidekiq'
+    end
     resources :subdomain_requests, except: [:new, :create] do
       member do
         get 'approve'
