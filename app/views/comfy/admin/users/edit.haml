@@ -12,6 +12,10 @@
         %label 
           Can manage website
       .form-group
+        = f.check_box :can_view_restricted_pages
+        %label 
+          Can view restricted web pages
+      .form-group
         = f.check_box :can_manage_blog
         %label 
           Can manage blog

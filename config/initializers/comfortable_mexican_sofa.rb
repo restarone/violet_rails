@@ -9,6 +9,24 @@ module RSolutions::DeviseAuth
   end
 end
 
+module ComfyPublicAuthentication
+  def authenticate
+    protected_paths = Comfy::Cms::Page.where(is_restricted: true).pluck(:full_path)
+    return unless protected_paths.member?(@cms_page.full_path)
+    if current_user
+      if current_user.can_view_restricted_pages
+        return true
+      else
+        flash.alert = "You do not have the permission to do that. Only users who can_view_restricted_pages are allowed to perform that action."
+        redirect_to comfy_admin_cms_path
+      end
+    else
+      flash.alert = "Please login first to view that page"
+      redirect_to new_user_session_path
+    end
+  end
+end
+
 module RSolutions::ComfyAdminAuthorization
 
   def perform_default_lockout
@@ -87,7 +105,7 @@ ComfortableMexicanSofa.configure do |config|
   # Module responsible for public authentication. Similar to the above. You also
   # will have access to @cms_site, @cms_layout, @cms_page so you can use them in
   # your logic. Default module doesn't do anything.
-  #   config.public_auth = 'ComfyPublicAuthentication'
+    config.public_auth = 'ComfyPublicAuthentication'
 
   # Module responsible for public authorization. It should have #authorize
   # method that returns true or false based on params and loaded instance
