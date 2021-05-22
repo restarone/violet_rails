@@ -1,0 +1,17 @@
+<%= display_meta_tags site: forum_html_title(Subdomain.current),
+                      page_title: html_title(Subdomain.current),
+                      page_description: site_description(Subdomain.current),
+                      page_keywords: site_keywords(Subdomain.current),
+                      og: {
+                        image: logo_url(Subdomain.current),
+                        title: @page_title,
+                        description: @page_description
+                      },
+                      twitter: {
+                        image: {
+                          _: logo_url(Subdomain.current),
+                          width: 1200,
+                          height: 628,
+                        },
+                        card: 'summary_large_image',
+                      } %>
