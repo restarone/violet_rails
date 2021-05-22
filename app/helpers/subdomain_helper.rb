@@ -42,4 +42,14 @@ module SubdomainHelper
   def forum_html_title(subdomain)
     subdomain.forum_html_title ? subdomain.forum_html_title : subdomain.name
   end
+
+  def render_logo(subdomain)
+    return if !subdomain.logo.attached?
+    image_tag subdomain.logo, class: 'rounded avatar', size: '40x40'
+  end
+
+  def render_favicon(subdomain)
+    return if !subdomain.favicon.attached?
+    image_tag subdomain.favicon, class: 'rounded avatar', size: '40x40'
+  end
 end

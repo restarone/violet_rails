@@ -23,10 +23,12 @@
       Forum HTML title: 
     = f.text_field :forum_html_title
   .form-group
+    = render_logo(Subdomain.current)
     %label
       Company logo: 
     = f.file_field :logo, required: false
   .form-group
+    = render_logo(Subdomain.current)
     %label
       Favicon: 
     = f.file_field :favicon, required: false
