@@ -96,4 +96,43 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
       end
     end
   end
+
+  test 'get #edit' do
+    sign_in(@user)
+    get edit_user_registration_url
+    assert_response :success
+  end
+
+  test 'should allow #update if user provides current password' do
+    payload = {
+      user: {
+        name: 'foo',
+        current_password: '123456'
+      }
+    }
+    assert_changes "@user.reload.name" do
+      sign_in(@user)
+      patch user_registration_url, params: payload
+    end
+  end
+
+  test 'should deny #update if user does not provide current password' do
+    payload = {
+      user: {
+        name: 'foo',
+      }
+    }
+    assert_no_changes "@user.reload.name" do
+      sign_in(@user)
+      patch user_registration_url, params: payload
+    end
+  end
+
+  test 'deny #destroy' do
+    assert_no_difference "User.all.size" do
+      sign_in(@user)
+      delete user_registration_url
+      assert_response :redirect
+    end
+  end
 end

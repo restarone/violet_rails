@@ -1,7 +1,11 @@
 module SimpleDiscussion::ForumPostsHelper
   # Override this to use avatars from other places than Gravatar
-  def avatar_tag(email)
-    image_tag gravatar_url_for(email, size: 40), class: "rounded avatar"
+  def avatar_tag(user)
+    if user.avatar.attached?
+      render_custom_avatar(user)
+    else
+      image_tag gravatar_url_for(user.email, size: 40), class: "rounded avatar"
+    end
   end
 
   def category_link(category)

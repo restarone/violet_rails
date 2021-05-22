@@ -21,7 +21,7 @@
     <% end %>
 
     <div>
-      <%= avatar_tag(forum_post.user.email) %>
+      <%= avatar_tag(forum_post.user) %>
 
       <strong class="forum-post-user">
         <%= forum_post.user.name %> <%= forum_user_badge(forum_post.user) %>
