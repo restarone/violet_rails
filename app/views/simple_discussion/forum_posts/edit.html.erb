@@ -13,7 +13,7 @@
 <%= content_tag :div, id: dom_id(@forum_post), class: forum_post_classes(@forum_post) do %>
   <div class="card-header">
     <div>
-      <%= avatar_tag(@forum_post.user.email) %>
+      <%= avatar_tag(@forum_post.user) %>
       <strong class="forum-post-user"><%= @forum_post.user.name %></strong>
       <small>
         <%= t('commented_on')%>
