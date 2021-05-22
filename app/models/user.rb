@@ -17,6 +17,8 @@ class User < ApplicationRecord
     can_manage_blog: true,
   }
 
+  has_one_attached :avatar
+
   def subdomain
     Apartment::Tenant.current
   end
