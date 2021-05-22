@@ -229,6 +229,8 @@ GEM
     mailgun-ruby (1.2.4)
       rest-client (>= 2.0.2)
     marcel (1.0.1)
+    meta-tags (2.14.0)
+      actionpack (>= 3.2.0, < 6.2)
     method_source (1.0.0)
     mime-types (3.3.1)
       mime-types-data (~> 3.2015)
@@ -432,6 +434,7 @@ DEPENDENCIES
   jbuilder (~> 2.7)
   listen (~> 3.3)
   mailgun-ruby
+  meta-tags
   mocha
   pg (~> 1.1)
   puma (~> 5.0)
