@@ -4,4 +4,5 @@
   = active_link_to "Web Settings", edit_web_settings_path, class: 'nav-link'
   = link_to "Blog", '/blog', class: 'nav-link', target: '_blank'
   = link_to "Forum", '/forum', class: 'nav-link', target: '_blank'
+  = active_link_to "My Settings", edit_user_registration_path, class: 'nav-link'
   = link_to "Logout", destroy_user_session_path, class: 'nav-link text-danger', method: :delete
