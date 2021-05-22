@@ -48,8 +48,21 @@ module SubdomainHelper
     image_tag subdomain.logo, class: 'rounded avatar', size: '40x40'
   end
 
+  def logo_url(subdomain)
+    return if !subdomain.logo.attached?
+    rails_blob_path(subdomain.logo)
+  end
+
   def render_favicon(subdomain)
     return if !subdomain.favicon.attached?
     image_tag subdomain.favicon, class: 'rounded avatar', size: '40x40'
+  end
+
+  def site_description(subdomain)
+    subdomain.description ? subdomain.description : subdomain.name
+  end
+
+  def site_keywords(subdomain)
+    subdomain.keywords ? subdomain.keywords : subdomain.name
   end
 end
