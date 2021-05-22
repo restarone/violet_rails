@@ -13,7 +13,7 @@
       <%= javascript_include_tag comfy_cms_render_js_path(@cms_site.id, @cms_layout.identifier) %>
     <% end %>
     <%= render partial: 'shared/favicons' %>
-    <%= display_meta_tags site: forum_html_title(Subdomain.current) %>
+    <%= render partial: 'shared/meta_tags' %>
   </head>
   <%= render partial: 'shared/flash' %>
   <body class="container">
