@@ -23,6 +23,7 @@
       Forum HTML title: 
     = f.text_field :forum_html_title
   .form-group
+<<<<<<< Updated upstream
     .input-group
       .input-group-prepend
         %span.input-group-text SEO description
@@ -32,6 +33,15 @@
       .input-group-prepend
         %span.input-group-text SEO keywords (comma separated):
       = f.text_area :keywords
+=======
+    %label
+      SEO description: 
+    = f.text_area :description
+  .form-group
+    %label
+      SEO keywords (comma separated): 
+    = f.text_area :keywords
+>>>>>>> Stashed changes
   .form-group
     = render_logo(Subdomain.current)
     %label
