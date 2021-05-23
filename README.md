@@ -25,6 +25,10 @@ After configuring the cannonical domain with MX records and a catch all, each of
 Powered by ComfyBlog:
 ![Screenshot from 2021-05-21 17-31-21](https://user-images.githubusercontent.com/35935196/119200274-997f1e80-ba5a-11eb-917c-c8cf64a28a10.png)
 
+### Two-tier admin system
+Domain admins have control over which subdomains can be created (via approval) and destroyed. Subdomain admins have full control over their subdomain only.
+![Screenshot from 2021-05-23 14-04-06](https://user-images.githubusercontent.com/35935196/119271643-65c60500-bbd0-11eb-8f1e-28367c4d62ff.png)
+
 ## An opinionated template (built on top of an opinionated framework)
 
 * database multi-tenancy: Serious SaaS and XaaS apps need to support database multi-tenancy. So if you ship Violet with Postgres you will have schema based multi-tenancy with the option of routing each client at run-time to an external Postgres server. All of this is implemented in a simple way, just by subdomain (eg: design.your-website.com).
