@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="<%= I18n.locale %>">
   <head>
     <title><%= blog_html_title(Subdomain.current) %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -13,6 +13,7 @@
       <%= javascript_include_tag comfy_cms_render_js_path(@cms_site.id, @cms_layout.identifier) %>
     <% end %>
     <%= render partial: 'shared/favicons' %>
+    <%= render partial: 'shared/meta_tags' %>
   </head>
   <%= render partial: 'shared/flash' %>
   <%= render partial: 'shared/navbars/web_admin' %>

@@ -24,7 +24,9 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
       :forum_title,
       :forum_html_title,
       :logo,
-      :favicon
+      :favicon,
+      :description,
+      :keywords 
     )
   end
 

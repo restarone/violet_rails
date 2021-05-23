@@ -45,3 +45,7 @@ set :keep_releases, 5
 # set :ssh_options, verify_host_key: :secure
 after 'deploy:publishing', 'deploy:restart'
 after 'deploy:finishing', 'deploy:restart_sidekiq'
+
+# non essential tasks
+after 'deploy:finishing', 'sitemap:clean'
+after 'deploy:finishing', 'sitemap:refresh'

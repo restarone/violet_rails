@@ -23,6 +23,16 @@
       Forum HTML title: 
     = f.text_field :forum_html_title
   .form-group
+    .input-group
+      .input-group-prepend
+        %span.input-group-text SEO description
+      = f.text_area :description
+  .form-group
+    .input-group
+      .input-group-prepend
+        %span.input-group-text SEO keywords (comma separated):
+      = f.text_area :keywords
+  .form-group
     = render_logo(Subdomain.current)
     %label
       Company logo: 
