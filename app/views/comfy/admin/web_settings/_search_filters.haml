@@ -1,0 +1,22 @@
+= search_form_for @visits_q, url: edit_web_settings_path do |f|
+  .form-group
+    = f.label "browser, user agent, operating system or device type", class: 'col-form-label'
+    = f.search_field :browser_or_user_agent_or_os_or_device_type_cont, value: params[:q][:browser_or_user_agent_or_os_or_device_type_cont], class: 'form-control'
+    = f.label "referring domain", class: 'col-form-label'
+    = f.search_field :referrer_or_referring_domain_cont, value: params[:q][:referrer_or_referring_domain_cont], class: 'form-control'
+    = f.label "country, region or city", class: 'col-form-label'
+    = f.search_field :country_or_region_or_city_cont, value: params[:q][:country_or_region_or_city_cont], class: 'form-control'
+    = f.label "IP addresses (include)", class: 'col-form-label'
+    = f.search_field :ip_in, value: params[:q][:ip_in], class: 'form-control'
+    = f.label "IP addresses (exclude)", class: 'col-form-label'
+    = f.search_field :ip_does_not_match_all, value: params[:q][:ip_does_not_match_all], class: 'form-control'
+    .form-row.p-5
+      .col
+        = f.label "start date", class: 'col-form-label'
+        = f.search_field :started_at_gteq, class: 'form-control', type: 'date', value: params[:q][:started_at_gteq]
+      .col
+        = f.label "end date", class: 'col-form-label'
+        = f.search_field :started_at_lteq, class: 'form-control', type: 'date', value: params[:q][:started_at_lteq]
+    .text-center
+      = f.submit class: 'btn btn-primary my-2'
+      = link_to "Clear Search", request.path, class:"cancel-button"

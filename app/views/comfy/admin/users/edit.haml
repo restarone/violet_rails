@@ -74,28 +74,29 @@
     %h3 
       Sessions
     .card
-      %table.table.table-bordered
-        %thead
-          %tr
-            %th Timestamp
-            %th IP
-            %th OS
-            %th Browser
-            %th Device Type
-            %th Country
-            %th Region
-            %th City
-            %th User Agent
-          - @user.previous_ahoy_visits.each do |v|
+      .table-responsive
+        %table.table.table-bordered
+          %thead
             %tr
-              %th= v.started_at.strftime('%I:%M %P - %b %d, %Y')
-              %th= v.ip
-              %th= v.os
-              %th= v.browser
-              %th= v.device_type
-              %th= v.country
-              %th= v.region
-              %th= v.city
-              %th.text-wrap.text-break= v.user_agent  
-        
+              %th Timestamp
+              %th IP
+              %th OS
+              %th Browser
+              %th Device Type
+              %th Country
+              %th Region
+              %th City
+              %th User Agent
+            - @user.previous_ahoy_visits.each do |v|
+              %tr
+                %th= v.started_at.strftime('%I:%M %P - %b %d, %Y')
+                %th= v.ip
+                %th= v.os
+                %th= v.browser
+                %th= v.device_type
+                %th= v.country
+                %th= v.region
+                %th= v.city
+                %th.text-wrap.text-break= v.user_agent  
+          
 
