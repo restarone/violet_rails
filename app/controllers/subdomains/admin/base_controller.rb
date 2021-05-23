@@ -1,4 +1,5 @@
 class Subdomains::Admin::BaseController < Subdomains::BaseController
+  skip_before_action :track_ahoy_visit
   before_action :authenticate_user!, :ensure_user_belongs_to_subdomain
   layout "subdomains"
 

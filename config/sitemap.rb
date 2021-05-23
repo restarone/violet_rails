@@ -1,5 +1,11 @@
+
+
+
+
+
 Subdomain.all.each do |subdomain|
   subdomain_name = subdomain.name == Subdomain::ROOT_DOMAIN_NAME ? 'www' : subdomain.name
+  sitemap_path = "/sitemaps/#{subdomain_name}/sitemap.xml.gz"
   SitemapGenerator::Sitemap.default_host = "https://#{subdomain_name}.#{ENV['APP_HOST']}"
   SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/#{subdomain_name}"
   SitemapGenerator::Sitemap.create do
@@ -13,6 +19,7 @@ Subdomain.all.each do |subdomain|
       (web_paths + blog_paths + forum_thread_paths).each do |path|
         add path
       end
+      SitemapGenerator::Sitemap.ping_search_engines("https://#{subdomain_name}.#{ENV['APP_HOST']}#{sitemap_path}")
     end
   end
 end

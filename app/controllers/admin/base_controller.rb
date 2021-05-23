@@ -1,4 +1,5 @@
 class Admin::BaseController < ApplicationController
+  skip_before_action :track_ahoy_visit
   before_action :ensure_user_logged_in, :ensure_superuser
   layout 'admin'
   

@@ -7,6 +7,21 @@ class ContentControllerTest < ActionDispatch::IntegrationTest
     Apartment::Tenant.switch @restarone_subdomain do
       @restarone_user = User.find_by(email: 'contact@restarone.com')
     end
+    Ahoy::Visit.destroy_all
+  end
+
+  test "should get index with ahoy signed cookies" do
+    refute Ahoy::Visit.first
+    get root_url
+    assert_response :success
+    cookie_keys = ["ahoy_visitor", "ahoy_visit"]
+    signed_cookies = cookies.to_hash
+    assert_equal signed_cookies.keys.sort, cookie_keys.sort
+    cookie_keys.each do |k|
+      assert signed_cookies[k]
+    end
+    visit = Ahoy::Visit.first
+    assert visit
   end
 
   test "should get index" do
