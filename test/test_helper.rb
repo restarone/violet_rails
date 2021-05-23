@@ -45,6 +45,7 @@ class ActiveSupport::TestCase
   class ActionDispatch::IntegrationTest
     include Devise::Test::IntegrationHelpers
     include ActiveJob::TestHelper
+    Ahoy.track_bots = true
   end
   
 
