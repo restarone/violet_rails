@@ -11,4 +11,5 @@
       %li= "#{pluralize(emails_count(@subdomain), 'Email')}"
       %li= "#{pluralize(web_pages_count(@subdomain), 'Web Page')}"
       %li= "#{pluralize(blog_posts_count(@subdomain), 'Blog Post')}"
+      %li= "#{pluralize(forum_threads_count(@subdomain), 'Forum Thread')}"
     = link_to "Destroy Domain (Irreversible)", admin_subdomain_path(id: @subdomain), method: :delete, class: 'btn btn-lg btn-block btn-danger', data: { confirm: 'are you sure? This cannot be undone' }

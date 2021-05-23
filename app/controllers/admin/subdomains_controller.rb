@@ -4,7 +4,7 @@ class Admin::SubdomainsController < Admin::BaseController
   def index
     params[:q] ||= {}
     @subdomains_q = Subdomain.ransack(params[:q])
-    @subdomains = @subdomains_q.result.paginate(page: params[:visits_page], per_page: 10)
+    @subdomains = @subdomains_q.result.paginate(page: params[:page], per_page: 10)
   end
 
   def edit

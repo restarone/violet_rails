@@ -2,12 +2,30 @@
   Active Subdomains
 .my-5.list-group
   = render partial: 'search_filters'
-  - @subdomains.each do |subdomain|
-    - if subdomain.name
-      = link_to edit_admin_subdomain_path(id: subdomain.id), class: 'list-group-item list-group-item-action flex-column align-items-start' do
-        .d-flex.w-100.justify-content-between
-          %h5 
-            = display_subdomain_name(subdomain.name)
-          %small
-            = subdomain.created_at
-
+  = render partial: 'pagination'
+  %table.table.table-responsive
+    %thead
+      %tr
+        %th{:scope => "col"}
+          = sort_link @subdomains_q, :name
+        %th{:scope => "col"}
+          = sort_link @subdomains_q, :description
+        %th{:scope => "col"}
+          = sort_link @subdomains_q, :keywords
+        %th{:scope => "col"}
+          = sort_link @subdomains_q, :created_at
+        %th{:scope => "col"}
+          = sort_link @subdomains_q, :updated_at
+        %th{:scope => "col"}
+          = sort_link @subdomains_q, :storage_used
+    - @subdomains.each do |subdomain|
+      - if subdomain.name
+        %tr
+          %td
+            = link_to display_subdomain_name(subdomain.name), edit_admin_subdomain_path(id: subdomain.id)
+          %td= subdomain.description
+          %td= subdomain.keywords
+          %td= local_time(subdomain.created_at)
+          %td= local_time(subdomain.updated_at)
+          %td= number_to_human_size(subdomain.storage_used)
+  = render partial: 'pagination'
