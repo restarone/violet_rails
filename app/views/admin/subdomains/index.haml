@@ -13,6 +13,10 @@
         %th{:scope => "col"}
           = sort_link @subdomains_q, :keywords
         %th{:scope => "col"}
+          = sort_link @subdomains_q, :visitors
+        %th{:scope => "col"}
+          = sort_link @subdomains_q, :users
+        %th{:scope => "col"}
           = sort_link @subdomains_q, :created_at
         %th{:scope => "col"}
           = sort_link @subdomains_q, :updated_at
@@ -25,6 +29,8 @@
             = link_to display_subdomain_name(subdomain.name), edit_admin_subdomain_path(id: subdomain.id)
           %td= subdomain.description
           %td= subdomain.keywords
+          %td= visits_count(subdomain)
+          %td= users_count(subdomain)
           %td= local_time(subdomain.created_at)
           %td= local_time(subdomain.updated_at)
           %td= number_to_human_size(subdomain.storage_used)
