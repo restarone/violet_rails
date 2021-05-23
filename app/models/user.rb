@@ -26,6 +26,10 @@ class User < ApplicationRecord
   def self.global_admins
     self.where(global_admin: true)
   end
+
+  def self.forum_mods
+    self.where(moderator: true)
+  end
   
   private
 
