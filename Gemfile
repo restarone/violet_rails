@@ -40,6 +40,11 @@ gem "aws-sdk-s3", require: false
 gem 'meta-tags'
 gem 'sitemap_generator'
 gem 'ahoy_matey'
+gem 'ransack'
+gem 'will_paginate'
+gem "chartkick"
+gem 'groupdate'
+gem 'local_time'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false
