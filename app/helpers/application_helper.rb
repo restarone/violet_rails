@@ -1,6 +1,7 @@
 module ApplicationHelper
   def display_subdomain_name(schema_path)
-    "#{schema_path}.#{ENV['APP_HOST']}"
+    subdomain = schema_path != Subdomain::ROOT_DOMAIN_NAME ? schema_path : 'www'
+    "#{subdomain}.#{ENV['APP_HOST']}"
   end
 
   def page_entries_info(collection)
