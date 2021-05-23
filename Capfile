@@ -7,6 +7,9 @@ require "capistrano/deploy"
 # to compile assets locally
 require 'capistrano/local_precompile'
 
+# to generate the sitemap
+require 'capistrano/sitemap_generator'
+
 # Load the SCM plugin appropriate to your project:
 #
 # require "capistrano/scm/hg"
