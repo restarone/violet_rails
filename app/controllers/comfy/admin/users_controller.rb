@@ -4,7 +4,9 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
   before_action :ensure_authority_to_manage_users, only: [:index, :new, :invite, :edit, :update, :destroy]
   
   def index
-    @users = User.all
+    params[:q] ||= {}
+    @users_q = User.ransack(params[:q])
+    @users = @users_q.result.paginate(page: params[:page], per_page: 10)
   end
 
   def new

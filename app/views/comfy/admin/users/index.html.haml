@@ -2,11 +2,25 @@
   = link_to I18n.t('views.comfy.users.index.header.action'), new_admin_user_path, class: 'btn btn-secondary float-right'
   .h2
     = I18n.t('views.comfy.users.index.header.title')
-- @users.each do |user|
-  = link_to edit_admin_user_path(id: user.id) do
-    .card.my-3
-      .card-body 
-        .card-title
-          = user.email
-        .card-subtitle.mb-2.text-muted
-          = user.created_at
+  = render partial: 'search_filters'
+  = render partial: 'pagination'
+  %table.table.table-responsive
+    %thead
+      %tr
+        %th{:scope => "col"}
+          = sort_link @users_q, :name
+        %th{:scope => "col"}
+          = sort_link @users_q, :email
+        %th{:scope => "col"}
+          = sort_link @users_q, :current_sign_in_at
+        %th{:scope => "col"}
+          = sort_link @users_q, :last_sign_in_at
+        %th{:scope => "col"}
+    - @users.each do |user|
+      - name = user.name ? user.name : user.email
+      %tr
+        %td= link_to name, edit_admin_user_path(id: user.id)
+        %td= user.email
+        %td= user.current_sign_in_at
+        %td= user.last_sign_in_at
+  = render partial: 'pagination'

@@ -33,3 +33,69 @@
           Can manage and invite users
       = f.submit "Update", class: 'btn btn-success'
       = link_to "Remove", admin_user_path(id: @user.id), method: :delete, class: 'btn btn-sm btn-danger', data: { confirm: 'Are you sure you want to remove this user? This cannot be undone' }
+  %hr/
+  %main{class: 'my-5'}
+    %h3 
+      Stats
+    .card
+      %ul.list-group.list-group-flush
+        %li.list-group-item
+          sign ins:
+          = @user.sign_in_count
+        %li.list-group-item
+          current sign in:
+          = @user.current_sign_in_at
+        %li.list-group-item
+          last sign in:
+          = @user.last_sign_in_at
+        %li.list-group-item
+          current session IP:
+          = @user.current_sign_in_ip
+        %li.list-group-item
+          last session IP:
+          = @user.last_sign_in_ip
+        %li.list-group-item
+          created at:
+          = local_time(@user.created_at)
+        %li.list-group-item
+          updated at:
+          = local_time(@user.created_at)
+        %li.list-group-item
+          confirmed at:
+          = @user.confirmed_at
+        %li.list-group-item
+          confirmation sent at:
+          = @user.confirmation_sent_at
+        %li.list-group-item
+          locked at:
+          = @user.locked_at
+
+  %main{class: 'my-5'}
+    %h3 
+      Sessions
+    .card
+      %table.table.table-bordered
+        %thead
+          %tr
+            %th Timestamp
+            %th IP
+            %th OS
+            %th Browser
+            %th Device Type
+            %th Country
+            %th Region
+            %th City
+            %th User Agent
+          - @user.previous_ahoy_visits.each do |v|
+            %tr
+              %th= v.started_at.strftime('%I:%M %P - %b %d, %Y')
+              %th= v.ip
+              %th= v.os
+              %th= v.browser
+              %th= v.device_type
+              %th= v.country
+              %th= v.region
+              %th= v.city
+              %th.text-wrap.text-break= v.user_agent  
+        
+

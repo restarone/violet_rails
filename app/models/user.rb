@@ -30,6 +30,10 @@ class User < ApplicationRecord
   def self.forum_mods
     self.where(moderator: true)
   end
+
+  def previous_ahoy_visits
+    Ahoy::Visit.where(user_id: self.id).order(started_at: :desc).limit(5)
+  end
   
   private
 
