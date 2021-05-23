@@ -3,6 +3,8 @@ class SimpleDiscussion::ForumThreadsController < SimpleDiscussion::ApplicationCo
   before_action :set_forum_thread, only: [:show, :edit, :update, :destroy]
   before_action :require_mod_or_author_for_thread!, only: [:edit, :update, :destroy]
 
+  after_action :broadcast_to_mods, only: [:create]
+
   def index
     @forum_threads = ForumThread.pinned_first.sorted.includes(:user, :forum_category).paginate(page: page_number)
   end
@@ -70,6 +72,15 @@ class SimpleDiscussion::ForumThreadsController < SimpleDiscussion::ApplicationCo
   end
 
   private
+
+  def broadcast_to_mods
+    if @forum_thread && @forum_thread.persisted?
+      forum_mods = User.forum_mods.where.not(id: @forum_thread.user_id)
+      forum_mods.each do |user|
+        SimpleDiscussion::UserMailer.new_thread(@forum_thread, user).deliver_later
+      end
+    end
+  end
 
   def set_forum_thread
     @forum_thread = ForumThread.friendly.find(params[:id])
