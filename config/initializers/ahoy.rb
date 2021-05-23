@@ -7,4 +7,5 @@ Ahoy.api = false
 # set to true for geocoding
 # we recommend configuring local geocoding first
 # see https://github.com/ankane/ahoy#geocoding
-Ahoy.geocode = false
+Ahoy.geocode = true
+Ahoy.job_queue = :default
