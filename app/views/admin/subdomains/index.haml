@@ -1,6 +1,7 @@
 %h1
   Active Subdomains
 .my-5.list-group
+  = render partial: 'search_filters'
   - @subdomains.each do |subdomain|
     - if subdomain.name
       = link_to edit_admin_subdomain_path(id: subdomain.id), class: 'list-group-item list-group-item-action flex-column align-items-start' do

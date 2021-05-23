@@ -2,7 +2,9 @@ class Admin::SubdomainsController < Admin::BaseController
   before_action :load_subdomain, except: [:index]
 
   def index
-    @subdomains = Subdomain.all
+    params[:q] ||= {}
+    @subdomains_q = Subdomain.ransack(params[:q])
+    @subdomains = @subdomains_q.result.paginate(page: params[:visits_page], per_page: 10)
   end
 
   def edit
