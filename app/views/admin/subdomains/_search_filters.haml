@@ -1,0 +1,11 @@
+= search_form_for @subdomains_q, url: admin_subdomains_path do |f|
+  .form-group
+    = f.label "name", class: 'col-form-label'
+    = f.search_field :name_cont, value: params[:q][:name_cont], class: 'form-control'
+    = f.label "by SEO", class: 'col-form-label'
+    = f.search_field :keywords_or_description_cont, value: params[:q][:keywords_or_description_cont], class: 'form-control'
+    = f.label "by HTML meta", class: 'col-form-label'
+    = f.search_field :html_title_or_blog_title_or_blog_html_title_or_forum_title_or_forum_html_title_cont, value: params[:q][:html_title_or_blog_title_or_blog_html_title_or_forum_title_or_forum_html_title_cont], class: 'form-control'
+    .text-center
+      = f.submit class: 'btn btn-primary my-2'
+      = link_to "Clear Search", request.path, class:"cancel-button"

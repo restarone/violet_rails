@@ -30,6 +30,10 @@ class Subdomain < ApplicationRecord
     end
   end
 
+  def ahoy_visits
+    Ahoy::Visit.order(started_at: :desc)
+  end
+
   def initialize_mailbox
     Apartment::Tenant.switch self.name do
       mailbox = Mailbox.first_or_create

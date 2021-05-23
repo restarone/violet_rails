@@ -23,6 +23,18 @@ module SubdomainHelper
     end
   end
 
+  def forum_threads_count(subdomain)
+    Apartment::Tenant.switch subdomain.name do
+      ForumThread.all.size
+    end
+  end
+
+  def visits_count(subdomain)
+    Apartment::Tenant.switch subdomain.name do
+      Ahoy::Visit.all.size
+    end
+  end
+
   def html_title(subdomain)
     subdomain.html_title ? subdomain.html_title : subdomain.name
   end
