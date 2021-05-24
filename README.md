@@ -7,7 +7,7 @@
 
 ## Features
 ### Rich user management system with invites and granular permissions
-Allow your outreach team to support the forum & blog while the designers and developers work on the web pages. 
+Allow your outreach team to support the forum and blog, while the designers and developers work on the web pages. 
 ![Screenshot from 2021-05-21 17-25-15](https://user-images.githubusercontent.com/35935196/119199693-86b81a00-ba59-11eb-8543-96df36b44968.png)
 
 ### WSIWYG HTML, CSS & JS CMS
