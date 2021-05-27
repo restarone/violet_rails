@@ -1,5 +1,4 @@
 = form_for @call_to_action do |f|
-  = recaptcha_tags
   - if @call_to_action.errors.any?
     #error_explanation
       %h2= "#{pluralize(@call_to_action.errors.count, "error")} prohibited this call_to_action from being saved:"
@@ -12,7 +11,7 @@
     = f.text_field :title
   .field
     = f.label :cta_type
-    = f.text_field :cta_type
+    = f.select :cta_type, options_for_select(CallToAction::ACTION_TYPES)
   
   = f.rich_text_area :content
   .actions

@@ -25,7 +25,7 @@ class Comfy::Admin::CallToActionsController < Comfy::Admin::Cms::BaseController
     @call_to_action = CallToAction.new(call_to_action_params)
 
     respond_to do |format|
-      if verify_recaptcha(model: @call_to_action) && @call_to_action.save
+      if @call_to_action.save
         format.html { redirect_to @call_to_action, notice: "Call to action was successfully created." }
         format.json { render :show, status: :created, location: @call_to_action }
       else
