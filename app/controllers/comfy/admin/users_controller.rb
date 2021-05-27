@@ -24,6 +24,9 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
   end
 
   def edit
+    params[:q] ||= {}
+    @visits_q = @user.previous_ahoy_visits.ransack(params[:q])
+    @visits = @visits_q.result.paginate(page: params[:page], per_page: 10)
   end
 
   def update

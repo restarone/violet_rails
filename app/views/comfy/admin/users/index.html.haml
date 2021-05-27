@@ -3,7 +3,7 @@
   .h2
     = I18n.t('views.comfy.users.index.header.title')
   = render partial: 'search_filters'
-  = render partial: 'pagination'
+  = render partial: 'pagination', locals: { objects: @users }
   %table.table.table-responsive
     %thead
       %tr
@@ -22,4 +22,4 @@
         %td= user.name
         %td= user.current_sign_in_at
         %td= user.last_sign_in_at
-  = render partial: 'pagination'
+  = render partial: 'pagination', locals: { objects: @users }

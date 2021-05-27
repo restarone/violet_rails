@@ -29,7 +29,8 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
       :logo,
       :favicon,
       :description,
-      :keywords 
+      :keywords,
+      :og_image  
     )
   end
 

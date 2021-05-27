@@ -74,20 +74,30 @@
     %h3 
       Sessions
     .card
+      = render partial: 'pagination', locals: { objects: @visits }
       .table-responsive
         %table.table.table-bordered
           %thead
             %tr
-              %th Timestamp
-              %th IP
-              %th OS
-              %th Browser
-              %th Device Type
-              %th Country
-              %th Region
-              %th City
-              %th User Agent
-            - @user.previous_ahoy_visits.each do |v|
+              %th 
+                = sort_link @visits_q, :timestamp
+              %th
+                = sort_link @visits_q, :ip
+              %th
+                = sort_link @visits_q, :os
+              %th 
+                = sort_link @visits_q, :browser
+              %th 
+                = sort_link @visits_q, :device_type
+              %th 
+                = sort_link @visits_q, :country
+              %th 
+                = sort_link @visits_q, :region
+              %th 
+                = sort_link @visits_q, :city
+              %th 
+                = sort_link @visits_q, :user_agent
+            - @visits.each do |v|
               %tr
                 %th= v.started_at.strftime('%I:%M %P - %b %d, %Y')
                 %th= v.ip
@@ -98,5 +108,5 @@
                 %th= v.region
                 %th= v.city
                 %th.text-wrap.text-break= v.user_agent  
-          
+      = render partial: 'pagination', locals: { objects: @visits }
 
