@@ -1,4 +1,5 @@
 = form_for @call_to_action do |f|
+  = recaptcha_tags
   - if @call_to_action.errors.any?
     #error_explanation
       %h2= "#{pluralize(@call_to_action.errors.count, "error")} prohibited this call_to_action from being saved:"
