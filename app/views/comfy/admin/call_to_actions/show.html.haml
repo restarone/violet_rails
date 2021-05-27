@@ -1,0 +1,12 @@
+%p#notice= notice
+
+%p
+  %b Title:
+  = @call_to_action.title
+%p
+  %b Cta type:
+  = @call_to_action.cta_type
+
+= link_to 'Edit', edit_call_to_action_path(@call_to_action)
+\|
+= link_to 'Back', call_to_actions_path

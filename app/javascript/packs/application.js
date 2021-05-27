@@ -5,7 +5,7 @@
 
 import Rails from "@rails/ujs"
 import Turbolinks from "turbolinks"
-import * as ActiveStorage from "@rails/activestorage"
+
 import "channels"
 import "bootstrap"
 import 'select2'
@@ -17,8 +17,8 @@ window.ahoy = ahoy;
 
 Rails.start()
 Turbolinks.start()
-ActiveStorage.start()
+
 
 require("jquery")
-require("trix")
-require("@rails/actiontext")
+require("./trix")
+

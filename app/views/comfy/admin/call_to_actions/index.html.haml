@@ -1,0 +1,23 @@
+%h1 Listing call_to_actions
+
+%table
+  %thead
+    %tr
+      %th Title
+      %th Cta type
+      %th
+      %th
+      %th
+
+  %tbody
+    - @call_to_actions.each do |call_to_action|
+      %tr
+        %td= call_to_action.title
+        %td= call_to_action.cta_type
+        %td= link_to 'Show', call_to_action
+        %td= link_to 'Edit', edit_call_to_action_path(call_to_action)
+        %td= link_to 'Destroy', call_to_action, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New Call to action', new_call_to_action_path

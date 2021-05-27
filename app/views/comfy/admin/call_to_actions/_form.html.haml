@@ -1,0 +1,18 @@
+= form_for @call_to_action do |f|
+  - if @call_to_action.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@call_to_action.errors.count, "error")} prohibited this call_to_action from being saved:"
+      %ul
+        - @call_to_action.errors.full_messages.each do |message|
+          %li= message
+
+  .field
+    = f.label :title
+    = f.text_field :title
+  .field
+    = f.label :cta_type
+    = f.text_field :cta_type
+  
+  = f.rich_text_area :content
+  .actions
+    = f.submit 'Save'

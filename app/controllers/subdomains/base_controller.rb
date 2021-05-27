@@ -10,4 +10,18 @@ class Subdomains::BaseController < ApplicationController
       redirect_to root_url
     end
   end
+
+  def ensure_authority_to_manage_web
+    unless current_user.can_manage_web
+      flash.alert = "You do not have the permission to do that. Only users who can_manage_web are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
+    end
+  end
+
+  def ensure_authority_to_manage_users
+    unless current_user.can_manage_users
+      flash.alert = "You do not have the permission to do that. Only users who can-manage-users  are allowed to perform that action."
+      redirect_to comfy_admin_cms_path
+    end
+  end
 end

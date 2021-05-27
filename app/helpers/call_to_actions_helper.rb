@@ -1,0 +1,2 @@
+module CallToActionsHelper
+end
