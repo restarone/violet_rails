@@ -38,4 +38,9 @@
   %label
     Favicon: 
   = f.file_field :favicon, required: false
-= f.submit
+.form-group
+  = render_og_image(Subdomain.current)
+  %label
+    open-graph image: 
+  = f.file_field :og_image, required: false
+= f.submit "Save", class: 'btn btn-primary'

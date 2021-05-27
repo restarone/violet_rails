@@ -65,6 +65,17 @@ module SubdomainHelper
     rails_blob_path(subdomain.logo)
   end
 
+  def og_image_url(subdomain)
+    return if !subdomain.og_image.attached?
+    rails_blob_path(subdomain.og_image)
+  end
+
+  def render_og_image(subdomain)
+    return if !subdomain.og_image.attached?
+    image_tag subdomain.og_image, class: 'rounded avatar', size: '40x40'
+  end
+
+
   def render_favicon(subdomain)
     return if !subdomain.favicon.attached?
     image_tag subdomain.favicon, class: 'rounded avatar', size: '40x40'
