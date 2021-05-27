@@ -10,6 +10,8 @@ class Subdomain < ApplicationRecord
 
   has_one_attached :logo
   has_one_attached :favicon
+  has_one_attached :og_image
+
 
   # max 1GB by default storage allowance
   MAXIMUM_STORAGED_ALLOWANCE = 1073741824
