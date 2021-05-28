@@ -12,8 +12,22 @@
 %p
   %b Cta responses:
   = @call_to_action_responses.size
-- @call_to_action_responses.each do |call_to_action_response|
-  = call_to_action_response.properties
+
+= render partial: 'pagination', locals: { objects: @call_to_action_responses }
+%table.table.table-responsive
+  %thead
+    %tr
+      %th 
+        = sort_link @call_to_action_responses_q, :properties
+      %th
+        = sort_link @call_to_action_responses_q, :created_at
+  %tbody
+    - @call_to_action_responses.each do |call_to_action_response|
+      %tr
+        %td= call_to_action_response.properties
+        %td= call_to_action_response.created_at
+
+
 
 = link_to 'Edit', edit_call_to_action_path(@call_to_action)
 \|

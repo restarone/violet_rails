@@ -11,6 +11,9 @@ class Comfy::Admin::CallToActionsController < Comfy::Admin::Cms::BaseController
 
   # GET /call_to_actions/1 or /call_to_actions/1.json
   def show
+    params[:q] ||= {}
+    @call_to_action_responses_q = @call_to_action_responses.ransack(params[:q])
+    @call_to_action_responses = @call_to_action_responses_q.result.paginate(page: params[:page], per_page: 10)
   end
 
   # GET /call_to_actions/new

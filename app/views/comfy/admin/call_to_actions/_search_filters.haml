@@ -1,4 +1,4 @@
-= search_form_for @call_to_actions_q, url: call_to_actions_path do |f|
+= search_form_for objects, url: path do |f|
   .form-group
     = f.label "title", class: 'col-form-label'
     = f.search_field :title_cont, value: params[:q][:title_cont], class: 'form-control'

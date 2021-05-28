@@ -8,8 +8,7 @@ import Turbolinks from "turbolinks"
 
 import "channels"
 import "bootstrap"
-import 'select2'
-import 'select2/dist/css/select2.css'
+
 
 import ahoy from "ahoy.js";
 import ctaSuccessHandler from "./website/call_to_actions"
@@ -22,4 +21,5 @@ Turbolinks.start()
 
 require("jquery")
 require("./trix")
+require("./select2")
 
