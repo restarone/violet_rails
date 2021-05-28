@@ -46,7 +46,7 @@ class SubdomainRequestTest < ActiveSupport::TestCase
     recipients = User.where(global_admin: true)
     subdomain_request = SubdomainRequest.new(subdomain_name: 'great-domain-name')
     subdomain_request.save
-    assert_changes "UserMailer.deliveries.size" do
+    assert_difference "UserMailer.deliveries.size", +recipients.size do
       perform_enqueued_jobs do
         subdomain_request.update(email: 'test@testingsystem.com')
       end

@@ -3,5 +3,9 @@
   = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
   = javascript_pack_tag 'trix'
   = javascript_pack_tag 'select2'
+  -# this is a hack until I figure out how to get chartkick working without importing the whole application js pack
+  - if controller_name == 'dashboard'
+    = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
+
   = render 'layouts/comfy/admin/cms/head'
   = render 'layouts/comfy/admin/cms/body'

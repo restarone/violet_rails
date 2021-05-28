@@ -8,7 +8,7 @@ import Turbolinks from "turbolinks"
 
 import "channels"
 import "bootstrap"
-
+import "chartkick/chart.js"
 
 import ahoy from "ahoy.js";
 import ctaSuccessHandler from "./website/call_to_actions"
@@ -22,4 +22,5 @@ Turbolinks.start()
 require("jquery")
 require("./trix")
 require("./select2")
+
 

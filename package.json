@@ -9,6 +9,8 @@
     "@rails/webpacker": "5.2.1",
     "ahoy.js": "^0.3.8",
     "bootstrap": "^4.6.0",
+    "chart.js": "^3.3.0",
+    "chartkick": "^4.0.4",
     "jquery": "^3.6.0",
     "popper.js": "^1.16.1",
     "rails-erb-loader": "^5.5.2",

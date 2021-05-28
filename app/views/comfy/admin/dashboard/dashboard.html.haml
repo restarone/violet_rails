@@ -1,0 +1,59 @@
+= javascript_include_tag "//www.google.com/jsapi"
+.page-header  
+  .h2
+    Visitor Analytics
+%main{class: 'my-5'}
+  %h3 
+    Visits
+
+  = render partial: 'search_filters'
+  .row.align-items-center.justify-content-center.text-center
+    .col-12.my-5
+      %h5 Grouped by date
+      .d-flex.justify-content-center.align-items-center
+        = line_chart @visits.group_by_day(:started_at).count, label: "visits"
+    .col-12.my-5
+      %h5 Grouped by country
+      .d-flex.justify-content-center.align-items-center
+        = geo_chart @visits.group(:country).count, label: "visits"
+    .col-12.my-5
+      .row
+        .mx-5
+          %p By device type
+          = pie_chart @visits.where.not(device_type: nil).group(:device_type).count, width: "300px", height: "300px", label: "visits"
+        .mx-5
+          %p By OS
+          = pie_chart @visits.where.not(os: nil).group(:os).count, width: "300px", height: "300px", label: "visits"
+        .mx-5
+          %p By browser
+          = pie_chart @visits.where.not(browser: nil).group(:browser).count, width: "300px", height: "300px", label: "visits"
+  = render partial: 'pagination'
+  .table-responsive
+    %table.table.table-bordered
+      %thead
+        %tr
+          %th= sort_link @visits_q, :started_at
+          %th= sort_link @visits_q, :ip
+          %th= sort_link @visits_q, :os
+          %th= sort_link @visits_q, :browser
+          %th= sort_link @visits_q, :device_type
+          %th= sort_link @visits_q, :country
+          %th= sort_link @visits_q, :region
+          %th= sort_link @visits_q, :city
+          %th= sort_link @visits_q, :referring_domain
+          %th= sort_link @visits_q, :landing_page
+          %th= sort_link @visits_q, :user_agent
+        - @visits.each do |v|
+          %tr
+            %th= v.started_at.strftime('%I:%M %P - %b %d, %Y')
+            %th= v.ip
+            %th= v.os
+            %th= v.browser
+            %th= v.device_type
+            %th= v.country
+            %th= v.region
+            %th= v.city
+            %th= v.referring_domain
+            %th= v.landing_page
+            %th= v.user_agent  
+    = render partial: 'pagination'

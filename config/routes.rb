@@ -9,7 +9,8 @@ end
 
 Rails.application.routes.draw do
 
-  
+  # analytics dashboard
+  get 'dashboard', controller: 'comfy/admin/dashboard'
   resources :signup_wizard
   resources :signin_wizard
   constraints SubdomainConstraint do
