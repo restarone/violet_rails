@@ -9,6 +9,11 @@
 %p
   %b Cta type:
   = @call_to_action.cta_type
+%p
+  %b Cta responses:
+  = @call_to_action_responses.size
+- @call_to_action_responses.each do |call_to_action_response|
+  = call_to_action_response.properties
 
 = link_to 'Edit', edit_call_to_action_path(@call_to_action)
 \|

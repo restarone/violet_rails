@@ -12,8 +12,9 @@ import 'select2'
 import 'select2/dist/css/select2.css'
 
 import ahoy from "ahoy.js";
+import ctaSuccessHandler from "./website/call_to_actions"
 window.ahoy = ahoy;
-
+window.ctaSuccessHandler = ctaSuccessHandler
 
 Rails.start()
 Turbolinks.start()
