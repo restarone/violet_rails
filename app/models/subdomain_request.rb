@@ -9,6 +9,8 @@ class SubdomainRequest < ApplicationRecord
 
   after_save :spawn_subdomain, :destroy_request, if: -> { self.approved? }
 
+  before_save :notify_global_admin, if: -> { self.persisted? && self.email_changed? && self.email.present? }
+
   def self.pending
     self.where(approved: false)
   end
@@ -22,6 +24,10 @@ class SubdomainRequest < ApplicationRecord
   end
 
   private
+
+  def notify_global_admin
+    UserMailer.with(subdomain_request: self).subdomain_registration.deliver_later
+  end
 
   def spawn_subdomain
     subdomain = Subdomain.create! name: self.subdomain_name

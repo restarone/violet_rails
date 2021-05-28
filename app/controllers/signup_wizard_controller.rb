@@ -26,7 +26,7 @@ class SignupWizardController < ApplicationController
         render_wizard
       end
     when :sign_up
-      if @subdomain_request.update(subdomain_request_params)
+      if verify_recaptcha(model: @subdomain_request) && @subdomain_request.update(subdomain_request_params)
         flash.notice = 'Thanks! We will send you your login link once you have been approved!'
         redirect_to wizard_path(:wicked_finish)
       else
