@@ -1,4 +1,4 @@
-= search_form_for @visits_q, url: edit_web_settings_path do |f|
+= search_form_for @visits_q, url: dashboard_path do |f|
   .form-group
     = f.label "browser, user agent, operating system or device type", class: 'col-form-label'
     = f.search_field :browser_or_user_agent_or_os_or_device_type_cont, value: params[:q][:browser_or_user_agent_or_os_or_device_type_cont], class: 'form-control'

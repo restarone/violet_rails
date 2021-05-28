@@ -3,9 +3,6 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
   before_action :ensure_authority_to_manage_web
 
   def edit
-    params[:q] ||= {}
-    @visits_q = Subdomain.current.ahoy_visits.ransack(params[:q])
-    @visits = @visits_q.result.paginate(page: params[:page], per_page: 10)
   end
 
   def update
