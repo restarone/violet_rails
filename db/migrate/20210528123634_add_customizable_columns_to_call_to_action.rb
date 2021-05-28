@@ -11,6 +11,7 @@ class AddCustomizableColumnsToCallToAction < ActiveRecord::Migration[6.1]
       t.string :phone_label, default: "Phone Number"
       t.string :message_label, default: "Message"
       t.string :message_placeholder, default: "Your message here"
+      t.string :submit_button_label, default: "Submit"
     end
   end
 end

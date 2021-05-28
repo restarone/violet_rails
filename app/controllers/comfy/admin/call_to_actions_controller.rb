@@ -83,7 +83,8 @@ class Comfy::Admin::CallToActionsController < Comfy::Admin::Cms::BaseController
         :message_label,
         :message_placeholder,
         :email_label,
-        :email_placeholder
+        :email_placeholder,
+        :submit_button_label
       )
     end
 end
