@@ -1,0 +1,9 @@
+= search_form_for objects, url: path do |f|
+  .form-group
+    = f.label "title", class: 'col-form-label'
+    = f.search_field :title_cont, value: params[:q][:title_cont], class: 'form-control'
+    = f.label "cta_type", class: 'col-form-label'
+    = f.search_field :cta_type_cont, value: params[:q][:cta_type_cont], class: 'form-control'
+    .text-center
+      = f.submit class: 'btn btn-primary my-2'
+      = link_to "Clear Search", request.path, class:"cancel-button"

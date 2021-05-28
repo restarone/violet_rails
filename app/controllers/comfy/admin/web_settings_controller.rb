@@ -33,11 +33,4 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
       :og_image  
     )
   end
-
-  def ensure_authority_to_manage_web
-    unless current_user.can_manage_web
-      flash.alert = "You do not have the permission to do that. Only users who can_manage_web are allowed to perform that action."
-      redirect_back(fallback_location: root_url)
-    end
-  end
 end

@@ -9,6 +9,7 @@ end
 
 Rails.application.routes.draw do
 
+  
   resources :signup_wizard
   resources :signin_wizard
   constraints SubdomainConstraint do
@@ -33,10 +34,14 @@ Rails.application.routes.draw do
   end
 
   resource :web_settings, controller: 'comfy/admin/web_settings', only: [:edit, :update]
-
   resources :users, controller: 'comfy/admin/users', as: :admin_users, except: [:create, :show] do
     collection do 
       post 'invite'
+    end
+  end
+  resources :call_to_actions, controller: 'comfy/admin/call_to_actions' do
+    member do
+      post 'respond', to: 'call_to_action_responses#respond'
     end
   end
 

@@ -1,0 +1,32 @@
+.page-header
+  = link_to 'New CTA', new_call_to_action_path, class: 'btn btn-secondary float-right'
+  %h2 Call To Actions
+= render partial: 'search_filters', locals: { objects: @call_to_actions_q, path: call_to_actions_path }
+= render partial: 'pagination', locals: { objects: @call_to_actions }
+%table.table.table-responsive
+  %thead
+    %tr
+      %th 
+        = sort_link @call_to_actions_q, :title
+      %th
+        = sort_link @call_to_actions_q, :cta_type
+      %th
+        = sort_link @call_to_actions_q, :updated_at
+      %th
+        Actions
+      %th
+        Snippet:
+  %tbody
+    - @call_to_actions.each do |call_to_action|
+      %tr
+        %td= link_to call_to_action.title, call_to_action
+        %td= call_to_action.cta_type
+        %td= call_to_action.updated_at
+        %td= call_to_action.call_to_action_responses.size
+        %td= "{{ cms:helper render_call_to_action, #{call_to_action.id} }}"
+        %td= link_to 'Edit', edit_call_to_action_path(call_to_action)
+        %td= link_to 'Destroy', call_to_action, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+

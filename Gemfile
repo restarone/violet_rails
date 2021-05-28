@@ -45,6 +45,7 @@ gem 'will_paginate'
 gem "chartkick"
 gem 'groupdate'
 gem 'local_time'
+gem "recaptcha"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false

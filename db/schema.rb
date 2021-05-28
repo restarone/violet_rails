@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_23_010012) do
+ActiveRecord::Schema.define(version: 2021_05_28_123634) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -102,6 +102,32 @@ ActiveRecord::Schema.define(version: 2021_05_23_010012) do
     t.datetime "started_at"
     t.index ["user_id"], name: "index_ahoy_visits_on_user_id"
     t.index ["visit_token"], name: "index_ahoy_visits_on_visit_token", unique: true
+  end
+
+  create_table "call_to_action_responses", force: :cascade do |t|
+    t.bigint "call_to_action_id", null: false
+    t.jsonb "properties"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["call_to_action_id"], name: "index_call_to_action_responses_on_call_to_action_id"
+  end
+
+  create_table "call_to_actions", force: :cascade do |t|
+    t.string "title", null: false
+    t.string "cta_type", default: "contact"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "success_message", default: "Thank you for your inquiry!"
+    t.string "failure_message", default: "Some fields were invalid, please double check the recapcha and try again"
+    t.string "name_label", default: "Name"
+    t.string "name_placeholder", default: "John AppleSeed"
+    t.string "email_label", default: "Email Address"
+    t.string "email_placeholder", default: "john@apple.seed"
+    t.string "phone_placeholder", default: "+1123456789"
+    t.string "phone_label", default: "Phone Number"
+    t.string "message_label", default: "Message"
+    t.string "message_placeholder", default: "Your message here"
+    t.string "submit_button_label", default: "Submit"
   end
 
   create_table "comfy_blog_posts", force: :cascade do |t|
@@ -388,6 +414,7 @@ ActiveRecord::Schema.define(version: 2021_05_23_010012) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "call_to_action_responses", "call_to_actions"
   add_foreign_key "forum_posts", "forum_threads"
   add_foreign_key "forum_posts", "users"
   add_foreign_key "forum_subscriptions", "forum_threads"
