@@ -4,7 +4,9 @@ class Comfy::Admin::CallToActionsController < Comfy::Admin::Cms::BaseController
 
   # GET /call_to_actions or /call_to_actions.json
   def index
-    @call_to_actions = CallToAction.all
+    params[:q] ||= {}
+    @call_to_actions_q = CallToAction.ransack(params[:q])
+    @call_to_actions = @call_to_actions_q.result.paginate(page: params[:page], per_page: 10)
   end
 
   # GET /call_to_actions/1 or /call_to_actions/1.json
