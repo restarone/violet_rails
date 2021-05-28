@@ -6,7 +6,8 @@
     <main>
       <h1>New Registration Request</h1>
       <strong>Email: <%= @subdomain_request.email %></strong>
-      <strong>Email: <%= @subdomain_request.subdomain_name %></strong>
+      <strong>subdomain: <%= @subdomain_request.subdomain_name %></strong>
+      <%= link_to "View it here", sysadmin_url %>
     </main>
   </body>
 </html>
