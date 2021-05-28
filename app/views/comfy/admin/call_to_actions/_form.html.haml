@@ -11,6 +11,37 @@
     = f.text_field :title
   .field
     = f.label :cta_type
-    = f.select :cta_type, options_for_select(CallToAction::ACTION_TYPES)
+    = f.select :cta_type, options_for_select(CallToAction::ACTION_TYPES, @call_to_action.cta_type)
+  .field
+    = f.label :success_message
+    = f.text_field :success_message
+  .field
+    = f.label :failure_message
+    = f.text_field :failure_message
+  - if @call_to_action.cta_type == CallToAction::ACTION_TYPES[:contact_us]
+    .field
+      = f.label :name_label
+      = f.text_field :name_label
+    .field
+      = f.label :name_placeholder
+      = f.text_field :name_placeholder
+    .field
+      = f.label :phone_placeholder
+      = f.text_field :phone_placeholder
+    .field
+      = f.label :phone_label
+      = f.text_field :phone_label
+    .field
+      = f.label :message_label
+      = f.text_field :message_label
+    .field
+      = f.label :message_placeholder
+      = f.text_field :message_placeholder
+  .field
+    = f.label :email_label
+    = f.text_field :email_label
+  .field
+    = f.label :email_placeholder
+    = f.text_field :email_placeholder
   .actions
     = f.submit 'Save'

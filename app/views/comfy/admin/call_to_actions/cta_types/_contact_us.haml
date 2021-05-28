@@ -1,13 +1,13 @@
 .form-group
   .form-group
-    = f.label :name
-    = f.text_field :name, placeholder: 'John AppleSeed', class: 'form-control'
+    = f.label @call_to_action.name_label
+    = f.text_field :name, placeholder: @call_to_action.name_placeholder, class: 'form-control'
   .form-group
-    = f.label :email_address
-    = f.email_field :email, placeholder: 'john@apple.seed', class: 'form-control', required: true
+    = f.label @call_to_action.email_label
+    = f.email_field :email, placeholder: @call_to_action.email_placeholder, class: 'form-control', required: true
   .form-group
-    = f.label :phone_number
-    = f.telephone_field :phone, class: 'form-control'
+    = f.label @call_to_action.phone_label
+    = f.telephone_field :phone, placeholder: @call_to_action.phone_placeholder, class: 'form-control'
   .form-group
-    = f.label :message
-    = f.text_area :message, class: 'form-control', required: true
+    = f.label @call_to_action.message_label
+    = f.text_area :message, placeholder: @call_to_action.message_placeholder, class: 'form-control', required: true

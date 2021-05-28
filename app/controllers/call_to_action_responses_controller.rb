@@ -2,9 +2,9 @@ class CallToActionResponsesController < ApplicationController
   before_action :set_call_to_action, only: [:respond]
   def respond
     if verify_recaptcha(model: @call_to_action) && build_response && @call_to_action_response.save
-      flash.notice = 'Success!'
+      flash.notice = @call_to_action.success_message
     else
-      flash.alert = 'fail!'
+      flash.alert = @call_to_action.failure_message
     end
     redirect_back(fallback_location: root_path)
   end
