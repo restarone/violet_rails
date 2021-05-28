@@ -1,12 +1,13 @@
 .form-group
-  = f.label :name
-  = f.text_field :name, placeholder: 'John AppleSeed'
-.form-group
-  = f.label :email_address
-  = f.email_field :email, placeholder: 'john@apple.seed', required: true
-.form-group
-  = f.label :phone_number
-  = f.telephone_field :phone
-.form-group
-  = f.label :message
-  = f.text_area :message, required: true
+  .form-group
+    = f.label :name
+    = f.text_field :name, placeholder: 'John AppleSeed', class: 'form-control'
+  .form-group
+    = f.label :email_address
+    = f.email_field :email, placeholder: 'john@apple.seed', class: 'form-control', required: true
+  .form-group
+    = f.label :phone_number
+    = f.telephone_field :phone, class: 'form-control'
+  .form-group
+    = f.label :message
+    = f.text_area :message, class: 'form-control', required: true

@@ -1,5 +1,4 @@
 class CallToAction < ApplicationRecord
-  has_rich_text :content
 
   ACTION_TYPES = {
     contact_us: 'contact-us',

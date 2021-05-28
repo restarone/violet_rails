@@ -12,7 +12,5 @@
   .field
     = f.label :cta_type
     = f.select :cta_type, options_for_select(CallToAction::ACTION_TYPES)
-  
-  = f.rich_text_area :content
   .actions
     = f.submit 'Save'

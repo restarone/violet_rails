@@ -66,6 +66,6 @@ class Comfy::Admin::CallToActionsController < Comfy::Admin::Cms::BaseController
 
     # Only allow a list of trusted parameters through.
     def call_to_action_params
-      params.require(:call_to_action).permit(:title, :cta_type)
+      params.require(:call_to_action).permit(:title, :cta_type, :content)
     end
 end
