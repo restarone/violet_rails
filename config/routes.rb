@@ -2,7 +2,7 @@ require 'sidekiq/web'
 class SubdomainConstraint
   def self.matches?(request)
     # plug in exclusions model here
-    restricted_subdomains = ['root']
+    restricted_subdomains = []
     !restricted_subdomains.include?(request.subdomain)
   end
 end
