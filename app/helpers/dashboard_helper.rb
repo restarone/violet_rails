@@ -1,8 +1,14 @@
 module DashboardHelper
   def redact_private_urls(url)
+    should_exclude = false
     return if !url
     exclusions = Subdomain::PRIVATE_URL_PATHS
-    if exclusions.any? {|exclusion| url.include?(exclusion) }
+    exclusions.each do |exclusion|
+      if url.include?('confirmation')
+        should_exclude = true
+      end
+    end
+    if should_exclude
       "private-system-url-redacted"
     else
       url
