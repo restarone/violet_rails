@@ -25,8 +25,9 @@ class EMailboxTest < ActionMailbox::TestCase
     end
   end
 
-  test "inbound mail routes to correct schema (www)" do
-    Apartment::Tenant.switch @restarone_subdomain do 
+  test "inbound mail routes to correct schema (www/domain apex)" do
+    MessageThread.destroy_all
+    Apartment::Tenant.switch 'public' do 
       assert_difference "MessageThread.all.reload.size" , +1 do 
         assert_difference "Message.all.reload.size", +1 do
           receive_inbound_email_from_mail \
