@@ -65,6 +65,28 @@ class Mailbox::MessageThreadsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test '#create (www)' do
+    sign_in(@user)
+    payload = {
+      message_thread: {
+        recipients: ['contact@restarone.com'],
+        message: {
+          content: 'foo'
+        }
+      }
+    }
+    perform_enqueued_jobs do
+      assert_difference "MessageThread.all.size", +1 do
+        assert_difference "Message.all.size", +1 do
+          post mailbox_message_threads_url(subdomain: 'www'), params: payload
+          assert_redirected_to mailbox_message_thread_url(subdomain: 'www', id: MessageThread.last.id)
+          assert flash.notice
+          refute Message.last.from
+        end
+      end
+    end
+  end
+
   test '#send_message' do
     sign_in(@user)
     payload = {
@@ -83,6 +105,28 @@ class Mailbox::MessageThreadsControllerTest < ActionDispatch::IntegrationTest
             assert flash.notice
             refute Message.last.from
           end
+        end
+      end
+    end
+  end
+
+  test '#send_message (www)' do
+    sign_in(@user)
+    payload = {
+      message_thread: {
+        message: {
+          content: 'foo'
+        }
+      }
+    }
+    
+    perform_enqueued_jobs do        
+      assert_no_difference "MessageThread.all.size" do
+        assert_difference "Message.all.size", +1 do
+          post send_message_mailbox_message_thread_url(subdomain: 'www', id: @message_thread.id), params: payload
+          assert_redirected_to mailbox_message_thread_url(subdomain: 'www', id: @message_thread.id)
+          assert flash.notice
+          refute Message.last.from
         end
       end
     end
