@@ -4,7 +4,7 @@ module DashboardHelper
     return if !url
     exclusions = Subdomain::PRIVATE_URL_PATHS
     exclusions.each do |exclusion|
-      if url.include?('confirmation')
+      if url.include?(exclusion)
         should_exclude = true
       end
     end
