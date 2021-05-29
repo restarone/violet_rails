@@ -28,4 +28,10 @@ class Mailbox::MailboxControllerTest < ActionDispatch::IntegrationTest
     get mailbox_url(subdomain: @subdomain.name)
     assert_response :success
   end
+
+  test "allows #show if logged in (root)" do
+    sign_in(@user)
+    get mailbox_url
+    assert_response :success
+  end
 end
