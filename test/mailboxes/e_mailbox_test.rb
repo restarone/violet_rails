@@ -25,6 +25,20 @@ class EMailboxTest < ActionMailbox::TestCase
     end
   end
 
+  test "inbound mail routes to correct schema (www)" do
+    Apartment::Tenant.switch @restarone_subdomain do 
+      assert_difference "MessageThread.all.reload.size" , +1 do 
+        assert_difference "Message.all.reload.size", +1 do
+          receive_inbound_email_from_mail \
+            to: '"Don Restarone" <www@restarone.solutions>',
+            from: '"else" <else@example.com>',
+            subject: "Hello world!",
+            body: "Hello?"
+        end
+      end
+    end
+  end
+
   test 'direct attachment' do
     Apartment::Tenant.switch @restarone_subdomain do      
       assert_difference "MessageThread.all.reload.size" , +1 do
