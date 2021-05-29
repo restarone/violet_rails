@@ -17,14 +17,6 @@ Rails.application.configure do
   config.action_controller.perform_caching = true
 
   config.action_mailer.raise_delivery_errors = true
-
-  config.action_mailer.default_url_options = { host: ENV['APP_HOST'] }
-  config.action_mailer.perform_deliveries = true 
-  config.action_mailer.delivery_method = :mailgun
-  config.action_mailer.mailgun_settings = {
-    api_key: ENV["MAILGUN_API_KEY"],
-    domain: 'mg.restarone.solutions',
-  }
   config.action_mailbox.ingress = :mailgun
 
   # Ensures that a master key has been made available in either ENV["RAILS_MASTER_KEY"]
@@ -77,7 +69,7 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
 
-  # for devise sending emails
+  
   config.action_mailer.default_url_options = { host: ENV['APP_HOST'] }
 
   config.action_mailer.perform_deliveries = true 
