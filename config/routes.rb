@@ -23,13 +23,13 @@ Rails.application.routes.draw do
       unlocks: 'users/unlocks',
       invitations: 'devise/invitations'
     }
-    
-    resource :mailbox, only: [:show], controller: 'mailbox/mailbox' do
-      resources :message_threads, controller: 'mailbox/message_threads' do
-        resources :messages
-        member do
-          post 'send_message'
-        end
+  end
+
+  resource :mailbox, only: [:show], controller: 'mailbox/mailbox' do
+    resources :message_threads, controller: 'mailbox/message_threads' do
+      resources :messages
+      member do
+        post 'send_message'
       end
     end
   end
