@@ -5,6 +5,7 @@
   = active_link_to "Call to Actions", call_to_actions_path, class: 'nav-link'
   = active_link_to "Visitor Analytics", dashboard_path, class: 'nav-link'
   = active_link_to "My Settings", edit_user_registration_path, class: 'nav-link'
+%li{class: 'nav-item'}
   %li.nav-item.dropdown
     %a#navbarDropdown.nav-link.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
       = "#{Subdomain.current.name.capitalize} Shortcuts"

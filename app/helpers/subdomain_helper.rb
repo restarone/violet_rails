@@ -72,7 +72,7 @@ module SubdomainHelper
 
   def render_og_image(subdomain)
     return if !subdomain.og_image.attached?
-    image_tag subdomain.og_image, class: 'rounded avatar', size: '40x40'
+    image_tag subdomain.og_image, class: 'rounded avatar', size: '100x100'
   end
 
 
