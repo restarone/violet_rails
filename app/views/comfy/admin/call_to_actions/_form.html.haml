@@ -6,45 +6,48 @@
         - @call_to_action.errors.full_messages.each do |message|
           %li= message
 
-  .field
+  .form-group
     = f.label :title
-    = f.text_field :title
-  .field
+    = f.text_field :title, class: 'form-control'
+  .form-group
     = f.label :cta_type
-    = f.select :cta_type, options_for_select(CallToAction::ACTION_TYPES, @call_to_action.cta_type)
-  .field
-    = f.label :success_message
-    = f.text_field :success_message
-  .field
-    = f.label :failure_message
-    = f.text_field :failure_message
+    = f.select :cta_type, options_for_select(CallToAction::ACTION_TYPES, @call_to_action.cta_type), class: 'form-control'
+  .my-5
+    .lead.my-2 
+      Messages
+    .form-group
+      = f.label :success_message
+      = f.text_field :success_message, class: 'form-control'
+    .form-group
+      = f.label :failure_message
+      = f.text_field :failure_message, class: 'form-control'
   - if @call_to_action.cta_type == CallToAction::ACTION_TYPES[:contact_us]
-    .field
+    .form-group
       = f.label :name_label
-      = f.text_field :name_label
-    .field
+      = f.text_field :name_label, class: 'form-control'
+    .form-group
       = f.label :name_placeholder
-      = f.text_field :name_placeholder
-    .field
+      = f.text_field :name_placeholder, class: 'form-control'
+    .form-group
       = f.label :phone_placeholder
-      = f.text_field :phone_placeholder
-    .field
+      = f.text_field :phone_placeholder, class: 'form-control'
+    .form-group
       = f.label :phone_label
-      = f.text_field :phone_label
-    .field
+      = f.text_field :phone_label, class: 'form-control'
+    .form-group
       = f.label :message_label
-      = f.text_field :message_label
-    .field
+      = f.text_field :message_label, class: 'form-control'
+    .form-group
       = f.label :message_placeholder
-      = f.text_field :message_placeholder
-  .field
+      = f.text_field :message_placeholder, class: 'form-control'
+  .form-group
     = f.label :email_label
-    = f.text_field :email_label
-  .field
+    = f.text_field :email_label, class: 'form-control'
+  .form-group
     = f.label :email_placeholder
-    = f.text_field :email_placeholder
-  .field
+    = f.text_field :email_placeholder, class: 'form-control'
+  .form-group
     = f.label :submit_button_label
-    = f.text_field :submit_button_label
+    = f.text_field :submit_button_label, class: 'form-control'
   .actions
-    = f.submit 'Save'
+    = f.submit 'Save', class: 'btn btn-primary'

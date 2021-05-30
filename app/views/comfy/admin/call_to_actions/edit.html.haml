@@ -1,7 +1,11 @@
-%h1 Editing call_to_action
+.page-header
+  %h2 
+    Editing 
+    = @call_to_action.title
 
 = render 'form'
 
-= link_to 'Show', @call_to_action
-\|
-= link_to 'Back', call_to_actions_path
+.my-5
+  = link_to 'Show', @call_to_action
+  \|
+  = link_to 'Back', call_to_actions_path
