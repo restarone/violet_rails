@@ -50,7 +50,7 @@ class Subdomain < ApplicationRecord
   end
 
   def mailing_address
-    Apartment::Tenant.switch self.name
+    Apartment::Tenant.switch self.name do
       "#{Apartment::Tenant.current}@#{ENV['APP_HOST']}"
     end
   end
