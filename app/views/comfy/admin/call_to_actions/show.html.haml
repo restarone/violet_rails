@@ -1,17 +1,21 @@
 %p#notice= notice
-
-%p
-  %b ID:
-  = @call_to_action.id
-%p
-  %b Title:
-  = @call_to_action.title
-%p
-  %b Cta type:
-  = @call_to_action.cta_type
-%p
-  %b Cta responses:
-  = @call_to_action_responses.size
+.my-5
+  %p
+    %b ID:
+    = @call_to_action.id
+  %p
+    %b Title:
+    = @call_to_action.title
+  %p
+    %b Cta type:
+    = @call_to_action.cta_type
+  %p
+    %b Cta responses:
+    = @call_to_action_responses.size
+  %p
+    %b Preview (outer border is present in preview only):
+  .card.p-3
+    = render_call_to_action @call_to_action.id
 
 = render partial: 'pagination', locals: { objects: @call_to_action_responses }
 %table.table.table-responsive

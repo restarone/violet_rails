@@ -1,46 +1,50 @@
 .form-group
   %label
     HTML title:
-  = f.text_field :html_title
+  = f.text_field :html_title, class: 'form-control'
 .form-group
   %label
     Blog title: 
-  = f.text_field :blog_title
+  = f.text_field :blog_title, class: 'form-control'
 .form-group
   %label
     Blog HTML title: 
-  = f.text_field :blog_html_title
+  = f.text_field :blog_html_title, class: 'form-control'
 .form-group
   %label
     Forum title: 
-  = f.text_field :forum_title
+  = f.text_field :forum_title, class: 'form-control'
 .form-group
   %label
     Forum HTML title: 
-  = f.text_field :forum_html_title
+  = f.text_field :forum_html_title, class: 'form-control'
 .form-group
-  .input-group
-    .input-group-prepend
-      %span.input-group-text SEO description
-    = f.text_area :description
+  %span SEO description
+  = f.text_area :description, class: 'form-control'
 .form-group
-  .input-group
-    .input-group-prepend
-      %span.input-group-text SEO keywords (comma separated):
-    = f.text_area :keywords
-.form-group
-  = render_logo(Subdomain.current)
-  %label
-    Company logo: 
-  = f.file_field :logo, required: false
-.form-group
-  = render_logo(Subdomain.current)
-  %label
-    Favicon: 
-  = f.file_field :favicon, required: false
-.form-group
-  = render_og_image(Subdomain.current)
-  %label
-    open-graph image: 
-  = f.file_field :og_image, required: false
+  %span SEO keywords (comma separated):
+  = f.text_area :keywords, class: 'form-control'
+
+.my-5
+  %strong
+    Graphics
+  .my-3
+    .form-group.card.p-2
+      %label
+        Company logo: 
+      .m-2
+        = render_logo(Subdomain.current)
+      = f.file_field :logo, required: false, class: 'form-control-file'
+    .form-group.card.p-2
+      %label
+        Favicon: 
+      .m-2
+        = render_logo(Subdomain.current)
+      = f.file_field :favicon, required: false, class: 'form-control-file'
+    .form-group.card.p-2
+      %label
+        open-graph image: 
+      .m-2
+        = render_og_image(Subdomain.current)
+      = f.file_field :og_image, required: false, class: 'form-control-file'
 = f.submit "Save", class: 'btn btn-primary'
