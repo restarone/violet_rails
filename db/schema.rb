@@ -109,8 +109,8 @@ ActiveRecord::Schema.define(version: 2021_06_02_010356) do
     t.integer "version", null: false
     t.jsonb "properties"
     t.boolean "requires_authentication", default: false
-    t.string "namespace_type", default: "create-read-update-delete"
-    t.string "base_authentication_permits", default: "read"
+    t.string "namespace_type", default: "create-read-update-delete", null: false
+    t.string "base_authentication_permits", default: "read", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end

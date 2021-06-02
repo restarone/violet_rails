@@ -75,7 +75,7 @@ Rails.application.routes.draw do
   namespace 'api' do
     scope ':version' do
       scope ':api_namespace' do
-        resources :api_resource, only: [:index, :show]
+        resources :resource, only: [:index, :show]
       end
     end
   end
