@@ -1,15 +1,15 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
+  name: users
   version: 1
   properties: 
   requires_authentication: false
-  namespace_type: MyString
+  namespace_type: create-read-update-delete
 
 two:
-  name: MyString
+  name: pages
   version: 1
   properties: 
   requires_authentication: false
-  namespace_type: MyString
+  namespace_type: create-read-update-delete
