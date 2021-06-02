@@ -46,6 +46,11 @@ Rails.application.routes.draw do
     end
   end
 
+  # api admin
+  resources :api_namespaces, controller: 'comfy/admin/api_namespaces' do
+    resources :api_resources, controller: 'comfy/admin/api_resources' 
+  end
+
   # system admin panel login
   devise_scope :user do
     get 'sign_in', to: 'users/sessions#new', as: :new_global_admin_session
@@ -65,6 +70,14 @@ Rails.application.routes.draw do
       end
     end
     resources :subdomains
+  end
+
+  namespace 'api' do
+    scope ':version' do
+      scope ':api_namespace' do
+        resources :api_resource, only: [:index, :show]
+      end
+    end
   end
   
   comfy_route :cms_admin, path: "/admin"

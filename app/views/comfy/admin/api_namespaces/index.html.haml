@@ -1,0 +1,29 @@
+%h1 Listing api_namespaces
+
+%table
+  %thead
+    %tr
+      %th Name
+      %th Version
+      %th Properties
+      %th Requires authentication
+      %th Namespace type
+      %th
+      %th
+      %th
+
+  %tbody
+    - @api_namespaces.each do |api_namespace|
+      %tr
+        %td= api_namespace.name
+        %td= api_namespace.version
+        %td= api_namespace.properties
+        %td= api_namespace.requires_authentication
+        %td= api_namespace.namespace_type
+        %td= link_to 'Show', api_namespace
+        %td= link_to 'Edit', edit_api_namespace_path(api_namespace)
+        %td= link_to 'Destroy', api_namespace, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New Api namespace', new_api_namespace_path

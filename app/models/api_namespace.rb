@@ -1,0 +1,2 @@
+class ApiNamespace < ApplicationRecord
+end

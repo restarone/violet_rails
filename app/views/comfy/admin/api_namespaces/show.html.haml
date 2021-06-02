@@ -1,0 +1,21 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @api_namespace.name
+%p
+  %b Version:
+  = @api_namespace.version
+%p
+  %b Properties:
+  = @api_namespace.properties
+%p
+  %b Requires authentication:
+  = @api_namespace.requires_authentication
+%p
+  %b Namespace type:
+  = @api_namespace.namespace_type
+
+= link_to 'Edit', edit_api_namespace_path(@api_namespace)
+\|
+= link_to 'Back', api_namespaces_path

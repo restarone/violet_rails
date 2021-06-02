@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_28_123634) do
+ActiveRecord::Schema.define(version: 2021_06_02_010356) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -102,6 +102,17 @@ ActiveRecord::Schema.define(version: 2021_05_28_123634) do
     t.datetime "started_at"
     t.index ["user_id"], name: "index_ahoy_visits_on_user_id"
     t.index ["visit_token"], name: "index_ahoy_visits_on_visit_token", unique: true
+  end
+
+  create_table "api_namespaces", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "version", null: false
+    t.jsonb "properties"
+    t.boolean "requires_authentication", default: false
+    t.string "namespace_type", default: "create-read-update-delete"
+    t.string "base_authentication_permits", default: "read"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "call_to_action_responses", force: :cascade do |t|
