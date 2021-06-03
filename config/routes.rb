@@ -8,7 +8,6 @@ class SubdomainConstraint
 end
 
 Rails.application.routes.draw do
-
   # analytics dashboard
   get 'dashboard', controller: 'comfy/admin/dashboard'
   resources :signup_wizard
@@ -48,7 +47,7 @@ Rails.application.routes.draw do
 
   # api admin
   resources :api_namespaces, controller: 'comfy/admin/api_namespaces' do
-    resources :api_resources, controller: 'comfy/admin/api_resources' 
+    resources :resources, controller: 'comfy/admin/api_resources' 
   end
 
   # system admin panel login

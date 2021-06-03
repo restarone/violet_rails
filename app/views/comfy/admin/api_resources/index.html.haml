@@ -1,0 +1,23 @@
+%h1 Listing api_resources
+
+%table
+  %thead
+    %tr
+      %th Api namespace
+      %th Properties
+      %th
+      %th
+      %th
+
+  %tbody
+    - @api_resources.each do |api_resource|
+      %tr
+        %td= api_resource.api_namespace
+        %td= api_resource.properties
+        %td= link_to 'Show', api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id)
+        %td= link_to 'Edit', edit_api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id)
+        %td= link_to 'Destroy', api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New Api resource', new_api_namespace_resource_path

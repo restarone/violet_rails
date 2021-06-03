@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_02_010356) do
+ActiveRecord::Schema.define(version: 2021_06_02_235740) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -110,9 +110,16 @@ ActiveRecord::Schema.define(version: 2021_06_02_010356) do
     t.jsonb "properties"
     t.boolean "requires_authentication", default: false
     t.string "namespace_type", default: "create-read-update-delete", null: false
-    t.string "base_authentication_permits", default: "read", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "api_resources", force: :cascade do |t|
+    t.bigint "api_namespace_id", null: false
+    t.jsonb "properties"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["api_namespace_id"], name: "index_api_resources_on_api_namespace_id"
   end
 
   create_table "call_to_action_responses", force: :cascade do |t|
@@ -425,6 +432,7 @@ ActiveRecord::Schema.define(version: 2021_06_02_010356) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "api_resources", "api_namespaces"
   add_foreign_key "call_to_action_responses", "call_to_actions"
   add_foreign_key "forum_posts", "forum_threads"
   add_foreign_key "forum_posts", "users"
