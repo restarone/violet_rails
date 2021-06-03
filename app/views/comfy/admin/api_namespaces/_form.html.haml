@@ -13,9 +13,7 @@
     = f.label :version
     = f.number_field :version
   #jsoneditor
-  .field
-    = f.label :properties
-    = f.text_field :properties
+  = f.hidden_field :properties
   .field
     = f.label :requires_authentication
     = f.check_box :requires_authentication
@@ -29,7 +27,7 @@
 :javascript
   // create the editor
   const container = document.getElementById("jsoneditor")
-  const options = {}
+  const options = {onChange: () => { setFields() } }
   const editor = new JSONEditor(container, options)
 
   // set json
@@ -42,6 +40,12 @@
       "String": "Hello World"
   }
   editor.set(initialJson)
-
+  setFields()
+  
+  function setFields() {
+    str = JSON.stringify(editor.get())
+    $("#api_namespace_properties").val(str)
+  }
   // get json
   const updatedJson = editor.get()
+

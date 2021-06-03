@@ -22,6 +22,7 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
 
   # POST /api_namespaces or /api_namespaces.json
   def create
+    byebug
     @api_namespace = ApiNamespace.new(api_namespace_params)
 
     respond_to do |format|
