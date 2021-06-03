@@ -7,6 +7,6 @@
   %b Properties:
   = @api_resource.properties
 
-= link_to 'Edit', edit_api_resource_path(@api_resource)
+= link_to 'Edit', edit_api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id, id: @api_resource.id)
 \|
-= link_to 'Back', api_resources_path
+= link_to 'Back', api_namespace_resources_path

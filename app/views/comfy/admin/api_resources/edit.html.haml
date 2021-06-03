@@ -2,6 +2,6 @@
 
 = render 'form'
 
-= link_to 'Show', @api_resource
+= link_to 'Show', api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id, id: @api_resource.id)
 \|
-= link_to 'Back', api_resources_path
+= link_to 'Back', api_namespace_resources_path

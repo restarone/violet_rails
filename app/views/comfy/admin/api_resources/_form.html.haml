@@ -1,4 +1,6 @@
-= form_for @api_resource do |f|
+- action = @api_resource.persisted? ? :put : :post
+- path = @api_resource.persisted? ? api_namespace_resource_url : api_namespace_resources_url
+= form_for @api_resource, url: path, method: action do |f|
   - if @api_resource.errors.any?
     #error_explanation
       %h2= "#{pluralize(@api_resource.errors.count, "error")} prohibited this api_resource from being saved:"

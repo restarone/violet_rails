@@ -21,43 +21,49 @@ class ApiResourcesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index" do
-    get api_namespace_resources_url
+    sign_in(@user)
+    get api_namespace_resources_url(api_namespace_id: @api_namespace.id)
     assert_response :success
   end
 
   test "should get new" do
-    get new_namespace_api_resource_url
+    sign_in(@user)
+    get new_api_namespace_resource_url(api_namespace_id: @api_namespace.id)
     assert_response :success
   end
 
   test "should create api_resource" do
+    sign_in(@user)
     assert_difference('ApiResource.count') do
-      post api_namespace_resources_url, params: { api_resource: { api_namespace_id: @api_resource.api_namespace_id, properties: @api_resource.properties } }
+      post api_namespace_resources_url(api_namespace_id: @api_namespace.id), params: { api_resource: { properties: @api_resource.properties } }
     end
 
-    assert_redirected_to api_resource_url(ApiResource.last)
+    assert_redirected_to api_namespace_resource_path(api_namespace_id: @api_namespace.id, id: ApiResource.last.id)
   end
 
   test "should show api_resource" do
-    get api_namespace_resource_url(@api_resource)
+    sign_in(@user)
+    get api_namespace_resource_url(api_namespace_id: @api_namespace.id, id: ApiResource.last.id)
     assert_response :success
   end
 
   test "should get edit" do
-    get edit_namespace_api_resource_url(@api_resource)
+    sign_in(@user)
+    get edit_api_namespace_resource_url(api_namespace_id: @api_namespace.id, id: ApiResource.last.id)
     assert_response :success
   end
 
   test "should update api_resource" do
+    sign_in(@user)
     patch api_namespace_resource_url(@api_resource, api_namespace_id: @api_resource.api_namespace_id), params: { api_resource: { properties: @api_resource.properties } }
     assert_redirected_to api_namespace_resource_url(@api_resource)
   end
 
   test "should destroy api_resource" do
+    sign_in(@user)
     assert_difference('ApiResource.count', -1) do
-      delete api_namespace_resource_url(@api_resource)
+      delete api_namespace_resource_url(@api_resource, api_namespace_id: @api_resource.api_namespace_id)
     end
-
-    assert_redirected_to api_resources_url
+    assert_redirected_to api_namespace_resources_url(api_namespace_id: @api_namespace.id)
   end
 end

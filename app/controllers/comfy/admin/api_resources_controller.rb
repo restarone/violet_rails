@@ -26,7 +26,7 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
 
     respond_to do |format|
       if @api_resource.save
-        format.html { redirect_to @api_resource, notice: "Api resource was successfully created." }
+        format.html { redirect_to api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id,id: @api_resource.id), notice: "Api resource was successfully created." }
         format.json { render :show, status: :created, location: @api_resource }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -39,7 +39,7 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
   def update
     respond_to do |format|
       if @api_resource.update(api_resource_params)
-        format.html { redirect_to @api_resource, notice: "Api resource was successfully updated." }
+        format.html { redirect_to api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id, id: @api_resource.id), notice: "Api resource was successfully updated." }
         format.json { render :show, status: :ok, location: @api_resource }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -52,7 +52,7 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
   def destroy
     @api_resource.destroy
     respond_to do |format|
-      format.html { redirect_to api_resources_url, notice: "Api resource was successfully destroyed." }
+      format.html { redirect_to api_namespace_resources_url(api_namespace_id: @api_namespace.id), notice: "Api resource was successfully destroyed." }
       format.json { head :no_content }
     end
   end
@@ -60,11 +60,12 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_api_resource
-      @api_resource = ApiResource.find(params[:id])
+      @api_namespace = ApiNamespace.find_by(id: params[:api_namespace_id])
+      @api_resource = @api_namespace.api_resources.find_by(id: params[:id])
     end
 
     # Only allow a list of trusted parameters through.
     def api_resource_params
-      params.require(:api_resource).permit(:api_namespace_id, :properties)
+      params.require(:api_resource).permit(:properties).merge({api_namespace_id: params[:api_namespace_id]})
     end
 end
