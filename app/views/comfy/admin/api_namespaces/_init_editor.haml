@@ -14,8 +14,11 @@
       "String": "Hello World"
   }
   editor.set(initialJson)
-  if ($("#api_namespace_properties").val()) {
-    let json = JSON.parse($("#api_namespace_properties").val())
+  let existingValue = $("#api_namespace_properties").val() ? $("#api_namespace_properties").val() : $("#properties").val()
+
+  if (existingValue) {
+    console.log(existingValue)
+    let json = JSON.parse(existingValue)
     editor.set(json)
   } else {
     setFields()

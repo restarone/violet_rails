@@ -1,6 +1,6 @@
 class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
   before_action :ensure_authority_to_manage_web
-  before_action :set_api_resource, only: %i[ show edit update destroy ]
+  before_action :set_api_resource
 
   # GET /api_resources or /api_resources.json
   def index
@@ -13,7 +13,7 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
 
   # GET /api_resources/new
   def new
-    @api_resource = ApiResource.new
+    @api_resource = ApiResource.new(api_namespace_id: @api_namespace.id)
   end
 
   # GET /api_resources/1/edit

@@ -7,12 +7,8 @@
       %ul
         - @api_resource.errors.full_messages.each do |message|
           %li= message
-
-  .field
-    = f.label :api_namespace
-    = f.text_field :api_namespace
-  .field
-    = f.label :properties
-    = f.text_field :properties
+  #jsoneditor  
+  = hidden_field_tag :properties, @api_resource.api_namespace.properties
   .actions
     = f.submit 'Save'
+= render 'comfy/admin/api_namespaces/init_editor'

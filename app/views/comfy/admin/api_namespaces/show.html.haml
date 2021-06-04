@@ -1,3 +1,7 @@
+= link_to 'Edit', edit_api_namespace_path(@api_namespace)
+\|
+= link_to 'Back', api_namespaces_path
+
 %p#notice= notice
 
 %p
@@ -17,9 +21,33 @@
   %b Namespace type:
   = @api_namespace.namespace_type
 
-= link_to 'Edit', edit_api_namespace_path(@api_namespace)
-\|
-= link_to 'Back', api_namespaces_path
-
-
 = render 'init_editor'
+
+%strong
+  resources
+.my-3
+  = link_to "Create new #{@api_namespace.name.singularize}", new_api_namespace_resource_path(api_namespace_id: @api_namespace.id)
+
+
+.container-fluid
+  %h1 
+    Listing
+    =  @api_namespace.name
+  %table
+    %thead
+      %tr
+        %th Properties
+        %th
+        %th
+        %th
+
+    %tbody
+      - @api_resources.each do |api_resource|
+        %tr
+          %td= api_resource.properties
+          %td= link_to 'Show', api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id)
+          %td= link_to 'Edit', edit_api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id)
+          %td= link_to 'Destroy', api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), method: :delete, data: { confirm: 'Are you sure?' }
+
+  %br
+

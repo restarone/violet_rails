@@ -9,6 +9,7 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
 
   # GET /api_namespaces/1 or /api_namespaces/1.json
   def show
+    @api_resources = @api_namespace.api_resources
   end
 
   # GET /api_namespaces/new
