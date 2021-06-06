@@ -53,7 +53,7 @@
             %th= v.country
             %th= v.region
             %th= v.city
-            %th= v.referring_domain
-            %th= v.landing_page
+            %th= redact_private_urls(v.referring_domain)
+            %th= redact_private_urls(v.landing_page)
             %th= v.user_agent  
     = render partial: 'pagination'
