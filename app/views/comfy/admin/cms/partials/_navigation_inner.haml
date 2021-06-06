@@ -4,7 +4,13 @@
   = active_link_to "Web Settings", edit_web_settings_path, class: 'nav-link'
   = active_link_to "Call to Actions", call_to_actions_path, class: 'nav-link'
   = active_link_to "Visitor Analytics", dashboard_path, class: 'nav-link'
-  = link_to "Blog", '/blog', class: 'nav-link', target: '_blank'
-  = link_to "Forum", '/forum', class: 'nav-link', target: '_blank'
   = active_link_to "My Settings", edit_user_registration_path, class: 'nav-link'
+%li{class: 'nav-item'}
+  %li.nav-item.dropdown
+    %a#navbarDropdown.nav-link.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
+      = "#{Subdomain.current.name.capitalize} Shortcuts"
+    .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
+      = link_to "Website", '/', class: 'dropdown-item', target: '_blank'
+      = link_to "Blog", '/blog', class: 'dropdown-item', target: '_blank'
+      = link_to "Forum", '/forum', class: 'dropdown-item', target: '_blank'
   = link_to "Logout", destroy_user_session_path, class: 'nav-link text-danger', method: :delete

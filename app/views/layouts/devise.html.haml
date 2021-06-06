@@ -1,0 +1,21 @@
+!!!
+%html
+  %head
+    %title= "Welcome to #{Subdomain.current.name}"
+    %meta{:content => "width=device-width,initial-scale=1", :name => "viewport"}/
+    = csrf_meta_tags
+    = csp_meta_tag
+    = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
+    = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
+  %body
+    = render partial: 'shared/flash'
+    = cms_snippet_content('navbar').html_safe
+    .d-flex.flex-column.justify-content-center.align-items-center
+      .my-5
+        - custom_logo_path = logo_url(Subdomain.current)
+        - if custom_logo_path
+          = image_tag(custom_logo_path, class: "img-fluid", size: '100x100')
+        - else
+          = image_tag('https://placebear.com/200/300', class: "img-fluid", size: '100x100')  
+      = yield
+    = cms_snippet_content('footer').html_safe
