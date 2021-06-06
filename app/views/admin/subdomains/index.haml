@@ -9,6 +9,8 @@
         %th{:scope => "col"}
           = sort_link @subdomains_q, :name
         %th{:scope => "col"}
+          Email
+        %th{:scope => "col"}
           = sort_link @subdomains_q, :description
         %th{:scope => "col"}
           = sort_link @subdomains_q, :keywords
@@ -27,6 +29,7 @@
         %tr
           %td
             = link_to display_subdomain_name(subdomain.name), edit_admin_subdomain_path(id: subdomain.id)
+          %td= subdomain.mailing_address
           %td= subdomain.description
           %td= subdomain.keywords
           %td= visits_count(subdomain)
