@@ -9,6 +9,7 @@
           %li= message
   #jsoneditor  
   = hidden_field_tag :properties, @api_resource.api_namespace.properties
+  = f.hidden_field :properties
   .actions
     = f.submit 'Save'
 = render 'comfy/admin/api_namespaces/init_editor'

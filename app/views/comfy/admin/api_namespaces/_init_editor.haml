@@ -17,7 +17,6 @@
   let existingValue = $("#api_namespace_properties").val() ? $("#api_namespace_properties").val() : $("#properties").val()
 
   if (existingValue) {
-    console.log(existingValue)
     let json = JSON.parse(existingValue)
     editor.set(json)
   } else {
@@ -27,6 +26,7 @@
   function setFields() {
     str = JSON.stringify(editor.get())
     $("#api_namespace_properties").val(str)
+    $("#api_resource_properties").val(str)
   }
   // get json
   const updatedJson = editor.get()
