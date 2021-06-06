@@ -2,7 +2,7 @@ require 'sidekiq/web'
 class SubdomainConstraint
   def self.matches?(request)
     # plug in exclusions model here
-    restricted_subdomains = ['root']
+    restricted_subdomains = []
     !restricted_subdomains.include?(request.subdomain)
   end
 end
@@ -23,13 +23,13 @@ Rails.application.routes.draw do
       unlocks: 'users/unlocks',
       invitations: 'devise/invitations'
     }
-    
-    resource :mailbox, only: [:show], controller: 'mailbox/mailbox' do
-      resources :message_threads, controller: 'mailbox/message_threads' do
-        resources :messages
-        member do
-          post 'send_message'
-        end
+  end
+
+  resource :mailbox, only: [:show], controller: 'mailbox/mailbox' do
+    resources :message_threads, controller: 'mailbox/message_threads' do
+      resources :messages
+      member do
+        post 'send_message'
       end
     end
   end

@@ -21,6 +21,9 @@ class Subdomain < ApplicationRecord
   # root domain name schema name
   ROOT_DOMAIN_NAME = 'root'
 
+  # keep these urls out of logging
+  PRIVATE_URL_PATHS  = ['/users/password', '/users/registration', '/users/sessions', '/users/confirmation', '/users/invitation']
+
   def self.current
     subdomain = Subdomain.find_by(name: Apartment::Tenant.current)
     if subdomain
@@ -47,7 +50,9 @@ class Subdomain < ApplicationRecord
   end
 
   def mailing_address
-    "#{Apartment::Tenant.current}@#{ENV['APP_HOST']}"
+    Apartment::Tenant.switch self.name do
+      "#{Apartment::Tenant.current}@#{ENV['APP_HOST']}"
+    end
   end
 
   def hostname
