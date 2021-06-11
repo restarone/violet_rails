@@ -61,7 +61,7 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_api_namespace
-      @api_namespace = ApiNamespace.find(params[:id])
+      @api_namespace = ApiNamespace.friendly.find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.

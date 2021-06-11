@@ -28,7 +28,7 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
 
   test 'describes resource' do
     get api_describe_url(version: '1', api_namespace: @api_namespace.name)
-    assert_equal response.parsed_body.symbolize_keys.keys.sort, [:id, :name, :version, :properties, :requires_authentication, :namespace_type, :created_at, :updated_at].sort 
+    assert_equal response.parsed_body.symbolize_keys.keys.sort, [:created_at, :id, :name, :namespace_type, :properties, :requires_authentication, :slug, :updated_at, :version].sort 
   end
 
   test 'index users resource' do

@@ -2,6 +2,7 @@
 
 one:
   name: clients
+  slug: clients
   version: 1
   properties: 
   requires_authentication: false
@@ -9,6 +10,7 @@ one:
 
 two:
   name: pages
+  slug: pages
   version: 1
   properties: 
   requires_authentication: false
@@ -16,6 +18,7 @@ two:
 
 users:
   name: users
+  slug: users
   version: 1
   properties: >
     {

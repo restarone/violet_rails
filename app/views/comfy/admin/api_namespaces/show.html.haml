@@ -24,6 +24,16 @@
 = render 'init_editor'
 
 %strong
+  Request description endpoint:
+%pre
+  = api_base_url(Subdomain.current, @api_namespace)
+
+%strong
+  Request index endpoint:
+%pre
+  = api_base_url(Subdomain.current, @api_namespace)
+
+%strong
   resources
 .my-3
   = link_to "Create new #{@api_namespace.name.singularize}", new_api_namespace_resource_path(api_namespace_id: @api_namespace.id)
