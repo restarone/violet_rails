@@ -66,8 +66,9 @@ module SubdomainHelper
   end
 
   def og_image_url(subdomain)
+    # this needs to be an absolute path, not a relative one
     return if !subdomain.og_image.attached?
-    rails_blob_path(subdomain.og_image)
+    rails_blob_url(subdomain.og_image)
   end
 
   def render_og_image(subdomain)
