@@ -1,7 +1,7 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: users
+  name: clients
   version: 1
   properties: 
   requires_authentication: false
@@ -11,5 +11,15 @@ two:
   name: pages
   version: 1
   properties: 
+  requires_authentication: false
+  namespace_type: create-read-update-delete
+
+users:
+  name: users
+  version: 1
+  properties: >
+    {
+      "release_date": "1/1/1995"
+    }
   requires_authentication: false
   namespace_type: create-read-update-delete

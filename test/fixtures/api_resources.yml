@@ -1,9 +1,17 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  api_namespace: one
+  api_namespace: 1
   properties: 
 
 two:
-  api_namespace: two
+  api_namespace: 1
   properties: 
+
+user:
+  api_namespace: users
+  properties: >
+    {
+      "first_name": "Don",
+      "last_name": "Restarone"
+    }
