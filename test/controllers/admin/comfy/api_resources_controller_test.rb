@@ -1,6 +1,6 @@
 require "test_helper"
 
-class ApiResourcesControllerTest < ActionDispatch::IntegrationTest
+class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
     @user.update(can_manage_web: true)
