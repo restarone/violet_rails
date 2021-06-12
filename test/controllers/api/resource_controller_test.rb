@@ -35,9 +35,9 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
     get api_url(version: '1', api_namespace: @users_namespace.name), as: :json
     sample_user = response.parsed_body[0].symbolize_keys!
     assert_equal(
-      [:id, :api_namespace_id, :properties, :created_at, :updated_at].sort,
+      [:created_at, :properties, :updated_at].sort,
       sample_user.keys.sort
     )
-    assert_equal JSON.parse(sample_user[:properties]).symbolize_keys!.keys.sort, JSON.parse(api_resources(:user).properties).symbolize_keys!.keys.sort
+    assert_equal sample_user[:properties].symbolize_keys!.keys.sort, JSON.parse(api_resources(:user).properties).symbolize_keys!.keys.sort
   end
 end

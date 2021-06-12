@@ -6,7 +6,4 @@ class Api::ResourceController < Api::BaseController
   def describe
     render json: @api_namespace
   end
-
-  def show
-  end
 end
