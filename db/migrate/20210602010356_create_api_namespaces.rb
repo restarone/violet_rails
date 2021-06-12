@@ -10,5 +10,6 @@ class CreateApiNamespaces < ActiveRecord::Migration[6.1]
 
       t.timestamps
     end
+    add_index :api_namespaces, :properties, using: :gin, opclass: :jsonb_path_ops
   end
 end

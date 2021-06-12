@@ -113,6 +113,7 @@ ActiveRecord::Schema.define(version: 2021_06_11_230926) do
     t.string "namespace_type", default: "create-read-update-delete", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["properties"], name: "index_api_namespaces_on_properties", opclass: :jsonb_path_ops, using: :gin
   end
 
   create_table "api_resources", force: :cascade do |t|
@@ -121,6 +122,7 @@ ActiveRecord::Schema.define(version: 2021_06_11_230926) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["api_namespace_id"], name: "index_api_resources_on_api_namespace_id"
+    t.index ["properties"], name: "index_api_resources_on_properties", opclass: :jsonb_path_ops, using: :gin
   end
 
   create_table "call_to_action_responses", force: :cascade do |t|

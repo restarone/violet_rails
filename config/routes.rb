@@ -76,6 +76,7 @@ Rails.application.routes.draw do
       scope ':api_namespace' do
         get '/', to: 'resource#index'
         get '/describe', to: 'resource#describe'
+        post '/query', to: 'resource#query'
       end
     end
   end

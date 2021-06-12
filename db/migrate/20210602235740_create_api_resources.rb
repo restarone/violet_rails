@@ -6,5 +6,6 @@ class CreateApiResources < ActiveRecord::Migration[6.1]
 
       t.timestamps
     end
+    add_index :api_resources, :properties, using: :gin, opclass: :jsonb_path_ops
   end
 end

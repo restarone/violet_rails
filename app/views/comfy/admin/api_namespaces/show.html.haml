@@ -25,13 +25,26 @@
 
 %strong
   Request description endpoint:
+%p
+  GET
 %pre
-  = api_base_url(Subdomain.current, @api_namespace)
+  = "#{api_base_url(Subdomain.current, @api_namespace)}/describe"
 
 %strong
   Request index endpoint:
+%p
+  GET
 %pre
+
   = api_base_url(Subdomain.current, @api_namespace)
+
+%strong
+  Request query endpoint:
+%p
+  POST
+%pre
+  = "#{api_base_url(Subdomain.current, @api_namespace)}/query"
+
 
 %strong
   resources
