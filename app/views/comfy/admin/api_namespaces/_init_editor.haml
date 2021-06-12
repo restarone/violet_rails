@@ -14,7 +14,7 @@
       "String": "Hello World"
   }
   editor.set(initialJson)
-  let existingValue = $("#properties").val() ? $("#properties").val() : $("#api_namespace_properties").val()
+  let existingValue = $("#api_resource_properties").val() ? $("#api_resource_properties").val() : $("#api_namespace_properties").val()
 
   if (existingValue) {
     let json = JSON.parse(existingValue)
