@@ -66,6 +66,7 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
 
     # Only allow a list of trusted parameters through.
     def api_resource_params
-      params.require(:api_resource).permit(:properties).merge({api_namespace_id: params[:api_namespace_id]})
+      properties = params[:api_resource][:properties] ? JSON.parse(params[:api_resource][:properties]) : nil
+      params.require(:api_resource).permit(:properties).merge({ api_namespace_id: params[:api_namespace_id], properties: properties })
     end
 end
