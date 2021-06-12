@@ -34,12 +34,12 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
 
   test "should create api_resource" do
     sign_in(@user)
-    payload = {foo: 'bar'}
+    payload_as_stringified_json = "{\"age\":26,\"alive\":true,\"last_name\":\"Teng\",\"first_name\":\"Jennifer\"}"
     assert_difference('ApiResource.count') do
-      post api_namespace_resources_url(api_namespace_id: @api_namespace.id), params: { api_resource: { properties: payload } }
+      post api_namespace_resources_url(api_namespace_id: @api_namespace.id), params: { api_resource: { properties: payload_as_stringified_json } }
     end
     assert ApiResource.last.properties
-    assert_equal payload.symbolize_keys.keys, ApiResource.last.properties.symbolize_keys.keys
+    assert_equal JSON.parse(payload_as_stringified_json).symbolize_keys.keys, ApiResource.last.properties.symbolize_keys.keys
     assert_redirected_to api_namespace_resource_path(api_namespace_id: @api_namespace.id, id: ApiResource.last.id)
   end
 
