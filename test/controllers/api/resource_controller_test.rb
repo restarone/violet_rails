@@ -38,6 +38,6 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
       [:created_at, :properties, :updated_at].sort,
       sample_user.keys.sort
     )
-    assert_equal sample_user[:properties].symbolize_keys!.keys.sort, JSON.parse(api_resources(:user).properties).symbolize_keys!.keys.sort
+    assert_equal JSON.parse(sample_user[:properties]).symbolize_keys!.keys.sort, JSON.parse(api_resources(:user).properties).symbolize_keys!.keys.sort
   end
 end
