@@ -38,6 +38,20 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
       [:created_at, :properties, :updated_at].sort,
       sample_user.keys.sort
     )
-    assert_equal JSON.parse(sample_user[:properties]).symbolize_keys!.keys.sort, JSON.parse(api_resources(:user).properties).symbolize_keys!.keys.sort
+    assert_equal sample_user[:properties].symbolize_keys!.keys.sort, api_resources(:user).properties.symbolize_keys!.keys.sort
+  end
+
+  test 'query users resource' do
+    payload = {
+      attribute: 'first_name',
+      value: "Don"
+    }
+    post api_query_url(version: '1', api_namespace: @users_namespace.name, params: payload)
+    sample_user = response.parsed_body[0].symbolize_keys!
+    assert_equal(
+      [:created_at, :properties, :updated_at].sort,
+      sample_user.keys.sort
+    )
+    assert_equal sample_user[:properties].symbolize_keys!.keys.sort, api_resources(:user).properties.symbolize_keys!.keys.sort
   end
 end

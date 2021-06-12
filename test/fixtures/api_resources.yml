@@ -10,8 +10,4 @@ two:
 
 user:
   api_namespace: users
-  properties: >
-    {
-      "first_name": "Don",
-      "last_name": "Restarone"
-    }
+  properties: {first_name: "Don", last_name: "Restarone"}
