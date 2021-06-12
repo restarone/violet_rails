@@ -8,8 +8,8 @@
         - @api_resource.errors.full_messages.each do |message|
           %li= message
   #jsoneditor  
-  = hidden_field_tag :properties, @api_resource.api_namespace.properties
-  = f.hidden_field :properties
+  = hidden_field_tag :api_namespace_properties, @api_resource.api_namespace.properties
+  = hidden_field_tag "api_resource[properties]", @api_resource.properties ? @api_resource.properties.to_json : nil
   .actions
     = f.submit 'Save'
 = render 'comfy/admin/api_namespaces/init_editor'
