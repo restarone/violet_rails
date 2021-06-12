@@ -27,7 +27,7 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'describes resource' do
-    get api_describe_url(version: '1', api_namespace: @api_namespace.name)
+    get api_describe_url(version: '1', api_namespace: @users_namespace.name)
     assert_equal response.parsed_body.symbolize_keys.keys.sort, [:created_at, :id, :name, :namespace_type, :properties, :requires_authentication, :slug, :updated_at, :version].sort 
   end
 
@@ -35,7 +35,7 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
     get api_url(version: '1', api_namespace: @users_namespace.name), as: :json
     sample_user = response.parsed_body[0].symbolize_keys!
     assert_equal(
-      [:created_at, :properties, :updated_at].sort,
+      [:id, :created_at, :properties, :updated_at].sort,
       sample_user.keys.sort
     )
     assert_equal sample_user[:properties].symbolize_keys!.keys.sort, api_resources(:user).properties.symbolize_keys!.keys.sort
@@ -49,9 +49,14 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
     post api_query_url(version: '1', api_namespace: @users_namespace.name, params: payload)
     sample_user = response.parsed_body[0].symbolize_keys!
     assert_equal(
-      [:created_at, :properties, :updated_at].sort,
+      [:id, :created_at, :properties, :updated_at].sort,
       sample_user.keys.sort
     )
     assert_equal sample_user[:properties].symbolize_keys!.keys.sort, api_resources(:user).properties.symbolize_keys!.keys.sort
+  end
+
+  test '#show users resource' do
+    get api_show_resource_url(version: '1', api_namespace: @users_namespace.name, api_resource_id: @users_namespace.api_resources.first.id)
+    assert_response :success
   end
 end
