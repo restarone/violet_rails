@@ -4,12 +4,16 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
 
   # GET /api_namespaces or /api_namespaces.json
   def index
-    @api_namespaces = ApiNamespace.all
+    params[:q] ||= {}
+    @api_namespaces_q = ApiNamespace.ransack(params[:q])
+    @api_namespaces = @api_namespaces_q.result.paginate(page: params[:page], per_page: 10)
   end
 
   # GET /api_namespaces/1 or /api_namespaces/1.json
   def show
-    @api_resources = @api_namespace.api_resources
+    params[:q] ||= {}
+    @api_resources_q = @api_namespace.api_resources.ransack(params[:q])
+    @api_resources = @api_resources_q.result.paginate(page: params[:page], per_page: 10)
   end
 
   # GET /api_namespaces/new

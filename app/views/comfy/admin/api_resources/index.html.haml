@@ -12,7 +12,7 @@
   %tbody
     - @api_resources.each do |api_resource|
       %tr
-        %td= api_resource.api_namespace
+        %td= api_resource.api_namespace.name
         %td= api_resource.properties
         %td= link_to 'Show', api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id)
         %td= link_to 'Edit', edit_api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id)
