@@ -1,0 +1,15 @@
+- action = @api_resource.persisted? ? :put : :post
+- path = @api_resource.persisted? ? api_namespace_resource_url : api_namespace_resources_url
+= form_for @api_resource, url: path, method: action do |f|
+  - if @api_resource.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@api_resource.errors.count, "error")} prohibited this api_resource from being saved:"
+      %ul
+        - @api_resource.errors.full_messages.each do |message|
+          %li= message
+  #jsoneditor  
+  = hidden_field_tag :api_namespace_properties, @api_resource.api_namespace.properties
+  = hidden_field_tag "api_resource[properties]", @api_resource.properties ? @api_resource.properties.to_json : nil
+  .actions
+    = f.submit 'Save'
+= render 'comfy/admin/api_namespaces/init_editor'

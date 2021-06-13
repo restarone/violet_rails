@@ -1,0 +1,28 @@
+= form_for @api_namespace do |f|
+  - if @api_namespace.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@api_namespace.errors.count, "error")} prohibited this api_namespace from being saved:"
+      %ul
+        - @api_namespace.errors.full_messages.each do |message|
+          %li= message
+
+  .field
+    = f.label :name
+    = f.text_field :name
+  .field
+    = f.label :version
+    = f.number_field :version
+  #jsoneditor
+  = f.hidden_field :properties
+  .field
+    = f.label :requires_authentication
+    = f.check_box :requires_authentication
+  .field
+    = f.label :namespace_type
+    = f.text_field :namespace_type
+  .actions
+    = f.submit 'Save'
+
+
+= render 'init_editor'
+
