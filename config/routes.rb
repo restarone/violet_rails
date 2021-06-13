@@ -80,7 +80,7 @@ Rails.application.routes.draw do
         post '/query', to: 'resource#query'
         post '/', to: 'resource#create', as: :create_resource
         patch '/edit/:api_resource_id', to: 'resource#update', as: :update_resource
-        delete ':api_resource_id', to: 'resource#destroy', as: :destroy_resource
+        delete '/destroy/:api_resource_id', to: 'resource#destroy', as: :destroy_resource
       end
     end
   end
