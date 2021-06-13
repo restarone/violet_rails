@@ -73,6 +73,9 @@ class Api::ResourceController < Api::BaseController
 
   def load_api_resource
     @api_resource = @api_namespace.api_resources.find_by(id: params[:api_resource_id])
+    unless @api_resource 
+      render json: { status: 'not found', code: 404 }
+    end
   end
 
   def serialize_resources(collection)

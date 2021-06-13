@@ -152,5 +152,8 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
       delete api_destroy_resource_url(version: @users_namespace.version, api_namespace: @users_namespace.slug, api_resource_id: @users_namespace.api_resources.first.id), headers: { 'Authorization': "Bearer #{api_client.bearer_token}" }
     end
     assert_equal [:status, :code, :object].sort, response.parsed_body.symbolize_keys.keys.sort
+
+    delete api_destroy_resource_url(version: @users_namespace.version, api_namespace: @users_namespace.slug, api_resource_id: 42), headers: { 'Authorization': "Bearer #{api_client.bearer_token}" }
+    assert_equal response.parsed_body["code"], 404
   end
 end
