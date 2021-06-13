@@ -13,3 +13,10 @@ two:
   slug: MyString11
   authentication_strategy: bearer_token
   bearer_token: MyString1
+
+for_users:
+  api_namespace: users
+  label: MyString111
+  slug: MyString111
+  authentication_strategy: bearer_token
+  bearer_token: MyString11

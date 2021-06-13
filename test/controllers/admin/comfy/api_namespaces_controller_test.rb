@@ -36,8 +36,9 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_difference('ApiNamespace.count') do
       post api_namespaces_url, params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, properties: @api_namespace.properties, requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
     end
-
-    assert_redirected_to api_namespace_url(ApiNamespace.last)
+    api_namespace = ApiNamespace.last
+    assert api_namespace.slug
+    assert_redirected_to api_namespace_url(api_namespace)
   end
 
   test "should show api_namespace" do

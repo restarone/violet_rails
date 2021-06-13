@@ -1,5 +1,5 @@
 class Api::ResourceController < Api::BaseController
-  before_action :load_api_resource, only: [:show, :create, :update]
+  before_action :load_api_resource, only: [:show, :update, :destroy]
   before_action :prevent_write_access_if_public, only: [:create, :update, :destroy]
 
   def index
@@ -28,15 +28,31 @@ class Api::ResourceController < Api::BaseController
   end
 
   def create
-
+    payload = params[:data]
+    api_resource = @api_namespace.api_resources.new(properties: payload)
+    if api_resource.save
+      render json: { code: 200, status: 'OK', object: serialize_resource(api_resource) }
+    else
+      render json: { code: 400, status: api_resource.errors.full_messages.to_sentence }
+    end
   end
 
   def update
-
+    payload = params[:data]
+    before_change = @api_resource.dup
+    if payload && @api_resource.update(properties: payload)
+      render json: { code: 200, status: 'OK', object: serialize_resource(@api_resource.reload), before: serialize_resource(before_change) }
+    else
+      render json: { code: 422, status: 'unprocessable entity' }
+    end
   end
 
   def destroy
-
+    if @api_resource.destroy
+      render json: { code: 200, status: 'OK', object: serialize_resource(@api_resource) }
+    else
+      render json: { code: 422, status: 'unprocessable entity' }
+    end
   end
 
   private

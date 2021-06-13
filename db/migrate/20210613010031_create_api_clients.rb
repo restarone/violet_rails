@@ -9,5 +9,6 @@ class CreateApiClients < ActiveRecord::Migration[6.1]
 
       t.timestamps
     end
+    add_index :api_clients, :bearer_token
   end
 end

@@ -113,6 +113,7 @@ ActiveRecord::Schema.define(version: 2021_06_13_010031) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["api_namespace_id"], name: "index_api_clients_on_api_namespace_id"
+    t.index ["bearer_token"], name: "index_api_clients_on_bearer_token"
   end
 
   create_table "api_namespaces", force: :cascade do |t|
