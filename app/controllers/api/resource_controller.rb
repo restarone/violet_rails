@@ -2,6 +2,8 @@ class Api::ResourceController < Api::BaseController
   before_action :load_api_resource, only: [:show, :update, :destroy]
   before_action :prevent_write_access_if_public, only: [:create, :update, :destroy]
 
+  before_action :validate_payload, only: [:create, :update]
+
   def index
     render json: serialize_resources(@api_namespace.api_resources.order(updated_at: :desc))
   end
@@ -56,6 +58,12 @@ class Api::ResourceController < Api::BaseController
   end
 
   private
+
+  def validate_payload
+    unless params[:data]
+      render json: { status: 'Please make sure that your parameters are provided under a data: {} top-level key', code: 422 }
+    end
+  end
 
   def prevent_write_access_if_public
     unless @api_namespace.requires_authentication

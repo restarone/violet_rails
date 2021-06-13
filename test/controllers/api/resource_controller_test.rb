@@ -115,6 +115,12 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
     end
     assert_equal [:status, :code, :object].sort, response.parsed_body.symbolize_keys.keys.sort
     assert_equal payload[:data].keys.sort, response.parsed_body["object"]["properties"].symbolize_keys.keys.sort
+
+    assert_no_difference "@users_namespace.api_resources.count", +1 do
+      post api_create_resource_url(version: @users_namespace.version, api_namespace: @users_namespace.slug), headers: { 'Authorization': "Bearer #{api_client.bearer_token}" }
+    end
+    assert_equal [:status, :code].sort, response.parsed_body.symbolize_keys.keys.sort
+    assert_equal response.parsed_body["status"], "Please make sure that your parameters are provided under a data: {} top-level key"
   end
 
   test '#update access is allowed if bearer authentication is provided' do
@@ -134,6 +140,9 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
     assert_equal api_resource.reload.properties["first_name"], response.parsed_body["object"]["properties"]["first_name"]
     assert_equal cloned_before_state.properties["first_name"], response.parsed_body["before"]["properties"]["first_name"]
     assert_equal payload[:data].keys.sort, response.parsed_body["object"]["properties"].symbolize_keys.keys.sort
+
+    patch api_update_resource_url(version: @users_namespace.version, api_namespace: @users_namespace.slug, api_resource_id: api_resource.id), headers: { 'Authorization': "Bearer #{api_client.bearer_token}" }
+    assert_equal response.parsed_body["status"], "Please make sure that your parameters are provided under a data: {} top-level key"
   end
 
   test '#destroy access is allowed if bearer authentication is provided' do
