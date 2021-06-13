@@ -48,9 +48,9 @@
 
 - if @api_namespace.requires_authentication
   %strong
-    Keys
+    = link_to "API Clients", api_namespace_api_clients_path(api_namespace_id: @api_namespace.id)
   .my-3
-    = link_to "Create new key", new_api_namespace_api_client_path(api_namespace_id: @api_namespace.id)
+    = link_to "Create new key for client", new_api_namespace_api_client_path(api_namespace_id: @api_namespace.id)
 
 %strong
   resources
