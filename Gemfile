@@ -34,7 +34,6 @@ gem "comfy_blog", git: 'https://github.com/restarone/comfy-blog', branch: 'maste
 gem 'simple_discussion', git: 'https://github.com/restarone/simple_discussion', branch: 'master'
 gem 'gravatar_image_tag'
 gem 'wicked' # for multi-step forms
-gem 'friendly_id'
 gem 'devise_invitable'
 gem "aws-sdk-s3", require: false
 gem 'meta-tags'
