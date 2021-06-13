@@ -70,6 +70,6 @@ class Comfy::Admin::ApiClientsController < Comfy::Admin::Cms::BaseController
 
     # Only allow a list of trusted parameters through.
     def api_client_params
-      params.require(:api_client).permit(:api_namespace_id, :label, :authentication_strategy, :bearer_token).merge({api_namespace_id: @api_namespace.id})
+      params.require(:api_client).permit(:api_namespace_id, :label, :authentication_strategy).merge({api_namespace_id: @api_namespace.id})
     end
 end

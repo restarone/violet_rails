@@ -300,15 +300,6 @@ ActiveRecord::Schema.define(version: 2021_06_13_010031) do
     t.index ["page_id"], name: "index_comfy_cms_translations_on_page_id"
   end
 
-  create_table "email_aliases", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.string "name"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["name"], name: "index_email_aliases_on_name", unique: true
-    t.index ["user_id"], name: "index_email_aliases_on_user_id"
-  end
-
   create_table "forum_categories", id: :serial, force: :cascade do |t|
     t.string "name", null: false
     t.string "slug", null: false
@@ -361,10 +352,8 @@ ActiveRecord::Schema.define(version: 2021_06_13_010031) do
     t.boolean "unread", default: false
     t.boolean "enabled", default: false
     t.integer "threads_count", default: 0
-    t.bigint "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["user_id"], name: "index_mailboxes_on_user_id"
   end
 
   create_table "message_threads", force: :cascade do |t|
@@ -372,17 +361,19 @@ ActiveRecord::Schema.define(version: 2021_06_13_010031) do
     t.datetime "deleted_at"
     t.string "subject"
     t.string "recipients", default: [], array: true
-    t.bigint "mailbox_id", null: false
+    t.string "current_email_message_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["mailbox_id"], name: "index_message_threads_on_mailbox_id"
+    t.index ["current_email_message_id"], name: "index_message_threads_on_current_email_message_id"
   end
 
   create_table "messages", force: :cascade do |t|
     t.string "from"
     t.bigint "message_thread_id", null: false
+    t.string "email_message_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["email_message_id"], name: "index_messages_on_email_message_id"
     t.index ["message_thread_id"], name: "index_messages_on_message_thread_id"
   end
 
@@ -469,14 +460,11 @@ ActiveRecord::Schema.define(version: 2021_06_13_010031) do
   add_foreign_key "api_clients", "api_namespaces"
   add_foreign_key "api_resources", "api_namespaces"
   add_foreign_key "call_to_action_responses", "call_to_actions"
-  add_foreign_key "email_aliases", "users"
   add_foreign_key "forum_posts", "forum_threads"
   add_foreign_key "forum_posts", "users"
   add_foreign_key "forum_subscriptions", "forum_threads"
   add_foreign_key "forum_subscriptions", "users"
   add_foreign_key "forum_threads", "forum_categories"
   add_foreign_key "forum_threads", "users"
-  add_foreign_key "mailboxes", "users"
-  add_foreign_key "message_threads", "mailboxes"
   add_foreign_key "messages", "message_threads"
 end

@@ -37,7 +37,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test "should create api_client" do
     sign_in(@user)
     assert_difference('ApiClient.count') do
-      post api_namespace_api_clients_url(api_namespace_id: @api_namespace.id), params: { api_client: {  authentication_strategy: @api_client.authentication_strategy, bearer_token: @api_client.bearer_token, label: @api_client.label } }
+      post api_namespace_api_clients_url(api_namespace_id: @api_namespace.id), params: { api_client: {  authentication_strategy: @api_client.authentication_strategy, label: "foobar" } }
     end
     api_client = ApiClient.last
     assert_redirected_to api_namespace_api_client_path(api_namespace_id: api_client.api_namespace.id, id: api_client.id)

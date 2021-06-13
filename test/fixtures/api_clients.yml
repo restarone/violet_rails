@@ -4,12 +4,12 @@ one:
   api_namespace: one
   label: MyString
   slug: MyString
-  authentication_strategy: MyString
+  authentication_strategy: bearer_token
   bearer_token: MyString
 
 two:
   api_namespace: two
   label: MyString11
   slug: MyString11
-  authentication_strategy: MyString
+  authentication_strategy: bearer_token
   bearer_token: MyString1
