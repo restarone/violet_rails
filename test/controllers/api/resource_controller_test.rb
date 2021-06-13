@@ -27,12 +27,12 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'describes resource' do
-    get api_describe_url(version: '1', api_namespace: @users_namespace.name)
+    get api_describe_url(version: @users_namespace.version, api_namespace: @users_namespace.name)
     assert_equal response.parsed_body.symbolize_keys.keys.sort, [:created_at, :id, :name, :namespace_type, :properties, :requires_authentication, :slug, :updated_at, :version].sort 
   end
 
   test 'index users resource' do
-    get api_url(version: '1', api_namespace: @users_namespace.name), as: :json
+    get api_url(version: @users_namespace.version, api_namespace: @users_namespace.name), as: :json
     sample_user = response.parsed_body[0].symbolize_keys!
     assert_equal(
       [:id, :created_at, :properties, :updated_at].sort,
@@ -46,7 +46,7 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
       attribute: 'first_name',
       value: "Don"
     }
-    post api_query_url(version: '1', api_namespace: @users_namespace.name, params: payload)
+    post api_query_url(version: @users_namespace.version, api_namespace: @users_namespace.name, params: payload)
     sample_user = response.parsed_body[0].symbolize_keys!
     assert_equal(
       [:id, :created_at, :properties, :updated_at].sort,
@@ -56,7 +56,48 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
   end
 
   test '#show users resource' do
-    get api_show_resource_url(version: '1', api_namespace: @users_namespace.name, api_resource_id: @users_namespace.api_resources.first.id)
+    get api_show_resource_url(version: @users_namespace.version, api_namespace: @users_namespace.name, api_resource_id: @users_namespace.api_resources.first.id)
+    assert_equal response.parsed_body.symbolize_keys.keys.sort, [:id, :created_at, :updated_at, :properties].sort
     assert_response :success
+  end
+
+  test '#create access is blocked by default for unsecured API' do
+    refute @api_namespace.requires_authentication
+    post api_create_resource_url(version: @users_namespace.version, api_namespace: @users_namespace.name)
+    assert_no_difference "ApiResource.all.size" do
+      assert_equal({ status: 'write access is disabled by default for public access namespaces', code: 403 }, response.parsed_body.symbolize_keys)
+    end
+  end
+
+  test '#update access is blocked by default for unsecured API' do
+    refute @api_namespace.requires_authentication
+    patch api_update_resource_url(version: @users_namespace.version, api_namespace: @users_namespace.name, api_resource_id: @users_namespace.api_resources.first.id)
+    assert_equal({ status: 'write access is disabled by default for public access namespaces', code: 403 }, response.parsed_body.symbolize_keys)
+  end
+
+  test '#destroy access is blocked by default for unsecured API' do
+    refute @api_namespace.requires_authentication
+    delete api_destroy_resource_url(version: @users_namespace.version, api_namespace: @users_namespace.name, api_resource_id: @users_namespace.api_resources.first.id)
+    assert_equal({ status: 'write access is disabled by default for public access namespaces', code: 403 }, response.parsed_body.symbolize_keys)
+  end
+
+  test '#create access is blocked if bearer authentication is not provided' do
+    @users_namespace.update(requires_authentication: true)
+    post api_create_resource_url(version: @users_namespace.version, api_namespace: @users_namespace.name)
+    assert_no_difference "ApiResource.all.size" do
+      assert_equal({ status: 'unauthorized', code: 401 }, response.parsed_body.symbolize_keys)
+    end
+  end
+
+  test '#update access is blocked if bearer authentication is not provided' do
+    @users_namespace.update(requires_authentication: true)
+    patch api_update_resource_url(version: @users_namespace.version, api_namespace: @users_namespace.name, api_resource_id: @users_namespace.api_resources.first.id)
+    assert_equal({ status: 'unauthorized', code: 401 }, response.parsed_body.symbolize_keys)
+  end
+
+  test '#destroy access is blocked if bearer authentication is not provided' do
+    @users_namespace.update(requires_authentication: true)
+    delete api_destroy_resource_url(version: @users_namespace.version, api_namespace: @users_namespace.name, api_resource_id: @users_namespace.api_resources.first.id)
+    assert_equal({ status: 'unauthorized', code: 401 }, response.parsed_body.symbolize_keys)
   end
 end

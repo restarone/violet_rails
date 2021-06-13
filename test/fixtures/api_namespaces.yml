@@ -17,8 +17,8 @@ two:
   namespace_type: create-read-update-delete
 
 users:
-  name: users
-  slug: users
+  name: internal_users
+  slug: internal_users
   version: 1
   properties: >
     {

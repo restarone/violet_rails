@@ -1,6 +1,6 @@
 class Api::ResourceController < Api::BaseController
-  before_action :load_api_resource, only: [:show]
-
+  before_action :load_api_resource, only: [:show, :create, :update]
+  before_action :prevent_write_access_if_public, only: [:create, :update, :destroy]
 
   def index
     render json: serialize_resources(@api_namespace.api_resources.order(updated_at: :desc))
@@ -27,7 +27,25 @@ class Api::ResourceController < Api::BaseController
     end
   end
 
+  def create
+
+  end
+
+  def update
+
+  end
+
+  def destroy
+
+  end
+
   private
+
+  def prevent_write_access_if_public
+    unless @api_namespace.requires_authentication
+      render json: { status: 'write access is disabled by default for public access namespaces', code: 403 }
+    end
+  end
 
   def load_api_resource
     @api_resource = @api_namespace.api_resources.find_by(id: params[:api_resource_id])

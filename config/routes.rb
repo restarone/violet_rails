@@ -78,6 +78,9 @@ Rails.application.routes.draw do
         get '/show/:api_resource_id', to: 'resource#show', as: :show_resource
         get '/describe', to: 'resource#describe'
         post '/query', to: 'resource#query'
+        post '/', to: 'resource#create', as: :create_resource
+        patch '/edit/:api_resource_id', to: 'resource#update', as: :update_resource
+        delete ':api_resource_id', to: 'resource#destroy', as: :destroy_resource
       end
     end
   end
