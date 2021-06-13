@@ -48,6 +48,7 @@ Rails.application.routes.draw do
   # api admin
   resources :api_namespaces, controller: 'comfy/admin/api_namespaces' do
     resources :resources, controller: 'comfy/admin/api_resources' 
+    resources :api_clients, controller: 'comfy/admin/api_clients' 
   end
 
   # system admin panel login

@@ -1,6 +1,6 @@
 require "test_helper"
 
-class ApiNamespacesControllerTest < ActionDispatch::IntegrationTest
+class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
     @user.update(can_manage_web: true)

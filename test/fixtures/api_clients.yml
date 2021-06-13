@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  api_namespace: one
+  label: MyString
+  slug: MyString
+  authentication_strategy: MyString
+  bearer_token: MyString
+
+two:
+  api_namespace: two
+  label: MyString11
+  slug: MyString11
+  authentication_strategy: MyString
+  bearer_token: MyString1

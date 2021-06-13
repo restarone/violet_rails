@@ -46,6 +46,12 @@
   = "#{api_base_url(Subdomain.current, @api_namespace)}/query"
 
 
+- if @api_namespace.requires_authentication
+  %strong
+    Keys
+  .my-3
+    = link_to "Create new key", new_api_namespace_api_client_path(api_namespace_id: @api_namespace.id)
+
 %strong
   resources
 .my-3
