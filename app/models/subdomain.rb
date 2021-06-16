@@ -19,7 +19,7 @@ class Subdomain < ApplicationRecord
   ROOT_DOMAIN_EMAIL_NAME = 'www'
 
   # root domain name schema name
-  ROOT_DOMAIN_NAME = 'root'
+  ROOT_DOMAIN_NAME = 'www'
 
   # keep these urls out of logging
   PRIVATE_URL_PATHS  = ['/users/password', '/users/registration', '/users/sessions', '/users/confirmation', '/users/invitation']
