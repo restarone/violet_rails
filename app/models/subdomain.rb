@@ -145,7 +145,7 @@ class Subdomain < ApplicationRecord
         <div>
           <h1>Hello from #{name}</h1>
           To access the admin panel for your website, 
-          <a href='http://#{hostname}/admin' target='_blank'>click here</a>
+          <a href='/admin' target='_blank'>click here</a>
         </div>
       "
     )
