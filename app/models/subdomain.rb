@@ -19,7 +19,7 @@ class Subdomain < ApplicationRecord
   ROOT_DOMAIN_EMAIL_NAME = 'www'
 
   # root domain name schema name
-  ROOT_DOMAIN_NAME = 'root'
+  ROOT_DOMAIN_NAME = 'www'
 
   # keep these urls out of logging
   PRIVATE_URL_PATHS  = ['/users/password', '/users/registration', '/users/sessions', '/users/confirmation', '/users/invitation']
@@ -145,7 +145,7 @@ class Subdomain < ApplicationRecord
         <div>
           <h1>Hello from #{name}</h1>
           To access the admin panel for your website, 
-          <a href='http://#{hostname}/admin' target='_blank'>click here</a>
+          <a href='/admin' target='_blank'>click here</a>
         </div>
       "
     )
