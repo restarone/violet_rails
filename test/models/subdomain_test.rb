@@ -55,8 +55,8 @@ class SubdomainTest < ActiveSupport::TestCase
   end
 
   test 'does not allow destroy of root subdomain' do
-    # if subdomain named 'www' is destroyed, the domain apex (also the www) will page will crash
-    name = 'www'
+    # if subdomain named 'root' is destroyed, the domain apex (also the www) will page will crash
+    name = 'root'
     subdomain = Subdomain.new(
       name: name
     )
