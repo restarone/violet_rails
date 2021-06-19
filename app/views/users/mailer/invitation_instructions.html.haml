@@ -1,4 +1,4 @@
-= render partial: 'users/mailer/company_logo'
+= render partial: 'shared/company_logo'
 %p= t("devise.mailer.invitation_instructions.hello", email: @resource.email)
 %p= t("devise.mailer.invitation_instructions.someone_invited_you", url: root_url(subdomain: @resource.subdomain))
 %p= link_to t("devise.mailer.invitation_instructions.accept"), accept_invitation_url(@resource, invitation_token: @token, subdomain: @resource.subdomain)
