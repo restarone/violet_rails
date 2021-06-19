@@ -1,5 +1,5 @@
 - if Subdomain.current.logo.attached? 
   = link_to root_url(subdomain: Subdomain.current.name), target: '_blank', class: 'd-flex justify-content-center align-items-center' do
-    - path = rails_blob_url(Subdomain.current.logo, subdomain: Subdomain.current.name)
+    - path = rails_blob_url(Subdomain.current.logo, subdomain: Subdomain.current.name == Subdomain::ROOT_DOMAIN_NAME ? 'www' : Subdomain.current.name)
     = image_tag(path, class: 'd-none d-lg-block img-fluid p-4', size: '150x150')
     
