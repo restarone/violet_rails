@@ -6,7 +6,7 @@ class Subdomain < ApplicationRecord
   before_create :downcase_subdomain_name, :create_tenant
 
   after_create_commit :create_cms_site
-  before_destroy :drop_tenant
+  before_destroy :purge_stored_files, :drop_tenant
 
   has_one_attached :logo
   has_one_attached :favicon
@@ -105,6 +105,13 @@ class Subdomain < ApplicationRecord
   end
 
   private
+
+  def purge_stored_files
+    Apartment::Tenant.switch(self.name) do
+      ActiveStorage::Attachment.all.each { |attachment| attachment.purge }
+      ActiveStorage::Blob.all.each { |blob| blob.purge }
+    end
+  end
 
   def drop_tenant
     Apartment::Tenant.drop(self.name)
