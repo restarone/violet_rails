@@ -107,8 +107,10 @@ class Subdomain < ApplicationRecord
   private
 
   def purge_stored_files
-    ActiveStorage::Attachment.all.each { |attachment| attachment.purge }
-    ActiveStorage::Blob.all.each { |blob| blob.purge }
+    Apartment::Tenant.switch(self.name) do
+      ActiveStorage::Attachment.all.each { |attachment| attachment.purge }
+      ActiveStorage::Blob.all.each { |blob| blob.purge }
+    end
   end
 
   def drop_tenant
