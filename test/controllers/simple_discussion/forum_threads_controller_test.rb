@@ -14,6 +14,12 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     @forum_category = ForumCategory.create!(name: 'test', slug: 'test')
   end
 
+  test 'denies #index if forum is disabled' do
+    @restarone_subdomain.update(forum_enabled: false)
+    get simple_discussion.root_url(subdomain: @restarone_subdomain.name)
+    assert_response :redirect
+  end
+
   test 'allows #index if not logged in' do
     get simple_discussion.root_url(subdomain: @restarone_subdomain.name)
     assert_response :success    

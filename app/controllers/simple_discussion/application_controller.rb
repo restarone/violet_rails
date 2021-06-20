@@ -1,6 +1,8 @@
 class SimpleDiscussion::ApplicationController < ::ApplicationController
   layout "simple_discussion"
 
+  before_action :redirect_if_forum_disabled
+
   def page_number
     page = params.fetch(:page, "").gsub(/[^0-9]/, "").to_i
     page = "1" if page.zero?
@@ -36,6 +38,12 @@ class SimpleDiscussion::ApplicationController < ::ApplicationController
   end
 
   private
+
+  def redirect_if_forum_disabled
+    unless Subdomain.current.forum_enabled
+      redirect_to root_path
+    end
+  end
 
   def redirect_to_root
     redirect_to simple_discussion.root_path, alert: "You aren't allowed to do that."

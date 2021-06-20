@@ -1,3 +1,6 @@
+.my-5
+  %strong
+    SEO / Metadata
 .form-group
   %label
     HTML title:
@@ -24,6 +27,20 @@
 .form-group
   %span SEO keywords (comma separated):
   = f.text_area :keywords, class: 'form-control'
+
+.my-5
+  %strong
+    Extensions
+.form-group
+  %label
+    Blog:
+  = f.check_box :blog_enabled
+
+.form-group
+  %label
+    Forum:
+  = f.check_box :forum_enabled
+
 
 .my-5
   %strong
