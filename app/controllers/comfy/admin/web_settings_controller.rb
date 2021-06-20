@@ -30,6 +30,7 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
       :og_image,
       :blog_enabled,
       :forum_enabled,
+      :allow_user_self_signup,
     )
   end
 end

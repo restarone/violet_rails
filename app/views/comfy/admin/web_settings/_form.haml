@@ -41,6 +41,13 @@
     Forum:
   = f.check_box :forum_enabled
 
+.my-5
+  %strong
+    Security
+.form-group
+  %label
+    Allow user self sign up (if disabled, users can join via invite only)
+  = f.check_box :allow_user_self_signup
 
 .my-5
   %strong
