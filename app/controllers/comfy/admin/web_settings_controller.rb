@@ -31,6 +31,7 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
       :blog_enabled,
       :forum_enabled,
       :allow_user_self_signup,
+      :forum_is_private,
     )
   end
 end

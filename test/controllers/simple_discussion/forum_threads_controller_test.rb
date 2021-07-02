@@ -20,6 +20,19 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     assert_response :redirect
   end
 
+  test 'denies #index if forum is by registration' do
+    @restarone_subdomain.update(forum_is_private: true)
+    get simple_discussion.root_url(subdomain: @restarone_subdomain.name)
+    assert_response :redirect
+  end
+
+  test 'allows #index if forum is by registration' do
+    sign_in(@restarone_user)
+    @restarone_subdomain.update(forum_is_private: true)
+    get simple_discussion.root_url(subdomain: @restarone_subdomain.name)
+    assert_response :success
+  end
+
   test 'allows #index if not logged in' do
     get simple_discussion.root_url(subdomain: @restarone_subdomain.name)
     assert_response :success    
