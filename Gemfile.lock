@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/restarone/comfortable-mexican-sofa
-  revision: 53ad31953797c8f5de40a979c5e09f288f938625
-  tag: 3.1
+  revision: 31a984419bc09062366806d06f5dd74282d0c232
+  tag: 3.2
   specs:
     comfortable_mexican_sofa (2.0.19)
       active_link_to (>= 1.0.0)
