@@ -21,6 +21,7 @@
 
 set :output, 'log/whenever.log'
 env :PATH, ENV['PATH']
+job_type :rake, 'export PATH="$HOME/.rbenv/bin:$PATH"; eval "$(rbenv init -)"; cd :path && :environment_variable=:environment bundle exec rake :task --silent :output'
 
 every 1.minute do
   rake "maintenance:clear_old_ahoy_visits"
