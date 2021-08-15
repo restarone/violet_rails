@@ -55,6 +55,14 @@
 
 .my-5
   %strong
+    Maintenance
+.form-group
+  %label
+    Purge visitor analytics:
+  = f.select :purge_visits_every, options_for_select(Subdomain::TRACKING_PURGE_MAPPING, Subdomain.current.purge_visits_every)
+
+.my-5
+  %strong
     Graphics
   .my-3
     .form-group.card.p-2
