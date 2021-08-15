@@ -23,5 +23,5 @@ set :output, 'log/whenever.log'
 env :PATH, ENV['PATH']
 
 every 1.minute do
-  p "running cron job"
+  rake "maintenance:clear_old_ahoy_visits", environment: @environment
 end

@@ -3,7 +3,7 @@ namespace :maintenance do
     on roles(:app) do
       within current_path do
         execute "crontab -r || exit 0"
-        execute "whenever --update-crontab"
+        execute "bundle exec whenever --update-crontab"
       end
     end
   end
