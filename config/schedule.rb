@@ -20,7 +20,7 @@
 # Learn more: http://github.com/javan/whenever
 
 set :output, 'log/whenever.log'
-# env :PATH, ENV['PATH']
+env :PATH, ENV['PATH']
 
 every 1.minute do
   rake "maintenance:clear_old_ahoy_visits"
