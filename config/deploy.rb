@@ -3,6 +3,7 @@ lock "~> 3.16.0"
 
 set :application, "violet"
 set :repo_url, "git@github.com:restarone/r-solutions.git"
+set :whenever_command, "bundle exec whenever"
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
@@ -49,3 +50,6 @@ after 'deploy:finishing', 'deploy:restart_sidekiq'
 # non essential tasks
 after 'deploy:finishing', 'sitemap:clean'
 after 'deploy:finishing', 'sitemap:refresh'
+
+# maintenance tasks
+after 'deploy:finishing', 'maintenance:update_cron'
