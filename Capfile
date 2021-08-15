@@ -10,6 +10,9 @@ require 'capistrano/local_precompile'
 # to generate the sitemap
 require 'capistrano/sitemap_generator'
 
+# whenever / cron
+require "whenever/capistrano"
+
 # Load the SCM plugin appropriate to your project:
 #
 # require "capistrano/scm/hg"

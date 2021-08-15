@@ -47,6 +47,7 @@ gem 'local_time'
 gem "recaptcha"
 gem 'rack-cors'
 gem 'friendly_id'
+gem 'whenever', require: false
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false
