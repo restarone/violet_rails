@@ -29,12 +29,11 @@ gem 'ros-apartment', require: 'apartment'
 gem 'ros-apartment-sidekiq', require: 'apartment-sidekiq'
 gem 'apartment-activejob'
 gem 'devise'
-gem "comfortable_mexican_sofa",git: 'https://github.com/restarone/comfortable-mexican-sofa', branch: 'master'
+gem "comfortable_mexican_sofa",git: 'https://github.com/restarone/comfortable-mexican-sofa', tag: '3.2'
 gem "comfy_blog", git: 'https://github.com/restarone/comfy-blog', branch: 'master'
 gem 'simple_discussion', git: 'https://github.com/restarone/simple_discussion', branch: 'master'
 gem 'gravatar_image_tag'
 gem 'wicked' # for multi-step forms
-gem 'friendly_id'
 gem 'devise_invitable'
 gem "aws-sdk-s3", require: false
 gem 'meta-tags'
@@ -46,6 +45,9 @@ gem "chartkick"
 gem 'groupdate'
 gem 'local_time'
 gem "recaptcha"
+gem 'rack-cors'
+gem 'friendly_id'
+gem 'whenever', require: false
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false

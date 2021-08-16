@@ -9,7 +9,7 @@
     = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
   %body
     = render partial: 'shared/flash'
-    = cms_snippet_content('navbar').html_safe
+    = cms_snippet_render('navbar').html_safe
     .d-flex.flex-column.justify-content-center.align-items-center
       .my-5
         - custom_logo_path = logo_url(Subdomain.current)
@@ -18,4 +18,4 @@
         - else
           = image_tag('https://placebear.com/200/300', class: "img-fluid", size: '100x100')  
       = yield
-    = cms_snippet_content('footer').html_safe
+    = cms_snippet_render('footer').html_safe

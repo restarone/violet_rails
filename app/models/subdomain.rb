@@ -6,7 +6,7 @@ class Subdomain < ApplicationRecord
   before_create :downcase_subdomain_name, :create_tenant
 
   after_create_commit :create_cms_site
-  before_destroy :drop_tenant
+  before_destroy :purge_stored_files, :drop_tenant
 
   has_one_attached :logo
   has_one_attached :favicon
@@ -23,6 +23,20 @@ class Subdomain < ApplicationRecord
 
   # keep these urls out of logging
   PRIVATE_URL_PATHS  = ['/users/password', '/users/registration', '/users/sessions', '/users/confirmation', '/users/invitation']
+
+  # for cleaning out old Ahoy::Visit & Ahoy::Event
+  TRACKING_PURGE_MAPPING = {
+    weekly: '1.week',
+    biweekly: '2.weeks',
+    monthly: '1.month',
+    quarterly: '3.months',
+    biannually: '6.months',
+    annually: '1.year',
+    never: 'never'
+  }
+
+  validates :purge_visits_every, inclusion: { in: TRACKING_PURGE_MAPPING.values,
+    message: "purge frequency is not valid" }
 
   def self.current
     subdomain = Subdomain.find_by(name: Apartment::Tenant.current)
@@ -106,6 +120,13 @@ class Subdomain < ApplicationRecord
 
   private
 
+  def purge_stored_files
+    Apartment::Tenant.switch(self.name) do
+      ActiveStorage::Attachment.all.each { |attachment| attachment.purge }
+      ActiveStorage::Blob.all.each { |blob| blob.purge }
+    end
+  end
+
   def drop_tenant
     Apartment::Tenant.drop(self.name)
   end
@@ -145,7 +166,7 @@ class Subdomain < ApplicationRecord
         <div>
           <h1>Hello from #{name}</h1>
           To access the admin panel for your website, 
-          <a href='http://#{hostname}/admin' target='_blank'>click here</a>
+          <a href='/admin' target='_blank'>click here</a>
         </div>
       "
     )
