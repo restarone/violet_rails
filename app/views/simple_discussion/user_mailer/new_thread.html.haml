@@ -1,0 +1,9 @@
+%div{:style => "position: relative"}
+  = gravatar_image_tag @forum_post.user.email, style: "float: left"
+  %div{:style => "margin-left:60px"}
+    %p
+      %strong= @forum_post.user.name
+      %small commented:
+    = formatted_content @forum_post.body
+%br/
+%p= link_to "Reply to this comment", forum_thread_url(@forum_post.forum_thread, anchor: "forum_post_#{@forum_post.id}", subdomain: Apartment::Tenant.current), style: "background:#be2126; color:#fff; text-decoration:none; padding: 10px 20px"

@@ -1,0 +1,7 @@
+%h1 Editing api_client
+
+= render 'form'
+
+= link_to 'Show', api_namespace_api_client_path(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+\|
+= link_to 'Back', api_namespace_api_clients_path(api_namespace_id: @api_namespace.id)

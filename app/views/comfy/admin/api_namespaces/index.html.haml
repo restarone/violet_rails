@@ -1,0 +1,36 @@
+.page-header
+  = link_to 'New Namespace', new_api_namespace_path, class: 'btn btn-secondary float-right'
+  %h2 API Namespaces
+= render partial: 'search_filters', locals: { objects: @api_namespaces_q, path: api_namespaces_path }
+= render partial: 'pagination', locals: { objects: @api_namespaces }
+%table.table.table-responsive
+  %thead
+    %tr
+      %th 
+        = sort_link @api_namespaces_q, :name
+      %th
+        = sort_link @api_namespaces_q, :version
+      %th 
+        = sort_link @api_namespaces_q, :properties
+      %th 
+        = sort_link @api_namespaces_q, :requires_authentication
+      %th 
+        = sort_link @api_namespaces_q, :namespace_type
+      %th
+      %th
+
+
+  %tbody
+    - @api_namespaces.each do |api_namespace|
+      %tr
+        %td= link_to api_namespace.name, api_namespace
+        %td= api_namespace.version
+        %td= api_namespace.properties
+        %td= api_namespace.requires_authentication
+        %td= api_namespace.namespace_type
+        %td= link_to 'Edit', edit_api_namespace_path(api_namespace)
+        %td= link_to 'Destroy', api_namespace, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+

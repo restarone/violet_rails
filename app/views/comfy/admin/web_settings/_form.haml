@@ -1,3 +1,6 @@
+.my-5
+  %strong
+    SEO / Metadata
 .form-group
   %label
     HTML title:
@@ -24,6 +27,39 @@
 .form-group
   %span SEO keywords (comma separated):
   = f.text_area :keywords, class: 'form-control'
+
+.my-5
+  %strong
+    Extensions
+.form-group
+  %label
+    Blog:
+  = f.check_box :blog_enabled
+
+.form-group
+  %label
+    Forum:
+  = f.check_box :forum_enabled
+
+.my-5
+  %strong
+    Security
+.form-group
+  %label
+    Allow user self sign up (if disabled, users can join via invite only)
+  = f.check_box :allow_user_self_signup
+.form-group
+  %label
+    Private forum (if enabled, users must sign up first or be invited to be able to access the forum)
+  = f.check_box :forum_is_private
+
+.my-5
+  %strong
+    Maintenance
+.form-group
+  %label
+    Purge visitor analytics:
+  = f.select :purge_visits_every, options_for_select(Subdomain::TRACKING_PURGE_MAPPING, Subdomain.current.purge_visits_every)
 
 .my-5
   %strong

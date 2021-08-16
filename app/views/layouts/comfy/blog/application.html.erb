@@ -19,8 +19,8 @@
   <%= render partial: 'shared/navbars/web_admin' %>
 
   <body>
-    <%= cms_snippet_content('navbar').html_safe %>
+    <%= cms_snippet_render('navbar').html_safe %>
     <%= yield %>
-    <%= cms_snippet_content('footer').html_safe %>
+    <%= cms_snippet_render('footer').html_safe %>
   </body>
 </html>
