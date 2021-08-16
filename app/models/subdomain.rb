@@ -24,6 +24,20 @@ class Subdomain < ApplicationRecord
   # keep these urls out of logging
   PRIVATE_URL_PATHS  = ['/users/password', '/users/registration', '/users/sessions', '/users/confirmation', '/users/invitation']
 
+  # for cleaning out old Ahoy::Visit & Ahoy::Event
+  TRACKING_PURGE_MAPPING = {
+    weekly: '1.week',
+    biweekly: '2.weeks',
+    monthly: '1.month',
+    quarterly: '3.months',
+    biannually: '6.months',
+    annually: '1.year',
+    never: 'never'
+  }
+
+  validates :purge_visits_every, inclusion: { in: TRACKING_PURGE_MAPPING.values,
+    message: "purge frequency is not valid" }
+
   def self.current
     subdomain = Subdomain.find_by(name: Apartment::Tenant.current)
     if subdomain
