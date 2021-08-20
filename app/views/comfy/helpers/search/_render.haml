@@ -1,4 +1,4 @@
-= form_tag query_path, remote: ajax, onsubmit: "searchHandler(event)" do
+= form_tag query_path, remote: ajax, onsubmit: "onSearchFormSubmit(event)" do
   = text_field_tag :query
   = submit_tag "search"
 
