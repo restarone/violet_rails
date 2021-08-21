@@ -4,6 +4,7 @@ class SearchController < ApplicationController
     pages = Comfy::Cms::Page.where.not(is_restricted: false, is_published: true).ransack(search_q)
     respond_to do |format|
       format.html { redirect_to '/search' }
+      format.json   { render json: pages.result }
       format.js   { render json: pages.result }
     end
   end
