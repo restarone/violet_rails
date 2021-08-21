@@ -1,8 +1,8 @@
 module SearchHelper
 
-  def render_search_field(ajax = true)
-    # usage in cms  {{ cms:helper render_search_field, false }}
-    # usage in rails = render_search_field false
-    render partial: 'comfy/helpers/search/render', locals: { ajax:  ActiveModel::Type::Boolean.new.cast(ajax) }
+  def render_search_field
+    # usage in cms  {{ cms:helper render_search_field }}
+    # usage in rails = render_search_field
+    render partial: 'comfy/helpers/search/render'
   end
 end
