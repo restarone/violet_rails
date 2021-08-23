@@ -2,3 +2,5 @@
   .col-sm-10
     .custom-control.custom-checkbox
       = form.check_box :is_restricted
+.form-group
+  = form.text_area :preview_content, data: {'cms-cm-mode' => 'text/html'}
