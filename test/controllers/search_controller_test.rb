@@ -1,6 +1,6 @@
 require "test_helper"
 
-class SearchControllerControllerTest < ActionDispatch::IntegrationTest
+class SearchControllerTest < ActionDispatch::IntegrationTest
   setup do
     page = Comfy::Cms::Page.first
     page.update(is_restricted: false)
