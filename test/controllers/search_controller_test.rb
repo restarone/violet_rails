@@ -2,11 +2,11 @@ require "test_helper"
 
 class SearchControllerTest < ActionDispatch::IntegrationTest
   setup do
-    page = Comfy::Cms::Page.first
-    page.update(is_restricted: false)
+    @page = Comfy::Cms::Page.first
+    @page.update(is_restricted: false)
     Comfy::Cms::Fragment.create!(
       identifier: 'content',
-      record: page,
+      record: @page,
       tag: 'wysiwyg',
       content: "<h1>Hello</h1>"
     )
@@ -28,5 +28,14 @@ class SearchControllerTest < ActionDispatch::IntegrationTest
     post query_url, as: :json
     json_response = JSON.parse(response.body)
     assert_equal json_response["code"], 422
+  end
+
+  test '#query does not return restricted pages' do
+    Comfy::Cms::Page.update_all(is_restricted: true)
+    get comfy_cms_render_page_path('/')
+    post query_url, params: {query: 'Hello'}, as: :json
+    json_response = JSON.parse(response.body)
+    assert_equal json_response.class, Array
+    assert json_response.size == 0
   end
 end
