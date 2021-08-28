@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_15_214536) do
+ActiveRecord::Schema.define(version: 2021_08_28_082815) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -411,7 +411,8 @@ ActiveRecord::Schema.define(version: 2021_08_15_214536) do
     t.boolean "blog_enabled", default: true
     t.boolean "allow_user_self_signup", default: true
     t.boolean "forum_is_private", default: false
-    t.string "purge_visits_every", default: "3.months"
+    t.string "purge_visits_every", default: "never"
+    t.string "analytics_report_frequency", default: "never"
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
     t.index ["name"], name: "index_subdomains_on_name"
   end
@@ -452,6 +453,7 @@ ActiveRecord::Schema.define(version: 2021_08_15_214536) do
     t.string "name"
     t.boolean "moderator"
     t.boolean "can_view_restricted_pages"
+    t.boolean "deliver_analytics_report", default: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
