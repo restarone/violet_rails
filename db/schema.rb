@@ -250,7 +250,7 @@ ActiveRecord::Schema.define(version: 2021_08_23_235033) do
     t.boolean "is_published", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "is_restricted"
+    t.boolean "is_restricted", default: false
     t.text "preview_content"
     t.index ["is_published"], name: "index_comfy_cms_pages_on_is_published"
     t.index ["parent_id", "position"], name: "index_comfy_cms_pages_on_parent_id_and_position"
