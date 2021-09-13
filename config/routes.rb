@@ -85,6 +85,8 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  post '/query', to: 'search#query'
   
   comfy_route :cms_admin, path: "/admin"
   comfy_route :blog, path: "blog"
