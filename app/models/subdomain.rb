@@ -35,8 +35,21 @@ class Subdomain < ApplicationRecord
     never: 'never'
   }
 
+  REPORT_FREQUENCY_MAPPING = {
+    weekly: '1.week',
+    biweekly: '2.weeks',
+    monthly: '1.month',
+    quarterly: '3.months',
+    biannually: '6.months',
+    annually: '1.year',
+    never: 'never'
+  }
+
   validates :purge_visits_every, inclusion: { in: TRACKING_PURGE_MAPPING.values,
     message: "purge frequency is not valid" }
+
+  validates :analytics_report_frequency, inclusion: { in: REPORT_FREQUENCY_MAPPING.values,
+    message: "report frequency is not valid" }
 
   def self.current
     subdomain = Subdomain.find_by(name: Apartment::Tenant.current)

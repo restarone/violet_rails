@@ -6,4 +6,11 @@ class UserMailer < ApplicationMailer
       subject: "New Subdomain Registration",
     )
   end
+
+  def analytics_report
+    mail(
+      to: User.where(deliver_analytics_report: true).pluck(:email), 
+      subject: "Periodic reports for visitor analytics",
+    )
+  end
 end

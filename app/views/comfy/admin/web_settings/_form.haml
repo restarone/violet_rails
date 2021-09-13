@@ -63,6 +63,14 @@
 
 .my-5
   %strong
+    Reports
+.form-group
+  %label
+    Analytics report frequency:
+  = f.select :analytics_report_frequency, options_for_select(Subdomain::REPORT_FREQUENCY_MAPPING, Subdomain.current.analytics_report_frequency)
+
+.my-5
+  %strong
     Graphics
   .my-3
     .form-group.card.p-2
