@@ -250,7 +250,7 @@ ActiveRecord::Schema.define(version: 2021_08_28_082815) do
     t.boolean "is_published", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "is_restricted", default: false
+    t.boolean "is_restricted"
     t.text "preview_content"
     t.index ["is_published"], name: "index_comfy_cms_pages_on_is_published"
     t.index ["parent_id", "position"], name: "index_comfy_cms_pages_on_parent_id_and_position"
@@ -414,6 +414,7 @@ ActiveRecord::Schema.define(version: 2021_08_28_082815) do
     t.boolean "forum_is_private", default: false
     t.string "purge_visits_every", default: "never"
     t.string "analytics_report_frequency", default: "never"
+    t.datetime "analytics_report_last_sent"
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
     t.index ["name"], name: "index_subdomains_on_name"
   end
