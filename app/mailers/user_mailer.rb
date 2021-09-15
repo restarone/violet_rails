@@ -7,7 +7,8 @@ class UserMailer < ApplicationMailer
     )
   end
 
-  def analytics_report
+  def analytics_report(ctas)
+    @ctas = ctas
     mail(
       to: User.where(deliver_analytics_report: true).pluck(:email), 
       subject: "Periodic reports for visitor analytics",
