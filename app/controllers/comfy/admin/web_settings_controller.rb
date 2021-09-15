@@ -8,6 +8,7 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
   def update
     if Subdomain.current.update(subdomain_params)
       flash.notice = 'Settings updated'
+      AnalyticsReportService.new(Subdomain.current).call
     else
       flash.alert = 'Settings could not be updated please try again'
     end
@@ -32,7 +33,8 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
       :forum_enabled,
       :allow_user_self_signup,
       :forum_is_private,
-      :purge_visits_every
+      :purge_visits_every,
+      :analytics_report_frequency
     )
   end
 end

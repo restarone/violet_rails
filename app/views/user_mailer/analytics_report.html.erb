@@ -1,11 +1,102 @@
 <html>
-  <head>
-    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
-  </head>
-  <body>
-    <main>
-      <h1>Periodic reports for visitor analytics</h1>
-      <p>test</p>
-    </main>
-  </body>
+
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  <style>
+    main {
+      max-width: 500px;
+      margin: auto;
+    }
+
+    table {
+      width: 100%;
+    }
+
+    th {
+      text-align: left;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h1>Periodic reports for visitor analytics</h1>
+    <div>
+      <h2>
+        Call to Actions
+      </h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>CTA</th>
+            <th>Response count</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% response_total=0 %>
+            <% @ctas.each do |cta|%>
+              <tr>
+                <td><a href=<%="/call_to_actions/#{cta.id}" %>"><%= cta.title %></a></td>
+                <td>
+                  <%= cta.call_to_action_responses.count %>
+                    <% response_total=+ cta.call_to_action_responses.count %>
+                </td>
+              </tr>
+              <%end%>
+        </tbody>
+
+        <tfoot>
+          <tr>
+            <td><strong>Total</strong></td>
+            <td>
+              <%= response_total %>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <% @visited_by_attributes.each do |visited_by|%>
+      <div>
+        <h2>
+          Visits by <%= visited_by%>
+        </h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>CTA</th>
+              <th>Response count</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% total=0 %>
+              <% @visits.group(visited_by).count.each do |key, value|%>
+                <tr>
+                  <td>
+                    <%= key || "Others" %>
+                  </td>
+                  <td>
+                    <%= value %>
+                      <% total=total + value %>
+                  </td>
+                </tr>
+                <%end%>
+          </tbody>
+
+          <tfoot>
+            <tr>
+              <td><strong>Total</strong></td>
+              <td>
+                <%= total %>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <% end %>
+  </main>
+</body>
+
 </html>

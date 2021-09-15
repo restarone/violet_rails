@@ -7,8 +7,10 @@ class UserMailer < ApplicationMailer
     )
   end
 
-  def analytics_report(ctas)
+  def analytics_report(ctas, visits)
+    @visited_by_attributes = %i[country region city referring_domain landing_page]
     @ctas = ctas
+    @visits = visits
     mail(
       to: User.where(deliver_analytics_report: true).pluck(:email), 
       subject: "Periodic reports for visitor analytics",
