@@ -4,16 +4,31 @@
   <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
   <style>
     main {
-      max-width: 500px;
+      max-width: 676px;
       margin: auto;
+      font-family: Arial, Helvetica, sans-serif;
     }
 
     table {
       width: 100%;
+      margin-bottom: 50px;
+      border-collapse: collapse;
     }
 
     th {
       text-align: left;
+    }
+
+    .styled-table thead tr {
+      background-color: #212529;
+      color: #ffffff;
+      text-align: left;
+    }
+
+    .styled-table th,
+    .styled-table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid rgb(222, 226, 230);
     }
   </style>
 </head>
@@ -26,7 +41,7 @@
         Call to Actions
       </h2>
 
-      <table>
+      <table class="styled-table">
         <thead>
           <tr>
             <th>CTA</th>
@@ -35,12 +50,12 @@
         </thead>
         <tbody>
           <% response_total=0 %>
-            <% @ctas.each do |cta|%>
+            <% @report[:ctas] do |cta|%>
               <tr>
-                <td><a href=<%="/call_to_actions/#{cta.id}" %>"><%= cta.title %></a></td>
+                <td><a href=<%="/call_to_actions/#{cta[:id]}" %>"><%= cta[:title] %></a></td>
                 <td>
-                  <%= cta.call_to_action_responses.count %>
-                    <% response_total=+ cta.call_to_action_responses.count %>
+                  <%= cta[:response_count] %>
+                    <% response_total=+ cta[:response_count] %>
                 </td>
               </tr>
               <%end%>
@@ -57,13 +72,13 @@
       </table>
     </div>
 
-    <% @visited_by_attributes.each do |visited_by|%>
+    <% @report[:visits].each do |visited_by, response|%>
       <div>
         <h2>
-          Visits by <%= visited_by%>
+          Visits by <%= visited_by.to_s.humanize%>
         </h2>
 
-        <table>
+        <table class="styled-table">
           <thead>
             <tr>
               <th>CTA</th>
@@ -72,7 +87,7 @@
           </thead>
           <tbody>
             <% total=0 %>
-              <% @visits.group(visited_by).count.each do |key, value|%>
+              <% response.each do |key, value|%>
                 <tr>
                   <td>
                     <%= key || "Others" %>
@@ -96,6 +111,50 @@
         </table>
       </div>
       <% end %>
+
+        <div class="users">
+          <h2>
+            Users
+          </h2>
+
+
+          <div>
+            <% columns=User.public_attributes%>
+              <table class="styled-table">
+                <thead>
+                  <tr>
+                    <% columns.each do |col| %>
+                      <th>
+                        <%= col.humanize %>
+                      </th>
+                      <%end%>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% total=0 %>
+                    <% @report[:users].each do |user|%>
+                      <tr>
+                        <% columns.each do |col| %>
+                          <td>
+                            <%= user[col] %>
+                          </td>
+                          <%end%>
+                      </tr>
+                      <%end%>
+                </tbody>
+
+                <tfoot>
+                  <tr>
+                    <td><strong>Total</strong></td>
+                    <td>
+                      <%= total %>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+          </div>
+
+        </div>
   </main>
 </body>
 

@@ -7,10 +7,9 @@ class UserMailer < ApplicationMailer
     )
   end
 
-  def analytics_report(ctas, visits)
-    @visited_by_attributes = %i[country region city referring_domain landing_page]
-    @ctas = ctas
-    @visits = visits
+  def analytics_report(subdomain)
+    @report = AnalyticsReportService.new(subdomain).call
+    subdomain.update(analytics_report_last_sent: Time.zone.now)
     mail(
       to: User.where(deliver_analytics_report: true).pluck(:email), 
       subject: "Periodic reports for visitor analytics",
