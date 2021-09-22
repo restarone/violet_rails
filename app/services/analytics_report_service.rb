@@ -1,7 +1,7 @@
 class AnalyticsReportService
   def initialize(subdomain)
     @subdomain = subdomain
-    @report_frequency = @subdomain.analytics_report_frequency
+    @report_since = eval(@subdomain.analytics_report_frequency).ago
   end
 
   def call
@@ -10,12 +10,13 @@ class AnalyticsReportService
 
   private
 
-  attr_reader :report_frequency
+  attr_reader :report_since
 
   def analytics_report_json
     { ctas: cta_json,
       visits: visits_json,
-      users: users_json
+      users: users_json,
+      macros: macros_json
     }
   end
 
@@ -25,7 +26,7 @@ class AnalyticsReportService
       ctas << {
         title: cta.title,
         id: cta.id,
-        response_count: cta.call_to_action_responses.where('created_at > ?', eval("#{report_frequency}.ago")).count
+        response_count: cta.call_to_action_responses.where('created_at > ?', report_since).count
       }
     end
 
@@ -34,7 +35,7 @@ class AnalyticsReportService
 
   def visits_json
     response = {}
-    visits = @subdomain.ahoy_visits.unscoped.where('started_at >= ?', eval("#{report_frequency}.ago"))
+    visits = @subdomain.ahoy_visits.unscoped.where('started_at >= ?', report_since)
     visited_by = %i[country region city referring_domain landing_page]
 
     visited_by.each do |each_elm|
@@ -44,6 +45,23 @@ class AnalyticsReportService
   end
 
   def users_json
-    User.where('created_at >= ?', eval("#{report_frequency}.ago")).as_json(only: User.public_attributes)
+    @subdomain.users.where('created_at >= ?', report_since).as_json(only: User.public_attributes)
+  end
+
+  def macros_json
+    {
+      users: {
+        total: @subdomain.users.size,
+        added: @subdomain.users.where('created_at >= ?', report_since).size
+      },
+      storage: {
+        total: @subdomain.storage_used,
+        added: @subdomain.storage_used_since(report_since).size
+      },
+      pages: {
+        total: @subdomain.pages.size,
+        added: @subdomain.pages.where('created_at >= ?', report_since).size
+      }
+    }
   end
 end
