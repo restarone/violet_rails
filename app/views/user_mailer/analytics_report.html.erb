@@ -30,6 +30,10 @@
       padding: 12px 15px;
       border-bottom: 1px solid rgb(222, 226, 230);
     }
+
+    .users {
+      overflow: auto;
+    }
   </style>
 </head>
 
@@ -90,7 +94,7 @@
               <% response.each do |key, value|%>
                 <tr>
                   <td>
-                    <%= key || "Others" %>
+                    <%= key || "Others(nil)" %>
                   </td>
                   <td>
                     <%= value %>
@@ -142,16 +146,44 @@
                       </tr>
                       <%end%>
                 </tbody>
-
-                <tfoot>
-                  <tr>
-                    <td><strong>Total</strong></td>
-                    <td>
-                      <%= total %>
-                    </td>
-                  </tr>
-                </tfoot>
               </table>
+          </div>
+
+        </div>
+
+        <div class="macros">
+          <h2>
+            Macros
+          </h2>
+
+
+          <div>
+
+            <table class="styled-table">
+              <thead>
+                <tr>
+                  <th>Macro</th>
+                  <th>Total</th>
+                  <th>Added</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @report[:macros].each do |key, value|%>
+                  <tr>
+                    <td>
+                      <%= key.to_s.humanize%>
+                    </td>
+                    <td>
+                      <%= value[:total] %>
+                    </td>
+                    <td>
+                      <%= value[:added] %>
+                    </td>
+
+                  </tr>
+                  <%end%>
+              </tbody>
+            </table>
           </div>
 
         </div>
