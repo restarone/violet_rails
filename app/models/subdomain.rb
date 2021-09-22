@@ -8,6 +8,8 @@ class Subdomain < ApplicationRecord
   after_create_commit :create_cms_site
   before_destroy :purge_stored_files, :drop_tenant
 
+  after_save :send_analytics_report, if: -> { self.saved_change_to_analytics_report_frequency? && self.analytics_report_frequency != 'never' }
+
   has_one_attached :logo
   has_one_attached :favicon
   has_one_attached :og_image
@@ -36,7 +38,6 @@ class Subdomain < ApplicationRecord
   }
 
   REPORT_FREQUENCY_MAPPING = {
-    daily: '1.minute',
     weekly: '1.week',
     biweekly: '2.weeks',
     monthly: '1.month',
@@ -110,6 +111,28 @@ class Subdomain < ApplicationRecord
     end
   end
 
+  def storage_used_since(date)
+    Apartment::Tenant.switch self.name do
+      if ActiveStorage::Blob.any?
+        return ActiveStorage::Blob.where('created_at >= ?', date).pluck(:byte_size).sum
+      else
+        return 0
+      end
+    end
+  end
+
+  def pages
+    Apartment::Tenant.switch self.name do
+      return Comfy::Cms::Site.first.pages
+    end
+  end
+
+  def users
+    Apartment::Tenant.switch self.name do
+      User.all
+    end
+  end
+
   def destroy
     raise "Cannot destroy root domain" if self.name == Subdomain::ROOT_DOMAIN_NAME
     super
@@ -130,6 +153,10 @@ class Subdomain < ApplicationRecord
       forum_title: ENV['APP_HOST_FORUM_TITLE'] ? ENV['APP_HOST_FORUM_TITLE'] : ENV['APP_HOST'],
       forum_html_title: ENV['APP_HOST_FORUM_HTML_TITLE'] ? ENV['APP_HOST_FORUM_HTML_TITLE'] : ENV['APP_HOST'],
     )
+  end
+
+  def send_analytics_report
+    UserMailer.analytics_report(self).deliver_later
   end
 
   private

@@ -13,7 +13,8 @@ class AnalyticsReportService
   attr_reader :report_since
 
   def analytics_report_json
-    { ctas: cta_json,
+    {
+      ctas: cta_json,
       visits: visits_json,
       users: users_json,
       macros: macros_json
@@ -54,13 +55,13 @@ class AnalyticsReportService
         total: @subdomain.users.size,
         added: @subdomain.users.where('created_at >= ?', report_since).size
       },
-      storage: {
-        total: @subdomain.storage_used,
-        added: @subdomain.storage_used_since(report_since).size
-      },
       pages: {
         total: @subdomain.pages.size,
         added: @subdomain.pages.where('created_at >= ?', report_since).size
+      },
+      storage: {
+        total: "#{@subdomain.storage_used} Bytes",
+        added: "#{@subdomain.storage_used_since(report_since)} Bytes"
       }
     }
   end
