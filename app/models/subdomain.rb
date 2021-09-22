@@ -8,7 +8,7 @@ class Subdomain < ApplicationRecord
   after_create_commit :create_cms_site
   before_destroy :purge_stored_files, :drop_tenant
 
-  after_save :send_analytics_report, if: -> { self.saved_change_to_analytics_report_frequency? && self.analytics_report_frequency != 'never' }
+  after_save :send_analytics_report, if: -> { self.saved_change_to_analytics_report_frequency? && self.analytics_report_frequency != REPORT_FREQUENCY_MAPPING[:never] }
 
   has_one_attached :logo
   has_one_attached :favicon
