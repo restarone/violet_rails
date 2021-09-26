@@ -1,5 +1,5 @@
 namespace :report do
-  desc "system maintenance tasks"
+  desc "subdomain analytics and report tasks"
   
   task :send_analytics_report => [:environment] do 
     Subdomain.where.not(analytics_report_frequency: Subdomain::REPORT_FREQUENCY_MAPPING[:never]).each do |subdomain|
