@@ -74,5 +74,6 @@ class AnalyticsReportService
       path = URI.parse(key).path
       existing_paths.exclude?(path)
     end
+    response
   end
 end
