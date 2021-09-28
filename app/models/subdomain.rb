@@ -38,6 +38,7 @@ class Subdomain < ApplicationRecord
   }
 
   REPORT_FREQUENCY_MAPPING = {
+    daily: '1.day',
     weekly: '1.week',
     biweekly: '2.weeks',
     monthly: '1.month',

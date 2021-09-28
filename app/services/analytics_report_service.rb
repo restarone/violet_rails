@@ -14,6 +14,8 @@ class AnalyticsReportService
 
   def analytics_report_json
     {
+      start_date: report_since.to_date,
+      end_date: Date.today,
       ctas: cta_json,
       visits: visits_json,
       users: users_json,
@@ -31,7 +33,7 @@ class AnalyticsReportService
       }
     end
 
-    ctas
+    ctas.sort_by {|cta| cta[:response_count]}.reverse!
   end
 
   def visits_json
@@ -40,7 +42,7 @@ class AnalyticsReportService
     visited_by = %i[country region city referring_domain landing_page]
 
     visited_by.each do |each_elm|
-      response[each_elm] = visits.group(each_elm).count
+      response[each_elm] = visits.group(each_elm).order('count_id desc').count('id')
     end
     response
   end
