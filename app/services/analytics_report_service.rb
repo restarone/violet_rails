@@ -42,9 +42,9 @@ class AnalyticsReportService
     visited_by = %i[country region city referring_domain landing_page]
 
     visited_by.each do |each_elm|
-      response[each_elm] = visits.group(each_elm).order('count_id desc').count('id')
+      response[each_elm] = visits.where.not(each_elm => nil).group(each_elm).order('count_id desc').count('id')
     end
-    response
+    filter_landing_page(response)
   end
 
   def users_json
@@ -66,5 +66,13 @@ class AnalyticsReportService
         added: "#{@subdomain.storage_used_since(report_since)} Bytes"
       }
     }
+  end
+
+  def filter_landing_page(response)
+    existing_paths = @subdomain.pages.pluck(:full_path)
+    response[:landing_page].delete_if do |key, _|
+      path = URI.parse(key).path
+      existing_paths.exclude?(path)
+    end
   end
 end
