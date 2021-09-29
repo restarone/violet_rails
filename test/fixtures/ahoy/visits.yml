@@ -1,6 +1,6 @@
 public: 
   referring_domain: localhost
-  landing_page: "lvh.me:5250"
+  landing_page: "http://lvh.me:5250/"
   country: canada
   region: onterio
   city: toronto
