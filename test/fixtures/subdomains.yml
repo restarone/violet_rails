@@ -2,3 +2,4 @@
 
 public:
   name: public
+  analytics_report_frequency: 1.day
