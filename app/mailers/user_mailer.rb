@@ -14,6 +14,7 @@ class UserMailer < ApplicationMailer
 
       @report = AnalyticsReportService.new(subdomain).call
       subdomain.update(analytics_report_last_sent: Time.zone.now)
+      p "sending analytics report for #{mail_to.join(', ')}"
       mail(
         to: mail_to,
         subject: "Analytics report for #{@report[:start_date]} - #{@report[:end_date]}"
