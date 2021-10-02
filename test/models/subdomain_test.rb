@@ -86,7 +86,7 @@ class SubdomainTest < ActiveSupport::TestCase
     recipients = User.where(deliver_analytics_report: true)
     assert_no_difference "UserMailer.deliveries.size", +recipients.size do
       perform_enqueued_jobs do
-        @subdomain.update(analytics_report_frequency: '1.never')
+        @subdomain.update(analytics_report_frequency: 'never')
       end
     end
   end
