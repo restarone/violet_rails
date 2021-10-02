@@ -7,7 +7,7 @@ namespace :report do
       if (subdomain.analytics_report_last_sent.nil? || subdomain.analytics_report_last_sent <= eval(subdomain.analytics_report_frequency).ago)
         Apartment::Tenant.switch subdomain.name do
           p "sending analytics report for subdomain: #{subdomain.name} @ #{Time.now}"
-          UserMailer.analytics_report(subdomain).deliver_later
+          UserMailer.analytics_report(subdomain).deliver_now
         end
       end
     end
