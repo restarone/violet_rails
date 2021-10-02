@@ -10,6 +10,7 @@ class UserMailer < ApplicationMailer
   def analytics_report(subdomain)
     Apartment::Tenant.switch subdomain.name do
       mail_to = User.where(deliver_analytics_report: true).pluck(:email)
+      p "sending analytics report for #{mail_to.size} users in subdomain: #{subdomain.name}"
       return if mail_to.empty?
 
       @report = AnalyticsReportService.new(subdomain).call
