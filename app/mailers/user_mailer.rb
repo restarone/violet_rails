@@ -8,18 +8,16 @@ class UserMailer < ApplicationMailer
   end
 
   def analytics_report(subdomain)
-    Apartment::Tenant.switch subdomain.name do
-      mail_to = User.where(deliver_analytics_report: true).pluck(:email)
-      p "sending analytics report for #{mail_to.size} users in subdomain: #{subdomain.name}"
-      return if mail_to.empty?
+    mail_to = User.where(deliver_analytics_report: true).pluck(:email)
+    p "sending analytics report for #{mail_to.size} users in subdomain: #{subdomain.name}"
+    return if mail_to.empty?
 
-      @report = AnalyticsReportService.new(subdomain).call
-      subdomain.update(analytics_report_last_sent: Time.zone.now)
-      p "sending analytics report for #{mail_to.join(', ')}"
-      mail(
-        to: mail_to,
-        subject: "Analytics report for #{@report[:start_date]} - #{@report[:end_date]}"
-      )
-    end
+    @report = AnalyticsReportService.new(subdomain).call
+    subdomain.update(analytics_report_last_sent: Time.zone.now)
+    p "sending analytics report for #{mail_to.join(', ')}"
+    mail(
+      to: mail_to,
+      subject: "Analytics report for #{@report[:start_date]} - #{@report[:end_date]}"
+    )
   end
 end
