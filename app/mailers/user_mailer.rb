@@ -12,7 +12,7 @@ class UserMailer < ApplicationMailer
     return if mail_to.empty?
 
     @report = AnalyticsReportService.new(subdomain).call
-    subdomain.update(analytics_report_last_sent: Time.zone.now)
+    subdomain.update(analytics_report_last_sent: Time.zone.now.at_beginning_of_day)
     mail(
       to: mail_to,
       subject: "Analytics report for #{@report[:start_date]} - #{@report[:end_date]}"
