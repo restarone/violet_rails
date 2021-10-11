@@ -22,6 +22,6 @@ class UserMailerTest < ActionMailer::TestCase
     end
 
     assert_equal email.to, [@user.email]
-    assert_in_delta @subdomain.analytics_report_last_sent, Time.zone.now, 1
+    assert_in_delta @subdomain.analytics_report_last_sent, Time.zone.now.at_beginning_of_day, 1
   end
 end
