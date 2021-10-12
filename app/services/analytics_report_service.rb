@@ -1,7 +1,7 @@
 class AnalyticsReportService
   def initialize(subdomain)
     @subdomain = subdomain
-    @report_since = eval(@subdomain.analytics_report_frequency).ago
+    @report_since = eval(@subdomain.analytics_report_frequency).ago.at_beginning_of_day
   end
 
   def call

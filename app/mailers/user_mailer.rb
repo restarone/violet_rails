@@ -13,7 +13,7 @@ class UserMailer < ApplicationMailer
     return if mail_to.empty?
 
     @report = AnalyticsReportService.new(subdomain).call
-    subdomain.update(analytics_report_last_sent: Time.zone.now)
+    subdomain.update(analytics_report_last_sent: Time.zone.now.at_beginning_of_day)
     p "sending analytics report for #{mail_to.join(', ')}"
     mail(
       to: mail_to,
