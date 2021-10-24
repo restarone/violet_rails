@@ -68,7 +68,8 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
       :can_manage_users,
       :moderator,
       :name,
-      :can_view_restricted_pages
+      :can_view_restricted_pages,
+      :deliver_analytics_report
     )
   end
 

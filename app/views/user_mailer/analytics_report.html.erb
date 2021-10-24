@@ -1,0 +1,194 @@
+<html>
+
+<head>
+  <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  <style>
+    main {
+      max-width: 676px;
+      margin: auto;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    table {
+      width: 100%;
+      margin-bottom: 50px;
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+    }
+
+    .styled-table thead tr {
+      background-color: #212529;
+      color: #ffffff;
+      text-align: left;
+    }
+
+    .styled-table th,
+    .styled-table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid rgb(222, 226, 230);
+    }
+
+    .users {
+      overflow: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h1>Analytics Report</h1>
+    <h3>For period starting from <%= @report[:start_date] %> to <%= @report[:end_date]%></h3>
+    <div>
+      <h2>
+        Call to Actions
+      </h2>
+
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th>Call to Actions</th>
+            <th>Responses</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% response_total=0 %>
+            <% @report[:ctas].each do |cta|%>
+              <tr>
+                <td><%= link_to cta[:title], call_to_action_url(cta[:id]) %></td>
+                <td>
+                  <%= cta[:response_count] %>
+                    <% response_total=+ cta[:response_count] %>
+                </td>
+              </tr>
+              <%end%>
+        </tbody>
+
+        <tfoot>
+          <tr>
+            <td><strong>Total</strong></td>
+            <td>
+              <%= response_total %>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <% @report[:visits].each do |visited_by, response|%>
+      <div>
+        <h2>
+          Visits by <%= visited_by.to_s.humanize%>
+        </h2>
+
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th><%= visited_by.to_s.humanize%></th>
+              <th>Visits</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% total=0 %>
+              <% response.each do |key, value|%>
+                <tr>
+                  <td>
+                    <%= key %>
+                  </td>
+                  <td>
+                    <%= value %>
+                      <% total=total + value %>
+                  </td>
+                </tr>
+                <%end%>
+          </tbody>
+
+          <tfoot>
+            <tr>
+              <td><strong>Total</strong></td>
+              <td>
+                <%= total %>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <% end %>
+
+        <div class="users">
+          <h2>
+            Users
+          </h2>
+
+
+          <div>
+            <% columns=User.public_attributes%>
+              <table class="styled-table">
+                <thead>
+                  <tr>
+                    <% columns.each do |col| %>
+                      <th>
+                        <%= col.humanize %>
+                      </th>
+                      <%end%>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% total=0 %>
+                    <% @report[:users].each do |user|%>
+                      <tr>
+                        <% columns.each do |col| %>
+                          <td>
+                            <%= user[col] %>
+                          </td>
+                          <%end%>
+                      </tr>
+                      <%end%>
+                </tbody>
+              </table>
+          </div>
+
+        </div>
+
+        <div class="macros">
+          <h2>
+            Macros
+          </h2>
+
+
+          <div>
+
+            <table class="styled-table">
+              <thead>
+                <tr>
+                  <th>Macro</th>
+                  <th>Total</th>
+                  <th>Added</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @report[:macros].each do |key, value|%>
+                  <tr>
+                    <td>
+                      <%= key.to_s.humanize%>
+                    </td>
+                    <td>
+                      <%= value[:total] %>
+                    </td>
+                    <td>
+                      <%= value[:added] %>
+                    </td>
+
+                  </tr>
+                  <%end%>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+  </main>
+</body>
+
+</html>
