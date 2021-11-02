@@ -57,8 +57,22 @@
 .my-3
   = link_to "Create new #{@api_namespace.name.singularize}", new_api_namespace_resource_path(api_namespace_id: @api_namespace.id)
 
+%strong
+  %b Has Form:
+  = @api_namespace.api_form.present?
 
-.container-fluid
+- if @api_namespace.api_form.present?
+  %p
+    .d-flex.justify-content-between
+      %b Preview (outer border is present in preview only):
+      %div
+        = link_to 'Edit', edit_api_namespace_api_form_path(api_namespace_id: @api_namespace.id, id: @api_namespace.api_form.id)
+        \|
+        = link_to 'Destroy', api_namespace_api_form_path(api_namespace_id: @api_namespace.id, id: @api_namespace.api_form.id), method: :delete, data: { confirm: 'Are you sure?' }
+  .card.p-3
+    = render_form @api_namespace.id
+
+.container-fluid.mt-5
   %h1 
     Listing
     =  @api_namespace.name.pluralize

@@ -1,0 +1,55 @@
+- action = @api_form.persisted? ? :put : :post
+- path = @api_form.persisted? ? api_namespace_api_form_path(api_namespace_id: @api_form.api_namespace.id, id: @api_form.id) : api_namespace_api_forms_path(api_namespace_id: @api_client.api_namespace.id)
+- properties = @api_form.properties
+
+= form_for @api_form, url: path, method: action do |f|
+  - if @api_form.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@api_form.errors.count, "error")} prohibited this api_form from being saved:"
+      %ul
+        - @api_form.errors.full_messages.each do |message|
+          %li= message
+
+  .form-group
+    = f.label :title
+    = f.text_field :title, class: 'form-control'
+  .my-5
+    %h3.my-2 
+      Messages
+    .form-group
+      = f.label :success_message
+      = f.text_field :success_message, class: 'form-control'
+    .form-group
+      = f.label :failure_message
+      = f.text_field :failure_message, class: 'form-control'
+
+  %h3 Fields
+  = f.fields_for :properties do |p|
+    - JSON.parse(@api_namespace.properties).each do |key, value|
+      %h4
+        = key
+      = p.fields_for key do |a|
+        .row.mb-3.align-items-end
+          .form-group.col-12.col-md-4
+            = a.label :label
+            = a.text_field :label, class: 'form-control', value: properties[key]["label"]
+          .form-group.col-12.col-md-4
+            = a.label :placeholder
+            = a.text_field :placeholder, class: 'form-control', value: properties[key]["placeholder"]
+          .form-group.col-12.col-md-4
+            = a.label :required
+            = a.check_box :required, checked: properties[key]["required"] == "1"
+
+  
+  %h3.mt-4
+    Button
+  .form-group
+    = f.label :submit_button_label
+    = f.text_field :submit_button_label, class: 'form-control'
+
+  .form-group.mt-4
+    = f.label :show_recaptcha
+    = f.check_box :show_recaptcha
+    
+  .actions
+    = f.submit 'Save', class: 'btn btn-primary'
