@@ -32,7 +32,13 @@ class Api::ResourceController < Api::BaseController
   def create
     payload = params[:data]
     api_resource = @api_namespace.api_resources.new(properties: payload)
-    if api_resource.save
+    if @api_namespace&.api_form&.show_recaptcha
+      if verify_recaptcha(action: 'create') && api_resource.save
+        render json: { code: 200, status: 'OK', object: serialize_resource(api_resource) }
+      else
+        render json: { code: 400, status: api_resource.errors.full_messages.to_sentence }
+      end
+    elsif api_resource.save
       render json: { code: 200, status: 'OK', object: serialize_resource(api_resource) }
     else
       render json: { code: 400, status: api_resource.errors.full_messages.to_sentence }
