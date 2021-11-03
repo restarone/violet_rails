@@ -9,20 +9,37 @@ module ApiFormsHelper
     end
   end
 
-  def map_form_field(form, key, value, placeholder, required = false)
+  def map_form_field(form, key, value, form_properties)
     case value.class.to_s
     when 'String'
-      form.text_field key, placeholder: placeholder, required: required, value: value, class: 'form-control'
+      form.text_field key, placeholder: form_properties[key]['placeholder'], required: form_properties[key]['required'] == '1', value: value, class: 'form-control'
     when 'Integer'
-      form.number_field key, placeholder: placeholder, required: required, value: value, class: 'form-control'
+      form.number_field key, placeholder: form_properties[key]['placeholder'], required: form_properties[key]['required'] == '1', value: value, class: 'form-control'
     when 'Array'
-      form.select key, options_for_select(value), { multiple: true }, {class: "form-control array_select", name: "data[#{key}][]", default_value: value.to_s }
+      form.select key, options_for_select(form_properties[key]['options'].nil? ? value : form_properties[key]['options'] ), { multiple: true }, {class: "form-control array_select", name: "data[#{key}][]", default_value: value.to_s }
     when 'TrueClass', 'FalseClass'
       form.check_box key, checked: value
     when 'Hash'
       render partial: 'comfy/admin/api_forms/jsoneditor', locals: {form: form, key: key, value: value} 
     else
-      form.text_field key, placeholder: placeholder, value: value, class: 'form-control'
+      form.text_field key, placeholder: form_properties[key]['placeholder'], required: form_properties[key]['required'] == '1',  value: value, class: 'form-control'
+    end
+  end
+
+  def map_form_field_type(data_type)
+    case data_type
+    when 'String'
+      'Text field'
+    when 'Integer'
+      'Number field'
+    when 'Array'
+      'Multiselect'
+    when 'TrueClass', 'FalseClass'
+      'Checkbox'
+    when 'Hash'
+      'Json input'
+    else
+      'String'
     end
   end
 end

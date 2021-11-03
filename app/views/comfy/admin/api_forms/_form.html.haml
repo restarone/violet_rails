@@ -24,23 +24,40 @@
       = f.text_field :failure_message, class: 'form-control'
 
   %h3 Fields
-  = f.fields_for :properties do |p|
-    - JSON.parse(@api_namespace.properties).each do |key, value|
-      %h4
-        = key
-      = p.fields_for key do |a|
-        .row.mb-3.align-items-end
-          .form-group.col-12.col-md-4
-            = a.label :label
-            = a.text_field :label, class: 'form-control', value: properties[key]["label"]
-          .form-group.col-12.col-md-4
-            = a.label :placeholder
-            = a.text_field :placeholder, class: 'form-control', value: properties[key]["placeholder"]
-          .form-group.col-12.col-md-4
-            = a.label :required
-            = a.check_box :required, checked: properties[key]["required"] == "1"
+  .row
+    = f.fields_for :properties do |p|
+      - JSON.parse(@api_namespace.properties).each do |key, value|
+        .col-12.col-md-4.mb-4
+          .card.p-3
+            %h4.mb-3
+              = key
+            .form-group.d-flex.align-items-baseline
+              .mr-4
+                = 'Data type:'
+              %div
+                = value.class.to_s
+            .form-group.d-flex.align-items-baseline
+              .mr-4
+                = 'Input Field Type: '
+              %div
+                = map_form_field_type(value.class.to_s)
+            = p.fields_for key do |a|
+              .row.mb-3.align-items-end
+                .form-group.col-12.d-flex.align-items-baseline
+                  = a.label :label, 'Label:', class: 'mr-4'
+                  = a.text_field :label, class: 'form-control', value: properties[key]["label"]
+                .form-group.col-12.d-flex.align-items-baseline
+                  = a.label :placeholder, 'Placeholder:', class: 'mr-4'
+                  = a.text_field :placeholder, class: 'form-control', value: properties[key]["placeholder"]
+                - if value.class.to_s == 'Array'
+                  .form-group.col-12.d-flex.align-items-baseline
+                    = a.label :options, 'Options:', class: 'mr-4'
+                    = a.select key, options_for_select(properties[key]["options"].nil? ? value : properties[key]["options"]), { multiple: true }, {class: "form-control array_select", name: "api_form[properties][#{key}][options][]", default_value: properties[key]["options"].nil? ? value.to_s : properties[key]["options"].to_s}
 
-  
+                .form-group.col-12.d-flex.align-items-baseline
+                  = a.label :required, 'Required:', class: 'mr-4'
+                  = a.check_box :required, checked: properties[key]["required"] == "1"
+        
   %h3.mt-4
     Button
   .form-group
@@ -53,3 +70,15 @@
     
   .actions
     = f.submit 'Save', class: 'btn btn-primary'
+
+:javascript
+  $(document).ready( function() {
+    $(".array_select").select2({
+      multiple: true,
+      required: false,
+      tags: true
+    })
+    $('.array_select').each(function() {
+      $(this).val(JSON.parse($(this).attr('default_value'))).change();
+    })
+  });

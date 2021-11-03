@@ -7,7 +7,7 @@
     - properties.each do |key, value|
       .form-group
         = f.label key, form_properties[key]["label"]
-        = map_form_field(f, key, value, form_properties[key]["placeholder"], form_properties[key]['required'] == '1')
+        = map_form_field(f, key, value, form_properties)
   = recaptcha_tags callback: 'ctaSuccessHandler' if @api_form.show_recaptcha
   = f.submit @api_form.submit_button_label, disabled: @api_form.show_recaptcha, class: 'my-2 btn btn-primary'
 
@@ -17,5 +17,7 @@
       multiple: true,
       required: false
     })
-    $('.array_select').val(JSON.parse($('.array_select').attr('default_value'))).change();
+    $('.array_select').each(function() {
+      $(this).val(JSON.parse($(this).attr('default_value'))).change();
+    })
   });
