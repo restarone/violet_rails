@@ -43,18 +43,18 @@
                 = map_form_field_type(value.class.to_s)
             = p.fields_for key do |a|
               .row.mb-3.align-items-end
-                .form-group.col-12.d-flex.align-items-baseline
+                .form-group.col-12
                   = a.label :label, 'Label:', class: 'mr-4'
                   = a.text_field :label, class: 'form-control', value: properties[key]["label"]
-                .form-group.col-12.d-flex.align-items-baseline
+                .form-group.col-12
                   = a.label :placeholder, 'Placeholder:', class: 'mr-4'
                   = a.text_field :placeholder, class: 'form-control', value: properties[key]["placeholder"]
                 - if value.class.to_s == 'Array'
-                  .form-group.col-12.d-flex.align-items-baseline
+                  .form-group.col-12
                     = a.label :options, 'Options:', class: 'mr-4'
                     = a.select key, options_for_select(properties[key]["options"].nil? ? value : properties[key]["options"]), { multiple: true }, {class: "form-control array_select", name: "api_form[properties][#{key}][options][]", default_value: properties[key]["options"].nil? ? value.to_s : properties[key]["options"].to_s}
 
-                .form-group.col-12.d-flex.align-items-baseline
+                .form-group.col-12
                   = a.label :required, 'Required:', class: 'mr-4'
                   = a.check_box :required, checked: properties[key]["required"] == "1"
         

@@ -9,7 +9,7 @@ class ApiNamespace < ApplicationRecord
   has_many :api_resources, dependent: :destroy
   accepts_nested_attributes_for :api_resources
 
-  has_one :api_form
+  has_one :api_form, dependent: :destroy
   accepts_nested_attributes_for :api_form
 
   has_many :api_clients, dependent: :destroy

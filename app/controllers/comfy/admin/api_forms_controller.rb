@@ -7,7 +7,6 @@ class Comfy::Admin::ApiFormsController < Comfy::Admin::Cms::BaseController
   def edit
   end
 
-  # PATCH/PUT /api_clients/1 or /api_clients/1.json
   def update
     respond_to do |format|
       if @api_form.update(api_form_params)
@@ -17,6 +16,14 @@ class Comfy::Admin::ApiFormsController < Comfy::Admin::Cms::BaseController
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @api_form.errors, status: :unprocessable_entity }
       end
+    end
+  end
+
+  def destroy
+    @api_form.destroy
+    respond_to do |format|
+      format.html { redirect_to api_namespace_path(id: @api_namespace.slug), notice: "Api form was successfully destroyed." }
+      format.json { head :no_content }
     end
   end
 
