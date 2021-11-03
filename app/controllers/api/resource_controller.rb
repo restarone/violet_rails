@@ -1,6 +1,6 @@
 class Api::ResourceController < Api::BaseController
   before_action :load_api_resource, only: [:show, :update, :destroy]
-  before_action :prevent_write_access_if_public, only: [:create, :update, :destroy]
+  before_action :prevent_write_access_if_public, only: [:update, :destroy]
 
   before_action :validate_payload, only: [:create, :update]
 

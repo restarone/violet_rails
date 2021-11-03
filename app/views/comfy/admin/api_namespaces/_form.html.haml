@@ -18,6 +18,9 @@
     = f.label :requires_authentication
     = f.check_box :requires_authentication
   .field
+    = f.label :has_form
+    = f.check_box :has_form, checked: @api_namespace.api_form.present?
+  .field
     = f.label :namespace_type
     = f.text_field :namespace_type
   .actions
