@@ -26,6 +26,15 @@ module ApiFormsHelper
     end
   end
 
+  def map_non_primitive_data_type(form, type)
+    case type
+    when 'file'
+      form.file_field :attachment, class: 'form-control'
+    when 'richtext'
+      form.rich_text_area :content
+    end
+  end
+
   def map_form_field_type(data_type)
     case data_type
     when 'String'

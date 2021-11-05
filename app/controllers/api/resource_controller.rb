@@ -30,8 +30,7 @@ class Api::ResourceController < Api::BaseController
   end
 
   def create
-    payload = params[:data]
-    api_resource = @api_namespace.api_resources.new(properties: payload)
+    api_resource = @api_namespace.api_resources.new(resource_params)
     if @api_namespace&.api_form&.show_recaptcha
       if verify_recaptcha(action: 'create') && api_resource.save
         render json: { code: 200, status: 'OK', object: serialize_resource(api_resource) }
@@ -82,6 +81,12 @@ class Api::ResourceController < Api::BaseController
     unless @api_resource 
       render json: { status: 'not found', code: 404 }
     end
+  end
+
+  def resource_params
+    # it comes in as a json string which we need to parse into a ruby hash before saving it to the DB 
+    properties = params[:data].try(:permit!).except(:non_primitive_properties_attributes)
+    params.require(:data).permit(non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachments, :_destroy]).merge({ api_namespace_id: params[:api_namespace_id], properties: properties })
   end
 
   def serialize_resources(collection)
