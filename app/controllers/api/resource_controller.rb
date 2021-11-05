@@ -86,7 +86,7 @@ class Api::ResourceController < Api::BaseController
   def resource_params
     # it comes in as a json string which we need to parse into a ruby hash before saving it to the DB 
     properties = params[:data].try(:permit!).except(:non_primitive_properties_attributes)
-    params.require(:data).permit(non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachments, :_destroy]).merge({ api_namespace_id: params[:api_namespace_id], properties: properties })
+    params.require(:data).permit(non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :_destroy]).merge({ api_namespace_id: params[:api_namespace_id], properties: properties })
   end
 
   def serialize_resources(collection)

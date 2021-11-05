@@ -1,4 +1,4 @@
-= form_for @api_namespace do |f|
+= form_for @api_namespace, html: {multipart: true} do |f|
   - if @api_namespace.errors.any?
     #error_explanation
       %h2= "#{pluralize(@api_namespace.errors.count, "error")} prohibited this api_namespace from being saved:"
