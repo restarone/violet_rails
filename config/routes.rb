@@ -51,6 +51,7 @@ Rails.application.routes.draw do
     resources :api_clients, controller: 'comfy/admin/api_clients'
     resources :api_forms, controller: 'comfy/admin/api_forms'
   end
+  resources :non_primitive_properties, controller: 'comfy/admin/non_primitive_properties', only: [:new]
 
   # system admin panel login
   devise_scope :user do

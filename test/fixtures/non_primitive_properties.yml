@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  label: MyString
+  type: 1
+  api_resource: one
+  api_namespace: one
+
+two:
+  label: MyString
+  type: 1
+  api_resource: two
+  api_namespace: two

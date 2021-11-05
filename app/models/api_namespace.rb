@@ -15,6 +15,9 @@ class ApiNamespace < ApplicationRecord
   has_many :api_clients, dependent: :destroy
   accepts_nested_attributes_for :api_clients
 
+  has_many :non_primitive_properties, dependent: :destroy
+  accepts_nested_attributes_for :non_primitive_properties, allow_destroy: true
+
   def update_api_form
     if has_form == '1'
       if api_form.present? 
