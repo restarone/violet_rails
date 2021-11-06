@@ -12,10 +12,13 @@ module ApiFormsHelper
   def map_form_field(form, key, value, form_properties)
     case value.class.to_s
     when 'String'
+      options = { placeholder: form_properties[key]['placeholder'], required: form_properties[key]['required'] == '1', value: value, class: 'form-control'}
+      options[:type] = form_properties[key]['type_validation'] if form_properties[key]['type_validation'].present?
+      options[:pattern] = form_properties[key]['pattern'] if form_properties[key]['pattern'].present?
       if form_properties[key]['field_type'] == 'textarea'
-        form.text_area key, placeholder: form_properties[key]['placeholder'], required: form_properties[key]['required'] == '1', value: value, class: 'form-control'
+        form.text_area key, options
       else
-        form.text_field key, placeholder: form_properties[key]['placeholder'], required: form_properties[key]['required'] == '1', value: value, class: 'form-control'
+        form.text_field key, options
       end
     when 'Integer'
       form.number_field key, placeholder: form_properties[key]['placeholder'], required: form_properties[key]['required'] == '1', value: value, class: 'form-control'
