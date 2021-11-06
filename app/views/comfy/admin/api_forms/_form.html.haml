@@ -49,6 +49,10 @@
                 .form-group.col-12
                   = a.label :placeholder, 'Placeholder:', class: 'mr-4'
                   = a.text_field :placeholder, class: 'form-control', value: properties[key]["placeholder"]
+                - if value.class.to_s == 'String'
+                  .form-group.col-12
+                    = a.label :field_type, 'Field type', class: 'mr-4'
+                    = a.select :field_type, options_for_select(['input', 'textarea'], properties[key]["field_type"] || 'input'), {}, {class: 'form-control' }
                 - if value.class.to_s == 'Array'
                   .form-group.col-12
                     = a.label :options, 'Options:', class: 'mr-4'

@@ -12,7 +12,11 @@ module ApiFormsHelper
   def map_form_field(form, key, value, form_properties)
     case value.class.to_s
     when 'String'
-      form.text_field key, placeholder: form_properties[key]['placeholder'], required: form_properties[key]['required'] == '1', value: value, class: 'form-control'
+      if form_properties[key]['field_type'] == 'textarea'
+        form.text_area key, placeholder: form_properties[key]['placeholder'], required: form_properties[key]['required'] == '1', value: value, class: 'form-control'
+      else
+        form.text_field key, placeholder: form_properties[key]['placeholder'], required: form_properties[key]['required'] == '1', value: value, class: 'form-control'
+      end
     when 'Integer'
       form.number_field key, placeholder: form_properties[key]['placeholder'], required: form_properties[key]['required'] == '1', value: value, class: 'form-control'
     when 'Array'

@@ -38,9 +38,17 @@ class Api::ResourceController < Api::BaseController
         render json: { code: 400, status: api_resource.errors.full_messages.to_sentence }
       end
     elsif api_resource.save
-      render json: { code: 200, status: 'OK', object: serialize_resource(api_resource) }
+      respond_to do |format|
+        flash[:notice] = @api_namespace.api_form.success_message if @api_namespace.api_form
+        format.html { redirect_back(fallback_location: root_path) }
+        format.json { render json: { code: 200, status: 'OK', object: serialize_resource(api_resource) } }
+      end
     else
-      render json: { code: 400, status: api_resource.errors.full_messages.to_sentence }
+      respond_to do |format|
+        flash[:error] = @api_namespace.api_form.error_message if @api_namespace.api_form
+        format.html { redirect_back(fallback_location: root_path) }
+        render json: { code: 400, status: api_resource.errors.full_messages.to_sentence }
+      end
     end
   end
 

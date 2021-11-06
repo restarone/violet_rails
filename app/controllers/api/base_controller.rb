@@ -1,4 +1,5 @@
-class Api::BaseController < ActionController::API
+class Api::BaseController < ActionController::Base
+
   before_action :parse_request,
                 :authenticate_request
   def authenticate_request
