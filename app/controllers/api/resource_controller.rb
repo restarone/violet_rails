@@ -1,6 +1,6 @@
 class Api::ResourceController < Api::BaseController
   before_action :load_api_resource, only: [:show, :update, :destroy]
-  before_action :prevent_write_access_if_public, only: [:update, :destroy]
+  before_action :prevent_write_access_if_public, only: [:create, :update, :destroy]
 
   before_action :validate_payload, only: [:create, :update]
 
@@ -31,31 +31,16 @@ class Api::ResourceController < Api::BaseController
 
   def create
     api_resource = @api_namespace.api_resources.new(resource_params)
-    if @api_namespace&.api_form&.show_recaptcha
-      if verify_recaptcha(action: 'create') && api_resource.save
+    if api_resource.save
         render json: { code: 200, status: 'OK', object: serialize_resource(api_resource) }
       else
         render json: { code: 400, status: api_resource.errors.full_messages.to_sentence }
-      end
-    elsif api_resource.save
-      respond_to do |format|
-        flash[:notice] = @api_namespace.api_form.success_message if @api_namespace.api_form
-        format.html { redirect_back(fallback_location: root_path) }
-        format.json { render json: { code: 200, status: 'OK', object: serialize_resource(api_resource) } }
-      end
-    else
-      respond_to do |format|
-        flash[:error] = @api_namespace.api_form.error_message if @api_namespace.api_form
-        format.html { redirect_back(fallback_location: root_path) }
-        render json: { code: 400, status: api_resource.errors.full_messages.to_sentence }
-      end
     end
   end
 
   def update
-    payload = params[:data]
     before_change = @api_resource.dup
-    if payload && @api_resource.update(properties: payload)
+    if payload && @api_resource.update(resource_params)
       render json: { code: 200, status: 'OK', object: serialize_resource(@api_resource.reload), before: serialize_resource(before_change) }
     else
       render json: { code: 422, status: 'unprocessable entity' }
