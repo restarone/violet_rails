@@ -18,7 +18,7 @@
           = show_file(prop.attachment)
         - else
           %div
-            = prop.content.to_s.html_safe
+            = render html: prop.content.to_s.html_safe
 
 = link_to 'Edit', edit_api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id, id: @api_resource.id)
 \|
