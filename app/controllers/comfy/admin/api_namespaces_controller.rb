@@ -70,6 +70,6 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
 
     # Only allow a list of trusted parameters through.
     def api_namespace_params
-      params.require(:api_namespace).permit(:name, :version, :properties, :requires_authentication, :namespace_type)
+      params.require(:api_namespace).permit(:name, :version, :properties, :requires_authentication, :namespace_type, :has_form, non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :_destroy])
     end
 end

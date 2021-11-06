@@ -30,19 +30,17 @@ class Api::ResourceController < Api::BaseController
   end
 
   def create
-    payload = params[:data]
-    api_resource = @api_namespace.api_resources.new(properties: payload)
+    api_resource = @api_namespace.api_resources.new(resource_params)
     if api_resource.save
-      render json: { code: 200, status: 'OK', object: serialize_resource(api_resource) }
-    else
-      render json: { code: 400, status: api_resource.errors.full_messages.to_sentence }
+        render json: { code: 200, status: 'OK', object: serialize_resource(api_resource) }
+      else
+        render json: { code: 400, status: api_resource.errors.full_messages.to_sentence }
     end
   end
 
   def update
-    payload = params[:data]
     before_change = @api_resource.dup
-    if payload && @api_resource.update(properties: payload)
+    if @api_resource.update(resource_params)
       render json: { code: 200, status: 'OK', object: serialize_resource(@api_resource.reload), before: serialize_resource(before_change) }
     else
       render json: { code: 422, status: 'unprocessable entity' }
@@ -76,6 +74,12 @@ class Api::ResourceController < Api::BaseController
     unless @api_resource 
       render json: { status: 'not found', code: 404 }
     end
+  end
+
+  def resource_params
+    # it comes in as a json string which we need to parse into a ruby hash before saving it to the DB 
+    properties = params[:data].try(:permit!).except(:non_primitive_properties_attributes)
+    params.require(:data).permit(non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :_destroy]).merge({ properties: properties })
   end
 
   def serialize_resources(collection)

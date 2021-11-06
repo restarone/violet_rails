@@ -48,8 +48,12 @@ Rails.application.routes.draw do
   # api admin
   resources :api_namespaces, controller: 'comfy/admin/api_namespaces' do
     resources :resources, controller: 'comfy/admin/api_resources' 
-    resources :api_clients, controller: 'comfy/admin/api_clients' 
+    resources :api_clients, controller: 'comfy/admin/api_clients'
+    resources :api_forms, controller: 'comfy/admin/api_forms', only: [:edit, :update, :destroy]
+
+    resources :resource, controller: 'resource', only: [:create]
   end
+  resources :non_primitive_properties, controller: 'comfy/admin/non_primitive_properties', only: [:new]
 
   # system admin panel login
   devise_scope :user do
