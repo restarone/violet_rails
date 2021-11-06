@@ -67,4 +67,34 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     assert_redirected_to api_namespaces_url
   end
+
+  test "should create api_form if has_form params is true" do
+    sign_in(@user)
+    assert_difference('ApiForm.count') do
+      post api_namespaces_url, params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, properties: @api_namespace.properties, has_form: "1" ,requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
+    end
+    api_namespace = ApiNamespace.last
+    assert api_namespace.api_form
+  end
+
+  test "should create api_form if has_form params is true when updating" do
+    sign_in(@user)
+    assert_difference('ApiForm.count') do
+      patch api_namespace_url(api_namespaces(:two)), params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, has_form: '1', properties: @api_namespace.properties, requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
+    end
+  end
+
+  test "should reomve api_form if has_form params is false when updating" do
+    sign_in(@user)
+    assert_difference('ApiForm.count', -1) do
+      patch api_namespace_url(@api_namespace), params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, has_form: '0', properties: @api_namespace.properties, requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
+    end
+  end
+
+  test "should not create api_form if api_form already exists" do
+    sign_in(@user)
+    assert_no_difference('ApiForm.count') do
+      patch api_namespace_url(@api_namespace), params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, has_form: '1', properties: @api_namespace.properties, requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
+    end
+  end
 end

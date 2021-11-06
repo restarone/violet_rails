@@ -2,12 +2,12 @@
 
 one:
   label: MyString
-  type: 1
-  api_resource: one
+  field_type: 1
+  api_resource: 
   api_namespace: one
 
 two:
   label: MyString
-  type: 1
+  field_type: 1
   api_resource: two
-  api_namespace: two
+  api_namespace: 

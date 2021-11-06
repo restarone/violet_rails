@@ -1,16 +1,8 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  properties: 
+  properties: { 'name': {'label': 'Test', 'placeholder': 'Test', 'field_type': 'input' }}
   api_namespace: one
-  success_message: MyString
-  failure_message: MyString
-  submit_button_label: MyString
-  title: MyString
-
-two:
-  properties: 
-  api_namespace: two
   success_message: MyString
   failure_message: MyString
   submit_button_label: MyString
