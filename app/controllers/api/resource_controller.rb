@@ -40,7 +40,7 @@ class Api::ResourceController < Api::BaseController
 
   def update
     before_change = @api_resource.dup
-    if payload && @api_resource.update(resource_params)
+    if @api_resource.update(resource_params)
       render json: { code: 200, status: 'OK', object: serialize_resource(@api_resource.reload), before: serialize_resource(before_change) }
     else
       render json: { code: 422, status: 'unprocessable entity' }
