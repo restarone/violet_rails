@@ -2,7 +2,7 @@ class Comfy::Admin::ApiFormsController < Comfy::Admin::Cms::BaseController
   before_action :ensure_authority_to_manage_web
   before_action :set_api_namespace
 
-  before_action :set_api_form, only: %i[show edit update destroy]
+  before_action :set_api_form, only: %i[show edit update]
 
   def edit
   end
@@ -16,14 +16,6 @@ class Comfy::Admin::ApiFormsController < Comfy::Admin::Cms::BaseController
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @api_form.errors, status: :unprocessable_entity }
       end
-    end
-  end
-
-  def destroy
-    @api_form.destroy
-    respond_to do |format|
-      format.html { redirect_to api_namespace_path(id: @api_namespace.slug), notice: "Api form was successfully destroyed." }
-      format.json { head :no_content }
     end
   end
 
