@@ -57,9 +57,15 @@
                     = a.label :type_validation, 'Type validation', class: 'mr-4'
                     = a.select :type_validation, options_for_select(['text', 'number', 'email', 'url'], properties[key]["type_validation"] || 'text'), {}, {class: 'form-control' }
                   .form-group.col-12
-                    = a.label :pattern, 'Pattern', class: 'mr-4'
-                    = a.text_field :pattern, class: 'form-control', value: properties[key]["pattern"]
+                    = a.label :pattern, 'REGEX Pattern', class: 'mr-4'
+                    = a.text_field :pattern, class: 'form-control', value: properties[key]["pattern"], placeholder: '[A-Za-z]{3}'
+                    .mt-2.form-control-sm.pl-0
+                      Regex editor:
+                      = link_to 'Rubular', "https://rubular.com/", {target: '_blank'}
                 - if value.class.to_s == 'Array'
+                  .form-group.col-12
+                    = a.label :select_type, 'Select Type:', class: 'mr-4'
+                    = a.select :select_type, options_for_select(['single', 'multi']), {}, {class: "form-control"}
                   .form-group.col-12
                     = a.label :options, 'Options:', class: 'mr-4'
                     = a.select key, options_for_select(properties[key]["options"].nil? ? value : properties[key]["options"]), { multiple: true }, {class: "form-control array_select", name: "api_form[properties][#{key}][options][]", default_value: properties[key]["options"].nil? ? value.to_s : properties[key]["options"].to_s}
