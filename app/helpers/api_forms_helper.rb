@@ -12,9 +12,10 @@ module ApiFormsHelper
   def map_form_field(form, key, value, form_properties)
     case value.class.to_s
     when 'String'
-      options = { placeholder: form_properties[key]['placeholder'], required: form_properties[key]['required'] == '1', value: value, class: 'form-control'}
-      options[:type] = form_properties[key]['type_validation'] if form_properties[key]['type_validation'].present?
-      options[:pattern] = form_properties[key]['pattern'] if form_properties[key]['pattern'].present?
+      options = { placeholder: value, required: form_properties[key]['required'] == '1', class: 'form-control'}
+      options[:type] = map_input_type(form_properties[key]['type_validation']) if form_properties[key]['type_validation'].present?
+      options[:pattern] = form_properties[key]['pattern'] if form_properties[key]['type_validation'] == 'REGEX pattern' && form_properties[key]['pattern'].present?
+      options[:value] = value if form_properties[key]['prepopulate'] == '1'
       if form_properties[key]['field_type'] == 'textarea'
         form.text_area key, options
       else
@@ -60,6 +61,19 @@ module ApiFormsHelper
       'Json input'
     else
       'String'
+    end
+  end
+
+  def map_input_type(type)
+    case type
+    when 'free text'
+      'text'
+    when 'number'
+      'tel'
+    when 'email', 'url'
+      type
+    else
+      'text'
     end
   end
 end

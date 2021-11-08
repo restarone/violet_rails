@@ -47,16 +47,16 @@
                   = a.label :label, 'Label:', class: 'mr-4'
                   = a.text_field :label, class: 'form-control', value: properties[key]["label"]
                 .form-group.col-12
-                  = a.label :placeholder, 'Placeholder:', class: 'mr-4'
-                  = a.text_field :placeholder, class: 'form-control', value: properties[key]["placeholder"]
+                  = a.label :prepopulate, 'Prepopulate:', class: 'mr-4'
+                  = a.check_box :prepopulate, checked: properties[key]["prepopulate"] == '1'
                 - if value.class.to_s == 'String'
                   .form-group.col-12
                     = a.label :field_type, 'Field type', class: 'mr-4'
                     = a.select :field_type, options_for_select(['input', 'textarea'], properties[key]["field_type"] || 'input'), {}, {class: 'form-control' }
                   .form-group.col-12
                     = a.label :type_validation, 'Type validation', class: 'mr-4'
-                    = a.select :type_validation, options_for_select(['text', 'number', 'email', 'url'], properties[key]["type_validation"] || 'text'), {}, {class: 'form-control' }
-                  .form-group.col-12
+                    = a.select :type_validation, options_for_select(['free text', 'number', 'REGEX pattern', 'email', 'url'], properties[key]["type_validation"] || 'text'), {}, {class: 'form-control', onchange: "toggleRegex(this , '#{key}_regex')" }
+                  .form-group.col-12{style: "#{'display: none' unless properties[key]["type_validation"] == 'REGEX pattern' }", id: "#{key}_regex"}
                     = a.label :pattern, 'REGEX Pattern', class: 'mr-4'
                     = a.text_field :pattern, class: 'form-control', value: properties[key]["pattern"], placeholder: '[A-Za-z]{3}'
                     .mt-2.form-control-sm.pl-0
@@ -98,3 +98,15 @@
       $(this).val(JSON.parse($(this).attr('default_value'))).change();
     })
   });
+
+
+  function toggleRegex(select, regexFieldId) {
+    var type = $(select).val();
+    if (type === 'REGEX pattern') {
+      $('#' + regexFieldId).show();
+    } else {
+      $('#' + regexFieldId).hide();
+    }
+  }
+
+
