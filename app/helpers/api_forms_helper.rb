@@ -25,9 +25,9 @@ module ApiFormsHelper
       form.number_field key, placeholder: form_properties[key]['placeholder'], required: form_properties[key]['required'] == '1', value: value, class: 'form-control'
     when 'Array'
       if form_properties[key]['select_type'] == 'multi'
-        form.select key, options_for_select(form_properties[key]['options'].nil? ? value : form_properties[key]['options'] ), { multiple: true }, {class: "form-control array_select", name: "data[#{key}][]", default_value: value.to_s }
+        form.select key, options_for_select(form_properties[key]['options'].nil? ? value : form_properties[key]['options'] ), { multiple: true }, {class: "form-control array_select", name: "data[properties][#{key}][]", default_value: value.to_s }
       else
-        form.select key, options_for_select(form_properties[key]['options'].nil? ? value : form_properties[key]['options'] ), { include_blank: form_properties[key]['required'] != "1" }, {class: "form-control", name: "data[#{key}][]"  }
+        form.select key, options_for_select(form_properties[key]['options'].nil? ? value : form_properties[key]['options'] ), { include_blank: form_properties[key]['required'] != "1" }, {class: "form-control", name: "data[properties][#{key}][]"  }
       end
     when 'TrueClass', 'FalseClass'
       form.check_box key, checked: value

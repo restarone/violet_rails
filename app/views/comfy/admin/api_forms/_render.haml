@@ -5,9 +5,10 @@
 = form_for :data, url: api_namespace_resource_index_path(api_namespace_id: @api_namespace.id), method: :post, html: {class: 'violet-cta-form', 'data-type': 'json', multipart: true, id: 'api_form'} do |f|
   .form-group
     - properties.each do |key, value|
-      .form-group
-        = f.label key, form_properties[key]["label"]
-        = map_form_field(f, key, value, form_properties)
+      = f.fields_for :properties do |fff|
+        .form-group
+          = fff.label key, form_properties[key]["label"]
+          = map_form_field(fff, key, value, form_properties)
     - @api_namespace.non_primitive_properties.each_with_index do |property, index|
       = fields_for "data[non_primitive_properties_attributes][#{index}]", property do |ff|
         .form-group

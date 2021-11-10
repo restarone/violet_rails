@@ -1,5 +1,5 @@
 .jsoneditor{id: "#{key}-editor"}
-= hidden_field_tag "data[#{key}]", value.to_json
+= hidden_field_tag "data[properties][#{key}]", value.to_json
 
 :javascript
   // create the editor
@@ -14,7 +14,7 @@
     const initialJson = {}
     editor.set(initialJson)
 
-    let existingValue = $("#data_#{key}").val()
+    let existingValue = $("#data_properties_#{key}").val()
 
     if (existingValue) {
         let json = JSON.parse(existingValue)
@@ -25,7 +25,7 @@
 
     function setFields() {
         str = JSON.stringify(editor.get())
-        $("#data_#{key}").val(str)
+        $("#data_properties_#{key}").val(str)
     }
 
     // get json
