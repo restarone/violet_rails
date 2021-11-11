@@ -1,6 +1,6 @@
 .card.form-container.font-size-sm.position-relative.p-3.mb-4{id: "non_prim_form_#{index}", style: "font-size: 13px; border-color: #3883fa"}
   .position-absolute{style: "top: 6px; right: 6px"}
-    %a.text-danger{style: "cursor: pointer;", onclick: "removeForm('#{index}')"}
+    %a.text-danger{style: "cursor: pointer;", onclick: "removeForm('non_prim_form_#{index}', 'form_destroy_field_#{index}')"}
       %i.fas.fa-times
   .row
     .form-group.col-12.col-md-6

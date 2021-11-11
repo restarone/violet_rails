@@ -1,0 +1,20 @@
+.card.form-container.font-size-sm.position-relative.p-3.mb-4{id: "api_action_form_#{index}", style: "font-size: 13px; border-color: #3883fa"}
+  .position-absolute{style: "top: 6px; right: 6px"}
+    %a.text-danger{style: "cursor: pointer;", onclick: "removeForm('api_action_form_#{index}', 'api_action_form_destroy_field_#{index}')"}
+      %i.fas.fa-times
+  .row
+    .form-group.col-12.col-md-6
+      = label_tag "Trigger Event"
+      = select_tag "api_namespace[api_actions_attributes][#{index}][trigger]", options_for_select(ApiAction.triggers.keys, resource.trigger), { class: "form-control form-control-sm", id: "trigger_field_#{index}"}
+    .form-group.col-12.col-md-6
+      = label_tag "Action"
+      = select_tag "api_namespace[api_actions_attributes][#{index}][action_type]", options_for_select(ApiAction.action_types.keys, resource.action_type), { class: "form-control form-control-sm", id: "action_type_field_#{index}", onchange: "toggleFields('#{index}');"}
+    .form-group.col-12{style: "#{'display:none' unless resource.action_type == 'send_email'}", id: "include_api_resource_data_field_#{index}"}
+      = label_tag 'Include Api Resource Data'
+      = check_box_tag "api_namespace[api_actions_attributes][#{index}][include_api_resource_data]", resource.include_api_resource_data , resource.include_api_resource_data
+    .form-group.col-12{style: "#{'display:none' unless resource.action_type == 'send_email'}", id: "include_api_resource_data_field_#{index}"}
+      = label_tag 'Email Address'
+      = text_field_tag "api_namespace[api_actions_attributes][#{index}][email]", resource.email, { class: "form-control form-control-sm" }
+
+
+  = hidden_field_tag "api_namespace[api_actions_attributes][#{index}][_destroy]", false ,{id: "api_action_form_destroy_field_#{index}"}
