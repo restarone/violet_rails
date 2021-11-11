@@ -12,9 +12,12 @@
     .form-group.col-12{style: "#{'display:none' unless resource.action_type == 'send_email'}", id: "include_api_resource_data_field_#{index}"}
       = label_tag 'Include Api Resource Data'
       = check_box_tag "api_namespace[api_actions_attributes][#{index}][include_api_resource_data]", resource.include_api_resource_data , resource.include_api_resource_data
-    .form-group.col-12{style: "#{'display:none' unless resource.action_type == 'send_email'}", id: "include_api_resource_data_field_#{index}"}
+    .form-group.col-12{style: "#{'display:none' unless resource.action_type == 'send_email'}", id: "email_field_#{index}"}
       = label_tag 'Email Address'
       = text_field_tag "api_namespace[api_actions_attributes][#{index}][email]", resource.email, { class: "form-control form-control-sm" }
+    .form-group.col-12{style: "#{'display:none' unless resource.action_type == 'send_email'}", id: "custom_message_field_#{index}"}
+      = label_tag 'Custom Message'
+      = text_area_tag "api_namespace[api_actions_attributes][#{index}][custom_message]", resource.custom_message, { class: "form-control form-control-sm" }
 
 
   = hidden_field_tag "api_namespace[api_actions_attributes][#{index}][_destroy]", false ,{id: "api_action_form_destroy_field_#{index}"}

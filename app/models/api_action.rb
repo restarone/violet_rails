@@ -5,4 +5,13 @@ class ApiAction < ApplicationRecord
 
   enum action_type: { send_email: 0, send_web_request: 1, redirect: 2, serve_file: 3 }
 
+  def execute_action
+    send(action_type)
+  end
+
+  private
+
+  def send_email
+    ApiActionMailer.send_email(self, ApiResource.last).deliver_now
+  end
 end

@@ -1,5 +1,6 @@
 class ResourceController < ApplicationController
     before_action :load_api_namespace
+    after_action :execute_api_actions
 
     def create
       api_resource = @api_namespace.api_resources.new(resource_params)
@@ -28,6 +29,12 @@ class ResourceController < ApplicationController
   
     def resource_params
       params.require(:data).permit(properties: {}, non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :_destroy])
+    end
+
+    def execute_api_actions
+      
+      binding.pry
+      
     end
   end
   
