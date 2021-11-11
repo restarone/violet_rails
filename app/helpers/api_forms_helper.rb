@@ -12,9 +12,10 @@ module ApiFormsHelper
   def map_form_field(form, key, value, form_properties)
     case value.class.to_s
     when 'String'
-      options = { placeholder: form_properties[key]['placeholder'], required: form_properties[key]['required'] == '1', value: value, class: 'form-control'}
-      options[:type] = form_properties[key]['type_validation'] if form_properties[key]['type_validation'].present?
-      options[:pattern] = form_properties[key]['pattern'] if form_properties[key]['pattern'].present?
+      options = { placeholder: value, required: form_properties[key]['required'] == '1', class: 'form-control'}
+      options[:type] = map_input_type(form_properties[key]['type_validation']) if form_properties[key]['type_validation'].present?
+      options[:pattern] = form_properties[key]['pattern'] if form_properties[key]['type_validation'] == 'REGEX pattern' && form_properties[key]['pattern'].present?
+      options[:value] = value if form_properties[key]['prepopulate'] == '1'
       if form_properties[key]['field_type'] == 'textarea'
         form.text_area key, options
       else
@@ -23,7 +24,11 @@ module ApiFormsHelper
     when 'Integer'
       form.number_field key, placeholder: form_properties[key]['placeholder'], required: form_properties[key]['required'] == '1', value: value, class: 'form-control'
     when 'Array'
-      form.select key, options_for_select(form_properties[key]['options'].nil? ? value : form_properties[key]['options'] ), { multiple: true }, {class: "form-control array_select", name: "data[#{key}][]", default_value: value.to_s }
+      if form_properties[key]['select_type'] == 'multi'
+        form.select key, options_for_select(form_properties[key]['options'].nil? ? value : form_properties[key]['options'] ), { multiple: true }, {class: "form-control array_select", name: "data[properties][#{key}][]", default_value: value.to_s }
+      else
+        form.select key, options_for_select(form_properties[key]['options'].nil? ? value : form_properties[key]['options'] ), { include_blank: form_properties[key]['required'] != "1" }, {class: "form-control", name: "data[properties][#{key}][]"  }
+      end
     when 'TrueClass', 'FalseClass'
       form.check_box key, checked: value
     when 'Hash'
@@ -56,6 +61,19 @@ module ApiFormsHelper
       'Json input'
     else
       'String'
+    end
+  end
+
+  def map_input_type(type)
+    case type
+    when 'free text'
+      'text'
+    when 'number'
+      'tel'
+    when 'email', 'url'
+      type
+    else
+      'text'
     end
   end
 end

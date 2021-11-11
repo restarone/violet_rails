@@ -2,7 +2,7 @@ class Comfy::Admin::ApiFormsController < Comfy::Admin::Cms::BaseController
   before_action :ensure_authority_to_manage_web
   before_action :set_api_namespace
 
-  before_action :set_api_form, only: %i[show edit update destroy]
+  before_action :set_api_form, only: %i[show edit update]
 
   def edit
   end
@@ -19,14 +19,6 @@ class Comfy::Admin::ApiFormsController < Comfy::Admin::Cms::BaseController
     end
   end
 
-  def destroy
-    @api_form.destroy
-    respond_to do |format|
-      format.html { redirect_to api_namespace_path(id: @api_namespace.slug), notice: "Api form was successfully destroyed." }
-      format.json { head :no_content }
-    end
-  end
-
   private
 
   def set_api_namespace
@@ -38,7 +30,6 @@ class Comfy::Admin::ApiFormsController < Comfy::Admin::Cms::BaseController
   end
 
   def api_form_params
-    properties = params.require(:api_form)[:properties].try(:permit!)
-    params.require(:api_form).permit(:api_namespace_id, :show_recaptcha, :submit_button_label, :title, :properties, :success_message, :failure_message).merge({api_namespace_id: @api_namespace.id, properties: properties})
+    params.require(:api_form).permit(:api_namespace_id, :show_recaptcha, :submit_button_label, :title, :success_message, :failure_message, properties: {}).merge({api_namespace_id: @api_namespace.id})
   end
 end

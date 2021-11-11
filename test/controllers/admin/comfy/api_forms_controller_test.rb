@@ -20,12 +20,4 @@ class Comfy::Admin::ApiFormsControllerTest < ActionDispatch::IntegrationTest
     patch api_namespace_api_form_url(@api_form, api_namespace_id: @api_form.api_namespace_id), params: { api_form: { properties: @api_form.properties } }
     assert_redirected_to api_namespace_url(@api_form.api_namespace.slug)
   end
-
-  test "should destroy api_form" do
-    sign_in(@user)
-    assert_difference('ApiForm.count', -1) do
-      delete api_namespace_api_form_url(@api_form, api_namespace_id: @api_form.api_namespace_id)
-    end
-    assert_redirected_to api_namespace_url(@api_form.api_namespace.slug)
-  end
 end

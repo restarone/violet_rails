@@ -8,6 +8,14 @@
   = @api_resource.properties
 
 .mb-3
+  - object_fields(@api_resource.api_namespace.properties).each do |prop|
+    .d-flex.mb-3
+      .mr-4
+        = "#{prop}:"
+      %div
+        = @api_resource.properties[prop].present? ? JSON.parse(@api_resource.properties[prop]) : 'nil'
+
+.mb-3
   %b.mb-2.d-block Non-primitive Properties
   - @api_resource.non_primitive_properties.each do |prop|
     .d-flex.mb-3

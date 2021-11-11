@@ -8,4 +8,12 @@ module ApiResourcesHelper
       link_to file.filename.to_s, file, target: '_blank'
     end
   end
+
+  def object_fields(properties) 
+      keys = []
+      JSON.parse(properties).each do |key, value|
+        keys << key if value.class.to_s == 'Hash'
+      end
+      keys
+  end
 end

@@ -15,6 +15,9 @@
     = fields_for "api_resource[non_primitive_properties_attributes][#{index}]", property do |ff|
       .form-group
         = label_tag property.label
+        .my-2
+          - if property.file?
+            = show_file(property.attachment)
         = map_non_primitive_data_type(ff, property.field_type)
       = ff.hidden_field :field_type
       = ff.hidden_field :label

@@ -27,8 +27,7 @@ class ResourceController < ApplicationController
     end
   
     def resource_params
-      properties = params[:data].try(:permit!).except(:non_primitive_properties_attributes)
-      params.require(:data).permit(non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :_destroy]).merge({ api_namespace_id: params[:api_namespace_id], properties: properties })
+      params.require(:data).permit(properties: {}, non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :_destroy])
     end
   end
   
