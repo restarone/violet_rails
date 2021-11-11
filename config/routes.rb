@@ -54,6 +54,7 @@ Rails.application.routes.draw do
     resources :resource, controller: 'resource', only: [:create]
   end
   resources :non_primitive_properties, controller: 'comfy/admin/non_primitive_properties', only: [:new]
+  resources :api_actions, controller: 'comfy/admin/api_actions', only: [:new]
 
   # system admin panel login
   devise_scope :user do
