@@ -5,7 +5,7 @@
   <body>
     <main>
       <p><%= @api_action.custom_message %></p>
-      <% if @api_action.include_api_resource_data %>
+      <% if @api_action.include_api_resource_data && @api_resource %>
         <p>
             <b>Api namespace:</b>
             <%= @api_resource.api_namespace.name %>

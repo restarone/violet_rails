@@ -3,7 +3,7 @@
     :javascript
         console.log("#{flash[:file_url]}")
         var link = document.createElement("a");
-        link.download;
+        link.target = '_blank'
+        link.download = '';
         link.href = "#{flash[:file_url]}";
         link.click();
-- flash.discard(:file_url)
