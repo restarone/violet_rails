@@ -1,0 +1,2 @@
+class ShowApiAction < ApiAction
+end

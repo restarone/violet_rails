@@ -1,0 +1,2 @@
+class UpdateApiAction < ApiAction
+end

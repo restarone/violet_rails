@@ -8,6 +8,18 @@ class ApiResource < ApplicationRecord
 
   has_many :api_actions, dependent: :destroy
 
+  has_many :new_api_actions, dependent: :destroy
+
+  has_many :create_api_actions, dependent: :destroy
+
+  has_many :show_api_actions, dependent: :destroy
+
+  has_many :update_api_actions, dependent: :destroy
+
+  has_many :destroy_api_actions, dependent: :destroy
+
+  has_many :error_api_actions, dependent: :destroy
+
   ransacker :properties do |_parent|
     Arel.sql("api_resources.properties::text") 
   end

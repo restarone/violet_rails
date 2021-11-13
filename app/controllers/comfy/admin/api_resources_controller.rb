@@ -2,6 +2,7 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
   before_action :ensure_authority_to_manage_web
   before_action :set_api_resource
 
+  include ApiActionable
   # GET /api_resources or /api_resources.json
   def index
     @api_resources = ApiResource.all
@@ -9,6 +10,7 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
 
   # GET /api_resources/1 or /api_resources/1.json
   def show
+    handle_redirection if @redirect_action.present?
   end
 
   # GET /api_resources/new
@@ -39,7 +41,7 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
   def update
     respond_to do |format|
       if @api_resource.update(api_resource_params)
-        format.html { redirect_to api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id, id: @api_resource.id), notice: "Api resource was successfully updated." }
+        format.html {  handle_redirection }
         format.json { render :show, status: :ok, location: @api_resource }
       else
         format.html { render :edit, status: :unprocessable_entity }
