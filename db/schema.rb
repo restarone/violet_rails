@@ -105,7 +105,7 @@ ActiveRecord::Schema.define(version: 2021_11_11_130549) do
   end
 
   create_table "api_actions", force: :cascade do |t|
-    t.integer "trigger", default: 0
+    t.string "type"
     t.integer "action_type", default: 0
     t.boolean "include_api_resource_data"
     t.text "custom_message"
@@ -115,9 +115,10 @@ ActiveRecord::Schema.define(version: 2021_11_11_130549) do
     t.integer "position"
     t.string "email"
     t.string "file_snippet"
-    t.string "bearer_token"
+    t.string "encrypted_bearer_token"
     t.string "lifecycle_message"
     t.integer "lifecycle_stage", default: 0
+    t.binary "salt"
     t.bigint "api_namespace_id"
     t.bigint "api_resource_id"
     t.datetime "created_at", precision: 6, null: false
