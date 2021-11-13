@@ -18,7 +18,7 @@ class ApiNamespace < ApplicationRecord
   has_many :non_primitive_properties, dependent: :destroy
   accepts_nested_attributes_for :non_primitive_properties, allow_destroy: true
 
-  has_many :api_actions
+  has_many :api_actions, dependent: :destroy
   accepts_nested_attributes_for :api_actions, allow_destroy: true
 
 
@@ -41,5 +41,9 @@ class ApiNamespace < ApplicationRecord
       form_hash[key] = form_properties[key].present? ? form_properties[key] : { label: key.humanize, placeholder: '', required: false }
     end
     form_hash
+  end
+
+  def redirect_actions(trigger)
+    api_actions.where(action_type: 'redirect', trigger: trigger)
   end
 end

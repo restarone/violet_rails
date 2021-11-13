@@ -8,16 +8,69 @@
       = select_tag "api_namespace[api_actions_attributes][#{index}][trigger]", options_for_select(ApiAction.triggers.keys, resource.trigger), { class: "form-control form-control-sm", id: "trigger_field_#{index}"}
     .form-group.col-12.col-md-6
       = label_tag "Action"
-      = select_tag "api_namespace[api_actions_attributes][#{index}][action_type]", options_for_select(ApiAction.action_types.keys, resource.action_type), { class: "form-control form-control-sm", id: "action_type_field_#{index}", onchange: "toggleFields('#{index}');"}
-    .form-group.col-12{style: "#{'display:none' unless resource.action_type == 'send_email'}", id: "include_api_resource_data_field_#{index}"}
-      = label_tag 'Include Api Resource Data'
-      = check_box_tag "api_namespace[api_actions_attributes][#{index}][include_api_resource_data]", resource.include_api_resource_data , resource.include_api_resource_data
-    .form-group.col-12{style: "#{'display:none' unless resource.action_type == 'send_email'}", id: "email_field_#{index}"}
-      = label_tag 'Email Address'
-      = text_field_tag "api_namespace[api_actions_attributes][#{index}][email]", resource.email, { class: "form-control form-control-sm" }
-    .form-group.col-12{style: "#{'display:none' unless resource.action_type == 'send_email'}", id: "custom_message_field_#{index}"}
-      = label_tag 'Custom Message'
-      = text_area_tag "api_namespace[api_actions_attributes][#{index}][custom_message]", resource.custom_message, { class: "form-control form-control-sm" }
+      = select_tag "api_namespace[api_actions_attributes][#{index}][action_type]", options_for_select(ApiAction.action_types.keys, resource.action_type), { class: "form-control form-control-sm", id: "action_type_field_#{index}", onchange: "toggleApiActionFields('#{index}');"}
+    .send_email.col-12{style: "#{'display:none' unless resource.action_type == 'send_email'}", id: "send_email_fields_#{index}"}
+      .form-group
+        = label_tag 'Include Api Resource Data'
+        = check_box_tag "api_namespace[api_actions_attributes][#{index}][include_api_resource_data]", resource.include_api_resource_data , resource.include_api_resource_data
+      .form-group
+        = label_tag 'Email Address'
+        = text_field_tag "api_namespace[api_actions_attributes][#{index}][email]", resource.email, { class: "form-control form-control-sm" }
+      .form-group
+        = label_tag 'Custom Message'
+        = text_area_tag "api_namespace[api_actions_attributes][#{index}][custom_message]", resource.custom_message, { class: "form-control form-control-sm" }
+
+    .redirect.col-12{style: "#{'display:none' unless resource.action_type == 'redirect'}", id: "redirect_fields_#{index}"}
+      .form-group
+        = label_tag 'Redirect Url'
+        = text_field_tag "api_namespace[api_actions_attributes][#{index}][redirect_url]", resource.redirect_url, { class: "form-control form-control-sm" }
+
+    .serve_file.col-12{style: "#{'display:none' unless resource.action_type == 'serve_file'}", id: "serve_file_fields_#{index}"}
+      .form-group
+        = label_tag 'File snippet'
+        = text_field_tag "api_namespace[api_actions_attributes][#{index}][file_snippet]", resource.file_snippet, { class: "form-control form-control-sm", placeholder: "{{ cms:file_link 2 }}" }
+
+    .serve_web_request.col-12{style: "#{'display:none' unless resource.action_type == 'send_web_request'}", id: "serve_web_request_fields_#{index}"}
+      .form-group
+        = label_tag 'Request Url'
+        = text_field_tag "api_namespace[api_actions_attributes][#{index}][request_url]", resource.request_url, { class: "form-control form-control-sm" }
+      .form-group
+        .jsoneditor{id: "payload_mapping_#{index}-editor"}
+        = hidden_field_tag "api_namespace[api_actions_attributes][#{index}][payload_mapping]", resource.payload_mapping
+      .form-group
+        = label_tag 'Bearer Token'
+        = text_field_tag "api_namespace[api_actions_attributes][#{index}][bearer_token]", resource.bearer_token, { class: "form-control form-control-sm" }
 
 
   = hidden_field_tag "api_namespace[api_actions_attributes][#{index}][_destroy]", false ,{id: "api_action_form_destroy_field_#{index}"}
+
+:javascript
+  // create the editor
+  payload_mapping_#{index}_initJsonEditor();
+
+  function payload_mapping_#{index}_initJsonEditor() {
+    const container = document.getElementById("payload_mapping_#{index}-editor")
+    const options = {onChange: () => { setFields() } }
+    const editor = new JSONEditor(container, options)
+
+    // set json
+    const initialJson = {}
+    editor.set(initialJson)
+
+    let existingValue = $("#api_namespace_api_actions_attributes_#{index}_payload_mapping").val()
+
+    if (existingValue) {
+        let json = JSON.parse(existingValue)
+        editor.set(json)
+    } else {
+        setFields()
+    }
+
+    function setFields() {
+        str = JSON.stringify(editor.get())
+        $("#api_namespace_api_actions_attributes_#{index}_payload_mapping").val(str)
+    }
+
+    // get json
+    const updatedJson = editor.get()
+  }

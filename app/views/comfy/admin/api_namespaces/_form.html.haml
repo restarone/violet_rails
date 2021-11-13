@@ -62,6 +62,27 @@
    }
   }
 
+  function toggleApiActionFields(index) {
+    var fieldType = $("#action_type_field_" + index).val();
+    hideAllFields(index)
+    if (fieldType === 'send_email') {
+      $("#send_email_fields_" + index).show();
+    } else if (fieldType === 'redirect') {
+      $("#redirect_fields_" + index).show();
+    } else if (fieldType === 'serve_file') {
+      $("#serve_file_fields_" + index).show();
+    } else if (fieldType === 'send_web_request') {
+      $("#serve_web_request_fields_" + index).show();
+    }
+  }
+
+  function hideAllFields(index) {
+    $("#send_email_fields_" + index).hide();
+    $("#redirect_fields_" + index).hide();
+    $("#serve_file_fields_" + index).hide();
+    $("#serve_web_request_fields_" + index).hide();
+  }
+
   function removeForm(form_id, destroy_field_id) {
     $("#" + form_id).hide();
     $("#" + destroy_field_id).val(true)

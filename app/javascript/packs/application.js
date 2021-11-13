@@ -23,4 +23,4 @@ require("jquery")
 require("./trix")
 require("./select2")
 
-
+console.log('ddd')

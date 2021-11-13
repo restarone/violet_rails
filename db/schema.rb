@@ -111,12 +111,19 @@ ActiveRecord::Schema.define(version: 2021_11_11_130549) do
     t.text "custom_message"
     t.jsonb "payload_mapping"
     t.string "redirect_url"
+    t.string "request_url"
     t.integer "position"
     t.string "email"
-    t.bigint "api_namespace_id", null: false
+    t.string "file_snippet"
+    t.string "bearer_token"
+    t.string "lifecycle_message"
+    t.integer "lifecycle_stage", default: 0
+    t.bigint "api_namespace_id"
+    t.bigint "api_resource_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["api_namespace_id"], name: "index_api_actions_on_api_namespace_id"
+    t.index ["api_resource_id"], name: "index_api_actions_on_api_resource_id"
   end
 
   create_table "api_clients", force: :cascade do |t|
@@ -507,6 +514,7 @@ ActiveRecord::Schema.define(version: 2021_11_11_130549) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "api_actions", "api_namespaces"
+  add_foreign_key "api_actions", "api_resources"
   add_foreign_key "api_clients", "api_namespaces"
   add_foreign_key "api_forms", "api_namespaces"
   add_foreign_key "api_resources", "api_namespaces"

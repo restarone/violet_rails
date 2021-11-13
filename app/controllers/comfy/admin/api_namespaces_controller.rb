@@ -77,7 +77,7 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
                                             :namespace_type,
                                             :has_form,
                                             non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :_destroy],
-                                            api_actions_attributes: [:id, :trigger, :action_type, :properties, :include_api_resource_data, :email,:custom_message, :payload_mapping, :redirect_url, :position]
+                                            api_actions_attributes: [:id, :trigger, :action_type, :properties, :include_api_resource_data, :email,:custom_message, :payload_mapping, :request_url, :redirect_url, :bearer_token, :file_snippet, :position]
                                            )
     end
 end

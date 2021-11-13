@@ -1,11 +1,11 @@
 class ApiActionMailer < ApplicationMailer
     helper ApiResourcesHelper
-    def send_email(api_action, api_resource)
+    def send_email(api_action)
       mail_to = api_action.email
       return if mail_to.empty?
     
       @api_action = api_action
-      @api_resource = api_resource
+      @api_resource = api_action.api_resource
 
       p "sending api action mail for #{mail_to}"
       mail(
