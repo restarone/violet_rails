@@ -7,6 +7,8 @@ class ApiAction < ApplicationRecord
 
   enum action_type: { send_email: 0, send_web_request: 1, redirect: 2, serve_file: 3 }
 
+  default_scope { order(position: 'ASC') }
+
   def self.children
     ['new_api_actions', 'create_api_actions', 'show_api_actions', 'update_api_actions', 'destroy_api_actions', 'error_api_actions']
   end

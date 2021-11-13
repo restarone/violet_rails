@@ -38,11 +38,16 @@
   .api_actions.my-4
     .h4.mt-3
       Api Actions:
-    .form-group#api_action_forms
-      = f.fields_for :api_actions, @api_namespace.api_actions do |ff|
-        = render partial: 'comfy/admin/api_actions/form', locals: {index: ff.index, resource: ff.object }
-    %a.btn.btn-primary.text-white{onclick: "appendApiActionForm()"}
-      %i.fa.fa-plus
+    - ApiAction.children.each do |subclass|
+      .mb-5
+        .h5.mb-3
+          Trigger Event: 
+          = subclass.split('_api_actions').first
+        .form-group{id: "#{subclass}_forms", class: "js-sortable"}
+          = f.fields_for subclass, @api_namespace.send(subclass) do |ff|
+            = render partial: 'comfy/admin/api_actions/form', locals: {index: ff.index, resource: ff.object, type: subclass }
+        %a.btn.btn-primary.text-white{onclick: "appendApiActionForm('#{subclass}')"}
+          %i.fa.fa-plus
 
   .actions
     = f.submit 'Save'
@@ -62,25 +67,25 @@
    }
   }
 
-  function toggleApiActionFields(index) {
+  function toggleApiActionFields(index, type) {
     var fieldType = $("#action_type_field_" + index).val();
-    hideAllFields(index)
+    hideAllFields(index, type)
     if (fieldType === 'send_email') {
-      $("#send_email_fields_" + index).show();
+      $("#send_email_fields_" + type + '_' + index).show();
     } else if (fieldType === 'redirect') {
-      $("#redirect_fields_" + index).show();
+      $("#redirect_fields_" + type + '_' + index).show();
     } else if (fieldType === 'serve_file') {
-      $("#serve_file_fields_" + index).show();
+      $("#serve_file_fields_" + type + '_' + index).show();
     } else if (fieldType === 'send_web_request') {
-      $("#serve_web_request_fields_" + index).show();
+      $("#serve_web_request_fields_" + type + '_' + index).show();
     }
   }
 
-  function hideAllFields(index) {
-    $("#send_email_fields_" + index).hide();
-    $("#redirect_fields_" + index).hide();
-    $("#serve_file_fields_" + index).hide();
-    $("#serve_web_request_fields_" + index).hide();
+  function hideAllFields(index, type) {
+    $("#send_email_fields_" + type + '_' + index).hide();
+    $("#redirect_fields_" + type + '_'  + index).hide();
+    $("#serve_file_fields_" + type + '_' + index).hide();
+    $("#serve_web_request_fields_" + type + '_' + index).hide();
   }
 
   function removeForm(form_id, destroy_field_id) {
@@ -100,9 +105,9 @@
     });
   }
 
-  function appendApiActionForm() {
-    var index = $("#api_action_forms > .form-container").length
-    var url = "#{new_api_action_path()}" + `?index=${index}`
+  function appendApiActionForm(type) {
+    var index = $("#" + `${type}_forms > .form-container`).length
+    var url = "#{new_api_action_path()}" + `?index=${index}&type=${type}` 
     $.ajax({
       url: url ,
       type: 'GET',
