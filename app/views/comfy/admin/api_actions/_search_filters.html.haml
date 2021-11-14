@@ -1,0 +1,12 @@
+= search_form_for objects, url: path do |f|
+  .form-group.mb-2
+    = f.label "Action type", class: 'col-form-label'
+    = f.select :action_type_eq, options_for_select(ApiAction.action_types.keys, params[:q][:action_type_eq]), {include_blank: true}, {class: 'form-control'}
+  .form-group.mb-3
+    = f.label "Trigger Event", class: 'col-form-label'
+    = f.select :type_eq, options_for_select(ApiAction.children.map{|a| a.classify}, params[:q][:type_eq]), {include_blank: true}, {class: 'form-control'}
+  - if params[:q][:api_resource_id_eq].present?  
+    = f.hidden_field :api_resource_id_eq, value: params[:q][:api_resource_id_eq]
+  .text-center
+    = f.submit class: 'btn btn-primary my-2'
+    = link_to "Clear Search", request.path, class:"cancel-button"

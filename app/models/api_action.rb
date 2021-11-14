@@ -11,6 +11,8 @@ class ApiAction < ApplicationRecord
 
   default_scope { order(position: 'ASC') }
 
+  ransacker :action_type, formatter: proc {|v| action_types[v]}
+
   def self.children
     ['new_api_actions', 'create_api_actions', 'show_api_actions', 'update_api_actions', 'destroy_api_actions', 'error_api_actions']
   end
