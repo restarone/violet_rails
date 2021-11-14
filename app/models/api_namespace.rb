@@ -17,6 +17,26 @@ class ApiNamespace < ApplicationRecord
 
   has_many :non_primitive_properties, dependent: :destroy
   accepts_nested_attributes_for :non_primitive_properties, allow_destroy: true
+ 
+  has_many :api_actions, dependent: :destroy
+
+  has_many :new_api_actions, dependent: :destroy
+  accepts_nested_attributes_for :new_api_actions, allow_destroy: true
+
+  has_many :create_api_actions, dependent: :destroy
+  accepts_nested_attributes_for :create_api_actions, allow_destroy: true
+
+  has_many :show_api_actions, dependent: :destroy
+  accepts_nested_attributes_for :show_api_actions, allow_destroy: true
+
+  has_many :update_api_actions, dependent: :destroy
+  accepts_nested_attributes_for :update_api_actions, allow_destroy: true
+
+  has_many :destroy_api_actions, dependent: :destroy
+  accepts_nested_attributes_for :destroy_api_actions, allow_destroy: true
+
+  has_many :error_api_actions, dependent: :destroy
+  accepts_nested_attributes_for :error_api_actions, allow_destroy: true
 
   def update_api_form
     if has_form == '1'
@@ -40,5 +60,21 @@ class ApiNamespace < ApplicationRecord
       form_hash[prop.label] = form_properties[prop.label].present? ? form_properties[prop.label] : { label: prop.label.humanize, required: false, prepopulate: '0' }
     end
     form_hash
+  end
+
+  def redirect_actions(trigger)
+    api_actions.where(action_type: 'redirect', trigger: trigger)
+  end
+
+  def rerun_api_actions
+    api_resources_id = api_resources.pluck(:id)
+    ApiAction.where(lifecycle_stage: 'failed', api_resource_id: api_resources_id).each  do |action|
+      action.execute_action
+    end
+  end
+
+  def discard_failed_actions
+    api_resources_id = api_resources.pluck(:id)
+    ApiAction.where(lifecycle_stage: 'failed', api_resource_id: api_resources_id).update_all(lifecycle_stage: 'discarded')
   end
 end

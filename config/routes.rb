@@ -52,8 +52,14 @@ Rails.application.routes.draw do
     resources :api_forms, controller: 'comfy/admin/api_forms', only: [:edit, :update]
 
     resources :resource, controller: 'resource', only: [:create]
+
+    member do
+      post 'discard_failed_api_actions'
+      post 'rerun_failed_api_actions'
+    end
   end
   resources :non_primitive_properties, controller: 'comfy/admin/non_primitive_properties', only: [:new]
+  resources :api_actions, controller: 'comfy/admin/api_actions', only: [:new]
 
   # system admin panel login
   devise_scope :user do

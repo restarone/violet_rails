@@ -1,0 +1,8 @@
+
+- if flash[:file_url]
+    :javascript
+        var link = document.createElement("a");
+        link.target = '_blank'
+        link.download = '';
+        link.href = "#{flash[:file_url]}";
+        link.click();

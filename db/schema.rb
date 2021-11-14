@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_04_111344) do
+ActiveRecord::Schema.define(version: 2021_11_14_111709) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -102,6 +102,29 @@ ActiveRecord::Schema.define(version: 2021_11_04_111344) do
     t.datetime "started_at"
     t.index ["user_id"], name: "index_ahoy_visits_on_user_id"
     t.index ["visit_token"], name: "index_ahoy_visits_on_visit_token", unique: true
+  end
+
+  create_table "api_actions", force: :cascade do |t|
+    t.string "type"
+    t.integer "action_type", default: 0
+    t.boolean "include_api_resource_data"
+    t.text "custom_message"
+    t.jsonb "payload_mapping"
+    t.string "redirect_url"
+    t.string "request_url"
+    t.integer "position"
+    t.string "email"
+    t.string "file_snippet"
+    t.string "encrypted_bearer_token"
+    t.string "lifecycle_message"
+    t.integer "lifecycle_stage", default: 0
+    t.binary "salt"
+    t.bigint "api_namespace_id"
+    t.bigint "api_resource_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["api_namespace_id"], name: "index_api_actions_on_api_namespace_id"
+    t.index ["api_resource_id"], name: "index_api_actions_on_api_resource_id"
   end
 
   create_table "api_clients", force: :cascade do |t|
@@ -480,6 +503,7 @@ ActiveRecord::Schema.define(version: 2021_11_04_111344) do
     t.boolean "moderator"
     t.boolean "can_view_restricted_pages"
     t.boolean "deliver_analytics_report", default: false
+    t.boolean "can_manage_api", default: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
@@ -491,6 +515,8 @@ ActiveRecord::Schema.define(version: 2021_11_04_111344) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "api_actions", "api_namespaces"
+  add_foreign_key "api_actions", "api_resources"
   add_foreign_key "api_clients", "api_namespaces"
   add_foreign_key "api_forms", "api_namespaces"
   add_foreign_key "api_resources", "api_namespaces"

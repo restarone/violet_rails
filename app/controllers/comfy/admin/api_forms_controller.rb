@@ -1,5 +1,5 @@
 class Comfy::Admin::ApiFormsController < Comfy::Admin::Cms::BaseController
-  before_action :ensure_authority_to_manage_web
+  before_action :ensure_authority_to_manage_api
   before_action :set_api_namespace
 
   before_action :set_api_form, only: %i[show edit update]

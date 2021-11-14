@@ -1,0 +1,2 @@
+class DestroyApiAction < ApiAction
+end

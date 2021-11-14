@@ -1,0 +1,51 @@
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <main>
+      <p><%= @api_action.custom_message %></p>
+      <% if @api_action.include_api_resource_data && @api_resource %>
+        <p>
+            <b>Api namespace:</b>
+            <%= @api_resource.api_namespace.name %>
+        </p>
+        <p>
+            <b>Properties:</b>
+            <%= @api_resource.properties %>
+        </p>
+        <div class="mb-3">
+            <% object_fields(@api_resource.api_namespace.properties).each do |prop| %>
+            <div class="d-flex mb-3">
+                <div class="mr-4">
+                <%= "#{prop}:" %>
+                </div>
+                <div>
+                <%= @api_resource.properties[prop].present? ? JSON.parse(@api_resource.properties[prop]) : 'nil' %>
+                </div>
+            </div>
+            <% end %>
+        </div>
+        <div class="mb-3">
+         <b class="mb-2 d-block">Non-primitive Properties</b>
+          <% @api_resource.non_primitive_properties.each do |prop| %>
+            <div class="d-flex mb-3">
+              <div class="mr-4">
+                <%= "#{prop.label}:" %>
+              </div>
+              <div>
+                <% if prop.file? %>
+                    <%= show_file(prop.attachment) %>
+                <% else %>
+                    <div>
+                    <%= render html: prop.content.to_s.html_safe %>
+                    </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </main>
+  </body>
+</html>

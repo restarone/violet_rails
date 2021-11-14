@@ -1,6 +1,6 @@
 class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
-  before_action :ensure_authority_to_manage_web
-  before_action :set_api_namespace, only: %i[ show edit update destroy ]
+  before_action :ensure_authority_to_manage_api
+  before_action :set_api_namespace, only: %i[ show edit update destroy discard_failed_api_actions rerun_failed_api_actions]
 
   # GET /api_namespaces or /api_namespaces.json
   def index
@@ -62,6 +62,22 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
     end
   end
 
+  def discard_failed_api_actions
+    @api_namespace.discard_failed_actions
+    respond_to do |format|
+      format.html { redirect_back(fallback_location: root_path, notice: "Failed api actions are discarded") }
+      format.json { render json: {message: 'Failed api actions are discarded', status: :ok } }
+    end
+  end
+
+  def rerun_failed_api_actions
+    @api_namespace.rerun_api_actions
+    respond_to do |format|
+      format.html { redirect_back(fallback_location: root_path, notice: "Failed api actions reran") }
+      format.json { render json: { message: 'Failed api actions reran', status: :ok } }
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_api_namespace
@@ -70,6 +86,20 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
 
     # Only allow a list of trusted parameters through.
     def api_namespace_params
-      params.require(:api_namespace).permit(:name, :version, :properties, :requires_authentication, :namespace_type, :has_form, non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :_destroy])
+      api_actions_attributes =  [:id, :trigger, :action_type, :properties, :include_api_resource_data, :email,:custom_message, :payload_mapping, :request_url, :redirect_url, :bearer_token, :file_snippet, :position, :_destroy]
+      params.require(:api_namespace).permit(:name,
+                                            :version,
+                                            :properties,
+                                            :requires_authentication,
+                                            :namespace_type,
+                                            :has_form,
+                                            non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :_destroy],
+                                            new_api_actions_attributes: api_actions_attributes,
+                                            create_api_actions_attributes: api_actions_attributes,
+                                            show_api_actions_attributes: api_actions_attributes,
+                                            update_api_actions_attributes: api_actions_attributes,
+                                            destroy_api_actions_attributes: api_actions_attributes,
+                                            error_api_actions_attributes: api_actions_attributes,
+                                           )
     end
 end

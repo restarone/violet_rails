@@ -46,11 +46,11 @@ module ApiFormsHelper
     key = form.object.label.to_sym
     case type
     when 'file'
-      options = { required: form_properties[key]['required'] == '1', class: 'form-control', type: 'file' }
+      options = { required:  form_properties.dig(key, 'required') == '1', class: 'form-control', type: 'file' }
       form.text_field :attachment, options
     when 'richtext'
-      options = { placeholder: form.object.content, required: form_properties[key]['required'] == '1' }
-      options[:value] = form_properties[key]['prepopulate'] == '1' ? form.object.content : ''
+      options = { placeholder: form.object.content, required: form_properties.dig(key, 'required') == '1' }
+      options[:value] = form_properties.dig(key, 'prepopulate') == '1' ? form.object.content : ''
       form.rich_text_area :content, options
     end
   end
