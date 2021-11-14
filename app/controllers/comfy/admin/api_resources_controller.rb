@@ -31,6 +31,7 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
         format.html { redirect_to api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id,id: @api_resource.id), notice: "Api resource was successfully created." }
         format.json { render :show, status: :created, location: @api_resource }
       else
+        execute_error_actions
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @api_resource.errors, status: :unprocessable_entity }
       end
@@ -44,6 +45,7 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
         format.html {  handle_redirection }
         format.json { render :show, status: :ok, location: @api_resource }
       else
+        execute_error_actions
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @api_resource.errors, status: :unprocessable_entity }
       end

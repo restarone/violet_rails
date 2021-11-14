@@ -16,4 +16,17 @@ module ApiResourcesHelper
       end
       keys
   end
+
+  def map_color(stage)
+    case stage
+    when 'initialize'
+      'blue'
+    when 'executing'
+      'orange'
+    when 'complete'
+      'green'
+    when 'failed'
+      'red'
+    end
+  end
 end

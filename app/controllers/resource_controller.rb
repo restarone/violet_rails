@@ -9,12 +9,14 @@ class ResourceController < ApplicationController
       if verify_recaptcha(action: 'create') && @api_resource.save
         handle_redirection
       else
+        execute_error_actions
         flash[:error] = @api_resource.errors.full_messages.to_sentence
         redirect_back(fallback_location: root_path)
       end
     elsif @api_resource.save
       handle_redirection
     else
+      execute_error_actions
       flash[:error] = @api_namespace.api_form.failure_message if @api_namespace.api_form.present?
       redirect_back(fallback_location: root_path)
     end

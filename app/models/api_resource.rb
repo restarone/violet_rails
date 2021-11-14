@@ -29,4 +29,8 @@ class ApiResource < ApplicationRecord
       api_actions.build(action.attributes.except("id", "created_at", "updated_at", "api_namespace_id", "lifecycle_message"))
     end
   end
+
+  def properties_object
+    JSON.parse(properties.to_json, object_class: OpenStruct)
+  end
 end
