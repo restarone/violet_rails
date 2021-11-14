@@ -25,3 +25,4 @@ function resetIndex(containerId) {
           .find(".position_field").val(index)
       });
   }
+  

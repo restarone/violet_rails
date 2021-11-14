@@ -30,6 +30,6 @@ module ApiActionable
   end
 
   def execute_api_actions
-    execute_actions(@api_resource, "#{params[:action]}_api_actions".to_sym)
+    helpers.execute_actions(@api_resource, "#{params[:action]}_api_actions".to_sym)
   end
 end

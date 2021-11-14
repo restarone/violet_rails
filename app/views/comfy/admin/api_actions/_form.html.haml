@@ -5,7 +5,7 @@
   .row
     .form-group.col-12
       = label_tag "Action"
-      = select_tag "api_namespace[#{type}_attributes][#{index}][action_type]", options_for_select(ApiAction.action_types.keys, resource.action_type), { class: "form-control form-control-sm", id: "action_type_field_#{index}", onchange: "toggleApiActionFields('#{index}', '#{type}');"}
+      = select_tag "api_namespace[#{type}_attributes][#{index}][action_type]", options_for_select(ApiAction.action_types.keys, resource.action_type), { class: "form-control form-control-sm", id: "action_type_field_#{type}_#{index}", onchange: "toggleApiActionFields('#{index}', '#{type}');"}
     .send_email.col-12{style: "#{'display:none' unless resource.action_type == 'send_email'}", id: "send_email_fields_#{type}_#{index}"}
       .form-group
         = label_tag 'Include Api Resource Data'
@@ -20,7 +20,7 @@
     .redirect.col-12{style: "#{'display:none' unless resource.action_type == 'redirect'}", id: "redirect_fields_#{type}_#{index}"}
       .form-group
         = label_tag 'Redirect Url'
-        = text_field_tag "api_namespace[#{type}_attributes][#{index}][redirect_url]", resource.redirect_url, { class: "form-control form-control-sm" }
+        = select_tag "api_namespace[#{type}_attributes][#{index}][redirect_url]", options_for_select((system_paths << resource.redirect_url).uniq), {class: "form-control form-control-sm path_select", default_value: resource.redirect_url}
 
     .serve_file.col-12{style: "#{'display:none' unless resource.action_type == 'serve_file'}", id: "serve_file_fields_#{type}_#{index}"}
       .form-group
@@ -72,3 +72,14 @@
     // get json
     const updatedJson = editor.get()
   }
+
+  $(document).ready( function() {
+    $(".path_select").select2({
+      multiple: false,
+      required: true,
+      tags: true
+    })
+    $('.path_select').each(function() {
+      $(this).val($(this).attr('default_value')).change();
+    })
+  });

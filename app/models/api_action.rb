@@ -14,20 +14,34 @@ class ApiAction < ApplicationRecord
   end
 
   def execute_action
+    self.update(lifecycle_stage: 'executing')
     send(action_type)
   end
 
   private
 
   def send_email
-    ApiActionMailer.send_email(self).deliver_now
+    begin
+      ApiActionMailer.send_email(self).deliver_now
+      self.update(lifecycle_stage: 'complete', lifecycle_message: email)
+    rescue => e
+      self.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
+    end
   end
 
   def send_web_request
-
-    response = HTTParty.post(request_url, 
-                  body: evaluate_payload,
-                  headers: request_headers)
+    begin
+      response = HTTParty.post(request_url, 
+                    body: evaluate_payload,
+                    headers: request_headers)
+      if response.success?
+        self.update(lifecycle_stage: 'complete', lifecycle_message: response.to_s)
+      else
+        self.update(lifecycle_stage: 'failed', lifecycle_message: response.to_s)
+      end
+    rescue => e
+      self.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
+    end
   end
 
   def redirect;end

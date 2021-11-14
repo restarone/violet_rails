@@ -1,6 +1,6 @@
 class ResourceController < ApplicationController
   before_action :load_api_namespace
-
+  
   include ApiActionable
 
   def create

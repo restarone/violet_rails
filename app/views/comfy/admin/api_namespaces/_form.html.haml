@@ -68,7 +68,7 @@
   }
 
   function toggleApiActionFields(index, type) {
-    var fieldType = $("#action_type_field_" + index).val();
+    var fieldType = $("#action_type_field_" + type + '_' + index).val();
     hideAllFields(index, type)
     if (fieldType === 'send_email') {
       $("#send_email_fields_" + type + '_' + index).show();
@@ -116,3 +116,4 @@
       success: function(response) {}
     });
   }
+  
