@@ -1,5 +1,5 @@
 class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
-  before_action :ensure_authority_to_manage_web
+  before_action :ensure_authority_to_manage_api
   before_action :set_api_resource
 
   include ApiActionable

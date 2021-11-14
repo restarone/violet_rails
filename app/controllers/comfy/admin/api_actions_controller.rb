@@ -1,5 +1,5 @@
 class Comfy::Admin::ApiActionsController < Comfy::Admin::Cms::BaseController
-  before_action :ensure_authority_to_manage_web
+  before_action :ensure_authority_to_manage_api
   def new
     @index = params[:index]
     @type = params[:type]

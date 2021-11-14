@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_11_130549) do
+ActiveRecord::Schema.define(version: 2021_11_14_111709) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -503,6 +503,7 @@ ActiveRecord::Schema.define(version: 2021_11_11_130549) do
     t.boolean "moderator"
     t.boolean "can_view_restricted_pages"
     t.boolean "deliver_analytics_report", default: false
+    t.boolean "can_manage_api", default: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true

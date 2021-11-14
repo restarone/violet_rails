@@ -1,5 +1,5 @@
 class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
-  before_action :ensure_authority_to_manage_web
+  before_action :ensure_authority_to_manage_api
   before_action :set_api_namespace, only: %i[ show edit update destroy discard_failed_api_actions rerun_failed_api_actions]
 
   # GET /api_namespaces or /api_namespaces.json

@@ -34,7 +34,7 @@ module ApiActionable
       redirect_to @redirect_action.redirect_url and return 
     end
 
-    redirect_to api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id, id: @api_resource.id), notice: "Api resource was successfully updated."
+    redirect_back(fallback_location: root_path, notice: "Api resource was successfully updated.")
   end
 
   def execute_api_actions
