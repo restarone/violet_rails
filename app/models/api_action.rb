@@ -32,9 +32,6 @@ class ApiAction < ApplicationRecord
   end
 
   def send_web_request
-    
-    binding.pry
-    
     begin
       response = HTTParty.post(request_url, 
                     body: evaluate_payload,
