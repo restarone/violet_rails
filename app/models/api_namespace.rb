@@ -56,6 +56,9 @@ class ApiNamespace < ApplicationRecord
     JSON.parse(properties).each do |key, _value|
       form_hash[key] = form_properties[key].present? ? form_properties[key] : { label: key.humanize, placeholder: '', required: false }
     end
+    non_primitive_properties.each do |prop|
+      form_hash[prop.label] = form_properties[prop.label].present? ? form_properties[prop.label] : { label: prop.label.humanize, required: false, prepopulate: '0' }
+    end
     form_hash
   end
 
