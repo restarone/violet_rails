@@ -1,6 +1,7 @@
 - action = @api_resource.persisted? ? :put : :post
 - non_primitive_properties = @api_resource.persisted? ? @api_resource.non_primitive_properties : @api_resource.api_namespace.non_primitive_properties
 - path = @api_resource.persisted? ? api_namespace_resource_url : api_namespace_resources_url
+- form_properties = @api_resource.api_namespace.api_form.properties.symbolize_keys
 = form_for @api_resource, url: path, method: action, html: {multipart: true} do |f|
   - if @api_resource.errors.any?
     #error_explanation
@@ -18,7 +19,7 @@
         .my-2
           - if property.file?
             = show_file(property.attachment)
-        = map_non_primitive_data_type(ff, property.field_type)
+        = map_non_primitive_data_type(ff, property.field_type, form_properties)
       = ff.hidden_field :field_type
       = ff.hidden_field :label
       = ff.hidden_field :id ,{ value: property.id } if property.id
