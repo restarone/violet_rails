@@ -20,7 +20,8 @@ module ApiFormsHelper
     when 'TrueClass', 'FalseClass'
       options = {required: form_properties[key]['required'] == '1', type: 'checkbox'}
       options[:checked] = value if form_properties[key]['prepopulate'] == '1'
-      form.text_field key, options
+      options[:value] = form_properties[key]['prepopulate'] == '1' ? value : 'false'
+      form.check_box key, options,  'true', 'false'
     when 'Hash'
       render partial: 'comfy/admin/api_forms/jsoneditor', locals: {form: form, key: key, value: value} 
     else
@@ -30,9 +31,6 @@ module ApiFormsHelper
       options[:value] = value if form_properties[key]['prepopulate'] == '1'
       if value.class.to_s == 'Integer'
         options[:type] = 'number'
-      end
-      if [ 'TrueClass', 'FalseClass'].include? value.class.to_s
-        options[:type] = 'checkbox'
       end
       if form_properties[key]['field_type'] == 'textarea'
         form.text_area key, options
