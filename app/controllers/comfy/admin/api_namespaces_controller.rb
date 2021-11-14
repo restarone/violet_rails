@@ -1,6 +1,6 @@
 class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
   before_action :ensure_authority_to_manage_web
-  before_action :set_api_namespace, only: %i[ show edit update destroy ]
+  before_action :set_api_namespace, only: %i[ show edit update destroy discard_failed_api_actions rerun_failed_api_actions]
 
   # GET /api_namespaces or /api_namespaces.json
   def index
@@ -59,6 +59,22 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
     respond_to do |format|
       format.html { redirect_to api_namespaces_url, notice: "Api namespace was successfully destroyed." }
       format.json { head :no_content }
+    end
+  end
+
+  def discard_failed_api_actions
+    @api_namespace.discard_failed_actions
+    respond_to do |format|
+      format.html { redirect_back(fallback_location: root_path, notice: "Failed api actions are discarded") }
+      format.json { render json: {message: 'Failed api actions are discarded', status: :ok } }
+    end
+  end
+
+  def rerun_failed_api_actions
+    @api_namespace.rerun_api_actions
+    respond_to do |format|
+      format.html { redirect_back(fallback_location: root_path, notice: "Failed api actions reran") }
+      format.json { render json: { message: 'Failed api actions reran', status: :ok } }
     end
   end
 

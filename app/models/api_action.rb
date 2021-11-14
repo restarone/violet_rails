@@ -7,6 +7,8 @@ class ApiAction < ApplicationRecord
 
   enum action_type: { send_email: 0, send_web_request: 1, redirect: 2, serve_file: 3 }
 
+  enum lifecycle_stage: {initialized: 0, executing: 1, complete: 2, failed: 3, discarded: 4}
+
   default_scope { order(position: 'ASC') }
 
   def self.children
@@ -30,6 +32,9 @@ class ApiAction < ApplicationRecord
   end
 
   def send_web_request
+    
+    binding.pry
+    
     begin
       response = HTTParty.post(request_url, 
                     body: evaluate_payload,
@@ -38,7 +43,7 @@ class ApiAction < ApplicationRecord
         self.update(lifecycle_stage: 'complete', lifecycle_message: response.to_s)
       else
         self.update(lifecycle_stage: 'failed', lifecycle_message: response.to_s)
-      end
+      end 
     rescue => e
       self.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
     end
@@ -49,7 +54,8 @@ class ApiAction < ApplicationRecord
   def serve_file;end
 
   def evaluate_payload
-    payload_mapping
+    payload = payload_mapping.gsub('self.', 'self.api_resource.properties_object.')
+    eval(payload).to_json
   end
 
   def request_headers

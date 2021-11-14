@@ -62,4 +62,16 @@ class ApiNamespace < ApplicationRecord
   def redirect_actions(trigger)
     api_actions.where(action_type: 'redirect', trigger: trigger)
   end
+
+  def rerun_api_actions
+    api_resources_id = api_resources.pluck(:id)
+    ApiAction.where(lifecycle_stage: 'failed', api_resource_id: api_resources_id).each  do |action|
+      action.execute_action
+    end
+  end
+
+  def discard_failed_actions
+    api_resources_id = api_resources.pluck(:id)
+    ApiAction.where(lifecycle_stage: 'failed', api_resource_id: api_resources_id).update_all(lifecycle_stage: 'discarded')
+  end
 end
