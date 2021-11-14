@@ -13,7 +13,7 @@
       = fields_for "data[non_primitive_properties_attributes][#{index}]", property do |ff|
         .form-group
           = label_tag property.label
-          = map_non_primitive_data_type(ff, property.field_type)
+          = map_non_primitive_data_type(ff, property.field_type, form_properties)
         = ff.hidden_field :field_type
         = ff.hidden_field :label
   = recaptcha_tags callback: 'ctaSuccessHandler' if @api_form.show_recaptcha
@@ -21,11 +21,12 @@
 
 :javascript
   $(document).ready( function() {
-    $(".array_select").select2({
-      multiple: true,
-      required: false
-    })
     $('.array_select').each(function() {
+      $(this).select2({
+        multiple: true,
+        required: false,
+        placeholder: $(this).attr('placeholder')
+      })
       $(this).val(JSON.parse($(this).attr('default_value'))).change();
     })
   });
