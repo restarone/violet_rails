@@ -66,10 +66,13 @@
                 - if value.class.to_s == 'Array'
                   .form-group.col-12
                     = a.label :select_type, 'Select Type:', class: 'mr-4'
-                    = a.select :select_type, options_for_select(['single', 'multi']), {}, {class: "form-control"}
-                  .form-group.col-12
+                    = a.select :select_type, options_for_select(['single', 'multi'], properties[key]["select_type"]), {}, {class: "form-control", onchange: "toggleOptionField(this, '#{key}')"}
+                  .form-group.col-12{style: "#{'display: none' unless properties[key]['select_type'] == 'multi'}", id: "#{key}_prepopulate_multi"}
                     = a.label :prepopulated_options, 'Prepopulate Options:', class: 'mr-4'
                     = a.select key, options_for_select(value), { multiple: true }, {class: "form-control array_select", name: "api_form[properties][#{key}][prepopulated_options][]", default_value: properties[key]["prepopulated_options"] ? properties[key]["prepopulated_options"].to_s : [].to_s}
+                  .form-group.col-12{style: "#{'display: none' if properties[key]['select_type'] == 'multi'}", id: "#{key}_prepopulate_single"}
+                    = a.label :prepopulated_options_single, 'Prepopulate Option:', class: 'mr-4'
+                    = a.select :prepopulated_options_single, options_for_select(value, properties[key]['prepopulated_options_single']), { include_blank: true }, {class: "form-control"}
                   .form-group.col-12
                     = a.label :placeholder, 'Placeholder:', class: 'mr-4'
                     = a.text_field :placeholder, class: 'form-control', value: properties[key]["placeholder"]
@@ -132,6 +135,21 @@
     } else {
       $('#' + regexFieldId).hide();
     }
+  }
+
+  function toggleOptionField(select, key) {
+    var type = $(select).val();
+    console.log(type, key)
+    if (type == 'single') {
+      $('#' + key + '_prepopulate_single').show();
+      $('#' + key +  '_prepopulate_multi').hide();
+    }
+
+    if (type == 'multi') {
+      $('#' + key + '_prepopulate_single').hide();
+      $('#' + key +  '_prepopulate_multi').show();
+    }
+    
   }
 
 

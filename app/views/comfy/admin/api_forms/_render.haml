@@ -24,7 +24,7 @@
     $('.array_select').each(function() {
       $(this).select2({
         multiple: true,
-        required: false,
+        required: true,
         placeholder: $(this).attr('placeholder')
       })
       $(this).val(JSON.parse($(this).attr('default_value'))).change();
