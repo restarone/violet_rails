@@ -3,7 +3,7 @@ require "test_helper"
 class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
-    @user.update(can_manage_web: true)
+    @user.update(can_manage_api: true)
     @api_namespace = api_namespaces(:one)
   end
 
@@ -14,7 +14,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
   test "should not get index if signed in but not allowed to manage web" do
     sign_in(@user)
-    @user.update(can_manage_web: false)
+    @user.update(can_manage_api: false)
     get api_namespaces_url
     assert_response :redirect
   end

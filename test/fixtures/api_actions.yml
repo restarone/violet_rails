@@ -1,7 +1,6 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  trigger: MyString
   action_type: MyString
   include_api_resource_data: false
   custom_message: MyText
@@ -10,7 +9,6 @@ one:
   api_namespace: one
 
 two:
-  trigger: MyString
   action_type: MyString
   include_api_resource_data: false
   custom_message: MyText
