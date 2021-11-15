@@ -3,6 +3,13 @@
   =  @api_namespace.name.pluralize
   > Api Actions
 = render partial: 'comfy/admin/api_actions/search_filters', locals: { objects: @api_actions_q, path: api_namespace_api_actions_path(api_namespace_id: @api_namespace.id) }
+
+.d-flex.my-4
+  .mr-3
+    = link_to 'Discard Failed Actions', discard_failed_api_actions_api_namespace_path(id: @api_namespace), method: :post, data: { confirm: 'Are you sure?' }, class: "btn btn-primary"
+  
+  = link_to 'Rerun Failed Actions', rerun_failed_api_actions_api_namespace_path(id: @api_namespace), method: :post, data: { confirm: 'Are you sure?' }, class: "btn btn-primary"
+
 %table
   %thead
     %tr

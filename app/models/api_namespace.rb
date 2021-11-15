@@ -69,14 +69,10 @@ class ApiNamespace < ApplicationRecord
   end
 
   def rerun_api_actions
-    api_resources_id = api_resources.pluck(:id)
-    ApiAction.where(lifecycle_stage: 'failed', api_resource_id: api_resources_id).each  do |action|
-      action.execute_action
-    end
+    executed_api_actions.where(lifecycle_stage: 'failed').each(&:execute_action)
   end
 
   def discard_failed_actions
-    api_resources_id = api_resources.pluck(:id)
-    ApiAction.where(lifecycle_stage: 'failed', api_resource_id: api_resources_id).update_all(lifecycle_stage: 'discarded')
+    executed_api_actions.where(lifecycle_stage: 'failed').update_all(lifecycle_stage: 'discarded')
   end
 end

@@ -10,7 +10,7 @@ class ApiActionMailer < ApplicationMailer
       p "sending api action mail for #{mail_to}"
       mail(
         to: mail_to,
-        subject: "#{api_action.type} #{api_resource.api_namespace.name.pluralize} v#{api_resource.api_namespace.version}"
+        subject: "#{api_action.type} #{@api_resource.api_namespace.name.pluralize} v#{@api_resource.api_namespace.version}"
       )
     end
 end

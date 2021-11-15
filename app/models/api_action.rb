@@ -13,6 +13,8 @@ class ApiAction < ApplicationRecord
 
   ransacker :action_type, formatter: proc {|v| action_types[v]}
 
+  has_rich_text :custom_message
+
   def self.children
     ['new_api_actions', 'create_api_actions', 'show_api_actions', 'update_api_actions', 'destroy_api_actions', 'error_api_actions']
   end
@@ -58,6 +60,7 @@ class ApiAction < ApplicationRecord
   end
 
   def request_headers
-    { 'Content-Type' => 'application/json', 'X-AUTHORIZATION': "bearer #{bearer_token}" }
+    headers = custom_headers.gsub('SECRET_BEARER_TOKEN', bearer_token)
+    { 'Content-Type' => 'application/json' }.merge(JSON.parse(headers))
   end
 end

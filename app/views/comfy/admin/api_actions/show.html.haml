@@ -13,11 +13,7 @@
         .mr-3
           Payload: 
         = @api_action.payload_mapping
-      .col-12.d-flex.mb-3
-        .mr-3
-          Bearer Token: 
-        = @api_action.bearer_token
-
+    
     - if @api_action.action_type == 'redirect'
       .col-12.d-flex.mb-3
         .mr-3
