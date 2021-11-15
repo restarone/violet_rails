@@ -44,10 +44,10 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
   def update
     respond_to do |format|
       if @api_namespace.update(api_namespace_params)
-        format.html { redirect_to @api_namespace, notice: "Api namespace was successfully updated." }
+        format.html { handle_success_redirect }
         format.json { render :show, status: :ok, location: @api_namespace }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html { handle_error_redirect }
         format.json { render json: @api_namespace.errors, status: :unprocessable_entity }
       end
     end
@@ -101,5 +101,19 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
                                             destroy_api_actions_attributes: api_actions_attributes,
                                             error_api_actions_attributes: api_actions_attributes,
                                            )
+    end
+
+    def handle_success_redirect
+      flash[:notice] =  "Api namespace was successfully updated."
+      redirect_to api_namespace_api_actions_path(api_namespace_id: @api_namespace.id) and return  if params[:source] == 'action_workflow'
+
+      redirect_to @api_namespace
+    end
+
+    def handle_error_redirect
+      flash[:notice] =  "Api namespace was successfully updated."
+      redirect_to action_workflow_api_namespace_api_actions_path(api_namespace_id: @api_namespace.id) and return  if params[:source] == 'action_workflow'
+
+      render :edit, status: :unprocessable_entity
     end
 end

@@ -53,7 +53,11 @@ Rails.application.routes.draw do
 
     resources :resource, controller: 'resource', only: [:create]
 
-    resources :api_actions, controller: 'comfy/admin/api_actions', only: [:index, :show]
+    resources :api_actions, controller: 'comfy/admin/api_actions', only: [:index, :show] do
+      collection do 
+        get 'action_workflow'
+      end
+    end
 
     member do
       post 'discard_failed_api_actions'
