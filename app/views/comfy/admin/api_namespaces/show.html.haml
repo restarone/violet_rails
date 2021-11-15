@@ -71,23 +71,8 @@
     = render_form @api_namespace.api_form.id
 
 
-.container-fluid.mt-5
-  .d-flex.justify-content-between
-    %h1
-      Listing Api Actions
-    .d-flex
-      .mr-3
-        = form_for :api_namespace, url: discard_failed_api_actions_api_namespace_path(id: @api_namespace), method: :post do |f|
-          .actions
-            = f.submit 'Discard Failed Actions'
-      = form_for :api_namespace, url: rerun_failed_api_actions_api_namespace_path(id: @api_namespace), method: :post do |f|
-        .actions
-          = f.submit 'Rerun Failed Actions'
-  - ApiAction.children.each do |subclass|
-    - if @api_namespace.send(subclass).present?
-      %h3=subclass.humanize
-      - @api_namespace.send(subclass).each do |action|
-        = render partial: 'comfy/admin/api_actions/show', locals: {action: action}
+.my-5
+  = link_to 'Api Actions', api_namespace_api_actions_path(api_namespace_id: @api_namespace.id)
 
 .container-fluid.mt-5
   %h1 

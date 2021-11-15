@@ -3,7 +3,7 @@ require "test_helper"
 class Comfy::Admin::ApiFormsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
-    @user.update(can_manage_web: true)
+    @user.update(can_manage_api: true)
     @api_namespace = api_namespaces(:one)
     @api_form = api_forms(:one)
   end

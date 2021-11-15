@@ -4,7 +4,7 @@
   </head>
   <body>
     <main>
-      <p><%= @api_action.custom_message %></p>
+      <p><%= render html: @api_action.custom_message.to_s.html_safe %></p>
       <% if @api_action.include_api_resource_data && @api_resource %>
         <p>
             <b>Api namespace:</b>

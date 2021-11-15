@@ -30,7 +30,9 @@ class Api::ResourceController < Api::BaseController
   end
 
   def create
-    api_resource = @api_namespace.api_resources.new(resource_params)
+    api_resource = @api_namespace.api_resources.new(
+      properties: resource_params[:data]
+    )
     if api_resource.save
         render json: { code: 200, status: 'OK', object: serialize_resource(api_resource) }
       else
@@ -40,7 +42,9 @@ class Api::ResourceController < Api::BaseController
 
   def update
     before_change = @api_resource.dup
-    if @api_resource.update(resource_params)
+    if @api_resource.update(
+      properties: resource_params[:data],
+    )
       render json: { code: 200, status: 'OK', object: serialize_resource(@api_resource.reload), before: serialize_resource(before_change) }
     else
       render json: { code: 422, status: 'unprocessable entity' }
@@ -77,7 +81,7 @@ class Api::ResourceController < Api::BaseController
   end
 
   def resource_params
-    params.require(:data).permit(properties: {}, non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :_destroy])
+    params.permit(data: {})
   end
 
   def serialize_resources(collection)

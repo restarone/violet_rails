@@ -53,6 +53,8 @@ Rails.application.routes.draw do
 
     resources :resource, controller: 'resource', only: [:create]
 
+    resources :api_actions, controller: 'comfy/admin/api_actions', only: [:index, :show]
+
     member do
       post 'discard_failed_api_actions'
       post 'rerun_failed_api_actions'

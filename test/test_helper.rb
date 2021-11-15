@@ -16,6 +16,7 @@ end
 require_relative "../config/environment"
 require "rails/test_help"
 require 'mocha/minitest'
+require 'webmock/minitest'
 
 class ActiveSupport::TestCase
   include ActiveJob::TestHelper
@@ -28,6 +29,8 @@ class ActiveSupport::TestCase
     Apartment::Tenant.switch subdomain.name do
       User.create!(email: 'contact@restarone.com', password: '123456', password_confirmation: '123456', confirmed_at: Time.now)
     end
+    stub_request(:post, "www.example.com/success").to_return(body: "success response", status: 200)
+    stub_request(:post, "www.example.com/error").to_return(body: "error response", status: 500)
   end
 
   teardown do

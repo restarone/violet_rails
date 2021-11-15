@@ -28,14 +28,7 @@
           %div
             = render html: prop.content.to_s.html_safe
 .container-fluid.my-5
-  %h1
-    Listing Api Actions
-  
-  - ApiAction.children.each do |subclass|
-    - if @api_resource.send(subclass).present?
-      %h3=subclass.humanize
-      - @api_resource.send(subclass).each do |action|
-        = render partial: 'comfy/admin/api_actions/show', locals: {action: action}
+  = link_to 'Api Actions', api_namespace_api_actions_path(api_namespace_id: @api_resource.api_namespace_id, 'q[api_resource_id_eq]': @api_resource.id)
 
 = link_to 'Edit', edit_api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id, id: @api_resource.id)
 \|
