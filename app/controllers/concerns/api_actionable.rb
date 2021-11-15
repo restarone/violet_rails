@@ -10,11 +10,11 @@ module ApiActionable
 
 
   def check_for_redirect_action
-    @redirect_action = @api_namespace.send("#{params[:action]}_api_actions".to_sym).where(action_type: 'redirect').last
+    @redirect_action = @api_namespace.send(action_name).where(action_type: 'redirect').last
   end
 
   def check_for_serve_file_action
-    serve_file_action = @api_namespace.send("#{params[:action]}_api_actions".to_sym).where(action_type: 'serve_file').last
+    serve_file_action = @api_namespace.send(action_name).where(action_type: 'serve_file').last
     return if serve_file_action.nil?
 
     serve_file_action.update(lifecycle_stage: 'executing')
@@ -40,7 +40,7 @@ module ApiActionable
   end
 
   def execute_api_actions
-    helpers.execute_actions(@api_resource, "#{params[:action]}_api_actions".to_sym)
+    helpers.execute_actions(@api_resource, action_name)
   end
 
   def handle_error(e)
@@ -63,8 +63,12 @@ module ApiActionable
   end
 
   def initialize_api_actions
-    @api_namespace.send("#{params[:action]}_api_actions".to_sym).each do |action|
-      @api_resource.send("#{params[:action]}_api_actions".to_sym).create(action.attributes.merge(custom_message: action.custom_message.to_s).except("id", "created_at", "updated_at", "api_namespace_id"))
+    @api_namespace.send(action_name).each do |action|
+      @api_resource.send(action_name).create(action.attributes.merge(custom_message: action.custom_message.to_s).except("id", "created_at", "updated_at", "api_namespace_id"))
     end
+  end
+
+  def action_name
+    return "#{params[:action]}_api_actions".to_sym if ['new', 'update', 'show', 'create', 'destroy'].include?(params[:action])
   end
 end
