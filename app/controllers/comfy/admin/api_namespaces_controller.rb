@@ -111,7 +111,6 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
     end
 
     def handle_error_redirect
-      flash[:notice] =  "Api namespace was successfully updated."
       redirect_to action_workflow_api_namespace_api_actions_path(api_namespace_id: @api_namespace.id) and return  if params[:source] == 'action_workflow'
 
       render :edit, status: :unprocessable_entity
