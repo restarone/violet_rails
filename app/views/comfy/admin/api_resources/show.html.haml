@@ -4,6 +4,9 @@
   %b Api namespace:
   = @api_resource.api_namespace.name
 %p
+  %b Resource Id:
+  = @api_resource.id
+%p
   %b Properties:
   = @api_resource.properties
 
@@ -13,7 +16,7 @@
       .mr-4
         = "#{prop}:"
       %div
-        = @api_resource.properties[prop].present? ? JSON.parse(@api_resource.properties[prop]) : 'nil'
+        = @api_resource&.properties&.dig(prop).present? ? @api_resource.properties[prop] : 'nil'
 
 .mb-3
   %b.mb-2.d-block Non-primitive Properties
