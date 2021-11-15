@@ -99,6 +99,9 @@
                 .form-group.col-12
                   = a.label :required, 'Required:', class: 'mr-4'
                   = a.check_box :required, checked: properties[prop.label]["required"] == '1'
+                .form-group.col-12
+                  = a.label :placeholder, 'Placeholder:', class: 'mr-4'
+                  = a.text_field :placeholder,class: 'form-control', value: properties[prop.label]["placeholder"]
 
         
   %h3.mt-4

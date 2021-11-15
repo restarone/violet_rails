@@ -19,7 +19,7 @@
         .my-2
           - if property.file?
             = show_file(property.attachment)
-        = map_non_primitive_data_type(ff, property.field_type, form_properties)
+        = map_non_primitive_data_type(ff, property.field_type, form_properties, true)
       = ff.hidden_field :field_type
       = ff.hidden_field :label
       = ff.hidden_field :id ,{ value: property.id } if property.id

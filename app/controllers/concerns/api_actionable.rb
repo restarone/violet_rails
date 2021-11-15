@@ -64,7 +64,7 @@ module ApiActionable
 
   def initialize_api_actions
     @api_namespace.send("#{params[:action]}_api_actions".to_sym).each do |action|
-      @api_resource.send("#{params[:action]}_api_actions".to_sym).create(action.attributes.except("id", "created_at", "updated_at", "api_namespace_id"))
+      @api_resource.send("#{params[:action]}_api_actions".to_sym).create(action.attributes.merge(custom_message: action.custom_message.to_s).except("id", "created_at", "updated_at", "api_namespace_id"))
     end
   end
 end
