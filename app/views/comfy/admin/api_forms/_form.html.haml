@@ -95,13 +95,13 @@
               .row.mb-3.align-items-end
                 .form-group.col-12
                   = a.label :prepopulate, 'Prepopulate:', class: 'mr-4'
-                  = a.check_box :prepopulate, checked: properties[prop.label]&["prepopulate"] == '1'
+                  = a.check_box :prepopulate, checked: properties.dig(prop.label, "prepopulate") == '1'
                 .form-group.col-12
                   = a.label :required, 'Required:', class: 'mr-4'
-                  = a.check_box :required, checked: properties[prop.label]["required"] == '1'
+                  = a.check_box :required, checked: properties.dig(prop.label, "required") == '1'
                 .form-group.col-12
                   = a.label :placeholder, 'Placeholder:', class: 'mr-4'
-                  = a.text_field :placeholder,class: 'form-control', value: properties[prop.label]["placeholder"]
+                  = a.text_field :placeholder,class: 'form-control', value: properties.dig(prop.label, "placeholder")
 
         
   %h3.mt-4
