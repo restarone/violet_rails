@@ -8,7 +8,7 @@
       = select_tag "api_namespace[non_primitive_properties_attributes][#{index}][field_type]", options_for_select(NonPrimitiveProperty.field_types.keys, resource.field_type), { class: "form-control form-control-sm", id: "field_type_field_#{index}", onchange: "manageEvent('#{index}');"}
     .form-group.col-12.col-md-6
       = label_tag 'Label'
-      = text_field_tag "api_namespace[non_primitive_properties_attributes][#{index}][label]", resource.label ,class: 'form-control form-control-sm'
+      = text_field_tag "api_namespace[non_primitive_properties_attributes][#{index}][label]", resource.label ,class: 'form-control form-control-sm', required: true
   .form-group{style: "#{'display:none' unless resource.field_type == 'richtext'}", id: "rich_text_field_#{index}"}
     = label_tag 'Default Content'
     = rich_text_area_tag "api_namespace[non_primitive_properties_attributes][#{index}][content]", resource.content

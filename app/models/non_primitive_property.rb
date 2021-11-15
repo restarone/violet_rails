@@ -6,4 +6,6 @@ class NonPrimitiveProperty < ApplicationRecord
 
   has_rich_text :content
   has_one_attached :attachment
+
+  validates_presence_of :label
 end
