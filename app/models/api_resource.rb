@@ -25,8 +25,8 @@ class ApiResource < ApplicationRecord
   end
 
   def initialize_api_actions
-    api_namespace.api_actions.each do |action|
-      api_actions.build(action.attributes.except("id", "created_at", "updated_at", "api_namespace_id", "lifecycle_message"))
+    api_namespace.create_api_actions.each do |action|
+      create_api_actions.build(action.attributes.merge(custom_message: action.custom_message.to_s).except("id", "created_at", "updated_at", "api_namespace_id"))
     end
   end
 

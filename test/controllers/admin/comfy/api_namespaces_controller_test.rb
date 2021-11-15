@@ -97,4 +97,29 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
       patch api_namespace_url(@api_namespace), params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, has_form: '1', properties: @api_namespace.properties, requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
     end
   end
+
+  test "should rerun all failed action" do
+    failed_action = api_actions(:two)
+    failed_action.update(lifecycle_stage: 'failed')
+    failed_action_counts = @api_namespace.executed_api_actions.where(lifecycle_stage: 'failed').size
+
+    sign_in(@user)
+    assert_difference "@api_namespace.reload.executed_api_actions.where(lifecycle_stage: 'failed').size", -(failed_action_counts) do
+      post rerun_failed_api_actions_api_namespace_url(@api_namespace)
+      assert_response :redirect
+    end
+  end
+
+  test "should change all failed action to discarded" do
+    failed_action = api_actions(:two)
+    failed_action.update(lifecycle_stage: 'failed')
+    failed_action_counts = @api_namespace.executed_api_actions.where(lifecycle_stage: 'failed').size
+
+    sign_in(@user)
+    assert_difference "@api_namespace.reload.executed_api_actions.where(lifecycle_stage: 'failed').size", -(failed_action_counts) do
+      assert_difference "@api_namespace.reload.executed_api_actions.where(lifecycle_stage: 'discarded').size", failed_action_counts do
+        post discard_failed_api_actions_api_namespace_url(@api_namespace)
+      end
+    end
+  end
 end

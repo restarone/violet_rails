@@ -15,7 +15,7 @@
         = text_field_tag "api_namespace[#{type}_attributes][#{index}][email]", resource.email, { class: "form-control form-control-sm" }
       .form-group
         = label_tag 'Custom Message'
-        = text_area_tag "api_namespace[#{type}_attributes][#{index}][custom_message]", resource.custom_message, { class: "form-control form-control-sm" }
+        = rich_text_area_tag "api_namespace[#{type}_attributes][#{index}][custom_message]", resource.custom_message, { class: "form-control form-control-sm" }
 
     .redirect.col-12{style: "#{'display:none' unless resource.action_type == 'redirect'}", id: "redirect_fields_#{type}_#{index}"}
       .form-group
@@ -32,8 +32,11 @@
         = label_tag 'Request Url'
         = text_field_tag "api_namespace[#{type}_attributes][#{index}][request_url]", resource.request_url, { class: "form-control form-control-sm" }
       .form-group
-        .jsoneditor{id: "payload_mapping_#{type}_#{index}-editor"}
+        .js-jsoneditor{id: "payload_mapping_#{type}_#{index}-editor", 'data-field-id': "api_namespace_#{type}_attributes_#{index}_payload_mapping"}
         = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][payload_mapping]", resource.payload_mapping
+      .form-group
+        .js-jsoneditor{id: "custom_headers_#{type}_#{index}-editor", 'data-field-id': "api_namespace_#{type}_attributes_#{index}_custom_headers"}
+        = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][custom_headers]", resource.custom_headers
       .form-group
         = label_tag 'Bearer Token'
         = text_field_tag "api_namespace[#{type}_attributes][#{index}][bearer_token]", resource.bearer_token, { class: "form-control form-control-sm" }
@@ -43,36 +46,6 @@
   = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][position]", resource.position ,{class: "position_field"}
 
 :javascript
-  // create the editor
-  payload_mapping_#{type}_#{index}_initJsonEditor();
-
-  function payload_mapping_#{type}_#{index}_initJsonEditor() {
-    const container = document.getElementById("payload_mapping_#{type}_#{index}-editor")
-    const options = {onChange: () => { setFields() } }
-    const editor = new JSONEditor(container, options)
-
-    // set json
-    const initialJson = {}
-    editor.set(initialJson)
-
-    let existingValue = $("#api_namespace_#{type}_attributes_#{index}_payload_mapping").val()
-
-    if (existingValue) {
-        let json = JSON.parse(existingValue)
-        editor.set(json)
-    } else {
-        setFields()
-    }
-
-    function setFields() {
-        str = JSON.stringify(editor.get())
-        $("#api_namespace_#{type}_attributes_#{index}_payload_mapping").val(str)
-    }
-
-    // get json
-    const updatedJson = editor.get()
-  }
-
   $(document).ready( function() {
     $(".path_select").select2({
       multiple: false,

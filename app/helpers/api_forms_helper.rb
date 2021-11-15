@@ -13,14 +13,15 @@ module ApiFormsHelper
     case value.class.to_s
     when 'Array'
       if form_properties[key]['select_type'] == 'multi'
-        form.select key, options_for_select(value), { multiple: true}, {class: "form-control array_select", name: "data[properties][#{key}][]", default_value: form_properties[key]['prepopulated_options'].to_s , placeholder: form_properties[key]['placeholder'] }
+        form.select key, options_for_select(value), { multiple: true}, {class: "form-control array_select", name: "data[properties][#{key}][]", required: form_properties[key]['required'] == '1', default_value: form_properties[key]['prepopulated_options'].to_s , placeholder: form_properties[key]['placeholder'] }
       else
-        form.select key, options_for_select(value), { include_blank: form_properties[key]['placeholder'] }, {class: "form-control", name: "data[properties][#{key}" }
+        form.select key, options_for_select(value, form_properties[key]['prepopulated_options_single']), { include_blank: form_properties[key]['placeholder'] }, {class: "form-control", name: "data[properties][#{key}", required: form_properties[key]['required'] == '1' }
       end
     when 'TrueClass', 'FalseClass'
       options = {required: form_properties[key]['required'] == '1', type: 'checkbox'}
       options[:checked] = value if form_properties[key]['prepopulate'] == '1'
-      form.text_field key, options
+      options[:value] = form_properties[key]['prepopulate'] == '1' ? value : 'false'
+      form.check_box key, options,  'true', 'false'
     when 'Hash'
       render partial: 'comfy/admin/api_forms/jsoneditor', locals: {form: form, key: key, value: value} 
     else
@@ -31,9 +32,6 @@ module ApiFormsHelper
       if value.class.to_s == 'Integer'
         options[:type] = 'number'
       end
-      if [ 'TrueClass', 'FalseClass'].include? value.class.to_s
-        options[:type] = 'checkbox'
-      end
       if form_properties[key]['field_type'] == 'textarea'
         form.text_area key, options
       else
@@ -42,15 +40,15 @@ module ApiFormsHelper
     end
   end
 
-  def map_non_primitive_data_type(form, type, form_properties = {})
+  def map_non_primitive_data_type(form, type, form_properties = {}, is_edit = false)
     key = form.object.label.to_sym
     case type
     when 'file'
       options = { required:  form_properties.dig(key, 'required') == '1', class: 'form-control', type: 'file' }
       form.text_field :attachment, options
     when 'richtext'
-      options = { placeholder: form.object.content, required: form_properties.dig(key, 'required') == '1' }
-      options[:value] = form_properties.dig(key, 'prepopulate') == '1' ? form.object.content : ''
+      options = { placeholder: form_properties.dig(key, 'placeholder'), required: form_properties.dig(key, 'required') == '1' }
+      options[:value] = form_properties.dig(key, 'prepopulate') == '1' || is_edit ? form.object.content : ''
       form.rich_text_area :content, options
     end
   end

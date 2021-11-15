@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_14_111709) do
+ActiveRecord::Schema.define(version: 2021_11_15_024633) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -108,7 +108,6 @@ ActiveRecord::Schema.define(version: 2021_11_14_111709) do
     t.string "type"
     t.integer "action_type", default: 0
     t.boolean "include_api_resource_data"
-    t.text "custom_message"
     t.jsonb "payload_mapping"
     t.string "redirect_url"
     t.string "request_url"
@@ -123,6 +122,7 @@ ActiveRecord::Schema.define(version: 2021_11_14_111709) do
     t.bigint "api_resource_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.jsonb "custom_headers"
     t.index ["api_namespace_id"], name: "index_api_actions_on_api_namespace_id"
     t.index ["api_resource_id"], name: "index_api_actions_on_api_resource_id"
   end

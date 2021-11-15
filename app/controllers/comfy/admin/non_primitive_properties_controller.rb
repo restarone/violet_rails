@@ -10,10 +10,4 @@ class Comfy::Admin::NonPrimitivePropertiesController < Comfy::Admin::Cms::BaseCo
       format.js
     end
   end
-
-  private
-
-  def set_api_namespace
-    @api_namespace = ApiNamespace.find_by(id: params[:api_namespace_id])
-  end
 end
