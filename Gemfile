@@ -77,7 +77,6 @@ group :development do
   gem 'capistrano3-puma'
   gem 'capistrano-rbenv'
   gem 'capistrano-local-precompile'
-  gem 'amazing_print'
 end
 
 group :test do
