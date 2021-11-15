@@ -61,6 +61,16 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to edit_api_namespace_resource_url(api_namespace_id: @api_namespace.id, id: @api_resource.id)
   end
 
+  test "should execute failed response api_resource" do
+    sign_in(@user)
+
+    actions_count = @api_resource.api_namespace.error_api_actions.size
+    assert_raises StandardError do
+      patch api_namespace_resource_url(@api_resource, api_namespace_id: @api_resource.api_namespace_id), params:  { properties: @api_resource.properties }, headers: { 'HTTP_REFERER': edit_api_namespace_resource_url(api_namespace_id: @api_namespace.id, id: @api_resource.id) }
+      assert_equal @api_resource.error_api_actions.count, actions_count
+    end
+  end
+
   test "should destroy api_resource" do
     sign_in(@user)
     assert_difference('ApiResource.count', -1) do
