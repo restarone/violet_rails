@@ -12,8 +12,8 @@ module ApiFormsHelper
   def map_form_field(form, key, value, form_properties)
     case value.class.to_s
     when 'Array'
-      if form_properties[key]['select_type'] == 'multi'
-        form.select key, options_for_select(value), { multiple: true}, {class: "form-control array_select", name: "data[properties][#{key}][]", required: form_properties[key]['required'] == '1', default_value: form_properties[key]['prepopulated_options'].to_s , placeholder: form_properties[key]['placeholder'] }
+      if form_properties[key]['select_type'] == 'multi' || !value.present?
+        form.select key, options_for_select(value), { multiple: true, include_blank: true}, {class: "form-control array_select", name: "data[properties][#{key}][]", required: form_properties.dig(key, 'required') == '1', default_value: form_properties.dig(key, 'prepopulated_options').present? ? form_properties.dig(key, 'prepopulated_options').to_s : "[]" , placeholder: form_properties.dig(key, 'placeholder'), 'data-tags': !value.present? }
       else
         form.select key, options_for_select(value, form_properties[key]['prepopulated_options_single']), { include_blank: form_properties[key]['placeholder'] }, {class: "form-control", name: "data[properties][#{key}", required: form_properties[key]['required'] == '1' }
       end
@@ -44,7 +44,7 @@ module ApiFormsHelper
     key = form.object.label.to_sym
     case type
     when 'file'
-      options = { required:  form_properties.dig(key, 'required') == '1', class: 'form-control', type: 'file' }
+      options = { required:  form_properties.dig(key, 'required') == '1', class: 'form-control', type: 'file', onchange: "previewFile(event, '#{key.to_s.parameterize.underscore}_preview')" }
       form.text_field :attachment, options
     when 'richtext'
       options = { placeholder: form_properties.dig(key, 'placeholder'), required: form_properties.dig(key, 'required') == '1' }
