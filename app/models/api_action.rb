@@ -32,6 +32,7 @@ class ApiAction < ApplicationRecord
       self.update(lifecycle_stage: 'complete', lifecycle_message: email)
     rescue => e
       self.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
+      execute_error_actions
     end
   end
 
@@ -44,9 +45,11 @@ class ApiAction < ApplicationRecord
         self.update(lifecycle_stage: 'complete', lifecycle_message: response.to_s)
       else
         self.update(lifecycle_stage: 'failed', lifecycle_message: response.to_s)
+        execute_error_actions
       end 
     rescue => e
       self.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
+      execute_error_actions
     end
   end
 
@@ -62,5 +65,14 @@ class ApiAction < ApplicationRecord
   def request_headers
     headers = custom_headers.gsub('SECRET_BEARER_TOKEN', bearer_token)
     { 'Content-Type' => 'application/json' }.merge(JSON.parse(headers))
+  end
+
+  def execute_error_actions
+    return if type == 'ErrorApiAction' || api_resource.nil?
+
+    api_resource.api_namespace.error_api_actions.each do |action|
+      api_resource.error_api_actions.create(action.attributes.merge(custom_message: action.custom_message.to_s).except("id", "created_at", "updated_at", "api_namespace_id"))
+    end
+    api_resource.error_api_actions.each(&:execute_action)
   end
 end

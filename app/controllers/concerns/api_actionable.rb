@@ -44,11 +44,14 @@ module ApiActionable
   end
 
   def handle_error(e)
+    clone_actions(:error_api_actions)
     execute_error_actions
     raise
   end
 
   def execute_error_actions
+    return if @api_resource.nil?
+
     error_api_actions = @api_resource.error_api_actions
 
     redirect_action = error_api_actions.where(action_type: 'redirect').last
@@ -63,12 +66,16 @@ module ApiActionable
   end
 
   def initialize_api_actions
-    @api_namespace.send(api_action_name).each do |action|
-      @api_resource.send(api_action_name).create(action.attributes.merge(custom_message: action.custom_message.to_s).except("id", "created_at", "updated_at", "api_namespace_id"))
-    end
+    clone_actions(api_action_name)
   end
 
   def api_action_name
     return "#{params[:action]}_api_actions".to_sym if ['new', 'update', 'show', 'create', 'destroy'].include?(params[:action])
+  end
+
+  def clone_actions(action_name)
+    @api_namespace.send(action_name).each do |action|
+      @api_resource.send(action_name).create(action.attributes.merge(custom_message: action.custom_message.to_s).except("id", "created_at", "updated_at", "api_namespace_id"))
+    end
   end
 end

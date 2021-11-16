@@ -21,6 +21,10 @@ class Comfy::Admin::ApiActionsController < Comfy::Admin::Cms::BaseController
   def show
   end
 
+  def action_workflow
+    
+  end
+
   private
 
   def set_api_action

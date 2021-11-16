@@ -37,4 +37,10 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
     get api_namespace_api_action_url(api_action, api_namespace_id: api_action.api_resource.api_namespace_id)
     assert_response :success
   end
+
+  test "should get action_workflow" do
+    sign_in(@user)
+    get action_workflow_api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
+    assert_response :success
+  end
 end
