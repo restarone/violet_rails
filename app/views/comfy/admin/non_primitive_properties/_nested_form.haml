@@ -14,6 +14,10 @@
     = rich_text_area_tag "api_namespace[non_primitive_properties_attributes][#{index}][content]", resource.content
   .form-group.mb-0{style: "#{'display:none' unless resource.field_type == 'file'}", id: "file_field_#{index}"}
     = label_tag 'Deafult attachment'
-    = file_field_tag "api_namespace[non_primitive_properties_attributes][#{index}][attachment]", class: "form-control form-control-sm"
+    = file_field_tag "api_namespace[non_primitive_properties_attributes][#{index}][attachment]", class: "form-control form-control-sm", onchange: "previewFile(event, 'file_field_#{index}_preview')"
+    .mt-3
+      %video{id: "file_field_#{index}_preview_video", controls: true, style: "max-height: 150px; display: none"}
+      %img{id: "file_field_#{index}_preview_img", controls: true,  style: "max-height: 150px; display: none"}
+    
 
   = hidden_field_tag "api_namespace[non_primitive_properties_attributes][#{index}][_destroy]", false ,{id: "form_destroy_field_#{index}"}
