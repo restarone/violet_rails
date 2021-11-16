@@ -14,6 +14,10 @@
         .form-group
           = label_tag property.label
           = map_non_primitive_data_type(ff, property.field_type, form_properties)
+          - if property.field_type == 'file'
+            .mt-3
+              %video{id: "#{property.label.parameterize.underscore}_preview_video", controls: true, style: "max-height: 150px; display: none"}
+              %img{id: "#{property.label.parameterize.underscore}_preview_img", controls: true,  style: "max-height: 150px; display: none"}
         = ff.hidden_field :field_type
         = ff.hidden_field :label
   = recaptcha_tags callback: 'ctaSuccessHandler' if @api_form.show_recaptcha
@@ -25,7 +29,8 @@
       $(this).select2({
         multiple: true,
         required: true,
-        placeholder: $(this).attr('placeholder')
+        placeholder: $(this).attr('placeholder'),
+        tags: $(this).attr('data-tags')
       })
       $(this).val(JSON.parse($(this).attr('default_value'))).change();
     })
