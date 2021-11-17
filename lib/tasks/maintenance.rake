@@ -22,4 +22,10 @@ namespace :maintenance do
       end
     end
   end
+
+  task :clear_discarded_api_actions => [:environment] do 
+    p "clearing old discarded api_actions @ #{Time.now}"
+    ApiAction.where(lifecycle_stage: 'discarded').where('created_at < ?', 1.years.ago).destroy_all
+    p "cleared old discarded api_actions @ #{Time.now}"
+  end
 end
