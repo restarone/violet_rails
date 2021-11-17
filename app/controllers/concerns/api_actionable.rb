@@ -25,7 +25,7 @@ module ApiActionable
     else
       flash[:file_url] = rails_blob_url(file.attachment)
     end
-    serve_file_action.update(lifecycle_stage: 'complete', lifecycle_message: file.label)
+    serve_file_action.update(lifecycle_stage: 'complete', lifecycle_message: "label: #{file.label} id: #{file.id} mime_type: #{file.attachment.content_type}")
   end
 
   def handle_redirection
