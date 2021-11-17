@@ -8,7 +8,7 @@ class MaintenanceTest < ActiveSupport::TestCase
     Rails.application.load_tasks if Rake::Task.tasks.empty?
   end
 
-  test 'rerun failed api actions' do
+  test 'removes discarded api_actions older than 1 years' do
     assert_difference "ApiAction.all.count", -1 do
       Rake::Task["maintenance:clear_discarded_api_actions"].invoke
     end
