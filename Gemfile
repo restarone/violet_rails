@@ -54,7 +54,7 @@ gem 'httparty'
 gem 'bootsnap', '>= 1.4.4', require: false
 gem 'mailgun-ruby'
 gem 'sinatra', require: false
-
+gem 'jsonapi-serializer'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

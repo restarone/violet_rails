@@ -25,7 +25,7 @@ module ApiActionable
     else
       flash[:file_url] = rails_blob_url(file.attachment)
     end
-    serve_file_action.update(lifecycle_stage: 'complete', lifecycle_message: file.label)
+    serve_file_action.update(lifecycle_stage: 'complete', lifecycle_message: "label: #{file.label} id: #{file.id} mime_type: #{file.attachment.content_type}")
   end
 
   def handle_redirection
@@ -76,7 +76,10 @@ module ApiActionable
     return "#{params[:action]}_api_actions".to_sym if ['new', 'update', 'show', 'create', 'destroy'].include?(params[:action])
   end
 
+  # create api_actions for api_resource using api_namespace's api_actions as template
   def clone_actions(action_name)
+    return if @api_resource.nil?
+
     @api_namespace.send(action_name).each do |action|
       @api_resource.send(action_name).create(action.attributes.merge(custom_message: action.custom_message.to_s).except("id", "created_at", "updated_at", "api_namespace_id"))
     end
