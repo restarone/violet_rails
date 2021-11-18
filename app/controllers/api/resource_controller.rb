@@ -5,7 +5,7 @@ class Api::ResourceController < Api::BaseController
   before_action :validate_payload, only: [:create, :update]
 
   def index
-    render json: serialize_resources(@api_namespace.api_resources.order(updated_at: :desc))
+    render json: ApiResourceSerializer.new(@api_namespace.api_resources.order(updated_at: :desc)).serializable_hash
   end
 
   def query
@@ -14,7 +14,7 @@ class Api::ResourceController < Api::BaseController
     results = @api_namespace.api_resources.where("properties ->> :key ILIKE :value",
       key: attribute, value: "%#{value}%"
     )
-    render json: serialize_resources(Array.wrap(results))
+    render json: ApiResourceSerializer.new(Array.wrap(results)).serializable_hash
   end
 
   def describe
@@ -23,7 +23,7 @@ class Api::ResourceController < Api::BaseController
 
   def show
     if @api_resource
-      render json: serialize_resource(@api_resource)
+      render json: ApiResourceSerializer.new(@api_resource).serializable_hash
     else
       render json: {code: 404, status: 'not found'}
     end
@@ -34,7 +34,7 @@ class Api::ResourceController < Api::BaseController
       properties: resource_params[:data]
     )
     if api_resource.save
-        render json: { code: 200, status: 'OK', object: serialize_resource(api_resource) }
+        render json: { code: 200, status: 'OK', object: ApiResourceSerializer.new(api_resource).serializable_hash }
       else
         render json: { code: 400, status: api_resource.errors.full_messages.to_sentence }
     end
@@ -45,7 +45,7 @@ class Api::ResourceController < Api::BaseController
     if @api_resource.update(
       properties: resource_params[:data],
     )
-      render json: { code: 200, status: 'OK', object: serialize_resource(@api_resource.reload), before: serialize_resource(before_change) }
+      render json: { code: 200, status: 'OK', object: ApiResourceSerializer.new(@api_resource.reload).serializable_hash, before: ApiResourceSerializer.new(before_change).serializable_hash }
     else
       render json: { code: 422, status: 'unprocessable entity' }
     end
@@ -53,7 +53,7 @@ class Api::ResourceController < Api::BaseController
 
   def destroy
     if @api_resource.destroy
-      render json: { code: 200, status: 'OK', object: serialize_resource(@api_resource) }
+      render json: { code: 200, status: 'OK', object: ApiResourceSerializer.new(@api_resource).serializable_hash }
     else
       render json: { code: 422, status: 'unprocessable entity' }
     end
@@ -82,13 +82,5 @@ class Api::ResourceController < Api::BaseController
 
   def resource_params
     params.permit(data: {})
-  end
-
-  def serialize_resources(collection)
-    collection.map{|n| { id: n.id, created_at: n.created_at, updated_at: n.updated_at, properties: n.properties ? n.properties : nil } }
-  end
-
-  def serialize_resource(resource)
-    { id: resource.id, created_at: resource.created_at, updated_at: resource.updated_at, properties: resource.properties ? resource.properties : nil }
   end
 end
