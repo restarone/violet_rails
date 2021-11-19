@@ -6,7 +6,7 @@ class ResourceController < ApplicationController
   def create
     @api_resource = @api_namespace.api_resources.new(resource_params)
     if @api_namespace&.api_form&.show_recaptcha
-      if verify_recaptcha(action: 'create') && @api_resource.save
+      if verify_recaptcha(model: @api_resource) && @api_resource.save
         handle_redirection
       else
         execute_error_actions

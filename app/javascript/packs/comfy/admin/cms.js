@@ -1,5 +1,7 @@
 import Sortable from 'sortablejs';
+import ctaSuccessHandler from "../../website/call_to_actions"
 
+window.ctaSuccessHandler = ctaSuccessHandler
 window.addEventListener('DOMContentLoaded', (event) => {
 
     $('.js-sortable').each(function() {
