@@ -9,11 +9,15 @@ class ApiAction < ApplicationRecord
 
   enum lifecycle_stage: {initialized: 0, executing: 1, complete: 2, failed: 3, discarded: 4}
 
+  HTTP_METHODS = ['get', 'post', 'patch', 'put', 'delete']
+  
   default_scope { order(position: 'ASC') }
 
   ransacker :action_type, formatter: proc {|v| action_types[v]}
 
   has_rich_text :custom_message
+
+  validates :http_method, inclusion: { in: ApiAction::HTTP_METHODS}
 
   def self.children
     ['new_api_actions', 'create_api_actions', 'show_api_actions', 'update_api_actions', 'destroy_api_actions', 'error_api_actions']
@@ -38,9 +42,8 @@ class ApiAction < ApplicationRecord
 
   def send_web_request
     begin
-      response = HTTParty.post(request_url, 
-                    body: evaluate_payload,
-                    headers: request_headers)
+      response = HTTParty.send(http_method.to_s, request_url, 
+                    { body: evaluate_payload, headers: request_headers })
       if response.success?
         self.update(lifecycle_stage: 'complete', lifecycle_message: response.to_s)
       else
