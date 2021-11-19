@@ -59,6 +59,7 @@ create_api_action_three:
   payload_mapping: "{\"first_name\":\"test\"}"
   custom_headers: "{\"AUTHORIZATION\":\"SECRET_BEARER_TOKEN\"}"
   api_resource: one
+  http_method: post
 
 create_api_action_four:
   type: CreateApiAction
@@ -69,6 +70,7 @@ create_api_action_four:
   request_url: "http://www.example.com/error"
   email: 
   api_resource: one
+  http_method: post
 
 error_api_action_one:
   type: ErrorApiAction
