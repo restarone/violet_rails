@@ -16,6 +16,8 @@
         = sort_link @api_namespaces_q, :requires_authentication
       %th 
         = sort_link @api_namespaces_q, :namespace_type
+      %th 
+        = 'Snippet'
       %th
       %th
 
@@ -28,6 +30,7 @@
         %td= api_namespace.properties
         %td= api_namespace.requires_authentication
         %td= api_namespace.namespace_type
+        %td= "{{ cms:helper render_form, #{api_namespace.api_form.id} }}" if api_namespace.api_form.present?
         %td= link_to 'Edit', edit_api_namespace_path(api_namespace)
         %td= link_to 'Destroy', api_namespace, method: :delete, data: { confirm: 'Are you sure?' }
 

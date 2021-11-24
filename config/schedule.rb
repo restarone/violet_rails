@@ -30,3 +30,11 @@ end
 every 1.day do
   rake "report:send_analytics_report"
 end
+
+every 5.minutes do
+  rake "api_action:rerun_failed_actions"
+end
+
+every 1.day do
+  rake "maintenance:clear_discarded_api_actions"
+end

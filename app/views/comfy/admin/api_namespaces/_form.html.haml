@@ -1,4 +1,4 @@
-= form_for @api_namespace do |f|
+= form_for @api_namespace, html: {multipart: true} do |f|
   - if @api_namespace.errors.any?
     #error_explanation
       %h2= "#{pluralize(@api_namespace.errors.count, "error")} prohibited this api_namespace from being saved:"
@@ -14,15 +14,54 @@
     = f.number_field :version
   #jsoneditor
   = f.hidden_field :properties
+
+  .non-primitve-properties.mb-4
+    .h4.mt-3
+      Non-primitve types:
+
+    .form-group#non_primitive_forms
+      = f.fields_for :non_primitive_properties, @api_namespace.non_primitive_properties do |ff|
+        = render partial: 'comfy/admin/non_primitive_properties/nested_form', locals: {index: ff.index, resource: ff.object }
+    %a.btn.btn-primary.text-white{onclick: "appendNonPrimitiveForm()"}
+      %i.fa.fa-plus
+
   .field
     = f.label :requires_authentication
     = f.check_box :requires_authentication
   .field
-    = f.label :namespace_type
-    = f.text_field :namespace_type
+    = f.label :has_form
+    = f.check_box :has_form, checked: @api_namespace.api_form.present?
   .actions
     = f.submit 'Save'
 
 
 = render 'init_editor'
 
+:javascript
+  function manageEvent(index) {
+   var fieldType = $("#field_type_field_" + index).val();
+   if (fieldType === 'file') {
+     $("#file_field_" + index).show();
+     $("#rich_text_field_" + index).hide();
+   } else if (fieldType === 'richtext') {
+     $("#file_field_" + index).hide();
+     $("#rich_text_field_" + index).show();
+   }
+  }
+
+  function removeForm(form_id, destroy_field_id) {
+    $("#" + form_id).hide();
+    $("#" + destroy_field_id).val(true)
+  }
+
+  function appendNonPrimitiveForm() {
+    var index = $("#non_primitive_forms > .form-container").length
+    var url = "#{new_non_primitive_property_path()}" + `?index=${index}`
+    $.ajax({
+      url: url ,
+      type: 'GET',
+      dataType: 'script',
+      contentType: "application/html",
+      success: function(response) {}
+    });
+  }

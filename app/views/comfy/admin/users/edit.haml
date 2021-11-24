@@ -19,6 +19,10 @@
               %label 
                 Can manage website
             .form-group
+              = f.check_box :can_manage_api
+              %label 
+                Can manage api
+            .form-group
               = f.check_box :can_view_restricted_pages
               %label 
                 Can view restricted web pages

@@ -1,0 +1,33 @@
+.jsoneditor{id: "#{key}-editor"}
+= hidden_field_tag "data[properties][#{key}]", value.to_json
+
+:javascript
+  // create the editor
+  #{key}_initJsonEditor();
+
+  function #{key}_initJsonEditor() {
+    const container = document.getElementById("#{key}-editor")
+    const options = {onChange: () => { setFields() } }
+    const editor = new JSONEditor(container, options)
+
+    // set json
+    const initialJson = {}
+    editor.set(initialJson)
+
+    let existingValue = $("#data_properties_#{key}").val()
+
+    if (existingValue) {
+        let json = JSON.parse(existingValue)
+        editor.set(json)
+    } else {
+        setFields()
+    }
+
+    function setFields() {
+        str = JSON.stringify(editor.get())
+        $("#data_properties_#{key}").val(str)
+    }
+
+    // get json
+    const updatedJson = editor.get()
+  }

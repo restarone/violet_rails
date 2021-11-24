@@ -4,8 +4,37 @@
   %b Api namespace:
   = @api_resource.api_namespace.name
 %p
+  %b Resource Id:
+  = @api_resource.id
+%p
   %b Properties:
   = @api_resource.properties
+
+.mb-3
+  - object_fields(@api_resource.api_namespace.properties).each do |prop|
+    .d-flex.mb-3
+      .mr-4
+        = "#{prop}:"
+      %div
+        = @api_resource&.properties&.dig(prop).present? ? @api_resource.properties[prop] : 'nil'
+
+.mb-3
+  %b.mb-2.d-block Non-primitive Properties
+  - @api_resource.non_primitive_properties.each do |prop|
+    .d-flex.mb-3
+      .mr-4
+        = "#{prop.label}:"
+      %div
+        - if prop.file?
+          = show_file(prop.attachment)
+        - else
+          %div
+            = render html: prop.content.to_s.html_safe
+.my-3
+  = link_to 'Api Actions', api_namespace_api_actions_path(api_namespace_id: @api_resource.api_namespace_id, 'q[api_resource_id_eq]': @api_resource.id)
+
+.my-5
+  = link_to 'Destroy', api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id, id: @api_resource.id), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'
 
 = link_to 'Edit', edit_api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id, id: @api_resource.id)
 \|

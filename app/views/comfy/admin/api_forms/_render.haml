@@ -1,0 +1,39 @@
+%link{:crossorigin => "anonymous", :href => "https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.0.0/jsoneditor.css", :integrity => "sha512-Mfp9P5Ln+lF/PmixCJBHUNHXoBKJwKY2i7oZ29iu/mnN47puo0TH/ORb3vgrdkyuBkLaDytv80480FNZxllpyQ==", :referrerpolicy => "no-referrer", :rel => "stylesheet"}/
+%script{:crossorigin => "anonymous", :integrity => "sha512-xEv8uIENS4DGY7Ml/Cv6+sbcPXiRAguIgU8Sv0FCUUdrNC7aRhWbOglm7lnzhnA3spqCr8DnTMTMNFW4jhM8gA==", :referrerpolicy => "no-referrer", :src => "https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.0.0/jsoneditor.js"}
+- properties = JSON.parse(@api_namespace.properties).symbolize_keys
+- form_properties = @api_form.properties.symbolize_keys
+= form_for :data, url: api_namespace_resource_index_path(api_namespace_id: @api_namespace.id), method: :post, html: {class: 'violet-cta-form', 'data-type': 'json', multipart: true, id: 'api_form'} do |f|
+  .form-group
+    - properties.each do |key, value|
+      = f.fields_for :properties do |fff|
+        .form-group
+          = fff.label key, form_properties[key]["label"]
+          = map_form_field(fff, key, value, form_properties)
+    - @api_namespace.non_primitive_properties.each_with_index do |property, index|
+      = fields_for "data[non_primitive_properties_attributes][#{index}]", property do |ff|
+        .form-group
+          = label_tag property.label
+          = map_non_primitive_data_type(ff, property.field_type, form_properties)
+          - if property.field_type == 'file'
+            .mt-3
+              %video{id: "#{property.label.parameterize.underscore}_preview_video", controls: true, style: "max-height: 150px; display: none"}
+              %img{id: "#{property.label.parameterize.underscore}_preview_img", controls: true,  style: "max-height: 150px; display: none"}
+        = ff.hidden_field :field_type
+        = ff.hidden_field :label
+  = recaptcha_tags callback: 'ctaSuccessHandler' if @api_form.show_recaptcha
+  = f.submit @api_form.submit_button_label, disabled: @api_form.show_recaptcha, class: 'my-2 btn btn-primary'
+
+:javascript
+  $(document).ready( function() {
+    $('.array_select').each(function() {
+      $(this).select2({
+        multiple: true,
+        required: true,
+        placeholder: $(this).attr('placeholder'),
+        tags: $(this).attr('data-tags')
+      })
+      $(this).val(JSON.parse($(this).attr('default_value'))).change();
+    })
+  });
+
+- execute_actions(@api_namespace, 'new_api_actions')
