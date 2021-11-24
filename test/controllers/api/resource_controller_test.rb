@@ -135,8 +135,9 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference "@users_namespace.api_resources.count" do
       post api_create_resource_url(version: @users_namespace.version, api_namespace: @users_namespace.slug), params: payload, headers: { 'Authorization': "Bearer #{api_client.bearer_token}" }
     end
-    
+
     assert_equal response.parsed_body["code"], 400
+    assert_equal response.parsed_body["status"], "Properties name is required"
   end
 
   test '#update access is allowed if bearer authentication is provided' do
