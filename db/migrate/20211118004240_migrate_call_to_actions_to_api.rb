@@ -29,7 +29,7 @@ class MigrateCallToActionsToApi < ActiveRecord::Migration[6.1]
                   "required": "0",
                   "field_type": "input",
                   "prepopulate": "0",
-                  "type_validation": "free text"
+                  "type_validation": "free_text"
               },
               "email": {
                   "label": cta.email_label,
@@ -45,7 +45,7 @@ class MigrateCallToActionsToApi < ActiveRecord::Migration[6.1]
                   "required": "1",
                   "field_type": "textarea",
                   "prepopulate": "0",
-                  "type_validation": "free text"
+                  "type_validation": "free_text"
               },
               "phone_number": {
                   "label": cta.phone_label,
