@@ -3,6 +3,8 @@ class ApiResource < ApplicationRecord
 
   before_create :initialize_api_actions
 
+  validate :presence_of_required_properties
+
   has_many :non_primitive_properties, dependent: :destroy
   accepts_nested_attributes_for :non_primitive_properties, allow_destroy: true
 
@@ -32,5 +34,15 @@ class ApiResource < ApplicationRecord
 
   def properties_object
     JSON.parse(properties.to_json, object_class: OpenStruct)
+  end
+
+  def presence_of_required_properties
+    return unless api_namespace.api_form
+
+    properties.each do |key, value|
+      if api_namespace.api_form.properties.dig(key,"required") == '1' && !value.present?
+        errors.add(:properties, "#{key} is required")
+      end
+    end
   end
 end

@@ -123,6 +123,22 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
     assert_equal response.parsed_body["status"], "Please make sure that your parameters are provided under a data: {} top-level key"
   end
 
+  test 'doesnot create allow #create if required property is missing' do
+    @users_namespace.update(requires_authentication: true)
+    api_client = api_clients(:for_users)
+    ApiForm.create(api_namespace_id: @users_namespace.id, properties: { 'name': {'label': 'Test', 'placeholder': 'Test', 'field_type': 'input', 'required': '1' }})
+    payload = {
+      data: {
+        name: ''
+      }
+    }
+    assert_no_difference "@users_namespace.api_resources.count" do
+      post api_create_resource_url(version: @users_namespace.version, api_namespace: @users_namespace.slug), params: payload, headers: { 'Authorization': "Bearer #{api_client.bearer_token}" }
+    end
+    
+    assert_equal response.parsed_body["code"], 400
+  end
+
   test '#update access is allowed if bearer authentication is provided' do
     @users_namespace.update(requires_authentication: true)
     api_client = api_clients(:for_users)
