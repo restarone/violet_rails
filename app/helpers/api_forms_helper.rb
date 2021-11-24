@@ -27,7 +27,7 @@ module ApiFormsHelper
     else
       options = { placeholder: value, required: form_properties[key]['required'] == '1', class: 'form-control'}
       options[:type] = map_input_type(form_properties[key]['type_validation']) if form_properties[key]['type_validation'].present?
-      options[:pattern] = form_properties[key]['pattern'] if form_properties[key]['type_validation'] == 'REGEX pattern' && form_properties[key]['pattern'].present?
+      options[:pattern] = form_properties[key]['pattern'] if form_properties[key]['type_validation'] == ApiForm::INPUT_TYPE_MAPPING[:regex_pattern] && form_properties[key]['pattern'].present?
       options[:value] = value if form_properties[key]['prepopulate'] == '1'
       if value.class.to_s == 'Integer'
         options[:type] = 'number'
@@ -72,11 +72,13 @@ module ApiFormsHelper
 
   def map_input_type(type)
     case type
-    when 'free text'
+    when ApiForm::INPUT_TYPE_MAPPING[:free_text]
       'text'
-    when 'number'
+    when ApiForm::INPUT_TYPE_MAPPING[:number]
       'tel'
-    when 'email', 'url', 'date', 'datetime-local'
+    when ApiForm::INPUT_TYPE_MAPPING[:datetime]
+      'datetime-local'
+    when  ApiForm::INPUT_TYPE_MAPPING[:email], ApiForm::INPUT_TYPE_MAPPING[:url], ApiForm::INPUT_TYPE_MAPPING[:date]
       type
     else
       'text'

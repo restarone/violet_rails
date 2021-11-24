@@ -25,7 +25,12 @@ namespace :maintenance do
 
   task :clear_discarded_api_actions => [:environment] do 
     p "clearing old discarded api_actions @ #{Time.now}"
-    ApiAction.where(lifecycle_stage: 'discarded').where('created_at < ?', 1.years.ago).destroy_all
+    Subdomain.all.each do |subdomain|
+      Apartment::Tenant.switch subdomain.name do
+        p "clearing old discarded api_actions for [#{subdomain.name}] @ #{Time.now}"
+        ApiAction.where(lifecycle_stage: 'discarded').where('created_at < ?', 1.years.ago).destroy_all
+      end
+    end
     p "cleared old discarded api_actions @ #{Time.now}"
   end
 end
