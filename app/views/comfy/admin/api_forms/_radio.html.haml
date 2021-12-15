@@ -1,0 +1,14 @@
+.fields
+  - value.each do |item|
+    %label.checkbox-container
+      %span.ml-2 
+        = item
+      - if form_properties.dig(key, 'select_type') == 'multi' 
+        = form.check_box(key, { :multiple => true, checked: form_properties.dig(key,'prepopulated_options').include?(item), class: "#{key}-checkbox", required: form_properties.dig(key, 'required') == '1' }, item, nil)
+      - else
+        = form.radio_button key, item , checked: form_properties.dig(key,'prepopulated_options_single') == item, required: form_properties.dig(key, 'required') == '1'
+      %span.radio-selection
+
+- if form_properties.dig(key, 'select_type') == 'multi' && form_properties.dig(key, 'required') == '1' 
+  :javascript
+    requireCheckbox("#{key}-checkbox")
