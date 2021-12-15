@@ -46,9 +46,6 @@
                 .form-group.col-12
                   = a.label :label, 'Label:', class: 'mr-4'
                   = a.text_field :label, class: 'form-control', value: properties[key]["label"]
-                .form-group.col-12
-                  = a.label :class_name, 'Class name:', class: 'mr-4'
-                  = a.text_field :class_name, class: 'form-control', value: properties[key]["class_name"]
                 - unless value.class.to_s == 'Array'
                   .form-group.col-12
                     = a.label :prepopulate, 'Prepopulate:', class: 'mr-4'
@@ -99,9 +96,6 @@
                 = prop.field_type
             = p.fields_for prop.label do |a|
               .row.mb-3.align-items-end
-                .form-group.col-12
-                  = a.label :class_name, 'Class name:', class: 'mr-4'
-                  = a.text_field :class_name, class: 'form-control', value: properties.dig(prop.label, "class_name")
                 .form-group.col-12
                   = a.label :prepopulate, 'Prepopulate:', class: 'mr-4'
                   = a.check_box :prepopulate, checked: properties.dig(prop.label, "prepopulate") == '1'
