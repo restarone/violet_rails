@@ -6,12 +6,12 @@
   .form-group
     - properties.each do |key, value|
       = f.fields_for :properties do |fff|
-        .form-group
+        .form-group{class: form_properties[key]['class_name']}
           = fff.label key, form_properties[key]["label"]
           = map_form_field(fff, key, value, form_properties)
     - @api_namespace.non_primitive_properties.each_with_index do |property, index|
       = fields_for "data[non_primitive_properties_attributes][#{index}]", property do |ff|
-        .form-group
+        .form-group{class: form_properties[key]['class_name']}
           = label_tag property.label
           = map_non_primitive_data_type(ff, property.field_type, form_properties)
           - if property.field_type == 'file'
