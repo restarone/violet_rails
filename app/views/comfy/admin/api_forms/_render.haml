@@ -11,7 +11,7 @@
           = map_form_field(fff, key, value, form_properties)
     - @api_namespace.non_primitive_properties.each_with_index do |property, index|
       = fields_for "data[non_primitive_properties_attributes][#{index}]", property do |ff|
-        .form-group{class: key}
+        .form-group{class: ff.object.label}
           = label_tag property.label
           = map_non_primitive_data_type(ff, property.field_type, form_properties)
           - if property.field_type == 'file'
