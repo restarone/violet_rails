@@ -12,10 +12,14 @@ module ApiFormsHelper
   def map_form_field(form, key, value, form_properties)
     case value.class.to_s
     when 'Array'
-      if form_properties[key]['select_type'] == 'multi' || !value.present?
-        form.select key, options_for_select(value), { multiple: true, include_blank: true}, {class: "form-control array_select", name: "data[properties][#{key}][]", required: form_properties.dig(key, 'required') == '1', default_value: form_properties.dig(key, 'prepopulated_options').present? ? form_properties.dig(key, 'prepopulated_options').to_s : "[]" , placeholder: form_properties.dig(key, 'placeholder'), 'data-tags': !value.present? }
+      if form_properties[key]['input_type'] == 'radio'
+        render partial: 'comfy/admin/api_forms/radio', locals: {form: form, key: key, value: value, form_properties: form_properties}
       else
-        form.select key, options_for_select(value, form_properties[key]['prepopulated_options_single']), { include_blank: form_properties[key]['placeholder'] }, {class: "form-control", name: "data[properties][#{key}", required: form_properties[key]['required'] == '1' }
+        if form_properties[key]['select_type'] == 'multi' || !value.present?
+          form.select key, options_for_select(value), { multiple: true, include_blank: true}, {class: "form-control array_select", name: "data[properties][#{key}][]", required: form_properties.dig(key, 'required') == '1', default_value: form_properties.dig(key, 'prepopulated_options').present? ? form_properties.dig(key, 'prepopulated_options').to_s : "[]" , placeholder: form_properties.dig(key, 'placeholder'), 'data-tags': !value.present? }
+        else
+          form.select key, options_for_select(value, form_properties[key]['prepopulated_options_single']), { include_blank: form_properties[key]['placeholder'] }, {class: "form-control", name: "data[properties][#{key}", required: form_properties[key]['required'] == '1' }
+        end
       end
     when 'TrueClass', 'FalseClass'
       options = {required: form_properties[key]['required'] == '1', type: 'checkbox'}

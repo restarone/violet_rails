@@ -111,4 +111,33 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
     end
   end
+
+  test 'should allow #create when input type is radio button with single select' do
+    api_namespace = api_namespaces(:array_namespace)
+    payload = {
+      data: {
+          properties: {
+            name: 'Yes',
+          }
+      }
+    }
+    assert_difference "api_namespace.api_resources.count", +1 do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+  end
+
+  test 'should allow #create when input type is radio button with multi select' do
+    api_namespace = api_namespaces(:array_namespace)
+    api_namespace.api_form.update(properties: { 'name': {'label': 'name', 'placeholder': 'Test', 'input_type': 'radio', 'select_type': 'single' }})
+    payload = {
+      data: {
+          properties: {
+            name: ['Yes', 'No'],
+          }
+      }
+    }
+    assert_difference "api_namespace.api_resources.count", +1 do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+  end
 end
