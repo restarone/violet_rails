@@ -140,4 +140,19 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
     end
   end
+
+  test 'should allow #create when input type is tel' do
+    api_namespace = api_namespaces(:one)
+    api_namespace.api_form.update(properties: { 'name': {'label': 'name', 'placeholder': 'Test', 'type_validation': 'tel'}})
+    payload = {
+      data: {
+          properties: {
+            name: 123,
+          }
+      }
+    }
+    assert_difference "api_namespace.api_resources.count", +1 do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+  end
 end
