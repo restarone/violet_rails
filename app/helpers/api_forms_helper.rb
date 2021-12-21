@@ -26,12 +26,9 @@ module ApiFormsHelper
       render partial: 'comfy/admin/api_forms/jsoneditor', locals: {form: form, key: key, value: value} 
     else
       options = { placeholder: value, required: form_properties[key]['required'] == '1', class: 'form-control'}
-      options[:type] = map_input_type(form_properties[key]['type_validation']) if form_properties[key]['type_validation'].present?
+      options[:type] = form_properties[key]['type_validation'] if form_properties[key]['type_validation'].present?
       options[:pattern] = form_properties[key]['pattern'] if form_properties[key]['type_validation'] == ApiForm::INPUT_TYPE_MAPPING[:regex_pattern] && form_properties[key]['pattern'].present?
       options[:value] = value if form_properties[key]['prepopulate'] == '1'
-      if value.class.to_s == 'Integer'
-        options[:type] = 'number'
-      end
       if form_properties[key]['field_type'] == 'textarea'
         form.text_area key, options
       else
@@ -67,21 +64,6 @@ module ApiFormsHelper
       'Json input'
     else
       'String'
-    end
-  end
-
-  def map_input_type(type)
-    case type
-    when ApiForm::INPUT_TYPE_MAPPING[:free_text]
-      'text'
-    when ApiForm::INPUT_TYPE_MAPPING[:number]
-      'tel'
-    when ApiForm::INPUT_TYPE_MAPPING[:datetime]
-      'datetime-local'
-    when  ApiForm::INPUT_TYPE_MAPPING[:email], ApiForm::INPUT_TYPE_MAPPING[:url], ApiForm::INPUT_TYPE_MAPPING[:date]
-      type
-    else
-      'text'
     end
   end
 end
