@@ -81,12 +81,43 @@ class Admin::SubdomainsControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
   end
 
+  test 'denies #create if not global admin' do
+    @user.update(global_admin: false)
+    sign_in(@user)
+    post admin_subdomains_url
+    assert flash.alert
+    assert_response :redirect
+  end
+
   test 'allows #destroy if global admin' do
     sign_in(@user)
     assert_difference "Subdomain.all.size", -1 do
       delete admin_subdomain_url(id: @restarone_subdomain.id)
     end
     assert_response :redirect
+  end
+
+  test 'allows #create if global admin & invites them to the subdomain' do
+    sign_in(@user)
+    name = 'foobar'
+    assert_difference "Subdomain.all.size", +1 do
+      payload = {
+        subdomain: {
+          name: name
+        }
+      }
+      perform_enqueued_jobs do
+        assert_changes "Devise::Mailer.deliveries.size" do
+          assert_difference "Subdomain.count", +1 do
+            post admin_subdomains_url, params: payload
+            Apartment::Tenant.switch name do
+              assert User.first
+            end
+          end
+        end
+      end
+      
+    end
   end
 
   test 'denies #destroy if not global admin' do

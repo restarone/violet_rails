@@ -1,0 +1,119 @@
+= link_to 'Edit', edit_api_namespace_path(@api_namespace)
+\|
+= link_to 'Back', api_namespaces_path
+
+%p#notice= notice
+
+%p
+  %b Name:
+  = @api_namespace.name
+%p
+  %b Version:
+  = @api_namespace.version
+%p
+  %b Properties:
+#jsoneditor
+= hidden_field_tag :api_namespace_properties, @api_namespace.properties
+
+= render 'init_editor'
+
+.py-3.d-flex
+  .btn.btn-primary.mr-3{'data-toggle': "collapse", 'data-target': "#infoCollapse", 'aria-expanded': "false", 'aria-controls': "infoCollapse"}
+    View Info
+  = link_to 'Delete', @api_namespace, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'
+
+
+.collapse#infoCollapse
+  .card.p-3
+    %p
+      %b Requires authentication:
+      = @api_namespace.requires_authentication
+    %p
+      %b Namespace type:
+      = @api_namespace.namespace_type
+
+
+    %strong
+      Request description endpoint:
+    %p
+      GET
+    %pre
+      = "#{api_base_url(Subdomain.current, @api_namespace)}/describe"
+
+    %strong
+      Request index endpoint:
+    %p
+      GET
+    %pre
+
+      = api_base_url(Subdomain.current, @api_namespace)
+
+    %strong
+      Request query endpoint:
+    %p
+      POST
+    %pre
+      = "#{api_base_url(Subdomain.current, @api_namespace)}/query"
+
+
+    - if @api_namespace.requires_authentication
+      %strong
+        = link_to "API Clients", api_namespace_api_clients_path(api_namespace_id: @api_namespace.id)
+      .my-3
+        = link_to "Create new key for client", new_api_namespace_api_client_path(api_namespace_id: @api_namespace.id)
+
+
+.d-flex.justify-content-between.align-items-center.py-3
+  %div
+    %strong
+      %b Has Form:
+      = @api_namespace.api_form.present?
+  - if @api_namespace.api_form.present?
+    .btn.btn-primary{'data-toggle': "collapse", 'data-target': "#previewCollapse", 'aria-expanded': "false", 'aria-controls': "previewCollapse"}
+      View
+
+- if @api_namespace.api_form.present?
+  .collapse#previewCollapse
+    %p
+      .d-flex.justify-content-between
+        %b Preview (outer border is present in preview only):
+        %div
+          = link_to 'Edit', edit_api_namespace_api_form_path(api_namespace_id: @api_namespace.id, id: @api_namespace.api_form.id)
+    .card.p-3
+      = render_form @api_namespace.api_form.id
+
+
+.my-5
+  = link_to 'Api Actions', api_namespace_api_actions_path(api_namespace_id: @api_namespace.id)
+
+.container-fluid.mt-5
+  .d-flex.justify-content-between.py-2.page-header
+    %h2
+      Listing
+      =  @api_namespace.name.pluralize
+    %div
+      = link_to "Create new #{@api_namespace.name.singularize}", new_api_namespace_resource_path(api_namespace_id: @api_namespace.id), class: 'btn btn-primary'
+
+  = render partial: 'comfy/admin/api_resources/search_filters', locals: { objects: @api_resources_q, path: api_namespace_path(@api_namespace) }
+  %table
+    %thead
+      %tr
+        %th.px-3= sort_link @api_resources_q, :id
+        %th.px-3 Properties
+        %th.px-3= sort_link @api_resources_q, :created_at
+        %th.px-3= sort_link @api_resources_q, :updated_at
+        %th.px-3
+        %th.px-3
+    = render partial: 'pagination', locals: { objects: @api_resources }
+    %tbody
+      - @api_resources.each do |api_resource|
+        %tr
+          %td.px-3.py-2= link_to api_resource.id, api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id) 
+          %td.px-3.py-2= link_to api_resource.properties, api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id) 
+          %td.px-3= api_resource.created_at.strftime('%F %T')
+          %td.px-3= api_resource.updated_at.strftime('%F %T')
+          %td.px-3= link_to 'Edit', edit_api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id)
+          %td.px-3= link_to 'Destroy', api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), method: :delete, data: { confirm: 'Are you sure?' }
+
+  %br
+

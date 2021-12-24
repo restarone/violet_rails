@@ -1,0 +1,1 @@
+$('#non_primitive_forms').append("<%= escape_javascript("#{render :partial => 'comfy/admin/non_primitive_properties/nested_form', locals: { index: @index, resource: @non_primitive_property }}").html_safe %>");

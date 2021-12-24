@@ -27,7 +27,13 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
       :favicon,
       :description,
       :keywords,
-      :og_image  
+      :og_image,
+      :blog_enabled,
+      :forum_enabled,
+      :allow_user_self_signup,
+      :forum_is_private,
+      :purge_visits_every,
+      :analytics_report_frequency
     )
   end
 end

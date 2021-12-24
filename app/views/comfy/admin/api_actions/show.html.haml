@@ -1,0 +1,57 @@
+.card.p-3.my-3
+  .row
+    .col-12.d-flex.mb-3
+      .mr-3
+        Action:
+      = @api_action.action_type
+    - if @api_action.action_type == 'send_web_request'
+      .col-12.d-flex.mb-3
+        .mr-3
+          Request Url:
+        = @api_action.request_url
+      .col-12.d-flex.mb-3
+        .mr-3
+          Payload: 
+        = @api_action.payload_mapping
+    
+    - if @api_action.action_type == 'redirect'
+      .col-12.d-flex.mb-3
+        .mr-3
+          Redirect Url:
+        = @api_action.redirect_url
+    - if @api_action.action_type == 'send_email'
+      .col-12.d-flex.mb-3
+        .mr-3
+          Email:
+        = @api_action.email
+      .col-12.d-flex.mb-3
+        .mr-3
+          Custom message:
+        = @api_action.custom_message
+      .col-12.d-flex.mb-3
+        .mr-3
+          Include resource:
+        = @api_action.include_api_resource_data || 'false'
+
+    - if @api_action.action_type == 'serve_file'
+      .col-12.d-flex.mb-3
+        .mr-3
+          File snippet:
+        = @api_action.file_snippet
+      .col-12.d-flex.mb-3
+        .mr-3
+          Url:
+        - url = rails_blob_url(Comfy::Cms::File.find(file_id_from_snippet(@api_action.file_snippet)).attachment)
+        = link_to url, url
+
+    - if @api_action.api_resource.present?
+      .col-12.d-flex.mb-3
+        .mr-3
+          Lifecycle stage:
+        %b{style: "color: #{map_color(@api_action.lifecycle_stage)}"}
+          = @api_action.lifecycle_stage
+      .col-12.d-flex.mb-3
+        .mr-3
+          Lifecycle Message:
+        = @api_action.lifecycle_message
+    
