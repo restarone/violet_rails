@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/restarone/comfortable-mexican-sofa
-  revision: 31a984419bc09062366806d06f5dd74282d0c232
-  tag: 3.2
+  revision: 050c09c48a4963acb809b971d23737c6e40a0e19
+  branch: fixforRuby3
   specs:
     comfortable_mexican_sofa (2.0.19)
       active_link_to (>= 1.0.0)
@@ -201,7 +201,7 @@ GEM
     gravatar_image_tag (1.2.0)
     groupdate (5.2.2)
       activesupport (>= 5)
-    haml (5.2.1)
+    haml (5.2.2)
       temple (>= 0.8.0)
       tilt
     haml-rails (2.0.1)
@@ -319,9 +319,9 @@ GEM
       nokogiri (>= 1.6)
     rails-html-sanitizer (1.3.0)
       loofah (~> 2.3)
-    rails-i18n (6.0.0)
+    rails-i18n (7.0.1)
       i18n (>= 0.7, < 2)
-      railties (>= 6.0.0, < 7)
+      railties (>= 6.0.0, < 8)
     railties (6.1.3.1)
       actionpack (= 6.1.3.1)
       activesupport (= 6.1.3.1)
@@ -360,8 +360,8 @@ GEM
     ruby-vips (2.1.0)
       ffi (~> 1.12)
     ruby2_keywords (0.0.4)
-    ruby_parser (3.16.0)
-      sexp_processor (~> 4.15, >= 4.15.1)
+    ruby_parser (3.18.1)
+      sexp_processor (~> 4.16)
     rubyzip (2.3.0)
     safely_block (0.3.0)
       errbase (>= 0.1.1)
@@ -379,7 +379,7 @@ GEM
       childprocess (>= 0.5, < 4.0)
       rubyzip (>= 1.2.2)
     semantic_range (3.0.0)
-    sexp_processor (4.15.3)
+    sexp_processor (4.16.0)
     sidekiq (6.2.1)
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
