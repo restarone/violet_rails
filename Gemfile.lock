@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/restarone/comfortable-mexican-sofa
-  revision: 050c09c48a4963acb809b971d23737c6e40a0e19
-  branch: fixforRuby3
+  revision: 2b80ce723ce9b80bb20752c32e81870ad37a25d5
+  tag: 3.3
   specs:
     comfortable_mexican_sofa (2.0.19)
       active_link_to (>= 1.0.0)
