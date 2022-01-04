@@ -46,6 +46,9 @@ jobs:
       with:
         ruby-version: 2.6.6 # Not needed with a .ruby-version file but it's good to be clear here
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+    - uses: actions/setup-node@v2
+      with:
+        node-version: 14.x
     - name: Setup main DB
       run: |
         bin/rails db:create

@@ -1,5 +1,5 @@
 class Subdomains::BaseController < ApplicationController
-  skip_before_action :track_ahoy_visit
+  skip_before_action :track_ahoy_visit, raise: false
   before_action :authenticate_user!
   before_action :ensure_user_belongs_to_subdomain
   layout "subdomains"
@@ -22,6 +22,13 @@ class Subdomains::BaseController < ApplicationController
     unless current_user.can_manage_users
       flash.alert = "You do not have the permission to do that. Only users who can-manage-users  are allowed to perform that action."
       redirect_to comfy_admin_cms_path
+    end
+  end
+
+  def ensure_authority_to_manage_api
+    unless current_user.can_manage_api
+      flash.alert = "You do not have the permission to do that. Only users who can_manage_api are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
     end
   end
 end

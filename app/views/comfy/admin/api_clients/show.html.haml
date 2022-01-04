@@ -1,0 +1,18 @@
+%p#notice= notice
+
+%p
+  %b Api namespace:
+  = @api_client.api_namespace.name
+%p
+  %b Label:
+  = @api_client.label
+%p
+  %b Authentication strategy:
+  = @api_client.authentication_strategy
+%p
+  %b Bearer token:
+  = @api_client.bearer_token
+
+= link_to 'Edit', edit_api_namespace_api_client_path(api_namespace_id: @api_namespace.id, id: @api_client.id)
+\|
+= link_to 'Back', api_namespace_api_clients_path(api_namespace_id: @api_namespace.id)

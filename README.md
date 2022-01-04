@@ -1,9 +1,7 @@
-# Welcome to Violet Rails ![Ruby](https://github.com/restarone/violet_rails/workflows/Ruby/badge.svg)
-![alt text](https://user-images.githubusercontent.com/35935196/116006240-49867680-a5d8-11eb-82f6-aea6e333942b.png)
-
-
+![violet-logo-horizontal-with-wordmark](https://user-images.githubusercontent.com/35935196/121615020-efc5f880-ca2d-11eb-9e0c-08e2c7926b3a.png)
+![Ruby](https://github.com/restarone/violet_rails/workflows/Ruby/badge.svg)
 ## What is Violet Rails?
-`violet_rails` is a Ruby on Rails template that implements a web CMS, blog and forum along with a lightweight email client and server. Violet ships with a two tier authorizatiion strategy that makes building SaaS and XaaS products quickly. 
+`violet_rails` is a Ruby on Rails template that implements a web CMS, blog and forum along with a lightweight email client and server. Violet ships with a two tier authorizatiion strategy as well so you can build large applications quickly and easily. 
 
 ## Features
 ### Rich user management system with invites and granular permissions
@@ -55,5 +53,5 @@ The [Demo](https://violet.restarone.solutions/) of `violet_rails` is deployed on
 If you prefer deploying to Heroku, [you can view the guide for that here](https://github.com/restarone/violet_rails/wiki/Deploying-to-Heroku)
 
 ## Hacking on top of Violet
-The local development environment is supported by docker. After installing `docker` and `docker-compose` take a look at the development cheatsheet for setting up the development environment along with useful scripts: https://github.com/restarone/violet_rails/wiki/development-cheatsheet
+The local development environment is supported by docker. After installing `docker` and `docker-compose` take a look at the development cheatsheet for setting up the development environment along with useful scripts: https://github.com/restarone/violet_rails/wiki/Getting-started-(development-cheatsheet)
 

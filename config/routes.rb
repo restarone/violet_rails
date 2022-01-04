@@ -8,7 +8,6 @@ class SubdomainConstraint
 end
 
 Rails.application.routes.draw do
-
   # analytics dashboard
   get 'dashboard', controller: 'comfy/admin/dashboard'
   resources :signup_wizard
@@ -46,6 +45,28 @@ Rails.application.routes.draw do
     end
   end
 
+  # api admin
+  resources :api_namespaces, controller: 'comfy/admin/api_namespaces' do
+    resources :resources, controller: 'comfy/admin/api_resources' 
+    resources :api_clients, controller: 'comfy/admin/api_clients'
+    resources :api_forms, controller: 'comfy/admin/api_forms', only: [:edit, :update]
+
+    resources :resource, controller: 'resource', only: [:create]
+
+    resources :api_actions, controller: 'comfy/admin/api_actions', only: [:index, :show] do
+      collection do 
+        get 'action_workflow'
+      end
+    end
+
+    member do
+      post 'discard_failed_api_actions'
+      post 'rerun_failed_api_actions'
+    end
+  end
+  resources :non_primitive_properties, controller: 'comfy/admin/non_primitive_properties', only: [:new]
+  resources :api_actions, controller: 'comfy/admin/api_actions', only: [:new]
+
   # system admin panel login
   devise_scope :user do
     get 'sign_in', to: 'users/sessions#new', as: :new_global_admin_session
@@ -66,6 +87,22 @@ Rails.application.routes.draw do
     end
     resources :subdomains
   end
+
+  namespace 'api' do
+    scope ':version' do
+      scope ':api_namespace' do
+        get '/', to: 'resource#index'
+        get '/show/:api_resource_id', to: 'resource#show', as: :show_resource
+        get '/describe', to: 'resource#describe'
+        post '/query', to: 'resource#query'
+        post '/', to: 'resource#create', as: :create_resource
+        patch '/edit/:api_resource_id', to: 'resource#update', as: :update_resource
+        delete '/destroy/:api_resource_id', to: 'resource#destroy', as: :destroy_resource
+      end
+    end
+  end
+
+  post '/query', to: 'search#query'
   
   comfy_route :cms_admin, path: "/admin"
   comfy_route :blog, path: "blog"
