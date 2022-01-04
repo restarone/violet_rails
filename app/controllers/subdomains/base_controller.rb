@@ -24,4 +24,11 @@ class Subdomains::BaseController < ApplicationController
       redirect_to comfy_admin_cms_path
     end
   end
+
+  def ensure_authority_to_manage_api
+    unless current_user.can_manage_api
+      flash.alert = "You do not have the permission to do that. Only users who can_manage_api are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
+    end
+  end
 end

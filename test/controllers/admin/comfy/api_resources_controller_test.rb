@@ -3,7 +3,7 @@ require "test_helper"
 class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
-    @user.update(can_manage_web: true)
+    @user.update(can_manage_api: true)
     @api_namespace = api_namespaces(:one)
     @api_resource = api_resources(:one)
   end
@@ -13,9 +13,9 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_user_session_url
   end
 
-  test "should not get index if signed in but not allowed to manage web" do
+  test "should not get index if signed in but not allowed to manage api" do
     sign_in(@user)
-    @user.update(can_manage_web: false)
+    @user.update(can_manage_api: false)
     get api_namespace_resources_url(api_namespace_id: @api_namespace.id)
     assert_response :redirect
   end
@@ -57,8 +57,18 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
 
   test "should update api_resource" do
     sign_in(@user)
-    patch api_namespace_resource_url(@api_resource, api_namespace_id: @api_resource.api_namespace_id), params: { api_resource: { properties: @api_resource.properties } }
-    assert_redirected_to api_namespace_resource_url(@api_resource)
+    patch api_namespace_resource_url(@api_resource, api_namespace_id: @api_resource.api_namespace_id), params: { api_resource: { properties: @api_resource.properties } }, headers: { 'HTTP_REFERER': edit_api_namespace_resource_url(api_namespace_id: @api_namespace.id, id: @api_resource.id) }
+    assert_redirected_to edit_api_namespace_resource_url(api_namespace_id: @api_namespace.id, id: @api_resource.id)
+  end
+
+  test "should execute failed response api_resource" do
+    sign_in(@user)
+
+    actions_count = @api_resource.api_namespace.error_api_actions.size
+    assert_raises StandardError do
+      patch api_namespace_resource_url(@api_resource, api_namespace_id: @api_resource.api_namespace_id), params:  { properties: @api_resource.properties }, headers: { 'HTTP_REFERER': edit_api_namespace_resource_url(api_namespace_id: @api_namespace.id, id: @api_resource.id) }
+      assert_equal @api_resource.error_api_actions.count, actions_count
+    end
   end
 
   test "should destroy api_resource" do

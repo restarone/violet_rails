@@ -1,6 +1,6 @@
 .page-header
   = link_to 'New CTA', new_call_to_action_path, class: 'btn btn-secondary float-right'
-  %h2 Call To Actions
+  %h2 Call To Actions (deprecated)
 = render partial: 'search_filters', locals: { objects: @call_to_actions_q, path: call_to_actions_path }
 = render partial: 'pagination', locals: { objects: @call_to_actions }
 %table.table.table-responsive

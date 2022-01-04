@@ -70,4 +70,24 @@ class SubdomainTest < ActiveSupport::TestCase
     end
     assert Subdomain.find_by(name: 'restarone').destroy
   end
+
+  test 'sends analytics report if analytics_report_frequency is updated' do
+    User.first.update(deliver_analytics_report: true)
+    recipients = User.where(deliver_analytics_report: true)
+    assert_difference "UserMailer.deliveries.size", +recipients.size do
+      perform_enqueued_jobs do
+        @subdomain.update(analytics_report_frequency: '1.week')
+      end
+    end
+  end
+
+  test 'does not sends analytics report if analytics_report_frequency is updated to never' do
+    User.first.update(deliver_analytics_report: true)
+    recipients = User.where(deliver_analytics_report: true)
+    assert_no_difference "UserMailer.deliveries.size", +recipients.size do
+      perform_enqueued_jobs do
+        @subdomain.update(analytics_report_frequency: 'never')
+      end
+    end
+  end
 end

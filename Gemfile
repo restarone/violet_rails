@@ -48,12 +48,13 @@ gem "recaptcha"
 gem 'rack-cors'
 gem 'friendly_id'
 gem 'whenever', require: false
+gem 'httparty'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false
 gem 'mailgun-ruby'
 gem 'sinatra', require: false
-
+gem 'jsonapi-serializer'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -87,6 +88,7 @@ group :test do
   gem 'simplecov', require: false, group: :test
   gem 'rails-controller-testing'
   gem 'mocha'
+  gem 'webmock'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
