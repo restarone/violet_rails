@@ -1,0 +1,1 @@
+$("#<%= @type %>_forms").append("<%= escape_javascript("#{render :partial => 'comfy/admin/api_actions/form', locals: { index: @index, resource: @api_action, type: @type }}").html_safe %>");

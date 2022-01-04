@@ -1,0 +1,94 @@
+.card.form-container.font-size-sm.position-relative.p-3.mb-4{id: "api_action_form_#{type}_#{index}", style: "font-size: 13px; border-color: #3883fa"}
+  .position-absolute{style: "top: 6px; right: 6px"}
+    %a.text-danger{style: "cursor: pointer;", onclick: "removeForm('api_action_form_#{type}_#{index}', 'api_action_form_destroy_field_#{type}_#{index}')"}
+      %i.fas.fa-times
+  .row
+    .form-group.col-12
+      = label_tag "Action"
+      = select_tag "api_namespace[#{type}_attributes][#{index}][action_type]", options_for_select(ApiAction.action_types.keys, resource.action_type), { class: "form-control form-control-sm", id: "action_type_field_#{type}_#{index}", onchange: "toggleApiActionFields('#{index}', '#{type}');"}
+    .send_email.col-12{style: "#{'display:none' unless resource.action_type == 'send_email'}", id: "send_email_fields_#{type}_#{index}"}
+      .form-group
+        = label_tag 'Include Api Resource Data'
+        = check_box_tag "api_namespace[#{type}_attributes][#{index}][include_api_resource_data]", resource.include_api_resource_data , resource.include_api_resource_data
+      .form-group
+        = label_tag 'Email Address'
+        = text_field_tag "api_namespace[#{type}_attributes][#{index}][email]", resource.email, { class: "form-control form-control-sm" }
+      .form-group
+        = label_tag 'Custom Message'
+        = rich_text_area_tag "api_namespace[#{type}_attributes][#{index}][custom_message]", resource.custom_message, { class: "form-control form-control-sm" }
+
+    .redirect.col-12{style: "#{'display:none' unless resource.action_type == 'redirect'}", id: "redirect_fields_#{type}_#{index}"}
+      .form-group
+        = label_tag 'Redirect Url'
+        = select_tag "api_namespace[#{type}_attributes][#{index}][redirect_url]", options_for_select((system_paths << resource.redirect_url).uniq), {class: "form-control form-control-sm path_select", default_value: resource.redirect_url}
+
+    .serve_file.col-12{style: "#{'display:none' unless resource.action_type == 'serve_file'}", id: "serve_file_fields_#{type}_#{index}"}
+      .form-group
+        = label_tag 'File snippet'
+        = text_field_tag "api_namespace[#{type}_attributes][#{index}][file_snippet]", resource.file_snippet, { class: "form-control form-control-sm", placeholder: "{{ cms:file_link 2 }}" }
+
+    .serve_web_request.col-12{style: "#{'display:none' unless resource.action_type == 'send_web_request'}", id: "serve_web_request_fields_#{type}_#{index}"}
+      .form-group
+        = label_tag 'Request Url'
+        = text_field_tag "api_namespace[#{type}_attributes][#{index}][request_url]", resource.request_url, { class: "form-control form-control-sm" }
+      .form-group
+        = label_tag 'HTTP method'
+        = select_tag "api_namespace[#{type}_attributes][#{index}][http_method]", options_for_select(ApiAction::HTTP_METHODS, resource.http_method), { class: "form-control form-control-sm"}
+      .form-group
+        = label_tag 'Request body'
+        .js-jsoneditor{id: "payload_mapping_#{type}_#{index}-editor", 'data-field-id': "api_namespace_#{type}_attributes_#{index}_payload_mapping"}
+        = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][payload_mapping]", resource.payload_mapping
+      .form-group
+        = label_tag 'Headers'
+        .js-jsoneditor{id: "custom_headers_#{type}_#{index}-editor", 'data-field-id': "api_namespace_#{type}_attributes_#{index}_custom_headers"}
+        = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][custom_headers]", resource.custom_headers
+      .form-group
+        = label_tag 'Bearer Token'
+        = text_field_tag "api_namespace[#{type}_attributes][#{index}][bearer_token]", resource.bearer_token, { class: "form-control form-control-sm" }
+
+
+  = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][_destroy]", false ,{id: "api_action_form_destroy_field_#{type}_#{index}"}
+  = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][position]", resource.position ,{class: "position_field"}
+
+:javascript
+
+  #{type}_#{index}_initializeJsonEditor("payload_mapping_#{type}_#{index}-editor", "api_namespace_#{type}_attributes_#{index}_payload_mapping")
+  #{type}_#{index}_initializeJsonEditor("custom_headers_#{type}_#{index}-editor", "api_namespace_#{type}_attributes_#{index}_custom_headers")
+
+
+  $(document).ready( function() {
+    $(".path_select").select2({
+      multiple: false,
+      required: true,
+      tags: true
+    })
+    $('.path_select').each(function() {
+      $(this).val($(this).attr('default_value')).change();
+    })
+  });
+
+  function #{type}_#{index}_initializeJsonEditor(containerId, fieldId) {
+    const container = document.getElementById(containerId)
+    const options = {onChange: () => { setFields() } }
+    const editor = new JSONEditor(container, options)
+
+    const initialJson = {}
+    editor.set(initialJson)
+
+    let existingValue = $('#' + fieldId).val()
+
+    if (existingValue) {
+        let json = JSON.parse(existingValue)
+        editor.set(json)
+    } else {
+        setFields()
+    }
+
+    function setFields() {
+        let str = JSON.stringify(editor.get())
+        $('#' + fieldId).val(str)
+    }
+
+    const updatedJson = editor.get()
+  }
+

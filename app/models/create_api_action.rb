@@ -1,0 +1,3 @@
+class CreateApiAction < ApiAction
+    
+end

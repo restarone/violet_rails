@@ -6,7 +6,9 @@ class Subdomain < ApplicationRecord
   before_create :downcase_subdomain_name, :create_tenant
 
   after_create_commit :create_cms_site
-  before_destroy :drop_tenant
+  before_destroy :purge_stored_files, :drop_tenant
+
+  after_save :send_analytics_report, if: -> { self.saved_change_to_analytics_report_frequency? && self.analytics_report_frequency != REPORT_FREQUENCY_MAPPING[:never] }
 
   has_one_attached :logo
   has_one_attached :favicon
@@ -23,6 +25,34 @@ class Subdomain < ApplicationRecord
 
   # keep these urls out of logging
   PRIVATE_URL_PATHS  = ['/users/password', '/users/registration', '/users/sessions', '/users/confirmation', '/users/invitation']
+
+  # for cleaning out old Ahoy::Visit & Ahoy::Event
+  TRACKING_PURGE_MAPPING = {
+    weekly: '1.week',
+    biweekly: '2.weeks',
+    monthly: '1.month',
+    quarterly: '3.months',
+    biannually: '6.months',
+    annually: '1.year',
+    never: 'never'
+  }
+
+  REPORT_FREQUENCY_MAPPING = {
+    daily: '1.day',
+    weekly: '1.week',
+    biweekly: '2.weeks',
+    monthly: '1.month',
+    quarterly: '3.months',
+    biannually: '6.months',
+    annually: '1.year',
+    never: 'never'
+  }
+
+  validates :purge_visits_every, inclusion: { in: TRACKING_PURGE_MAPPING.values,
+    message: "purge frequency is not valid" }
+
+  validates :analytics_report_frequency, inclusion: { in: REPORT_FREQUENCY_MAPPING.values,
+    message: "report frequency is not valid" }
 
   def self.current
     subdomain = Subdomain.find_by(name: Apartment::Tenant.current)
@@ -82,6 +112,28 @@ class Subdomain < ApplicationRecord
     end
   end
 
+  def storage_used_since(date)
+    Apartment::Tenant.switch self.name do
+      if ActiveStorage::Blob.any?
+        return ActiveStorage::Blob.where('created_at >= ?', date).pluck(:byte_size).sum
+      else
+        return 0
+      end
+    end
+  end
+
+  def pages
+    Apartment::Tenant.switch self.name do
+      return Comfy::Cms::Site.first.pages
+    end
+  end
+
+  def users
+    Apartment::Tenant.switch self.name do
+      User.all
+    end
+  end
+
   def destroy
     raise "Cannot destroy root domain" if self.name == Subdomain::ROOT_DOMAIN_NAME
     super
@@ -104,7 +156,18 @@ class Subdomain < ApplicationRecord
     )
   end
 
+  def send_analytics_report
+    UserMailer.analytics_report(self).deliver_later
+  end
+
   private
+
+  def purge_stored_files
+    Apartment::Tenant.switch(self.name) do
+      ActiveStorage::Attachment.all.each { |attachment| attachment.purge }
+      ActiveStorage::Blob.all.each { |blob| blob.purge }
+    end
+  end
 
   def drop_tenant
     Apartment::Tenant.drop(self.name)
@@ -145,7 +208,7 @@ class Subdomain < ApplicationRecord
         <div>
           <h1>Hello from #{name}</h1>
           To access the admin panel for your website, 
-          <a href='http://#{hostname}/admin' target='_blank'>click here</a>
+          <a href='/admin' target='_blank'>click here</a>
         </div>
       "
     )

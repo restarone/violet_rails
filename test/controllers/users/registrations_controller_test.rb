@@ -2,8 +2,9 @@ require "test_helper"
 
 class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
   setup do
+
     @user = users(:public)
-    @public_subdomain = @user.subdomain
+    @public_subdomain = subdomains(:public)
     @restarone_subdomain = Subdomain.find_by(name: 'restarone').name
   end
 
@@ -17,9 +18,9 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
         password_confirmation: password
       }
     }
-    Apartment::Tenant.switch(@public_subdomain) do
+    Apartment::Tenant.switch(@public_subdomain.name) do
       assert_difference "User.all.reload.size", +1 do
-        post user_registration_url(subdomain: @public_subdomain), params: payload
+        post user_registration_url(subdomain: @public_subdomain.name), params: payload
         assert_response :redirect
       end
     end
@@ -33,22 +34,28 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should allow #new (within subdomain scope)" do
-    get new_user_registration_url(subdomain: @public_subdomain)
+    get new_user_registration_url(subdomain: @public_subdomain.name)
     assert_response :success
   end
 
+  test "should deny #new if user self signups are denied" do
+    @public_subdomain.update(allow_user_self_signup: false)
+    get new_user_registration_url(subdomain: @public_subdomain.name)
+    assert_response :redirect
+  end
+
   test 'unconfirmed login results in redirect to subdomain landing page (within subdomain scope)' do
-    get new_user_session_url(subdomain: @public_subdomain)
+    get new_user_session_url(subdomain: @public_subdomain.name)
     assert_response :success
     assert_template :new
     @user.update(confirmed_at: nil)
-    post user_session_url(subdomain: @public_subdomain), params: {user: {email: @user.email, password: '123456'}}
+    post user_session_url(subdomain: @public_subdomain.name), params: {user: {email: @user.email, password: '123456'}}
     assert_response :redirect
     assert_equal flash.alert, "You have to confirm your email address before continuing."
   end
 
   test 'confirmed login results in redirect to comfy admin panel (within subdomain scope)' do
-    get comfy_admin_cms_url(subdomain: @public_subdomain)
+    get comfy_admin_cms_url(subdomain: @public_subdomain.name)
     assert_response :redirect
     email = 'hello-world@restarone.solutions'
     password = '123456'
@@ -58,15 +65,15 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
         password: password,
       }
     }
-    post user_session_url(subdomain: @public_subdomain), params: payload
+    post user_session_url(subdomain: @public_subdomain.name), params: payload
     assert_response :redirect
-    assert_redirected_to comfy_admin_cms_url(subdomain: @public_subdomain)
+    assert_redirected_to comfy_admin_cms_url(subdomain: @public_subdomain.name)
   end
 
   test 'login to comfy admin panel (within subdomain scope)' do
     sign_in(@user)
-    Apartment::Tenant.switch @public_subdomain do
-      get comfy_admin_cms_url(subdomain: @public_subdomain)
+    Apartment::Tenant.switch @public_subdomain.name do
+      get comfy_admin_cms_url(subdomain: @public_subdomain.name)
       assert_redirected_to comfy_admin_cms_site_pages_path(subdomain: @restarone_subdomain, site_id: Comfy::Cms::Site.first.id)
     end
   end
@@ -83,9 +90,9 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     }
     assert_changes "Devise.mailer.deliveries.size" do          
       assert_changes "User.all.size", +1 do
-        post user_registration_url(subdomain: @public_subdomain), params: payload
+        post user_registration_url(subdomain: @public_subdomain.name), params: payload
         assert_response :redirect
-        assert_redirected_to root_url(subdomain: @public_subdomain)
+        assert_redirected_to root_url(subdomain: @public_subdomain.name)
         latest_user = User.last
         assert latest_user.email == email
         refute latest_user.global_admin
@@ -93,6 +100,26 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
         refute latest_user.can_manage_email
         refute latest_user.can_manage_users
         refute latest_user.can_manage_blog
+      end
+    end
+  end
+
+
+  test "should not allow sign up at subdomain scope if user self signup is disabled" do
+    email = 'test1@tester.com'
+    password = '123456'
+    payload = {
+      user: {
+        email: email,
+        password: password,
+        password_confirmation: password
+      }
+    }
+    @public_subdomain.update(allow_user_self_signup: false)
+    assert_no_difference "Devise.mailer.deliveries.size" do          
+      assert_no_difference "User.all.size" do
+        post user_registration_url(subdomain: @public_subdomain.name), params: payload
+        assert_response :redirect
       end
     end
   end
