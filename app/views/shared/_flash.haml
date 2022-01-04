@@ -1,8 +1,10 @@
+= render 'shared/file_download'
 - flash.each do |key, value|
-  -alert_class = key == 'notice' ? 'success' : 'danger'
-  %div{:class => "alert alert-#{alert_class} alert-dismissible fade show"}
-    %strong
-      = value
-    %button.close{"aria-label" => "Close", "data-dismiss" => "alert", :type => "button"}
-      %span{"aria-hidden" => "true"} ×
+  - unless key == 'file_url'
+    -alert_class = key == 'notice' ? 'success' : 'danger'
+    %div{:class => "alert alert-#{alert_class} alert-dismissible fade show"}
+      %strong
+        = value
+      %button.close{"aria-label" => "Close", "data-dismiss" => "alert", :type => "button"}
+        %span{"aria-hidden" => "true"} ×
         

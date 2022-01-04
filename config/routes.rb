@@ -48,8 +48,24 @@ Rails.application.routes.draw do
   # api admin
   resources :api_namespaces, controller: 'comfy/admin/api_namespaces' do
     resources :resources, controller: 'comfy/admin/api_resources' 
-    resources :api_clients, controller: 'comfy/admin/api_clients' 
+    resources :api_clients, controller: 'comfy/admin/api_clients'
+    resources :api_forms, controller: 'comfy/admin/api_forms', only: [:edit, :update]
+
+    resources :resource, controller: 'resource', only: [:create]
+
+    resources :api_actions, controller: 'comfy/admin/api_actions', only: [:index, :show] do
+      collection do 
+        get 'action_workflow'
+      end
+    end
+
+    member do
+      post 'discard_failed_api_actions'
+      post 'rerun_failed_api_actions'
+    end
   end
+  resources :non_primitive_properties, controller: 'comfy/admin/non_primitive_properties', only: [:new]
+  resources :api_actions, controller: 'comfy/admin/api_actions', only: [:new]
 
   # system admin panel login
   devise_scope :user do
@@ -85,6 +101,8 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  post '/query', to: 'search#query'
   
   comfy_route :cms_admin, path: "/admin"
   comfy_route :blog, path: "blog"

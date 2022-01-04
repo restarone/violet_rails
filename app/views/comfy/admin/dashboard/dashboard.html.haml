@@ -18,15 +18,19 @@
         = geo_chart @visits.group(:country).count, label: "visits"
     .col-12.my-5
       .row
-        .mx-5
+        .mx-5.my-3
           %p By device type
           = pie_chart @visits.where.not(device_type: nil).group(:device_type).count, width: "300px", height: "300px", label: "visits"
-        .mx-5
+        .mx-5.my-3
           %p By OS
           = pie_chart @visits.where.not(os: nil).group(:os).count, width: "300px", height: "300px", label: "visits"
-        .mx-5
+        .mx-5.my-3
           %p By browser
           = pie_chart @visits.where.not(browser: nil).group(:browser).count, width: "300px", height: "300px", label: "visits"
+        .mx-5.my-3
+          %p By referring domain
+          = pie_chart @visits.where.not(referring_domain: nil).group(:referring_domain).count, width: "300px", height: "300px", label: "visits"
+
   = render partial: 'pagination'
   .table-responsive
     %table.table.table-bordered

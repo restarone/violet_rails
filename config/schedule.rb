@@ -26,3 +26,15 @@ job_type :rake, 'export PATH="$HOME/.rbenv/bin:$PATH"; eval "$(rbenv init -)"; c
 every 12.hours do
   rake "maintenance:clear_old_ahoy_visits"
 end
+
+every 1.day do
+  rake "report:send_analytics_report"
+end
+
+every 5.minutes do
+  rake "api_action:rerun_failed_actions"
+end
+
+every 1.day do
+  rake "maintenance:clear_discarded_api_actions"
+end

@@ -18,6 +18,7 @@
 
   if (existingValue) {
     let json = JSON.parse(existingValue)
+    $("#api_resource_properties").val(existingValue)
     editor.set(json)
   } else {
     setFields()

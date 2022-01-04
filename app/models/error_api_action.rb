@@ -1,0 +1,2 @@
+class ErrorApiAction < ApiAction
+end

@@ -22,5 +22,4 @@ Turbolinks.start()
 require("jquery")
 require("./trix")
 require("./select2")
-
-
+require("./common")

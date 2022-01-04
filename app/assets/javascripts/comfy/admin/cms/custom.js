@@ -1,6 +1,9 @@
 // Custom JS for the admin area
 
 // patch the correct subdomain admin name in the browser tab
+
+//= require select2
+
 let subdomain = /:\/\/([^\/]+)/.exec(window.location.href)[1].split('.')[0]
 document.title = `${subdomain} Admin`
 
