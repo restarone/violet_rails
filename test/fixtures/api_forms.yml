@@ -7,3 +7,20 @@ one:
   failure_message: MyString
   submit_button_label: MyString
   title: MyString
+
+two:
+  properties: { 'name': {'label': 'name', 'placeholder': 'Test', 'input_type': 'radio', 'select_type': 'single' }}
+  api_namespace: array_namespace
+  success_message: MyString
+  failure_message: MyString
+  submit_button_label: MyString
+  title: MyString
+
+three:
+  properties: { 'name': {'label': 'name', 'placeholder': 'Test', 'input_type': 'radio', 'select_type': 'multi' }}
+  api_namespace: array_namespace
+  success_message: MyString
+  failure_message: MyString
+  submit_button_label: MyString
+  title: MyString
+

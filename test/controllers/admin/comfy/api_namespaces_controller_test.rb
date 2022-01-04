@@ -77,6 +77,21 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert api_namespace.api_form
   end
 
+  test "should create set type validation to tel if value is an Integer" do
+    sign_in(@user)
+    properties = {
+      "name": 'test',
+      "age": 25
+    }.to_json
+
+    assert_difference('ApiForm.count') do
+      post api_namespaces_url, params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, properties: properties, has_form: "1" ,requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
+    end
+    api_namespace = ApiNamespace.last
+    assert api_namespace.api_form
+    assert_equal api_namespace.api_form.properties["age"]["type_validation"], 'tel'
+  end
+
   test "should create api_form if has_form params is true when updating" do
     sign_in(@user)
     assert_difference('ApiForm.count') do
