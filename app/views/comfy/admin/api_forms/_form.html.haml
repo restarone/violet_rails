@@ -50,7 +50,7 @@
                   .form-group.col-12
                     = a.label :prepopulate, 'Prepopulate:', class: 'mr-4'
                     = a.check_box :prepopulate, checked: properties[key]["prepopulate"] == '1'
-                - if value.class.to_s == 'String'
+                - if value.class.to_s == 'String' || value.class.to_s == 'Integer' 
                   .form-group.col-12
                     = a.label :field_type, 'Field type', class: 'mr-4'
                     = a.select :field_type, options_for_select(['input', 'textarea'], properties[key]["field_type"] || 'input'), {}, {class: 'form-control' }
@@ -64,6 +64,9 @@
                       Regex editor:
                       = link_to 'Rubular', "https://rubular.com/", {target: '_blank'}
                 - if value.class.to_s == 'Array'
+                  .form-group.col-12
+                    = a.label :input_type, 'Input Type:', class: 'mr-4'
+                    = a.select :input_type, options_for_select(['select', 'radio'], properties[key]["input_type"]), {}, {class: "form-control"}
                   .form-group.col-12
                     = a.label :select_type, 'Select Type:', class: 'mr-4'
                     = a.select :select_type, options_for_select(['single', 'multi'], properties[key]["select_type"]), {}, {class: "form-control", onchange: "toggleOptionField(this, '#{key}')"}
