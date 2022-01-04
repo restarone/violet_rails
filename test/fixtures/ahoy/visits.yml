@@ -1,0 +1,7 @@
+public: 
+  referring_domain: localhost
+  landing_page: "http://lvh.me:5250/"
+  country: canada
+  region: onterio
+  city: toronto
+  started_at: <%= 1.day.ago %>

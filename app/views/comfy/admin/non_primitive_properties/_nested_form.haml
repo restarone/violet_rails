@@ -1,0 +1,23 @@
+.card.form-container.font-size-sm.position-relative.p-3.mb-4{id: "non_prim_form_#{index}", style: "font-size: 13px; border-color: #3883fa"}
+  .position-absolute{style: "top: 6px; right: 6px"}
+    %a.text-danger{style: "cursor: pointer;", onclick: "removeForm('non_prim_form_#{index}', 'form_destroy_field_#{index}')"}
+      %i.fas.fa-times
+  .row
+    .form-group.col-12.col-md-6
+      = label_tag "Field type"
+      = select_tag "api_namespace[non_primitive_properties_attributes][#{index}][field_type]", options_for_select(NonPrimitiveProperty.field_types.keys, resource.field_type), { class: "form-control form-control-sm", id: "field_type_field_#{index}", onchange: "manageEvent('#{index}');"}
+    .form-group.col-12.col-md-6
+      = label_tag 'Label'
+      = text_field_tag "api_namespace[non_primitive_properties_attributes][#{index}][label]", resource.label ,class: 'form-control form-control-sm', required: true
+  .form-group{style: "#{'display:none' unless resource.field_type == 'richtext'}", id: "rich_text_field_#{index}"}
+    = label_tag 'Default Content'
+    = rich_text_area_tag "api_namespace[non_primitive_properties_attributes][#{index}][content]", resource.content
+  .form-group.mb-0{style: "#{'display:none' unless resource.field_type == 'file'}", id: "file_field_#{index}"}
+    = label_tag 'Deafult attachment'
+    = file_field_tag "api_namespace[non_primitive_properties_attributes][#{index}][attachment]", class: "form-control form-control-sm", onchange: "previewFile(event, 'file_field_#{index}_preview')"
+    .mt-3
+      %video{id: "file_field_#{index}_preview_video", controls: true, style: "max-height: 150px; display: none"}
+      %img{id: "file_field_#{index}_preview_img", controls: true,  style: "max-height: 150px; display: none"}
+    
+
+  = hidden_field_tag "api_namespace[non_primitive_properties_attributes][#{index}][_destroy]", false ,{id: "form_destroy_field_#{index}"}

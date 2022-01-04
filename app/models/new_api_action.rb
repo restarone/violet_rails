@@ -1,0 +1,2 @@
+class NewApiAction < ApiAction
+end

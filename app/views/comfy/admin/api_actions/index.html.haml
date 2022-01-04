@@ -1,0 +1,42 @@
+.d-flex.justify-content-between.page-header.pb-3.mb-4
+  %h2
+    Listing
+    =  @api_namespace.name.pluralize
+    > Api Actions
+  %div
+    = link_to 'Action Workflow', action_workflow_api_namespace_api_actions_path(api_namespace_id: @api_namespace.id), class: 'btn btn-primary'
+= render partial: 'comfy/admin/api_actions/search_filters', locals: { objects: @api_actions_q, path: api_namespace_api_actions_path(api_namespace_id: @api_namespace.id) }
+
+.d-flex.my-4
+  .mr-3
+    = link_to 'Discard Failed Actions', discard_failed_api_actions_api_namespace_path(id: @api_namespace), method: :post, data: { confirm: 'Are you sure?' }, class: "btn btn-primary"
+  
+  = link_to 'Rerun Failed Actions', rerun_failed_api_actions_api_namespace_path(id: @api_namespace), method: :post, data: { confirm: 'Are you sure?' }, class: "btn btn-primary"
+
+%table
+  %thead
+    %tr
+      %th.px-3= sort_link @api_actions_q, :id
+      %th.px-3= sort_link @api_actions_q, :api_resource_id
+      %th.px-3= sort_link @api_actions_q, :type
+      %th.px-3= sort_link @api_actions_q, :action_type
+      %th.px-3= sort_link @api_actions_q, :lifecycle_stage
+      %th.px-3 Lifecycle message
+      %th.px-3= sort_link @api_actions_q, :created_at
+      %th.px-3= sort_link @api_actions_q, :updated_at
+
+  = render partial: 'pagination', locals: { objects: @api_actions }
+  %tbody
+    - @api_actions.each do |api_action|
+      %tr
+        %td.px-3.py-2= link_to api_action.id, api_namespace_api_action_path(api_namespace_id: @api_namespace.id, id: api_action.id) 
+        %td.px-3.py-2= link_to api_action.api_resource_id, api_namespace_resource_path(api_namespace_id: @api_namespace.id, id: api_action.api_resource_id) 
+        %td.px-3= api_action.type
+        %td.px-3= api_action.action_type
+        %td.px-3
+          %b{style: "color: #{map_color(api_action.lifecycle_stage)}"}
+            = api_action.lifecycle_stage
+        %td.px-3= api_action.lifecycle_message
+        %td.px-3= api_action.created_at.strftime('%F %T')
+        %td.px-3= api_action.updated_at.strftime('%F %T')
+%br

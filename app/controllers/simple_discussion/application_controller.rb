@@ -1,6 +1,10 @@
 class SimpleDiscussion::ApplicationController < ::ApplicationController
   layout "simple_discussion"
 
+  before_action :redirect_if_forum_disabled
+
+  before_action :redirect_if_not_logged_in, if: -> { Subdomain.current.forum_is_private }
+
   def page_number
     page = params.fetch(:page, "").gsub(/[^0-9]/, "").to_i
     page = "1" if page.zero?
@@ -36,6 +40,20 @@ class SimpleDiscussion::ApplicationController < ::ApplicationController
   end
 
   private
+
+  def redirect_if_not_logged_in
+    unless current_user
+      flash.alert = 'please sign in to view this'
+      redirect_to new_user_session_path
+    end
+  end
+
+  def redirect_if_forum_disabled
+    unless Subdomain.current.forum_enabled
+      flash.alert = 'Forum is disabled'
+      redirect_to root_path
+    end
+  end
 
   def redirect_to_root
     redirect_to simple_discussion.root_path, alert: "You aren't allowed to do that."
