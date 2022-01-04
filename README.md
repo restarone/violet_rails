@@ -53,5 +53,5 @@ The [Demo](https://violet.restarone.solutions/) of `violet_rails` is deployed on
 If you prefer deploying to Heroku, [you can view the guide for that here](https://github.com/restarone/violet_rails/wiki/Deploying-to-Heroku)
 
 ## Hacking on top of Violet
-The local development environment is supported by docker. After installing `docker` and `docker-compose` take a look at the development cheatsheet for setting up the development environment along with useful scripts: https://github.com/restarone/violet_rails/wiki/development-cheatsheet
+The local development environment is supported by docker. After installing `docker` and `docker-compose` take a look at the development cheatsheet for setting up the development environment along with useful scripts: https://github.com/restarone/violet_rails/wiki/Getting-started-(development-cheatsheet)
 

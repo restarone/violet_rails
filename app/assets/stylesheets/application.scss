@@ -19,4 +19,10 @@
  @import "./actiontext.scss";
  @import 'select2/dist/css/select2.css';
 
- 
+ .alert-file_url {
+     display: none;
+ }
+
+ .select2-container {
+    width: 100% !important;
+ }

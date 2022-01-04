@@ -1,0 +1,18 @@
+= form_for Subdomain.new, url: admin_subdomains_url, method: :post, html: {class: 'violet-cta-form'} do |f|
+  .form-group
+    = f.label :subdomain_name
+    = f.text_field :name, class: 'form-control'
+  .form-group
+    = f.label "Enable forum?"
+    = f.check_box :forum_enabled, checked: true
+  .form-group
+    = f.label "Enable blog?"
+    = f.check_box :blog_enabled, checked: true
+  .form-group
+    = f.label "Allow users to self sign up? (if disabled, sign up via invite only)"
+    = f.check_box :allow_user_self_signup, checked: true
+  .form-group
+    = f.label "Private forum? (users need to sign up to read)"
+    = f.check_box :forum_is_private, checked: false
+  = f.submit class: 'my-2 btn btn-primary'
+

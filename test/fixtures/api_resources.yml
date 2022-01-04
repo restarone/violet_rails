@@ -2,11 +2,23 @@
 
 one:
   api_namespace: one
-  properties: 
+  properties: >
+    {
+      "can_edit": true,
+      "can_se": true,
+      "can_share": true,
+      "something_else": true
+    }
 
 two:
   api_namespace: two
-  properties: 
+  properties: >
+    {
+      "can_edit": true,
+      "can_se": true,
+      "can_share": true,
+      "something_else": true
+    }
 
 user:
   api_namespace: users

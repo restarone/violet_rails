@@ -10,6 +10,33 @@ class User < ApplicationRecord
 
   before_destroy :ensure_final_user
 
+  PRIVATE_ATTRIBUTES = [
+    :encrypted_password,
+    :reset_password_token,
+    :reset_password_sent_at,
+    :remember_created_at,
+    :sign_in_count,
+    :current_sign_in_at,
+    :last_sign_in_at,
+    :current_sign_in_ip,
+    :last_sign_in_ip,
+    :confirmation_token,
+    :confirmed_at,
+    :confirmation_sent_at,
+    :unconfirmed_email,
+    :failed_attempts,
+    :unlock_token,
+    :locked_at,
+    :invitation_token,
+    :invitation_created_at,
+    :invitation_sent_at,
+    :invitation_accepted_at,
+    :invitation_limit	,
+    :invited_by_type,
+    :invited_by_id,
+    :invitations_count
+  ]
+
   FULL_PERMISSIONS = {
     can_manage_web: true,
     can_manage_email: true,
@@ -33,6 +60,10 @@ class User < ApplicationRecord
 
   def previous_ahoy_visits
     Ahoy::Visit.where(user_id: self.id).order(started_at: :desc).limit(5)
+  end
+
+  def self.public_attributes
+    attribute_names - PRIVATE_ATTRIBUTES.map(&:to_s)
   end
   
   private

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_15_214536) do
+ActiveRecord::Schema.define(version: 2021_11_19_063616) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -104,6 +104,30 @@ ActiveRecord::Schema.define(version: 2021_08_15_214536) do
     t.index ["visit_token"], name: "index_ahoy_visits_on_visit_token", unique: true
   end
 
+  create_table "api_actions", force: :cascade do |t|
+    t.string "type"
+    t.integer "action_type", default: 0
+    t.boolean "include_api_resource_data"
+    t.jsonb "payload_mapping"
+    t.string "redirect_url"
+    t.string "request_url"
+    t.integer "position"
+    t.string "email"
+    t.string "file_snippet"
+    t.string "encrypted_bearer_token"
+    t.string "lifecycle_message"
+    t.integer "lifecycle_stage", default: 0
+    t.binary "salt"
+    t.bigint "api_namespace_id"
+    t.bigint "api_resource_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.jsonb "custom_headers"
+    t.string "http_method"
+    t.index ["api_namespace_id"], name: "index_api_actions_on_api_namespace_id"
+    t.index ["api_resource_id"], name: "index_api_actions_on_api_resource_id"
+  end
+
   create_table "api_clients", force: :cascade do |t|
     t.bigint "api_namespace_id", null: false
     t.string "slug", null: false
@@ -114,6 +138,19 @@ ActiveRecord::Schema.define(version: 2021_08_15_214536) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["api_namespace_id"], name: "index_api_clients_on_api_namespace_id"
     t.index ["bearer_token"], name: "index_api_clients_on_bearer_token"
+  end
+
+  create_table "api_forms", force: :cascade do |t|
+    t.jsonb "properties"
+    t.bigint "api_namespace_id", null: false
+    t.string "success_message"
+    t.string "failure_message"
+    t.string "submit_button_label", default: "Submit"
+    t.string "title"
+    t.boolean "show_recaptcha", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["api_namespace_id"], name: "index_api_forms_on_api_namespace_id"
   end
 
   create_table "api_namespaces", force: :cascade do |t|
@@ -135,32 +172,6 @@ ActiveRecord::Schema.define(version: 2021_08_15_214536) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["api_namespace_id"], name: "index_api_resources_on_api_namespace_id"
     t.index ["properties"], name: "index_api_resources_on_properties", opclass: :jsonb_path_ops, using: :gin
-  end
-
-  create_table "call_to_action_responses", force: :cascade do |t|
-    t.bigint "call_to_action_id", null: false
-    t.jsonb "properties"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["call_to_action_id"], name: "index_call_to_action_responses_on_call_to_action_id"
-  end
-
-  create_table "call_to_actions", force: :cascade do |t|
-    t.string "title", null: false
-    t.string "cta_type", default: "contact"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.string "success_message", default: "Thank you for your inquiry!"
-    t.string "failure_message", default: "Some fields were invalid, please double check the recapcha and try again"
-    t.string "name_label", default: "Name"
-    t.string "name_placeholder", default: "John AppleSeed"
-    t.string "email_label", default: "Email Address"
-    t.string "email_placeholder", default: "john@apple.seed"
-    t.string "phone_placeholder", default: "+1123456789"
-    t.string "phone_label", default: "Phone Number"
-    t.string "message_label", default: "Message"
-    t.string "message_placeholder", default: "Your message here"
-    t.string "submit_button_label", default: "Submit"
   end
 
   create_table "comfy_blog_posts", force: :cascade do |t|
@@ -250,7 +261,8 @@ ActiveRecord::Schema.define(version: 2021_08_15_214536) do
     t.boolean "is_published", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "is_restricted"
+    t.boolean "is_restricted", default: false
+    t.text "preview_content"
     t.index ["is_published"], name: "index_comfy_cms_pages_on_is_published"
     t.index ["parent_id", "position"], name: "index_comfy_cms_pages_on_parent_id_and_position"
     t.index ["site_id", "full_path"], name: "index_comfy_cms_pages_on_site_id_and_full_path"
@@ -378,6 +390,17 @@ ActiveRecord::Schema.define(version: 2021_08_15_214536) do
     t.index ["message_thread_id"], name: "index_messages_on_message_thread_id"
   end
 
+  create_table "non_primitive_properties", force: :cascade do |t|
+    t.string "label"
+    t.integer "field_type", default: 0
+    t.bigint "api_resource_id"
+    t.bigint "api_namespace_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["api_namespace_id"], name: "index_non_primitive_properties_on_api_namespace_id"
+    t.index ["api_resource_id"], name: "index_non_primitive_properties_on_api_resource_id"
+  end
+
   create_table "subdomain_requests", force: :cascade do |t|
     t.string "subdomain_name"
     t.string "email"
@@ -411,7 +434,9 @@ ActiveRecord::Schema.define(version: 2021_08_15_214536) do
     t.boolean "blog_enabled", default: true
     t.boolean "allow_user_self_signup", default: true
     t.boolean "forum_is_private", default: false
-    t.string "purge_visits_every", default: "3.months"
+    t.string "purge_visits_every", default: "never"
+    t.string "analytics_report_frequency", default: "never"
+    t.datetime "analytics_report_last_sent"
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
     t.index ["name"], name: "index_subdomains_on_name"
   end
@@ -452,6 +477,8 @@ ActiveRecord::Schema.define(version: 2021_08_15_214536) do
     t.string "name"
     t.boolean "moderator"
     t.boolean "can_view_restricted_pages"
+    t.boolean "deliver_analytics_report", default: false
+    t.boolean "can_manage_api", default: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
@@ -463,9 +490,11 @@ ActiveRecord::Schema.define(version: 2021_08_15_214536) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "api_actions", "api_namespaces"
+  add_foreign_key "api_actions", "api_resources"
   add_foreign_key "api_clients", "api_namespaces"
+  add_foreign_key "api_forms", "api_namespaces"
   add_foreign_key "api_resources", "api_namespaces"
-  add_foreign_key "call_to_action_responses", "call_to_actions"
   add_foreign_key "forum_posts", "forum_threads"
   add_foreign_key "forum_posts", "users"
   add_foreign_key "forum_subscriptions", "forum_threads"
@@ -473,4 +502,6 @@ ActiveRecord::Schema.define(version: 2021_08_15_214536) do
   add_foreign_key "forum_threads", "forum_categories"
   add_foreign_key "forum_threads", "users"
   add_foreign_key "messages", "message_threads"
+  add_foreign_key "non_primitive_properties", "api_namespaces"
+  add_foreign_key "non_primitive_properties", "api_resources"
 end
