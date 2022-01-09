@@ -50,20 +50,23 @@
                   .form-group.col-12
                     = a.label :prepopulate, 'Prepopulate:', class: 'mr-4'
                     = a.check_box :prepopulate, checked: properties[key]["prepopulate"] == '1'
-                - if value.class.to_s == 'String'
+                - if value.class.to_s == 'String' || value.class.to_s == 'Integer' 
                   .form-group.col-12
                     = a.label :field_type, 'Field type', class: 'mr-4'
                     = a.select :field_type, options_for_select(['input', 'textarea'], properties[key]["field_type"] || 'input'), {}, {class: 'form-control' }
                   .form-group.col-12
                     = a.label :type_validation, 'Type validation', class: 'mr-4'
-                    = a.select :type_validation, options_for_select(ApiForm::INPUT_TYPE, properties[key]["type_validation"] || 'text'), {}, {class: 'form-control', onchange: "toggleRegex(this , '#{key}_regex')" }
-                  .form-group.col-12{style: "#{'display: none' unless properties[key]["type_validation"] == 'REGEX pattern' }", id: "#{key}_regex"}
+                    = a.select :type_validation, options_for_select(ApiForm::INPUT_TYPE_MAPPING, properties[key]["type_validation"] || 'text'), {}, {class: 'form-control', onchange: "toggleRegex(this , '#{key}_regex')" }
+                  .form-group.col-12{style: "#{'display: none' unless properties[key]["type_validation"] == ApiForm::INPUT_TYPE_MAPPING[:regex_pattern] }", id: "#{key}_regex"}
                     = a.label :pattern, 'REGEX Pattern', class: 'mr-4'
                     = a.text_field :pattern, class: 'form-control', value: properties[key]["pattern"], placeholder: '[A-Za-z]{3}'
                     .mt-2.form-control-sm.pl-0
                       Regex editor:
                       = link_to 'Rubular', "https://rubular.com/", {target: '_blank'}
                 - if value.class.to_s == 'Array'
+                  .form-group.col-12
+                    = a.label :input_type, 'Input Type:', class: 'mr-4'
+                    = a.select :input_type, options_for_select(['select', 'radio'], properties[key]["input_type"]), {}, {class: "form-control"}
                   .form-group.col-12
                     = a.label :select_type, 'Select Type:', class: 'mr-4'
                     = a.select :select_type, options_for_select(['single', 'multi'], properties[key]["select_type"]), {}, {class: "form-control", onchange: "toggleOptionField(this, '#{key}')"}
@@ -133,7 +136,7 @@
 
   function toggleRegex(select, regexFieldId) {
     var type = $(select).val();
-    if (type === 'REGEX pattern') {
+    if (type === "#{ApiForm::INPUT_TYPE_MAPPING[:regex_pattern]}") {
       $('#' + regexFieldId).show();
     } else {
       $('#' + regexFieldId).hide();

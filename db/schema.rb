@@ -123,6 +123,7 @@ ActiveRecord::Schema.define(version: 2021_11_17_020948) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.jsonb "custom_headers"
+    t.string "http_method"
     t.index ["api_namespace_id"], name: "index_api_actions_on_api_namespace_id"
     t.index ["api_resource_id"], name: "index_api_actions_on_api_resource_id"
   end

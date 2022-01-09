@@ -60,4 +60,99 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       end
     end
   end
+
+  test 'should allow #create when recaptcha is enabled and recaptcha is verified' do
+    @api_namespace.api_form.update(show_recaptcha: true)
+    payload = {
+      data: {
+          properties: {
+            first_name: 'Don',
+            last_name: 'Restarone'
+          }
+      }
+    }
+    assert_difference "@api_namespace.api_resources.count", +1 do
+      post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
+      assert_response :redirect
+    end
+  end
+
+  test 'should not allow #create when recaptcha is enabled and recaptcha verification failed' do
+    @api_namespace.api_form.update(show_recaptcha: true)
+    payload = {
+      data: {
+          properties: {
+            first_name: 'Don',
+            last_name: 'Restarone'
+          }
+      }
+    }
+    # Recaptcha is disabled for test env by deafult
+    Recaptcha.configuration.skip_verify_env.delete("test")
+    assert_difference "@api_namespace.api_resources.count", +0 do
+      post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
+      assert_response :redirect
+    end
+
+    Recaptcha.configuration.skip_verify_env.push("test")
+  end
+
+
+  test 'should not allow #create if required properties is missing' do
+    @api_namespace.api_form.update(properties: { 'name': {'label': 'Test', 'placeholder': 'Test', 'field_type': 'input', 'required': '1' }})
+    payload = {
+      data: {
+          properties: {
+            name: '',
+          }
+      }
+    }
+    assert_no_difference "@api_namespace.api_resources.count" do
+      post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
+    end
+  end
+
+  test 'should allow #create when input type is radio button with single select' do
+    api_namespace = api_namespaces(:array_namespace)
+    payload = {
+      data: {
+          properties: {
+            name: 'Yes',
+          }
+      }
+    }
+    assert_difference "api_namespace.api_resources.count", +1 do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+  end
+
+  test 'should allow #create when input type is radio button with multi select' do
+    api_namespace = api_namespaces(:array_namespace)
+    api_namespace.api_form.update(properties: { 'name': {'label': 'name', 'placeholder': 'Test', 'input_type': 'radio', 'select_type': 'single' }})
+    payload = {
+      data: {
+          properties: {
+            name: ['Yes', 'No'],
+          }
+      }
+    }
+    assert_difference "api_namespace.api_resources.count", +1 do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+  end
+
+  test 'should allow #create when input type is tel' do
+    api_namespace = api_namespaces(:one)
+    api_namespace.api_form.update(properties: { 'name': {'label': 'name', 'placeholder': 'Test', 'type_validation': 'tel'}})
+    payload = {
+      data: {
+          properties: {
+            name: 123,
+          }
+      }
+    }
+    assert_difference "api_namespace.api_resources.count", +1 do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+  end
 end

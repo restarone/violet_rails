@@ -8,7 +8,7 @@ gem 'rails', '~> 6.1.3', '>= 6.1.3.1'
 # Use postgresql as the database for Active Record
 gem 'pg', '~> 1.1'
 # Use Puma as the app server
-gem 'puma', '~> 5.0'
+gem 'puma', '~> 5.3'
 # Use SCSS for stylesheets
 gem 'sass-rails', '>= 6'
 # Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
@@ -29,7 +29,7 @@ gem 'ros-apartment', require: 'apartment'
 gem 'ros-apartment-sidekiq', require: 'apartment-sidekiq'
 gem 'apartment-activejob'
 gem 'devise'
-gem "comfortable_mexican_sofa",git: 'https://github.com/restarone/comfortable-mexican-sofa', tag: '3.2'
+gem "comfortable_mexican_sofa",git: 'https://github.com/restarone/comfortable-mexican-sofa', tag: '3.3'
 gem "comfy_blog", git: 'https://github.com/restarone/comfy-blog', branch: 'master'
 gem 'simple_discussion', git: 'https://github.com/restarone/simple_discussion', branch: 'master'
 gem 'gravatar_image_tag'

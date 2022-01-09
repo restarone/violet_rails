@@ -32,6 +32,9 @@
         = label_tag 'Request Url'
         = text_field_tag "api_namespace[#{type}_attributes][#{index}][request_url]", resource.request_url, { class: "form-control form-control-sm" }
       .form-group
+        = label_tag 'HTTP method'
+        = select_tag "api_namespace[#{type}_attributes][#{index}][http_method]", options_for_select(ApiAction::HTTP_METHODS, resource.http_method), { class: "form-control form-control-sm"}
+      .form-group
         = label_tag 'Request body'
         .js-jsoneditor{id: "payload_mapping_#{type}_#{index}-editor", 'data-field-id': "api_namespace_#{type}_attributes_#{index}_payload_mapping"}
         = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][payload_mapping]", resource.payload_mapping

@@ -12,10 +12,14 @@ module ApiFormsHelper
   def map_form_field(form, key, value, form_properties)
     case value.class.to_s
     when 'Array'
-      if form_properties[key]['select_type'] == 'multi' || !value.present?
-        form.select key, options_for_select(value), { multiple: true, include_blank: true}, {class: "form-control array_select", name: "data[properties][#{key}][]", required: form_properties.dig(key, 'required') == '1', default_value: form_properties.dig(key, 'prepopulated_options').present? ? form_properties.dig(key, 'prepopulated_options').to_s : "[]" , placeholder: form_properties.dig(key, 'placeholder'), 'data-tags': !value.present? }
+      if form_properties[key]['input_type'] == 'radio'
+        render partial: 'comfy/admin/api_forms/radio', locals: {form: form, key: key, value: value, form_properties: form_properties}
       else
-        form.select key, options_for_select(value, form_properties[key]['prepopulated_options_single']), { include_blank: form_properties[key]['placeholder'] }, {class: "form-control", name: "data[properties][#{key}", required: form_properties[key]['required'] == '1' }
+        if form_properties[key]['select_type'] == 'multi' || !value.present?
+          form.select key, options_for_select(value), { multiple: true, include_blank: true}, {class: "form-control array_select", name: "data[properties][#{key}][]", required: form_properties.dig(key, 'required') == '1', default_value: form_properties.dig(key, 'prepopulated_options').present? ? form_properties.dig(key, 'prepopulated_options').to_s : "[]" , placeholder: form_properties.dig(key, 'placeholder'), 'data-tags': !value.present? }
+        else
+          form.select key, options_for_select(value, form_properties[key]['prepopulated_options_single']), { include_blank: form_properties[key]['placeholder'] }, {class: "form-control", name: "data[properties][#{key}", required: form_properties[key]['required'] == '1' }
+        end
       end
     when 'TrueClass', 'FalseClass'
       options = {required: form_properties[key]['required'] == '1', type: 'checkbox'}
@@ -26,12 +30,9 @@ module ApiFormsHelper
       render partial: 'comfy/admin/api_forms/jsoneditor', locals: {form: form, key: key, value: value} 
     else
       options = { placeholder: value, required: form_properties[key]['required'] == '1', class: 'form-control'}
-      options[:type] = map_input_type(form_properties[key]['type_validation']) if form_properties[key]['type_validation'].present?
-      options[:pattern] = form_properties[key]['pattern'] if form_properties[key]['type_validation'] == 'REGEX pattern' && form_properties[key]['pattern'].present?
+      options[:type] = form_properties[key]['type_validation'] if form_properties[key]['type_validation'].present?
+      options[:pattern] = form_properties[key]['pattern'] if form_properties[key]['type_validation'] == ApiForm::INPUT_TYPE_MAPPING[:regex_pattern] && form_properties[key]['pattern'].present?
       options[:value] = value if form_properties[key]['prepopulate'] == '1'
-      if value.class.to_s == 'Integer'
-        options[:type] = 'number'
-      end
       if form_properties[key]['field_type'] == 'textarea'
         form.text_area key, options
       else
@@ -67,19 +68,6 @@ module ApiFormsHelper
       'Json input'
     else
       'String'
-    end
-  end
-
-  def map_input_type(type)
-    case type
-    when 'free text'
-      'text'
-    when 'number'
-      'tel'
-    when 'email', 'url', 'date', 'datetime-local'
-      type
-    else
-      'text'
     end
   end
 end
