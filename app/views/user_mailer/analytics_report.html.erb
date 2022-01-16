@@ -41,41 +41,6 @@
   <main>
     <h1>Analytics Report</h1>
     <h3>For period starting from <%= @report[:start_date] %> to <%= @report[:end_date]%></h3>
-    <div>
-      <h2>
-        Call to Actions (deprecated)
-      </h2>
-
-      <table class="styled-table">
-        <thead>
-          <tr>
-            <th>Call to Actions</th>
-            <th>Responses</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% response_total=0 %>
-            <% @report[:ctas].each do |cta|%>
-              <tr>
-                <td><%= link_to cta[:title], call_to_action_url(cta[:id]) %></td>
-                <td>
-                  <%= cta[:response_count] %>
-                    <% response_total=+ cta[:response_count] %>
-                </td>
-              </tr>
-              <%end%>
-        </tbody>
-
-        <tfoot>
-          <tr>
-            <td><strong>Total</strong></td>
-            <td>
-              <%= response_total %>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
 
     <% @report[:visits].each do |visited_by, response|%>
       <div>

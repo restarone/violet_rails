@@ -39,11 +39,6 @@ Rails.application.routes.draw do
       post 'invite'
     end
   end
-  resources :call_to_actions, controller: 'comfy/admin/call_to_actions' do
-    member do
-      post 'respond', to: 'call_to_action_responses#respond'
-    end
-  end
 
   # api admin
   resources :api_namespaces, controller: 'comfy/admin/api_namespaces' do

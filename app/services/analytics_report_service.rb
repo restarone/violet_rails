@@ -16,24 +16,10 @@ class AnalyticsReportService
     {
       start_date: report_since.to_date,
       end_date: Date.today,
-      ctas: cta_json,
       visits: visits_json,
       users: users_json,
       macros: macros_json
     }
-  end
-
-  def cta_json
-    ctas = []
-    CallToAction.all.each do |cta|
-      ctas << {
-        title: cta.title,
-        id: cta.id,
-        response_count: cta.call_to_action_responses.where('created_at > ?', report_since).count
-      }
-    end
-
-    ctas.sort_by {|cta| cta[:response_count]}.reverse!
   end
 
   def visits_json

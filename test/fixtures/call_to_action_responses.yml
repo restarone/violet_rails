@@ -1,6 +1,0 @@
-one:
-  call_to_action: one
-
-two:
-  call_to_action: one
-  created_at: <%= 2.weeks.ago %>
