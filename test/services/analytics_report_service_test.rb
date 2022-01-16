@@ -9,8 +9,6 @@ class AnalyticsReportServiceTest  < ActiveSupport::TestCase
   test "returns expected response" do
     report = AnalyticsReportService.new(@subdomain).call
  
-    assert_equal report[:ctas].first[:response_count], 1
-    assert_equal report[:ctas].last[:response_count], 0
     assert_equal report[:visits][:country]["canada"], 1
     assert_equal report[:visits][:city]["toronto"], 1
     assert_equal report[:visits][:region]["onterio"], 1
