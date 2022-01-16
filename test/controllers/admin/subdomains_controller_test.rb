@@ -134,12 +134,8 @@ class Admin::SubdomainsControllerTest < ActionDispatch::IntegrationTest
           assert_difference "Subdomain.count", +1 do
             post admin_subdomains_url, params: payload
             Apartment::Tenant.switch name do
-              assert User.first
-              assert User.first.can_manage_web
-              assert User.first.can_manage_email
-              assert User.first.can_manage_users
-              assert User.first.can_manage_blog
-              assert User.first.can_manage_api
+              user = User.first
+              User::FULL_PERMISSIONS.keys.each{|k, v| assert user.send(k) }
             end
           end
         end
