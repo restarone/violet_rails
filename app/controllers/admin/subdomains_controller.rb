@@ -10,7 +10,7 @@ class Admin::SubdomainsController < Admin::BaseController
   def create
     subdomain = Subdomain.new(subdomain_params)
     if subdomain.save
-      invite_current_user_to_subdomain(subdomain)
+      invite_current_user_as_super_admin_to_subdomain(subdomain)
       flash.notice = "Subdomain: #{subdomain.name} created!"
       redirect_to admin_subdomains_path
     else
@@ -44,6 +44,18 @@ class Admin::SubdomainsController < Admin::BaseController
   def invite_current_user_to_subdomain(subdomain)
     Apartment::Tenant.switch subdomain.name do
       User.invite!(email: current_user.email)
+    end
+  end
+
+  def invite_current_user_as_super_admin_to_subdomain(subdomain)
+    Apartment::Tenant.switch subdomain.name do
+      User.invite!(
+      email: current_user.email, 
+      can_manage_web: true,
+      can_manage_email: true,
+      can_manage_users: true,
+      can_manage_blog: true,
+      can_manage_api: true)
     end
   end
 
