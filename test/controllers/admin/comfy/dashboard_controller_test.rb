@@ -4,7 +4,6 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
     @user.update(can_manage_web: true)
-    @call_to_action = call_to_actions(:one)
   end
 
   test "should deny #dashboard if not signed in" do
