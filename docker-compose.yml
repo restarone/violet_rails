@@ -7,10 +7,10 @@ volumes:
   gem_cache:
   shared_data:
 services:
-  solutions_redis:
+  tikcrm_redis:
     image: 'redis:4.0-alpine'
     command: redis-server
-    container_name: solutions_redis
+    container_name: tikcrm_redis
     networks:
       - development
       - test
@@ -18,9 +18,9 @@ services:
       - 'shared_data:/var/shared/redis'
     ports:
       - 6380:6379
-  solutions_db:
+  tikcrm_db:
     image: postgres:12.5-alpine
-    container_name: solutions_db
+    container_name: tikcrm_db
     volumes:
       - db_data:/var/lib/postgresql/data
       - shared_data:/var/shared
@@ -32,12 +32,12 @@ services:
       POSTGRES_PASSWORD: password
     ports:
       - 6000:5432
-  solutions_sidekiq:
+  tikcrm_sidekiq:
     depends_on:
-      - solutions_db
-      - solutions_redis
-    image: violet_rails_solutions_app
-    container_name: solutions_sidekiq
+      - tikcrm_db
+      - tikcrm_redis
+    image: tikcrm_server_app
+    container_name: tikcrm_sidekiq
     command: sidekiq -c 1
     volumes:
       - .:/var/app
@@ -49,8 +49,8 @@ services:
       - test
     ports:
       - 5251:5251
-  mailcatcher:
-    container_name: mailcatcher
+  tikcrm_mailcatcher:
+    container_name: tikcrm_mailcatcher
     image: yappabe/mailcatcher
     networks:
       - development
@@ -58,11 +58,11 @@ services:
     ports:
       - 1025:1025
       - 1080:1080
-  solutions_app:
+  app:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: solutions_app
+    container_name: app
     volumes:
       - .:/var/app
       - shared_data:/var/shared
@@ -79,11 +79,11 @@ services:
     environment:
       RAILS_ENV: development
     depends_on:
-      - solutions_db
-      - solutions_redis
-  solutions_test:
-    image: violet_rails_solutions_app
-    container_name: solutions_test
+      - tikcrm_db
+      - tikcrm_redis
+  test:
+    image: tikcrm_server_app
+    container_name: tikcrm_test
     volumes:
       - .:/var/app
       - shared_data:/var/shared
@@ -100,5 +100,5 @@ services:
     environment:
       RAILS_ENV: test
     depends_on:
-      - solutions_db
+      - tikcrm_db
       
