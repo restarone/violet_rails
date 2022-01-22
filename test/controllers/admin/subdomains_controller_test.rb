@@ -120,6 +120,30 @@ class Admin::SubdomainsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test 'allows #create if global admin & invites them to the subdomain with permission to manage everything' do
+    sign_in(@user)
+    name = 'foobar'
+    assert_difference "Subdomain.all.size", +1 do
+      payload = {
+        subdomain: {
+          name: name
+        }
+      }
+      perform_enqueued_jobs do
+        assert_changes "Devise::Mailer.deliveries.size" do
+          assert_difference "Subdomain.count", +1 do
+            post admin_subdomains_url, params: payload
+            Apartment::Tenant.switch name do
+              user = User.first
+              User::FULL_PERMISSIONS.keys.each{|k, v| assert user.send(k) }
+            end
+          end
+        end
+      end
+      
+    end
+  end
+
   test 'denies #destroy if not global admin' do
     @user.update(global_admin: false)
     sign_in(@user)

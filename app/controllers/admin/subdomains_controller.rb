@@ -43,7 +43,7 @@ class Admin::SubdomainsController < Admin::BaseController
 
   def invite_current_user_to_subdomain(subdomain)
     Apartment::Tenant.switch subdomain.name do
-      User.invite!(email: current_user.email)
+      User.invite!(User::FULL_PERMISSIONS.merge(email: current_user.email))
     end
   end
 
