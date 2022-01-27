@@ -170,7 +170,7 @@ GEM
     comfy_bootstrap_form (4.0.9)
       rails (>= 5.0.0)
     concurrent-ruby (1.1.8)
-    connection_pool (2.2.4)
+    connection_pool (2.2.5)
     crack (0.4.5)
       rexml
     crass (1.0.6)
@@ -343,7 +343,7 @@ GEM
       ffi (~> 1.0)
     recaptcha (5.8.0)
       json
-    redis (4.2.5)
+    redis (4.5.1)
     regexp_parser (2.1.1)
     responders (3.0.1)
       actionpack (>= 5.0)
@@ -385,7 +385,7 @@ GEM
       rubyzip (>= 1.2.2)
     semantic_range (3.0.0)
     sexp_processor (4.16.0)
-    sidekiq (6.2.1)
+    sidekiq (6.4.0)
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
       redis (>= 4.2.0)
