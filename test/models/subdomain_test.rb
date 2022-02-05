@@ -90,4 +90,13 @@ class SubdomainTest < ActiveSupport::TestCase
       end
     end
   end
+
+  test 'creates proper hostname' do
+    Apartment::Tenant.switch('public') { Comfy::Cms::Site.destroy_all }
+    Subdomain.unsafe_bootstrap_www_subdomain
+    Apartment::Tenant.switch('public') do
+      assert_equal Comfy::Cms::Site.last.hostname, "www.#{ENV['APP_HOST']}"
+      assert_equal Comfy::Cms::Page.last.url, "//www.#{ENV['APP_HOST']}/"
+    end
+  end
 end
