@@ -91,7 +91,7 @@ class SubdomainTest < ActiveSupport::TestCase
     end
   end
 
-  test 'creates valid hostname' do
+  test 'creates proper hostname' do
     Apartment::Tenant.switch('public') { Comfy::Cms::Site.destroy_all }
     Subdomain.unsafe_bootstrap_www_subdomain
     Apartment::Tenant.switch('public') do
