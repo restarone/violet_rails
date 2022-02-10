@@ -56,5 +56,5 @@ jobs:
       - uses: miloserdow/capistrano-deploy@master
         with:
           target: ${{ needs.build.outputs.env_name }} # Defines the environment that will be used for the deployment
-          enc_rsa_key_val: ${{ secrets.ENC_RSA_KEY_VAL }}
+          enc_rsa_key_val: ${{ secrets.DEPLOY_ID_RSA_ENC }}
           deploy_key: ${{ secrets.DEPLOY_ENC_KEY }}
