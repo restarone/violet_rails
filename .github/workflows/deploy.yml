@@ -1,0 +1,60 @@
+name: Deploy with Capistrano
+on:
+  push:
+    branches: [ rc, master, main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Choose Environment
+        id: branch_check
+        run: |
+          echo "Running on branch ${{ github.ref }}"
+          if [ "${{ github.ref }}" = "refs/heads/master" ]; then
+            echo "::set-output name=env_name:production"
+          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "::set-output name=env_name:production"
+          elif [ "${{ github.ref }}" = "refs/heads/rc" ]; then
+            echo "::set-output name=env_name::staging"
+          fi         
+    outputs:
+      env_name: ${{ steps.branch_check.outputs.env_name }}
+
+  deploy:
+    needs: build 
+    runs-on: ubuntu-18.04
+    environment:
+      name: ${{ needs.build.outputs.env_name }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Rbenv
+        run: |
+          sudo git clone https://github.com/rbenv/rbenv.git /home/runner/.rbenv
+          sudo apt-get update
+          sudo apt-get install -y libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm5 libgdbm-dev
+          sudo git clone https://github.com/rbenv/ruby-build.git /home/runner/.rbenv/plugins/ruby-build
+          sudo chown -R runner /home/runner/.rbenv
+          echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> $GITHUB_PATH
+          source $GITHUB_PATH
+          eval "$(rbenv init -)"
+          rbenv install -s `cat .ruby-version`
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6.6
+          bundler-cache: true 
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+      - uses: miloserdow/capistrano-deploy@master
+        with:
+          target: ${{ needs.build.outputs.env_name }} # Defines the environment that will be used for the deployment
+          enc_rsa_key_val: ${{ secrets.DEPLOY_ID_RSA_ENC }}
+          deploy_key: ${{ secrets.DEPLOY_ENC_KEY }}
