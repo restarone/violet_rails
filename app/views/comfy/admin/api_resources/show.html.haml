@@ -6,10 +6,8 @@
 %p
   %b Resource Id:
   = @api_resource.id
-%p
-  %b Properties:
-  = @api_resource.properties
-
+= render 'comfy/admin/api_namespaces/editor', {api_resource: @api_resource}
+= render 'comfy/admin/api_namespaces/init_editor', {read_only: true}
 .mb-3
   - object_fields(@api_resource.api_namespace.properties).each do |prop|
     .d-flex.mb-3
