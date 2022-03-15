@@ -1,0 +1,15 @@
+- non_primitive_properties = api_resource.persisted? ? api_resource.non_primitive_properties : api_resource.api_namespace.non_primitive_properties
+#jsoneditor  
+  = hidden_field_tag :api_namespace_properties, api_resource.api_namespace.properties
+  = hidden_field_tag "api_resource[properties]", api_resource.properties ? api_resource.properties.to_json : nil
+  - non_primitive_properties.each_with_index do |property, index|
+    = fields_for "api_resource[non_primitive_properties_attributes][#{index}]", property do |ff|
+      .form-group
+        = label_tag property.label
+        .my-2
+          - if property.file?
+            = show_file(property.attachment)
+        = map_non_primitive_data_type(ff, property.field_type, form_properties, true)
+      = ff.hidden_field :field_type
+      = ff.hidden_field :label
+      = ff.hidden_field :id ,{ value: property.id } if property.id

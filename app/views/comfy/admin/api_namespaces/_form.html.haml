@@ -35,7 +35,7 @@
     = f.submit 'Save'
 
 
-= render 'init_editor'
+= render 'init_editor', {read_only: false}
 
 :javascript
   function manageEvent(index) {
