@@ -1,0 +1,15 @@
+= link_to 'Edit', edit_api_namespace_external_api_client_path(@api_namespace)
+\|
+= link_to 'Back', api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)
+
+%p#notice= notice
+
+%p
+  %b Name:
+  = @external_api_client.label
+%p
+  %b Properties:
+#jsoneditor
+= hidden_field_tag :api_namespace_properties, @external_api_client.metadata
+
+= render 'comfy/admin/api_namespaces/init_editor'
