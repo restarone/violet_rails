@@ -1,6 +1,6 @@
 class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseController
     before_action :ensure_authority_to_manage_web
-    before_action :set_external_api_client, only: %i[ show edit update destroy ]
+    before_action :set_external_api_client, only: %i[ show edit update destroy start stop clear_errors clear_state]
     before_action :set_api_namespace
   
     # GET /api_clients or /api_clients.json
@@ -56,7 +56,26 @@ class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseContro
         format.json { head :no_content }
       end
     end
-  
+
+    def start
+      @external_api_client.run
+      redirect_back(fallback_location: api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id))
+    end
+
+    def stop
+      @external_api_client.stop
+      redirect_back(fallback_location: api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id))
+    end
+
+    def clear_errors
+      @external_api_client.clear_error_data
+      redirect_back(fallback_location: api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id))
+    end
+
+    def clear_state
+      @external_api_client.clear_state_data
+      redirect_back(fallback_location: api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id))
+    end
     private
       # Use callbacks to share common setup or constraints between actions.
       def set_api_namespace

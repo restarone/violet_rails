@@ -61,6 +61,24 @@ class ExternalApiClient < ApplicationRecord
     return external_api_interface_supervisor
   end
 
+  def stop
+    self.update(status: ExternalApiClient::STATUSES[:stopped])
+  end
+
+  def clear_error_data
+    self.update(
+      error_message: nil,
+      error_metadata: nil,
+      retries: 0
+    )
+  end
+
+  def clear_state_data
+    self.update(
+      state_metadata: nil,
+    )
+  end
+
   def get_metadata
     JSON.parse(self.reload.metadata).deep_symbolize_keys
   end

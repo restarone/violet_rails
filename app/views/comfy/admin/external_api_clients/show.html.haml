@@ -13,12 +13,18 @@
 %p
   %b status:
   = @external_api_client.status
+  - if @external_api_client.status == ExternalApiClient::STATUSES[:running]
+    = link_to "Stop", stop_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id, id: @external_api_client.id), data: {confirm:"Are you sure? Stopping the client will stop data ingestion"}
+  - else
+    = link_to "Start", start_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id, id: @external_api_client.id), data: {confirm:"Are you sure? Starting this client will write to #{@external_api_client.api_namespace.slug}"}
 %p
   %b enabled:
   = @external_api_client.enabled
 %p
   %b error message:
   = @external_api_client.error_message
+  - if @external_api_client.error_message
+    = link_to "Clear Errors", clear_errors_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id, id: @external_api_client.id), data: {confirm:"Are you sure? Please note down the error message and error state before clearing"}
 %p
   %b drive strategy:
   = @external_api_client.drive_strategy
@@ -45,9 +51,13 @@
 %p
   %b State Metadata:
   = @external_api_client.state_metadata
+  - if @external_api_client.error_metadata
+    = link_to "Clear State", clear_state_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id, id: @external_api_client.id), data: {confirm:"Are you sure? Supervisor state is generated automatically and cannot be recovered"}
 %p
   %b Error Metadata:
   = @external_api_client.error_metadata
+  - if @external_api_client.error_metadata
+    = link_to "Clear Errors", clear_errors_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id, id: @external_api_client.id), data: {confirm:"Are you sure? Please note down the error message and error state before clearing"}
 %p
   %b Metadata:
 #jsoneditor
