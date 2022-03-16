@@ -24,12 +24,14 @@ class ExternalApiClient < ApplicationRecord
 
   def run
     return false if !self.enabled || self.status == ExternalApiClient::STATUSES[:error]
+    external_api_interface = ExternalApiClient::CLIENT_INTERFACE_MAPPING[self.slug.to_sym].constantize
+    external_api_interface_supervisor = external_api_interface.new(external_api_client: self)
     retries = nil
     begin
       self.reload
       retries = self.retries
       self.update(status: ExternalApiClient::STATUSES[:running])
-      ExternalApiClient::CLIENT_INTERFACE_MAPPING[self.slug.to_sym].constantize.start(self)
+      external_api_interface_supervisor.start(self)
     rescue StandardError => e
       self.update(error_message: e.message) 
       if retries <= self.max_retries
@@ -41,13 +43,17 @@ class ExternalApiClient < ApplicationRecord
         sleep sleep_for_seconds
         retry
       else
+        # client is considered dead at this point, fire off a flare
         self.update(
           error_message: e.message,
           status: ExternalApiClient::STATUSES[:error]
         )
-        ExternalApiClient::CLIENT_INTERFACE_MAPPING[self.slug.to_sym].constantize.log(self)
+        external_api_interface_supervisor.log
       end
     end
-    
+  end
+
+  def get_metadata
+    JSON.parse(self.metadata).deep_symbolize_keys
   end
 end

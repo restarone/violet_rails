@@ -1,4 +1,3 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 modmed:
   api_namespace: one
@@ -7,6 +6,12 @@ modmed:
   enabled: true
   metadata:  >
     {
-      "x-api-key": "x-api-key-foo",
+      "api_key": "x-api-key-foo",
       "host": "host-foo",
+      "clinic_id": "dermpmsandbox277",
+      "grant_type": "password",
+      "username": "fhir_iRHGY",
+      "password": "icbBS6ecIk",
+      "auth_base_url": "https://stage.ema-api.com",
+      "bearer_token": "foo"
     }

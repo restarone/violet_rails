@@ -18,7 +18,7 @@ class ExternalApiClientTest < ActiveSupport::TestCase
     assert @external_api_client.retries < @external_api_client.max_retries
     assert @external_api_client.retry_in_seconds == 0
     error_message = "Gateway unavailable"
-    External::ApiClients::Modmed.stubs(:start).raises(StandardError, error_message)
+    External::ApiClients::Modmed.any_instance.stubs(:start).raises(StandardError, error_message)
     assert_changes "@external_api_client.status" do
       @external_api_client.run
     end
