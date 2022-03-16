@@ -317,6 +317,17 @@ ActiveRecord::Schema.define(version: 2022_03_15_185029) do
     t.bigint "api_namespace_id", null: false
     t.string "slug", null: false
     t.string "label", default: "data_source_identifier_here", null: false
+    t.string "status", default: "stopped", null: false
+    t.boolean "enabled", default: false
+    t.string "error_message"
+    t.string "drive_strategy", default: "on_demand", null: false
+    t.integer "max_requests_per_minute", default: 0, null: false
+    t.integer "current_requests_per_minute", default: 0, null: false
+    t.integer "max_workers", default: 0, null: false
+    t.integer "current_workers", default: 0, null: false
+    t.integer "retry_in_seconds", default: 0, null: false
+    t.jsonb "state_metadata"
+    t.jsonb "error_metadata"
     t.jsonb "metadata"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

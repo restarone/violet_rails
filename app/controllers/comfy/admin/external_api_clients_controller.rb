@@ -70,7 +70,19 @@ class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseContro
   
       # Only allow a list of trusted parameters through.
       def external_api_client_params
-        params.require(:external_api_client).permit(:api_namespace_id, :label, :metadata).merge({api_namespace_id: @api_namespace.id})
+        params
+          .require(:external_api_client)
+          .permit(
+            :api_namespace_id, 
+            :label, 
+            :metadata,
+            :enabled,
+            :drive_strategy,
+            :max_requests_per_minute,
+            :max_workers,
+          ).merge({
+            api_namespace_id: @api_namespace.id,
+          })
       end
   end
   
