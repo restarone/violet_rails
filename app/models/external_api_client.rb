@@ -11,6 +11,13 @@ class ExternalApiClient < ApplicationRecord
     cron: 'cron'
   }
 
+  CLIENTS = {
+    modmed: {
+      name: 'modmed',
+      api_namespace_prefix: 'modmed'
+    }
+  }
+
   CLIENT_INTERFACE_MAPPING = {
     modmed: 'External::ApiClients::Modmed'
   }
@@ -31,7 +38,7 @@ class ExternalApiClient < ApplicationRecord
       self.reload
       retries = self.retries
       self.update(status: ExternalApiClient::STATUSES[:running])
-      external_api_interface_supervisor.start(self)
+      external_api_interface_supervisor.start
     rescue StandardError => e
       self.update(error_message: e.message) 
       if retries <= self.max_retries
@@ -51,9 +58,14 @@ class ExternalApiClient < ApplicationRecord
         external_api_interface_supervisor.log
       end
     end
+    return external_api_interface_supervisor
   end
 
   def get_metadata
-    JSON.parse(self.metadata).deep_symbolize_keys
+    JSON.parse(self.reload.metadata).deep_symbolize_keys
+  end
+
+  def set_metadata(hash)
+    self.update(metadata: hash.to_json)
   end
 end
