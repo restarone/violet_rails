@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_03_15_185029) do
+ActiveRecord::Schema.define(version: 2022_03_16_145246) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -326,6 +326,8 @@ ActiveRecord::Schema.define(version: 2022_03_15_185029) do
     t.integer "max_workers", default: 0, null: false
     t.integer "current_workers", default: 0, null: false
     t.integer "retry_in_seconds", default: 0, null: false
+    t.integer "max_retries", default: 1, null: false
+    t.integer "retries", default: 0, null: false
     t.jsonb "state_metadata"
     t.jsonb "error_metadata"
     t.jsonb "metadata"

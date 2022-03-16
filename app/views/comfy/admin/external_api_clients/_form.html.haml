@@ -24,6 +24,9 @@
   .field
     = f.label :max_workers
     = f.number_field :max_workers
+  .field
+    = f.label :max_retries
+    = f.number_field :max_retries
 
   #jsoneditor
   = f.hidden_field :metadata
