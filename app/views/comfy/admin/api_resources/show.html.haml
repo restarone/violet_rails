@@ -7,7 +7,7 @@
   %b Resource Id:
   = @api_resource.id
 #jsoneditor
-= hidden_field_tag :api_namespace_properties, @api_resource.properties
+= hidden_field_tag :api_namespace_properties, @api_resource.properties.to_json
 = render 'comfy/admin/api_namespaces/init_editor'
 
 .mb-3
