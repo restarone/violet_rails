@@ -69,6 +69,7 @@ class ExternalApiClient < ApplicationRecord
     self.update(
       error_message: nil,
       error_metadata: nil,
+      status: ExternalApiClient::STATUSES[:stopped],
       retries: 0
     )
   end

@@ -1,8 +1,5 @@
 class CreateModmedExternalApiClient < ActiveRecord::Migration[6.1]
   def up
-    # Subdomain.all.pluck(name).each do |name|
-
-    # end
     api_namespace = ApiNamespace.find_by(slug: ExternalApiClient::CLIENTS[:modmed][:api_namespace_prefix])
     # check if modmed is not registered already
     modmed = ExternalApiClient.find_by(slug: ExternalApiClient::CLIENTS[:modmed][:name])
@@ -12,7 +9,9 @@ class CreateModmedExternalApiClient < ActiveRecord::Migration[6.1]
         name: ExternalApiClient::CLIENTS[:modmed][:api_namespace_prefix],
         slug: ExternalApiClient::CLIENTS[:modmed][:api_namespace_prefix],
         version: 1,
-        properties: {}.to_json
+        properties: {}.to_json,
+        requires_authentication: true,
+        has_form: true
       )
       # create modmed with dummy values
       ExternalApiClient.create!(
@@ -32,7 +31,8 @@ class CreateModmedExternalApiClient < ActiveRecord::Migration[6.1]
           username: 'fhir_iRHGY',
           password: 'icbBS6ecIk',
           auth_base_url: 'https://stage.ema-api.com',
-          bearer_token: 'foo'
+          bearer_token: 'foo',
+          base_url_generic: 'https://stage.ema-api.com/ema-dev/firm'
         }.to_json
       )
     end

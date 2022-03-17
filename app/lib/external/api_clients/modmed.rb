@@ -3,21 +3,105 @@
 # supervisor = modmed.run 
 # returns => External::ApiClients::Modmed instance so you can for eg:
 # supervisor.authenticate
+# supervisor.get_patients
 class External::ApiClients::Modmed
   def initialize(parameters)
     @external_api_client = parameters[:external_api_client]
     @metadata = @external_api_client.get_metadata
     @clinic_id = @metadata[:clinic_id]
     @auth_root = @metadata[:auth_base_url]
+    @base_url = @metadata[:base_url_generic]
+
+    @headers =  {
+      'Content-Type': 'application/json',
+      'x-api-key': @metadata[:api_key],
+      'Authorization': "Bearer #{@metadata[:bearer_token]}"
+    }
   end
 
   def start
-    self.reset_retries_after_success
+    authentication_event = self.authenticate
+    get_patients_event = self.get_patients
+    random_patient_id = get_patients_event[:entry].sample[:resource][:id]
+    get_patient_event = self.get_patient(random_patient_id)
+    get_patient_documents_event = self.get_patient_documents(random_patient_id)
+    get_patient_allergy_tolerance_event = self.get_patient_allergy_tolerance(random_patient_id)
+    get_patient_medication_statement_event = self.get_patient_medication_statement(random_patient_id)
+    # get_patient_service_request_event = self.get_clinic_patient_service_request(random_patient_id)
+
+    doc = {
+      get_patients: get_patients_event,
+      random_patient_id: random_patient_id,
+      get_patient_event: get_patient_event,
+      get_patient_documents_event: get_patient_documents_event,
+      get_patient_allergy_tolerance_event: get_patient_allergy_tolerance_event, 
+      get_patient_medication_statement_event: get_patient_medication_statement_event
+    }.to_json
+
+    if authentication_event && get_patients_event
+      self.reset_retries_after_success
+    end
+    ApiResource.create(api_namespace_id: @external_api_client.api_namespace.id,properties: doc)
     return true
   end
 
   def log
     return true
+  end
+
+  def get_patients
+    endpoint = "#{@base_url}/#{@clinic_id}/ema/fhir/v2/Patient"
+    response = HTTParty.get(endpoint, headers: @headers).body
+    return JSON.parse(response).deep_symbolize_keys
+  end
+
+  def get_patient(patient_id)
+    endpoint = "#{@base_url}/#{@clinic_id}/ema/fhir/v2/Patient/#{patient_id}"
+    response = HTTParty.get(endpoint, headers: @headers).body
+    return JSON.parse(response).deep_symbolize_keys
+  end
+
+  def get_patient_documents(patient_id)
+    # search documents in postman looks the same as this call but with an additional query parameter (_count)
+    endpoint = "#{@base_url}/#{@clinic_id}/ema/fhir/v2/DocumentReference?patient=#{patient_id}"
+    response = HTTParty.get(endpoint, headers: @headers).body
+    return JSON.parse(response).deep_symbolize_keys
+  end
+
+  def get_patient_allergy_tolerance(patient_id)
+    endpoint = "#{@base_url}/#{@clinic_id}/ema/fhir/v2/AllergyIntolerance?patient=#{patient_id}"
+    response = HTTParty.get(endpoint, headers: @headers).body
+    return JSON.parse(response).deep_symbolize_keys
+  end
+
+  def get_patient_medication_statement(patient_id)
+    endpoint = "#{@base_url}/#{@clinic_id}/ema/fhir/v2/MedicationStatement?patient=#{patient_id}"
+    response = HTTParty.get(endpoint, headers: @headers).body
+    return JSON.parse(response).deep_symbolize_keys
+  end
+
+  def get_clinic_patient_service_request(patient_id)
+    endpoint = "#{@base_url}/ema/fhir/v2/ServiceRequest?patient=#{patient_id}"
+    response = HTTParty.get(endpoint, headers: @headers).body
+    return JSON.parse(response).deep_symbolize_keys
+  end
+
+  def get_clinic_encounters
+    endpoint = "#{@base_url}/#{@clinic_id}/ema/fhir/v2/Encounter"
+    response = HTTParty.get(endpoint, headers: @headers).body
+    return JSON.parse(response).deep_symbolize_keys
+  end
+
+  def get_clinic_encounter_diagnostic_report(encounter_id)
+    endpoint = "#{@base_url}/ema/fhir/v2/DiagnosticReport?encounter=#{encounter_id}"
+    response = HTTParty.get(endpoint, headers: @headers).body
+    return JSON.parse(response).deep_symbolize_keys
+  end
+
+  def get_clinic_encounter_service_request(encounter_id)
+    endpoint = "#{@base_url}/ema/fhir/v2/ServiceRequest?encounter=#{encounter_id}"
+    response = HTTParty.get(endpoint, headers: @headers).body
+    return JSON.parse(response).deep_symbolize_keys
   end
 
   def authenticate
@@ -33,13 +117,18 @@ class External::ApiClients::Modmed
       body: URI.encode_www_form(payload), 
       headers: { 
         'Content-Type': 'application/x-www-form-urlencoded',
-        'x-api-key' => @metadata[:api_key]
+        'x-api-key': @metadata[:api_key]
       }
     ).body
     response_obj = JSON.parse(response).deep_symbolize_keys
     external_api_client_meta = @external_api_client.get_metadata
-    external_api_client_meta[:bearer_token] = response_obj[:access_token]
-    @external_api_client.set_metadata(external_api_client_meta)
+    if response_obj[:access_token]
+      external_api_client_meta[:bearer_token] = response_obj[:access_token]
+      @external_api_client.set_metadata(external_api_client_meta)
+      return true
+    else
+      raise StandardError.new "#authenticate: #{response_obj.to_s}"
+    end
   end
 
   def reset_retries_after_success
