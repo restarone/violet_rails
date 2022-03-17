@@ -1,0 +1,66 @@
+= link_to 'Edit', edit_api_namespace_external_api_client_path(@api_namespace)
+\|
+= link_to 'Back', api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)
+
+%p#notice= notice
+
+%p
+  %b Name:
+  = @external_api_client.label
+%p
+  %b slug:
+  = @external_api_client.slug
+%p
+  %b status:
+  = @external_api_client.status
+  - if @external_api_client.status == ExternalApiClient::STATUSES[:running]
+    = link_to "Stop", stop_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id, id: @external_api_client.id), data: {confirm:"Are you sure? Stopping the client will stop data ingestion"}
+  - else
+    = link_to "Start", start_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id, id: @external_api_client.id), data: {confirm:"Are you sure? Starting this client will write to #{@external_api_client.api_namespace.slug}"}
+%p
+  %b enabled:
+  = @external_api_client.enabled
+%p
+  %b error message:
+  = @external_api_client.error_message
+  - if @external_api_client.error_message
+    = link_to "Clear Errors", clear_errors_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id, id: @external_api_client.id), data: {confirm:"Are you sure? Please note down the error message and error state before clearing"}
+%p
+  %b drive strategy:
+  = @external_api_client.drive_strategy
+%p
+  %b Max requests/minute:
+  = @external_api_client.max_requests_per_minute
+%p
+  %b Current requests/minute:
+  = @external_api_client.current_requests_per_minute
+%p
+  %b Max workers:
+  = @external_api_client.max_workers
+%p
+  %b Current workers:
+  = @external_api_client.current_workers
+%p
+  %b Retry in seconds:
+  = @external_api_client.retry_in_seconds
+%p
+  %b Max retries:
+  = @external_api_client.max_retries
+
+
+%p
+  %b State Metadata:
+  = @external_api_client.state_metadata
+  - if @external_api_client.error_metadata
+    = link_to "Clear State", clear_state_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id, id: @external_api_client.id), data: {confirm:"Are you sure? Supervisor state is generated automatically and cannot be recovered"}
+%p
+  %b Error Metadata:
+  = @external_api_client.error_metadata
+  - if @external_api_client.error_metadata
+    = link_to "Clear Errors", clear_errors_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id, id: @external_api_client.id), data: {confirm:"Are you sure? Please note down the error message and error state before clearing"}
+%p
+  %b Metadata:
+#jsoneditor
+= hidden_field_tag :api_namespace_properties, @external_api_client.metadata
+
+= render 'comfy/admin/api_namespaces/init_editor'

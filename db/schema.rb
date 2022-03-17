@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_19_063616) do
+ActiveRecord::Schema.define(version: 2022_03_16_145246) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -313,6 +313,29 @@ ActiveRecord::Schema.define(version: 2021_11_19_063616) do
     t.index ["page_id"], name: "index_comfy_cms_translations_on_page_id"
   end
 
+  create_table "external_api_clients", force: :cascade do |t|
+    t.bigint "api_namespace_id", null: false
+    t.string "slug", null: false
+    t.string "label", default: "data_source_identifier_here", null: false
+    t.string "status", default: "stopped", null: false
+    t.boolean "enabled", default: false
+    t.string "error_message"
+    t.string "drive_strategy", default: "on_demand", null: false
+    t.integer "max_requests_per_minute", default: 0, null: false
+    t.integer "current_requests_per_minute", default: 0, null: false
+    t.integer "max_workers", default: 0, null: false
+    t.integer "current_workers", default: 0, null: false
+    t.integer "retry_in_seconds", default: 0, null: false
+    t.integer "max_retries", default: 1, null: false
+    t.integer "retries", default: 0, null: false
+    t.jsonb "state_metadata"
+    t.jsonb "error_metadata"
+    t.jsonb "metadata"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["api_namespace_id"], name: "index_external_api_clients_on_api_namespace_id"
+  end
+
   create_table "forum_categories", id: :serial, force: :cascade do |t|
     t.string "name", null: false
     t.string "slug", null: false
@@ -495,6 +518,7 @@ ActiveRecord::Schema.define(version: 2021_11_19_063616) do
   add_foreign_key "api_clients", "api_namespaces"
   add_foreign_key "api_forms", "api_namespaces"
   add_foreign_key "api_resources", "api_namespaces"
+  add_foreign_key "external_api_clients", "api_namespaces"
   add_foreign_key "forum_posts", "forum_threads"
   add_foreign_key "forum_posts", "users"
   add_foreign_key "forum_subscriptions", "forum_threads"

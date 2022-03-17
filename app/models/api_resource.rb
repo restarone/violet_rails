@@ -38,8 +38,14 @@ class ApiResource < ApplicationRecord
 
   def presence_of_required_properties
     return unless api_namespace.api_form
-
-    properties.each do |key, value|
+    # violet rails is expecting a hash stored in the DB. But when we shove a stringified json object in here we will need to check first. This is a stop gap fix
+    if properties.is_a? Enumerable
+      props = properties
+    else
+      # properties is a json string
+      props = JSON.parse(properties).deep_symbolize_keys
+    end
+    props.each do |key, value|
       if api_namespace.api_form.properties.dig(key,"required") == '1' && !value.present?
         errors.add(:properties, "#{key} is required")
       end
