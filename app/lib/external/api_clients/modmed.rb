@@ -36,7 +36,7 @@ class External::ApiClients::Modmed
       get_patient_documents_event: get_patient_documents_event,
       get_patient_allergy_tolerance_event: get_patient_allergy_tolerance_event, 
       get_patient_medication_statement_event: get_patient_medication_statement_event
-    }.to_json
+    }
 
     if authentication_event && get_patients_event
       self.reset_retries_after_success
