@@ -52,7 +52,7 @@ class ExternalApiClient < ApplicationRecord
       else
         # client is considered dead at this point, fire off a flare
         self.update(
-          error_message: e.message,
+          error_message: "#{e.message} - #{e.backtrace}",
           status: ExternalApiClient::STATUSES[:error]
         )
         external_api_interface_supervisor.log
