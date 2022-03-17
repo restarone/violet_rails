@@ -9,6 +9,8 @@
 
 server "54.196.20.210", user: 'ubuntu', roles: %w{app db web}
 
+set :branch, "rc"
+
 # for local precompile
 set :precompile_env, 'staging'
 
