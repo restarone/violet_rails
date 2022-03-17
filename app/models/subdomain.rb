@@ -141,8 +141,7 @@ class Subdomain < ApplicationRecord
 
   def self.unsafe_bootstrap_www_subdomain
     Apartment::Tenant.switch('public') do
-      hostname = ActionDispatch::Http::URL.extract_subdomain(ENV['APP_HOST'], 1).present? ? ENV['APP_HOST'] : "www.#{ENV['APP_HOST']}"
-      Subdomain.bootstrap_via_comfy('public', hostname)
+      Subdomain.bootstrap_via_comfy('public', ENV['APP_HOST'])
     end 
   end
 
