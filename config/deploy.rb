@@ -2,7 +2,7 @@
 lock "~> 3.16.0"
 
 set :application, "violet"
-set :repo_url, "git@github.com:restarone/r-solutions.git"
+set :repo_url, "git@github.com:vial-technology/vial_connect.git"
 
 
 # Default branch is :master
