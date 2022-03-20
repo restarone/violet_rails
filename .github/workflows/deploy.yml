@@ -14,7 +14,7 @@ jobs:
           if [ "${{ github.ref }}" = "refs/heads/master" ] || [ "${{ github.ref }}" = "refs/heads/main" ]; then
             echo "::set-output name=github_envs::{\"value\":['production', 'nikean', 'marked']}"
             echo "::set-output name=deploy_env::production"
-          elif [ "${{ github.ref }}" = "refs/heads/staging" ]; then
+          elif [ "${{ github.ref }}" = "refs/heads/rc" ]; then
             echo "::set-output name=github_envs::{\"value\":['staging']}"
             echo "::set-output name=deploy_env::staging"
           fi 
