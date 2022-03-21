@@ -1,7 +1,9 @@
+- read_only = false if local_assigns[:read_only].nil?
 - non_primitive_properties = api_resource.persisted? ? api_resource.non_primitive_properties : api_resource.api_namespace.non_primitive_properties
 #jsoneditor  
-  = hidden_field_tag :api_namespace_properties, api_resource.api_namespace.properties
-  = hidden_field_tag "api_resource[properties]", api_resource.properties ? api_resource.properties.to_json : nil
+= hidden_field_tag :api_namespace_properties, api_resource.api_namespace.properties
+= hidden_field_tag "api_resource[properties]", api_resource.properties ? api_resource.properties.to_json : nil
+- unless read_only
   - non_primitive_properties.each_with_index do |property, index|
     = fields_for "api_resource[non_primitive_properties_attributes][#{index}]", property do |ff|
       .form-group
@@ -13,3 +15,16 @@
       = ff.hidden_field :field_type
       = ff.hidden_field :label
       = ff.hidden_field :id ,{ value: property.id } if property.id
+- else
+  .my-3
+    %b.mb-2.d-block Non-primitive Properties
+    - api_resource.non_primitive_properties.each do |prop|
+      .d-flex.mb-3
+        .mr-4
+          = "#{prop.label}:"
+        %div
+          - if prop.file?
+            = show_file(prop.attachment)
+          - else
+            %div
+              = render html: prop.content.to_s.html_safe
