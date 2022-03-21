@@ -12,7 +12,10 @@ jobs:
         run: |
           echo "Running on branch ${{ github.ref }}"
           if [ "${{ github.ref }}" = "refs/heads/master" ] || [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "::set-output name=github_envs::{\"value\":['production', 'nikean', 'marked']}"
+            ENV_ARRAY="${{secrets.CLIENT_ENVS}}"
+            ENV_ARRAY="${ENV_ARRAY//, /,}"
+            ENV_ARRAY="${ENV_ARRAY//,/\",\"}"
+            echo "::set-output name=github_envs::{\"value\":[\"${ENV_ARRAY}\"]}"
             echo "::set-output name=deploy_env::production"
           elif [ "${{ github.ref }}" = "refs/heads/rc" ]; then
             echo "::set-output name=github_envs::{\"value\":['staging']}"
