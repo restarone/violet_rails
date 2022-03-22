@@ -1,6 +1,6 @@
 - action = @api_resource.persisted? ? :put : :post
 - path = @api_resource.persisted? ? api_namespace_resource_url : api_namespace_resources_url
-- form_properties = @api_resource.api_namespace.api_form.properties.symbolize_keys
+- form_properties = @api_resource.api_namespace&.api_form&.properties&.symbolize_keys
 = form_for @api_resource, url: path, method: action, html: {multipart: true} do |f|
   - if @api_resource.errors.any?
     #error_explanation
@@ -8,7 +8,7 @@
       %ul
         - @api_resource.errors.full_messages.each do |message|
           %li= message
-  = render 'comfy/admin/api_namespaces/editor', {api_resource: @api_resource}
+  = render 'comfy/admin/api_namespaces/editor', {api_resource: @api_resource, form_properties: form_properties}
   .actions
     = f.submit 'Save'
 = render 'comfy/admin/api_namespaces/init_editor', {read_only: false}
