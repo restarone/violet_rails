@@ -1,9 +1,8 @@
 name: Deploy with Capistrano
 on:
   push:
-    branches: [ rc, master, main ]
+    branches: [ rc, master, main]
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,21 +11,31 @@ jobs:
         id: branch_check
         run: |
           echo "Running on branch ${{ github.ref }}"
-          if [ "${{ github.ref }}" = "refs/heads/master" ]; then
-            echo "::set-output name=env_name:production"
-          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "::set-output name=env_name:production"
+          if [ "${{ github.ref }}" = "refs/heads/master" ] || [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            ENV_ARRAY="${{secrets.CLIENT_ENVS}}"
+            ENV_ARRAY="${ENV_ARRAY//, /,}"
+            ENV_ARRAY="${ENV_ARRAY//,/\",\"}"
+            echo "::set-output name=github_envs::{\"value\":[\"${ENV_ARRAY}\"]}"
+            echo "::set-output name=deploy_env::production"
           elif [ "${{ github.ref }}" = "refs/heads/rc" ]; then
-            echo "::set-output name=env_name::staging"
-          fi         
+            echo "::set-output name=github_envs::{\"value\":['staging']}"
+            echo "::set-output name=deploy_env::staging"
+          fi 
     outputs:
-      env_name: ${{ steps.branch_check.outputs.env_name }}
+      github_envs: ${{ steps.branch_check.outputs.github_envs }}
+      deploy_env: ${{ steps.branch_check.outputs.deploy_env }}
 
   deploy:
     needs: build 
     runs-on: ubuntu-18.04
+    strategy:
+      matrix: ${{fromJSON(needs.build.outputs.github_envs)}}
+      fail-fast: false
     environment:
-      name: ${{ needs.build.outputs.env_name }}
+      name: ${{ matrix.value }}
+    env:
+      SERVER_IP: ${{ secrets.SERVER_IP }}
+      BRANCH: ${{ secrets.BRANCH }}
     steps:
       - uses: actions/checkout@v2
       - name: Install Rbenv
@@ -66,6 +75,6 @@ jobs:
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
       - uses: miloserdow/capistrano-deploy@master
         with:
-          target: ${{ needs.build.outputs.env_name }} # Defines the environment that will be used for the deployment
+          target: ${{ needs.build.outputs.deploy_env }} # Defines the environment that will be used for the deployment
           enc_rsa_key_val: ${{ secrets.DEPLOY_ID_RSA_ENC }}
           deploy_key: ${{ secrets.DEPLOY_ENC_KEY }}
