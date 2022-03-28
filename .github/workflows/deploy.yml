@@ -35,6 +35,7 @@ jobs:
       name: ${{ matrix.value }}
     env:
       SERVER_IP: ${{ secrets.SERVER_IP }}
+      BRANCH: ${{ secrets.BRANCH }}
     steps:
       - uses: actions/checkout@v2
       - name: Install Rbenv
