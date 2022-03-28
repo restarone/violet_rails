@@ -1,7 +1,6 @@
 - action = @api_resource.persisted? ? :put : :post
-- non_primitive_properties = @api_resource.persisted? ? @api_resource.non_primitive_properties : @api_resource.api_namespace.non_primitive_properties
 - path = @api_resource.persisted? ? api_namespace_resource_url : api_namespace_resources_url
-- form_properties = @api_resource.api_namespace.api_form.properties.symbolize_keys
+- form_properties = @api_resource.api_namespace&.api_form&.properties&.symbolize_keys
 = form_for @api_resource, url: path, method: action, html: {multipart: true} do |f|
   - if @api_resource.errors.any?
     #error_explanation
@@ -9,20 +8,7 @@
       %ul
         - @api_resource.errors.full_messages.each do |message|
           %li= message
-  #jsoneditor  
-  = hidden_field_tag :api_namespace_properties, @api_resource.api_namespace.properties
-  = hidden_field_tag "api_resource[properties]", @api_resource.properties ? @api_resource.properties.to_json : nil
-  - non_primitive_properties.each_with_index do |property, index|
-    = fields_for "api_resource[non_primitive_properties_attributes][#{index}]", property do |ff|
-      .form-group
-        = label_tag property.label
-        .my-2
-          - if property.file?
-            = show_file(property.attachment)
-        = map_non_primitive_data_type(ff, property.field_type, form_properties, true)
-      = ff.hidden_field :field_type
-      = ff.hidden_field :label
-      = ff.hidden_field :id ,{ value: property.id } if property.id
+  = render 'comfy/admin/api_namespaces/editor', {api_resource: @api_resource, form_properties: form_properties}
   .actions
     = f.submit 'Save'
-= render 'comfy/admin/api_namespaces/init_editor'
+= render 'comfy/admin/api_namespaces/init_editor', {read_only: false}

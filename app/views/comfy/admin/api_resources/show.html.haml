@@ -6,30 +6,9 @@
 %p
   %b Resource Id:
   = @api_resource.id
-%p
-  %b Properties:
-  = @api_resource.properties
+= render 'comfy/admin/api_namespaces/editor', {api_resource: @api_resource, form_properties: @api_resource.api_namespace&.api_form&.properties&.symbolize_keys, read_only: true}
+= render 'comfy/admin/api_namespaces/init_editor', {read_only: true}
 
-.mb-3
-  - object_fields(@api_resource.api_namespace.properties).each do |prop|
-    .d-flex.mb-3
-      .mr-4
-        = "#{prop}:"
-      %div
-        = @api_resource&.properties&.dig(prop).present? ? @api_resource.properties[prop] : 'nil'
-
-.mb-3
-  %b.mb-2.d-block Non-primitive Properties
-  - @api_resource.non_primitive_properties.each do |prop|
-    .d-flex.mb-3
-      .mr-4
-        = "#{prop.label}:"
-      %div
-        - if prop.file?
-          = show_file(prop.attachment)
-        - else
-          %div
-            = render html: prop.content.to_s.html_safe
 .my-3
   = link_to 'Api Actions', api_namespace_api_actions_path(api_namespace_id: @api_resource.api_namespace_id, 'q[api_resource_id_eq]': @api_resource.id)
 
