@@ -73,6 +73,7 @@ Rails.application.routes.draw do
   namespace :admin do
     authenticate :user, lambda { |u| u.global_admin? } do
       mount Sidekiq::Web => '/sidekiq'
+      mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/graphql"
     end
     resources :subdomain_requests, except: [:new, :create] do
       member do
@@ -97,7 +98,10 @@ Rails.application.routes.draw do
     end
   end
 
+  # to query CMS pages
   post '/query', to: 'search#query'
+  # to query the rest of the system
+  post "/graphql", to: "graphql#execute"
   
   comfy_route :cms_admin, path: "/admin"
   comfy_route :blog, path: "blog"
