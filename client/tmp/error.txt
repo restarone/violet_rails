@@ -1,0 +1,25 @@
+[33mDEPRECATION: `bowerDependencies` has been deprecated.[39m
+[33mIf you still need access to the project's Bower dependencies, you will have to manually resolve the project's `bower.json` file instead. [ID: ember-cli.project.bower-dependencies][39m
+[33mat getStackTrace (/var/app/client/node_modules/ember-cli/lib/debug/deprecate.js:99:15)[39m
+[33mat deprecate (/var/app/client/node_modules/ember-cli/lib/debug/deprecate.js:77:8)[39m
+[33mat Project.bowerDependencies (/var/app/client/node_modules/ember-cli/lib/models/project.js:412:5)[39m
+[33mat EmberCLIDependencyChecker.normalizedBowerDependencies (/var/app/client/node_modules/ember-cli-dependency-checker/lib/dependency-checker.js:138:44)[39m
+[33mat EmberCLIDependencyChecker.readBowerDependencies (/var/app/client/node_modules/ember-cli-dependency-checker/lib/dependency-checker.js:148:39)[39m
+[33mat EmberCLIDependencyChecker.checkDependencies (/var/app/client/node_modules/ember-cli-dependency-checker/lib/dependency-checker.js:43:28)[39m
+[33mat Class.init (/var/app/client/node_modules/ember-cli-dependency-checker/index.js:18:25)[39m
+[33mat Class.superWrapper [as init] (/var/app/client/node_modules/core-object/lib/assign-properties.js:34:20)[39m
+[33mat new CoreObject (/var/app/client/node_modules/core-object/core-object.js:9:15)[39m
+[33mat new Class (/var/app/client/node_modules/core-object/core-object.js:21:5)[39m
+[31m[39m
+[31m[31mMissing npm packages: [31m[39m
+[31m[0mPackage: [0m[36member-cli-rails-addon[31m[39m
+[31m[90m  * Specified: [31m[0m~> 0.11.0[0m[39m
+[31m[90m  * Installed: [31m[0m(not installed)[0m[39m
+[31m[39m
+[31m[31mRun `npm install` to install missing dependencies.[31m[39m
+[31m[39m
+
+[31m[39m
+[31mStack Trace and Error Report: /tmp/error.dump.b15ef689c3406ac310ea3eb25d4d0367.log[39m
+[31mAn error occurred in the constructor for ember-cli-dependency-checker at /var/app/client/node_modules/ember-cli-dependency-checker[39m
+
