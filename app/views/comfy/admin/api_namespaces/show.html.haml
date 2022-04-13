@@ -15,7 +15,7 @@
 #jsoneditor
 = hidden_field_tag :api_namespace_properties, @api_namespace.properties
 
-= render 'init_editor'
+= render 'init_editor', {read_only: true}
 
 .py-3.d-flex
   .btn.btn-primary.mr-3{'data-toggle': "collapse", 'data-target': "#infoCollapse", 'aria-expanded': "false", 'aria-controls': "infoCollapse"}
