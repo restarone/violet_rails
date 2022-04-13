@@ -1,7 +1,9 @@
+- view_mode = read_only ? 'view' : 'tree'
+
 :javascript
   // create the editor
   const container = document.getElementById("jsoneditor")
-  const options = {onChange: () => { setFields() } }
+  const options = {onChange: () => { setFields() }, mode: "#{ escape_javascript(view_mode) }"}
   const editor = new JSONEditor(container, options)
 
   // set json
