@@ -1,4 +1,25 @@
 
+test:
+  api_namespace: two
+  slug: test-second
+  label: Test API 2
+  enabled: true
+  metadata:  >
+    {
+      "api_key": "x-api-key-foo",
+      "bearer_token": "foo"
+    }
+  model_definition: |
+    class External::ApiClients::Test
+      def initialize(parameters)  
+        # do init stuff
+      end
+      def start
+        return true
+      end
+    end
+    # at the end of the file we have to implicitly return the class 
+    External::ApiClients::Test
 modmed:
   api_namespace: one
   slug: test-api

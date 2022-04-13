@@ -2,7 +2,7 @@ require "test_helper"
 
 class ExternalApiClientTest < ActiveSupport::TestCase
   setup do
-    @external_api_client = external_api_clients(:modmed)
+    @external_api_client = external_api_clients(:test)
   end
 
   test "returns false if not enabled" do
@@ -19,7 +19,7 @@ class ExternalApiClientTest < ActiveSupport::TestCase
     assert @external_api_client.retries < @external_api_client.max_retries
     assert @external_api_client.retry_in_seconds == 0
     error_message = "Gateway unavailable"
-    External::ApiClients::Modmed.any_instance.stubs(:start).raises(StandardError, error_message)
+    External::ApiClients::Test.any_instance.stubs(:start).raises(StandardError, error_message)
     assert_changes "@external_api_client.status" do
       @external_api_client.run
     end
