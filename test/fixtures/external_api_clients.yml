@@ -1,17 +1,17 @@
 
 modmed:
   api_namespace: one
-  slug: modmed
-  label: Modern Medicine API
+  slug: test-api
+  label: Test API
   enabled: true
   metadata:  >
     {
       "api_key": "x-api-key-foo",
-      "host": "host-foo",
-      "clinic_id": "dermpmsandbox277",
-      "grant_type": "password",
-      "username": "fhir_iRHGY",
-      "password": "icbBS6ecIk",
-      "auth_base_url": "https://stage.ema-api.com",
       "bearer_token": "foo"
     }
+  model_definition: >
+    class Modmed
+      def start
+        p "running"
+      end
+    end
