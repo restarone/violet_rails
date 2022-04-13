@@ -100,3 +100,4 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem "graphql", "~> 2.0"
 gem 'graphiql-rails'
+gem "ember-cli-rails", "~> 0.11.0"

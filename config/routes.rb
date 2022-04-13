@@ -102,6 +102,9 @@ Rails.application.routes.draw do
   post '/query', to: 'search#query'
   # to query the rest of the system
   post "/graphql", to: "graphql#execute"
+
+  # catch web client route before it gets hijacked by the server
+  mount_ember_app :client, to: "/app"
   
   comfy_route :cms_admin, path: "/admin"
   comfy_route :blog, path: "blog"
