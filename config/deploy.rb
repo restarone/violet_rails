@@ -2,7 +2,7 @@
 lock "~> 3.16.0"
 
 set :application, "violet"
-set :repo_url, "git@github.com:vial-technology/vial_connect.git"
+set :repo_url, "git@github.com:restarone/r-solutions.git"
 
 
 # Default branch is :master
@@ -48,5 +48,5 @@ after 'deploy:publishing', 'deploy:restart'
 after 'deploy:finishing', 'deploy:restart_sidekiq'
 
 # non essential tasks
-#after 'deploy:finishing', 'sitemap:clean'
-#after 'deploy:finishing', 'sitemap:refresh'
+after 'deploy:finishing', 'sitemap:clean'
+after 'deploy:finishing', 'sitemap:refresh'

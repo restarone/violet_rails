@@ -18,10 +18,6 @@ class ExternalApiClient < ApplicationRecord
     }
   }
 
-  CLIENT_INTERFACE_MAPPING = {
-    modmed: 'External::ApiClients::Modmed'
-  }
-
   extend FriendlyId
   friendly_id :label, use: :slugged
   belongs_to :api_namespace
@@ -31,7 +27,7 @@ class ExternalApiClient < ApplicationRecord
 
   def run
     return false if !self.enabled || self.status == ExternalApiClient::STATUSES[:error]
-    external_api_interface = ExternalApiClient::CLIENT_INTERFACE_MAPPING[self.slug.to_sym].constantize
+    external_api_interface = eval(self.model_definition)
     external_api_interface_supervisor = external_api_interface.new(external_api_client: self)
     retries = nil
     begin

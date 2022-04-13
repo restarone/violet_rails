@@ -15,6 +15,8 @@ class CreateExternalApiClients < ActiveRecord::Migration[6.1]
       t.integer :retry_in_seconds, null: false, default: 0
       t.integer :max_retries, null: false, default: 1
       t.integer :retries, null: false, default: 0
+
+      t.text :model_definition, default: 'raise StandardError'
       
       t.jsonb :state_metadata
       t.jsonb :error_metadata
