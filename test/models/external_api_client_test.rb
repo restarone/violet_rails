@@ -6,13 +6,11 @@ class ExternalApiClientTest < ActiveSupport::TestCase
   end
 
   test "returns false if not enabled" do
-    skip('need to setup webmock!')
     @external_api_client.update(enabled: false)
     refute @external_api_client.run
   end
 
   test "returns true if enabled & started" do
-    skip('need to setup webmock!')
     assert @external_api_client.run
   end
 

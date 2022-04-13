@@ -28,6 +28,10 @@
     = f.label :max_retries
     = f.number_field :max_retries
 
+  .field
+    = f.label :model_definition
+    = f.text_area :model_definition
+
   #jsoneditor
   = f.hidden_field :metadata
 
@@ -35,5 +39,5 @@
     = f.submit 'Save'
 
 
-= render 'comfy/admin/api_namespaces/init_editor'
+= render 'comfy/admin/api_namespaces/init_editor', {read_only: false}
 

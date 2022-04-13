@@ -11,13 +11,6 @@ class ExternalApiClient < ApplicationRecord
     cron: 'cron'
   }
 
-  CLIENTS = {
-    modmed: {
-      name: 'modmed',
-      api_namespace_prefix: 'modmed'
-    }
-  }
-
   extend FriendlyId
   friendly_id :label, use: :slugged
   belongs_to :api_namespace

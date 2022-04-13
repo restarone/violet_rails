@@ -99,6 +99,7 @@ class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseContro
             :drive_strategy,
             :max_requests_per_minute,
             :max_workers,
+            :model_definition
           ).merge({
             api_namespace_id: @api_namespace.id,
           })

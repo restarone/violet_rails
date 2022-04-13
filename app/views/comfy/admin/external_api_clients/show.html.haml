@@ -47,6 +47,11 @@
   %b Max retries:
   = @external_api_client.max_retries
 
+%p
+  %b model definition:
+  %code
+    = @external_api_client.model_definition
+
 
 %p
   %b State Metadata:
@@ -63,4 +68,4 @@
 #jsoneditor
 = hidden_field_tag :api_namespace_properties, @external_api_client.metadata
 
-= render 'comfy/admin/api_namespaces/init_editor'
+= render 'comfy/admin/api_namespaces/init_editor', {read_only: true}
