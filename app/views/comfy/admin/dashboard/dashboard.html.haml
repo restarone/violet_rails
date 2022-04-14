@@ -49,7 +49,7 @@
           %th= sort_link @visits_q, :user_agent
         - @visits.each do |v|
           %tr
-            %th= v.started_at.strftime('%I:%M %P - %b %d, %Y')
+            %th= link_to v.started_at.strftime('%I:%M %P - %b %d, %Y'), dashboard_visits_path(ahoy_visit_id: v.id) 
             %th= v.ip
             %th= v.os
             %th= v.browser

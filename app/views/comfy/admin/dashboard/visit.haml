@@ -1,0 +1,14 @@
+.table-responsive
+  %table.table.table-bordered
+    %thead
+      %tr
+        %th= :name
+        %th= :user_id
+        %th= :visit_id
+        %th= :properties
+      - @events.each do |e|
+        %tr
+          %th= e.name
+          %th= e.user_id
+          %th= e.visit_id
+          %th= e.properties

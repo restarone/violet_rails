@@ -47,6 +47,10 @@ class User < ApplicationRecord
 
   has_one_attached :avatar
 
+  # to run User.find(123).visits
+  has_many :visits, class_name: "Ahoy::Visit"
+
+
   def subdomain
     Apartment::Tenant.current
   end
