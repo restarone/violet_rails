@@ -48,7 +48,7 @@ after 'deploy:publishing', 'deploy:restart'
 after 'deploy:finishing', 'deploy:restart_sidekiq'
 
 # clean up tasks
-after "deploy:update", "deploy:cleanup" 
+after "deploy:finishing", "deploy:cleanup" 
 
 # non essential tasks
 after 'deploy:finishing', 'sitemap:clean'
