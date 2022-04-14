@@ -33,7 +33,8 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
       :allow_user_self_signup,
       :forum_is_private,
       :purge_visits_every,
-      :analytics_report_frequency
+      :analytics_report_frequency,
+      :tracking_enabled
     )
   end
 end
