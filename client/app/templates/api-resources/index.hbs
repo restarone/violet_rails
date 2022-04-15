@@ -3,8 +3,8 @@
   <ul id="todo-list">
    {{#each @model as |apiResource|}}
       <li>
-        <LinkTo @route="api-resources.resource" @model={{apiResource.attributes}}>
-          {{apiResource.attributes.name}}
+        <LinkTo @route="api-resources.resource" @model={{apiResource}}>
+          {{apiResource.name}}
         </LinkTo>
       </li>
    {{/each}}

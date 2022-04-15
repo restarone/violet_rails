@@ -7,7 +7,7 @@ export default class Router extends EmberRouter {
 }
 
 Router.map(function () {
-  this.route('/')
+  this.route('/');
   this.route('api-resources', function () {
     this.route('index', { path: '/' });
     this.route('resource', { path: '/:version/:slug' });
