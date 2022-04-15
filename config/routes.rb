@@ -84,6 +84,7 @@ Rails.application.routes.draw do
   end
 
   namespace 'api' do
+    get '/resources', to: 'resources#index', as: :show_resources
     scope ':version' do
       scope ':api_namespace' do
         get '/', to: 'resource#index'
@@ -98,6 +99,9 @@ Rails.application.routes.draw do
   end
 
   post '/query', to: 'search#query'
+
+  # catch web client route before it gets hijacked by the server
+  mount_ember_app :client, to: "/app"
   
   comfy_route :cms_admin, path: "/admin"
   comfy_route :blog, path: "blog"
