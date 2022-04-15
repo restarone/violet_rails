@@ -101,25 +101,4 @@ services:
       RAILS_ENV: test
     depends_on:
       - solutions_db
-  solutions_client:
-    image: violet_rails_solutions_app
-    container_name: solutions_client
-    volumes:
-      - .:/var/app
-      - shared_data:/var/shared
-      - gem_cache:/usr/local/bundle/gems
-    networks:
-      - test
-      - development
-    ports:
-      - 3005:3005
-    stdin_open: true
-    tty: true
-    env_file: .env.test
-    entrypoint: ember-entrypoint.sh
-    command: ["ember", "-v"]
-    environment:
-      RAILS_ENV: development
-    depends_on:
-      - solutions_db
       
