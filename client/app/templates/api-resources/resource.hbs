@@ -1,0 +1,8 @@
+{{page-title "ApiResource"}}
+  ApiResources
+  {{#each @model as |apiResource|}}
+    <li>
+      {{apiResource.attributes.id}}
+    </li>
+  {{/each}}
+{{outlet}}
