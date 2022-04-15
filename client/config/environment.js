@@ -5,7 +5,6 @@ module.exports = function (environment) {
     modulePrefix: 'client',
     environment,
     rootURL: '/app',
-    baseURL: '/app',
     locationType: 'history',
     EmberENV: {
       FEATURES: {
