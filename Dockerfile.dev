@@ -32,7 +32,8 @@ imagemagick \
 tzdata \
 less \
 zsh \
-sqlite-dev 
+sqlite-dev \
+npm
 
 
 
@@ -46,6 +47,9 @@ RUN rm -rf /var/cache/apk/* \
 # Install bundler
 RUN gem install bundler --version "$BUNDLE_VERSION" \
 && rm -rf $GEM_HOME/cache/*
+
+# install ember
+RUN npm install -g ember-cli
 
 # Change to app dir
 WORKDIR $APP_PATH
