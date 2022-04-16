@@ -26,6 +26,7 @@ module Types
       argument :order_direction, String, required: false
       argument :order_dimension, String, required: false
       argument :offset, Integer, required: false
+      argument :slug, String, required: false
     end
     
     def api_namespaces(args = {})
@@ -33,7 +34,12 @@ module Types
       args[:order_direction] ||= 'desc'
       args[:limit] ||= 50
       args[:offset] ||= 0
-      ApiNamespace.where(requires_authentication: false).order("#{args[:order_dimension].underscore} #{args[:order_direction]}").limit(args[:limit]).offset(args[:offset])
+      args[:slug] ||= nil
+      if args[:slug]
+        return ApiNamespace.where(requires_authentication: false, slug: args[:slug]).order("#{args[:order_dimension].underscore} #{args[:order_direction]}").limit(args[:limit]).offset(args[:offset])
+      else
+        return ApiNamespace.where(requires_authentication: false).order("#{args[:order_dimension].underscore} #{args[:order_direction]}").limit(args[:limit]).offset(args[:offset])
+      end
     end
   end
 end

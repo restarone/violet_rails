@@ -32,35 +32,67 @@
       %b Namespace type:
       = @api_namespace.namespace_type
 
+    .card
+      .card-body
+        %h4
+          REST Interface
+        %strong
+          Request description endpoint:
+        %p
+          GET
+        %pre
+          = "#{api_base_url(Subdomain.current, @api_namespace)}/describe"
 
-    %strong
-      Request description endpoint:
-    %p
-      GET
-    %pre
-      = "#{api_base_url(Subdomain.current, @api_namespace)}/describe"
+        %strong
+          Request index endpoint:
+        %p
+          GET
+        %pre
 
-    %strong
-      Request index endpoint:
-    %p
-      GET
-    %pre
+          = api_base_url(Subdomain.current, @api_namespace)
 
-      = api_base_url(Subdomain.current, @api_namespace)
+        %strong
+          Request query endpoint:
+        %p
+          POST
+        %pre
+          = "#{api_base_url(Subdomain.current, @api_namespace)}/query"
 
-    %strong
-      Request query endpoint:
-    %p
-      POST
-    %pre
-      = "#{api_base_url(Subdomain.current, @api_namespace)}/query"
+      .card-body
+        %h4
+          Graph Interface
+        %strong
+          Request description endpoint:
+        %p
+          GET
+        %pre
+          = "#{graphql_base_url(Subdomain.current, @api_namespace)}/describe"
 
+        %strong
+          Request query endpoint:
+        %p
+          POST
+        %pre
+          = "#{graphql_base_url(Subdomain.current, @api_namespace)}"
+        %p
+          Payload (this)
+        %pre
+          = "query: { apiNamespaces(slug: \"#{@api_namespace.slug.camelize(:lower)}\") { id } }"
+        %p
+          Payload (this + children)
+        %pre
+          = "query: { apiNamespaces(slug: \"#{@api_namespace.slug.camelize(:lower)}\") { id apiResources { id } } }"
+        %p
+          Payload (global)
+        %pre
+          = "query: { apiNamespaces { id } }"
 
-    - if @api_namespace.requires_authentication
-      %strong
-        = link_to "API Clients", api_namespace_api_clients_path(api_namespace_id: @api_namespace.id)
-      .my-3
-        = link_to "Create new key for client", new_api_namespace_api_client_path(api_namespace_id: @api_namespace.id)
+      - if @api_namespace.requires_authentication
+        .card-body
+          %h4
+            = link_to "API Clients", api_namespace_api_clients_path(api_namespace_id: @api_namespace.id)
+          .my-3
+            = link_to "Create new key for client", new_api_namespace_api_client_path(api_namespace_id: @api_namespace.id)
 
 
 .d-flex.justify-content-between.align-items-center.py-3
