@@ -34,7 +34,8 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
       :forum_is_private,
       :purge_visits_every,
       :analytics_report_frequency,
-      :ember_enabled
+      :ember_enabled,
+      :graphql_enabled,
     )
   end
 end
