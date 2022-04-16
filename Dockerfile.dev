@@ -13,7 +13,8 @@ ENV RAILS_PORT 5250
 # Copy entrypoint scripts and give execution permissions
 COPY ./docker-entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY ./test-entrypoint.sh /usr/local/bin/test-entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/test-entrypoint.sh
+COPY ./ember-entrypoint.sh /usr/local/bin/ember-entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/test-entrypoint.sh && chmod +x /usr/local/bin/ember-entrypoint.sh
 
 # System upgrade, setup and tooling
 RUN apk --no-cache update \
