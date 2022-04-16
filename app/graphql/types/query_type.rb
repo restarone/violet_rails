@@ -33,7 +33,7 @@ module Types
       args[:order_direction] ||= 'desc'
       args[:limit] ||= 50
       args[:offset] ||= 0
-      ApiNamespace.where(requires_authentication: false).order("#{args[:order_dimension]} #{args[:order_direction]}").limit(args[:limit]).offset(args[:offset])
+      ApiNamespace.where(requires_authentication: false).order("#{args[:order_dimension].underscore} #{args[:order_direction]}").limit(args[:limit]).offset(args[:offset])
     end
   end
 end

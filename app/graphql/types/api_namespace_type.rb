@@ -13,7 +13,7 @@ module Types
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
 
     # {
-    #   apiResources(limit: 3, orderDirection:"asc", orderDimension: "created_at", offset: 1) {
+    #   apiResources(limit: 3, orderDirection:"asc", orderDimension: "createdAt", offset: 1) {
     #     id
     #      properties
     #   }
@@ -31,7 +31,7 @@ module Types
       args[:order_direction] ||= 'desc'
       args[:limit] ||= 50
       args[:offset] ||= 0
-      ApiResource.all.order("#{args[:order_dimension]} #{args[:order_direction]}").limit(args[:limit]).offset(args[:offset])
+      ApiResource.all.order("#{args[:order_dimension].underscore} #{args[:order_direction]}").limit(args[:limit]).offset(args[:offset])
     end
   end
 end

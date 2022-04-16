@@ -35,13 +35,29 @@ class GraphqlControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "[if enabled] query public API Namespaces" do
-    query_string = "{ apiNamespaces { id } }"
+    query_string = "{ apiNamespaces { id requiresAuthentication } }"
     post '/graphql', params: { query: query_string }
     json_response = JSON.parse(@response.body)
     assert_equal ["data"], json_response.keys
     assert_equal ["apiNamespaces"], json_response["data"].keys
     sample_api_namespace = json_response["data"]["apiNamespaces"].sample
-    assert_equal ["id"], sample_api_namespace.keys
+    assert_equal ["id", "requiresAuthentication"].sort, sample_api_namespace.keys.sort
+    assert_equal false, sample_api_namespace["requiresAuthentication"]
+
+    query_string = " { apiNamespaces(limit: 1, offset: 1) { id requiresAuthentication } } "
+    post '/graphql', params: { query: query_string }
+    json_response = JSON.parse(@response.body)
+    assert_equal ["data"], json_response.keys
+
+    query_string = "{ apiNamespaces(orderDirection: \"desc\", orderDimension: \"updatedAt\") { id apiResources { id } } }"
+    post '/graphql', params: { query: query_string }
+    json_response = JSON.parse(@response.body)
+    assert_equal ["data"], json_response.keys
+
+    query_string = "{ apiNamespaces { id apiResources(orderDirection: \"desc\", orderDimension: \"updatedAt\") { id } } }"
+    post '/graphql', params: { query: query_string }
+    json_response = JSON.parse(@response.body)
+    assert_equal ["data"], json_response.keys
   end
 
   test "[not enabled] presents error" do
