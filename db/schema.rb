@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_04_16_155149) do
+ActiveRecord::Schema.define(version: 2022_04_16_213659) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -438,6 +438,7 @@ ActiveRecord::Schema.define(version: 2022_04_16_155149) do
     t.string "analytics_report_frequency", default: "never"
     t.datetime "analytics_report_last_sent"
     t.boolean "ember_enabled", default: false
+    t.boolean "graphql_enabled", default: false
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
     t.index ["name"], name: "index_subdomains_on_name"
   end
