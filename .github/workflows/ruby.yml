@@ -54,6 +54,13 @@ jobs:
         bin/rails db:create
         bin/rails db:migrate
     - name: compile assets/javascript
-      run: yarn install
+      run: |
+        yarn install
+        bin/rails assets:precompile
+    - name: compile ember client
+      run: |
+        cd client
+        npm install -g ember-cli
+
     - name: Run Tests
       run: bin/rails test -f
