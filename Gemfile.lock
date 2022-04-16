@@ -477,7 +477,7 @@ DEPENDENCIES
   apartment-activejob
   aws-sdk-s3
   bcrypt_pbkdf (>= 1.0, < 2.0)
-  bootsnap (>= 1.4.4)
+  bootsnap (>= 1.7.3)
   byebug
   capistrano
   capistrano-local-precompile
