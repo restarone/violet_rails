@@ -85,6 +85,7 @@ Rails.application.routes.draw do
   end
 
   namespace 'api' do
+    get '/resources', to: 'resources#index', as: :show_resources
     scope ':version' do
       scope ':api_namespace' do
         get '/', to: 'resource#index'

@@ -1,0 +1,12 @@
+{{page-title "ApiResources"}}
+  <h2>API resources</h2>
+  <ul id="todo-list">
+   {{#each @model as |apiResource|}}
+      <li>
+        <LinkTo @route="api-resources.resource" @models={{array apiResource.version apiResource.slug}}>
+          {{apiResource.name}}
+        </LinkTo>
+      </li>
+   {{/each}}
+  </ul>
+  {{outlet}}
