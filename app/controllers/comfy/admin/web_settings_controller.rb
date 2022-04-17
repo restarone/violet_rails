@@ -37,6 +37,7 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
       :tracking_enabled
       :ember_enabled,
       :graphql_enabled,
+      :web_console_enabled,
     )
   end
 end
