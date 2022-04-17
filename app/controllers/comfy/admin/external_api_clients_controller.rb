@@ -58,7 +58,7 @@ class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseContro
     end
 
     def start
-      @external_api_client.run
+      ExternalApiClientJob.perform_async(@external_api_client.id)
       redirect_back(fallback_location: api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id))
     end
 

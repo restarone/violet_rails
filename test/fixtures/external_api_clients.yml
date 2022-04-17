@@ -24,6 +24,35 @@ test:
     end
     # at the end of the file we have to implicitly return the class 
     ExternalApiModelExample
+open_json_server:
+  api_namespace: two
+  slug: test-second
+  label: Test API 2
+  enabled: true
+  metadata:  >
+    {
+      "api_key": "x-api-key-foo",
+      "bearer_token": "foo"
+    }
+  model_definition: |
+    class OpenJsonServer
+      def initialize(parameters)  
+        @external_api_client = parameters[:external_api_client]
+        @base_url = "https://jsonplaceholder.typicode.com/todos/1"
+      end
+      def start
+        response = HTTParty.get(@base_url).body
+        @external_api_client.api_namespace.api_resources.create(
+          properties: JSON.parse(response).deep_symbolize_keys
+        )
+      end
+
+      def log
+        return true
+      end
+    end
+    # at the end of the file we have to implicitly return the class 
+    OpenJsonServer
 modmed:
   api_namespace: one
   slug: test-api
