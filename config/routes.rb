@@ -82,6 +82,7 @@ Rails.application.routes.draw do
     authenticate :user, lambda { |u| u.global_admin? } do
       mount Sidekiq::Web => '/sidekiq'
       mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/graphql"
+      get 'web_console', to: 'web_console#index'
     end
     resources :subdomain_requests, except: [:new, :create] do
       member do
