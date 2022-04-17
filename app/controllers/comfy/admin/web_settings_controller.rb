@@ -35,6 +35,8 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
       :purge_visits_every,
       :analytics_report_frequency,
       :tracking_enabled
+      :ember_enabled,
+      :graphql_enabled,
     )
   end
 end
