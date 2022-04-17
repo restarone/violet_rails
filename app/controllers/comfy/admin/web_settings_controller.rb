@@ -36,6 +36,7 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
       :analytics_report_frequency,
       :ember_enabled,
       :graphql_enabled,
+      :web_console_enabled,
     )
   end
 end
