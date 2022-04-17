@@ -1,2 +1,22 @@
-console
-= console
+%table.table
+  %thead
+    %tr
+      %th{:scope => "col"} Task
+      %th{:scope => "col"} Command
+  %tbody
+    %tr
+      %td get current subdomain
+      %td Subdomain.current
+      
+    %tr
+      %td list available subdomains
+      %td Subdomain.all.pluck(:name)
+
+    %tr
+      %td access arbitrary subdomain
+      %td Apartment::Tenant.switch('public') { User.first }
+
+    %tr
+      %td check memory usage of current shell
+      %td number_to_human_size(`ps -o rss #{Process.pid}`.lines.last.to_i)
+

@@ -1,6 +1,7 @@
 class Admin::WebConsoleController < Admin::BaseController
   before_action :redirect_if_unsupported
   def index
+    console
   end
 
   private
