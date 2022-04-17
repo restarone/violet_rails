@@ -8,7 +8,6 @@ class ExternalApiClient < ApplicationRecord
 
   DRIVE_STRATEGIES = {
     on_demand: 'on_demand',
-    cron: 'cron'
   }
 
   extend FriendlyId

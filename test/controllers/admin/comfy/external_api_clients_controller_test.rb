@@ -4,7 +4,7 @@ require "test_helper"
 class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
-    @user.update(can_manage_web: true, can_manage_api: true)
+    @user.update(can_manage_api: true)
     @api_client = api_clients(:one)
     @api_namespace = api_namespaces(:one)
     @external_api_client = external_api_clients(:test)
@@ -22,15 +22,21 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test "should not get index if not authenticated" do
-    skip
+    get api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)
+    assert_response :redirect
   end
 
   test "should not get #index, #new if signed in but not allowed to manage web" do
-    skip
+    @user.update(can_manage_api: false)
+    sign_in(@user)
+    get api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)
+    assert_response :redirect
   end
 
   test "should get index" do
-    skip
+    sign_in(@user)
+    get api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)
+    assert_response :success
   end
 
   test "should get new" do
