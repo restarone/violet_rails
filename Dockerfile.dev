@@ -48,6 +48,8 @@ RUN rm -rf /var/cache/apk/* \
 RUN gem install bundler --version "$BUNDLE_VERSION" \
 && rm -rf $GEM_HOME/cache/*
 
+RUN gem install nokogiri -- --use-system-libraries
+
 # install ember
 RUN npm install -g ember-cli
 
