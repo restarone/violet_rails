@@ -10,5 +10,6 @@ Apartment::Tenant.switch('public') do
     can_manage_users: true,
     can_manage_blog: true
   )
+  Subdomain.unsafe_bootstrap_root_domain
   Subdomain.unsafe_bootstrap_www_subdomain
 end

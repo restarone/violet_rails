@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_04_10_014959) do
+ActiveRecord::Schema.define(version: 2022_04_16_213659) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,7 +28,7 @@ ActiveRecord::Schema.define(version: 2022_04_10_014959) do
     t.string "name", null: false
     t.text "body"
     t.string "record_type", null: false
-    t.bigint "record_id", null: false
+    t.integer "record_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
@@ -461,6 +461,8 @@ ActiveRecord::Schema.define(version: 2022_04_10_014959) do
     t.string "purge_visits_every", default: "never"
     t.string "analytics_report_frequency", default: "never"
     t.datetime "analytics_report_last_sent"
+    t.boolean "ember_enabled", default: false
+    t.boolean "graphql_enabled", default: false
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
     t.index ["name"], name: "index_subdomains_on_name"
   end
