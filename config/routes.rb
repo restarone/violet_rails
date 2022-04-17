@@ -44,6 +44,14 @@ Rails.application.routes.draw do
   resources :api_namespaces, controller: 'comfy/admin/api_namespaces' do
     resources :resources, controller: 'comfy/admin/api_resources' 
     resources :api_clients, controller: 'comfy/admin/api_clients'
+    resources :external_api_clients, controller: 'comfy/admin/external_api_clients' do
+      member do
+        get 'start'
+        get 'stop'
+        get 'clear_errors'
+        get 'clear_state'
+      end
+    end
     resources :api_forms, controller: 'comfy/admin/api_forms', only: [:edit, :update]
 
     resources :resource, controller: 'resource', only: [:create]

@@ -86,7 +86,12 @@
           Payload (global)
         %pre
           = "query: { apiNamespaces { id } }"
-
+      .card-body
+        %h4
+          = link_to "External API connections", api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)
+        .my-3
+          = link_to "Create new external API Client", new_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id)
+      %hr
       - if @api_namespace.requires_authentication
         .card-body
           %h4
@@ -131,7 +136,6 @@
     %thead
       %tr
         %th.px-3= sort_link @api_resources_q, :id
-        %th.px-3 Properties
         %th.px-3= sort_link @api_resources_q, :created_at
         %th.px-3= sort_link @api_resources_q, :updated_at
         %th.px-3
@@ -141,7 +145,6 @@
       - @api_resources.each do |api_resource|
         %tr
           %td.px-3.py-2= link_to api_resource.id, api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id) 
-          %td.px-3.py-2= link_to api_resource.properties, api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id) 
           %td.px-3= api_resource.created_at.strftime('%F %T')
           %td.px-3= api_resource.updated_at.strftime('%F %T')
           %td.px-3= link_to 'Edit', edit_api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id)
