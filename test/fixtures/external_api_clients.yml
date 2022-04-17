@@ -10,7 +10,7 @@ test:
       "bearer_token": "foo"
     }
   model_definition: |
-    class External::ApiClients::Test
+    class ExternalApiModelExample
       def initialize(parameters)  
         # do init stuff
       end
@@ -19,7 +19,7 @@ test:
       end
     end
     # at the end of the file we have to implicitly return the class 
-    External::ApiClients::Test
+    ExternalApiModelExample
 modmed:
   api_namespace: one
   slug: test-api
