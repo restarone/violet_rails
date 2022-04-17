@@ -15,11 +15,10 @@ class ExternalApiClientTest < ActiveSupport::TestCase
   end
 
   test "sets status to error if error is caught and retries are exhausted" do
-    skip('need to setup webmock!')
     assert @external_api_client.retries < @external_api_client.max_retries
     assert @external_api_client.retry_in_seconds == 0
     error_message = "Gateway unavailable"
-    External::ApiClients::Test.any_instance.stubs(:start).raises(StandardError, error_message)
+    @external_api_client.evaluated_model_definition.any_instance.stubs(:start).raises(StandardError, error_message)
     assert_changes "@external_api_client.status" do
       @external_api_client.run
     end
@@ -31,22 +30,20 @@ class ExternalApiClientTest < ActiveSupport::TestCase
   end
 
   test "sets custom error_metadata if error is caught" do
-    skip
-  end
-
-  test "sets current_requests_per_minute when requests are successful" do
-    skip
-  end
-
-  test "sets current_workers when jobs are spawned" do
-    skip
+    error_message = "Gateway unavailable!!"
+    @external_api_client.evaluated_model_definition.any_instance.stubs(:start).raises(StandardError, error_message)
+    assert_changes "@external_api_client.status" do
+      @external_api_client.run
+    end
+    error_data = @external_api_client.error_metadata
+    assert error_data["backtrace"]
+    assert @external_api_client.error_message
   end
 
   test "sets retry_in_seconds if error is caught" do
-    skip
-  end
-
-  test 'sets state_metadata for tracking data ingestion state' do
-    skip
+    @external_api_client.evaluated_model_definition.any_instance.stubs(:start).raises(StandardError, 'error!')
+    assert_changes "@external_api_client.retry_in_seconds" do
+      @external_api_client.run
+    end
   end
 end

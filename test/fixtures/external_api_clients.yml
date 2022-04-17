@@ -17,6 +17,10 @@ test:
       def start
         return true
       end
+
+      def log
+        return true
+      end
     end
     # at the end of the file we have to implicitly return the class 
     ExternalApiModelExample
