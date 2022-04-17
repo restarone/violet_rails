@@ -1,0 +1,7 @@
+%h1 Editing api_namespace
+
+= render 'form'
+
+= link_to 'Show', api_namespace_external_api_client_path(api_namespace_id: @external_api_client.api_namespace.id, id: @external_api_client.id)
+\|
+= link_to 'Back', api_namespace_external_api_clients_path(api_namespace_id: @external_api_client.api_namespace.id)

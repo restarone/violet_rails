@@ -17,6 +17,7 @@ require_relative "../config/environment"
 require "rails/test_help"
 require 'mocha/minitest'
 require 'webmock/minitest'
+require 'sidekiq/testing'
 
 class ActiveSupport::TestCase
   include ActiveJob::TestHelper
