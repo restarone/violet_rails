@@ -94,6 +94,7 @@ Rails.application.routes.draw do
   end
 
   namespace 'api' do
+    devise_for :users, controllers: { sessions: 'api/sessions' }
     get '/resources', to: 'resources#index', as: :show_resources
     scope ':version' do
       scope ':api_namespace' do
@@ -112,6 +113,8 @@ Rails.application.routes.draw do
   post '/query', to: 'search#query'
   # to query the rest of the system
   post "/graphql", to: "graphql#execute"
+
+
 
   # catch web client route before it gets hijacked by the server
   mount_ember_app :client, to: "/app"

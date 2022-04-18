@@ -1,8 +1,19 @@
 {{page-title "Client"}}
-<LinkTo @route="/">
-  Home
-</LinkTo>
-<LinkTo @route="api-resources">
-  API resources
-</LinkTo>
+<div class="menu">
+  <LinkTo @route="/">
+    Home
+  </LinkTo>
+  {{#if this.model.isAuthenticated}}
+    <button {{on "click" this.invalidateSession}}>Logout!</button>
+  {{else}}
+    <LinkTo @route="sessions">
+      Login
+    </LinkTo>
+  {{/if}}
+  <LinkTo @route="api-resources">
+    API resources
+  </LinkTo>
+</div>
+
+
 {{outlet}}

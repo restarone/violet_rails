@@ -400,6 +400,10 @@ GEM
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
       redis (>= 4.2.0)
+    simple_token_authentication (1.17.0)
+      actionmailer (>= 3.2.6, < 7)
+      actionpack (>= 3.2.6, < 7)
+      devise (>= 3.2, < 6)
     simplecov (0.21.2)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
@@ -518,6 +522,7 @@ DEPENDENCIES
   sass-rails (>= 6)
   selenium-webdriver
   simple_discussion!
+  simple_token_authentication (~> 1.17)
   simplecov
   sinatra
   sitemap_generator

@@ -101,3 +101,4 @@ gem 'graphiql-rails'
 gem "ember-cli-rails", "0.10.0"
 # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
 gem 'web-console', '>= 4.1.0'
+gem "simple_token_authentication", "~> 1.17"
