@@ -146,7 +146,7 @@ ComfortableMexicanSofa.configure do |config|
   # By default you cannot have irb code inside your layouts/pages/snippets.
   # Generally this is to prevent putting something like this:
   # <% User.delete_all %> but if you really want to allow it...
-  #   config.allow_erb = false
+    config.allow_erb = true
 
   # Whitelist of all helper methods that can be used via {{cms:helper}} tag. By default
   # all helpers are allowed except `eval`, `send`, `call` and few others. Empty array
@@ -174,6 +174,7 @@ ComfortableMexicanSofa.configure do |config|
   #   config.content_json_options = {
   #     include: [:fragments]
   #   }
+
 end
 
 # Uncomment this module and `config.admin_auth` above to use custom admin authentication
