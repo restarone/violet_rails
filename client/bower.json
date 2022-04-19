@@ -1,0 +1,6 @@
+{
+  "name": "client",
+  "dependencies": {
+    "ember-simple-auth": "0.8.0"
+  }
+}
