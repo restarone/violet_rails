@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  acts_as_token_authenticatable
   include SimpleDiscussion::ForumUser
   # Include default devise modules. Others available are:
   #  and :omniauthable

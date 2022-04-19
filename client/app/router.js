@@ -12,4 +12,8 @@ Router.map(function () {
     this.route('index', { path: '/' });
     this.route('resource', { path: '/:version/:slug' });
   });
+
+  this.route('sessions', function () {
+    this.route('index', { path: '/' });
+  });
 });
