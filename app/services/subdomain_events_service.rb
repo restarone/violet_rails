@@ -6,7 +6,9 @@ class SubdomainEventsService
   def track_event
     return if !Subdomain.current.api_plugin_events_enabled
     api_namespace = ApiNamespace.find_by(slug: ApiNamespace::REGISTERED_PLUGINS[:subdomain_events][:slug])
-    api_properties = JSON.parse(api_namespace.properties).deep_symbolize_keys    
+    # to-do this should not be an issue. see https://github.com/restarone/violet_rails/issues/327
+    normalized_props = api_namespace.properties.class == Hash ? api_namespace.properties : JSON.parse(api_namespace.properties)
+    api_properties = normalized_props.deep_symbolize_keys    
     object_type = @object.class.to_s
     case object_type
     when 'Message'

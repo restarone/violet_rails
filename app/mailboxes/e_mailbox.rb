@@ -19,6 +19,7 @@ class EMailbox < ApplicationMailbox
             from: mail.from.join(', '),
             attachments: (attachments + multipart_attached).map{ |a| a[:blob] }
           )
+          SubdomainEventsService.new(message).track_event
         else
           # this is a bounce (came up to the correct subdomain, but nonexistant local name)
         end

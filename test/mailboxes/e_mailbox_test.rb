@@ -9,6 +9,7 @@ class EMailboxTest < ActionMailbox::TestCase
       @user = User.first
       @user.update(can_manage_email: true)
     end
+    Sidekiq::Testing.fake!
   end
 
   test "inbound mail routes to correct schema" do
@@ -21,6 +22,18 @@ class EMailboxTest < ActionMailbox::TestCase
             subject: "Hello world!",
             body: "Hello?"
         end
+      end
+    end
+  end
+
+  test "inbound mail is tracked if plugin: subdomain/subdomain_events is enabled" do
+    Apartment::Tenant.switch @restarone_subdomain do 
+      assert_difference "ApiResource.count", +1 do      
+        receive_inbound_email_from_mail \
+          to: '"Don Restarone" <restarone@restarone.solutions>',
+          from: '"else" <else@example.com>',
+          subject: "Hello world!",
+          body: "Hello?"
       end
     end
   end
