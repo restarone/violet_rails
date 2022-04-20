@@ -62,6 +62,7 @@ class ApiAction < ApplicationRecord
 
   def evaluate_payload
     payload = payload_mapping.gsub('self.', 'self.api_resource.properties_object.')
+    byebug
     eval(payload).to_json
   end
 

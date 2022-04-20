@@ -6,6 +6,7 @@ class ApiResourceSpawnJob
     api_resource = api_namespace.api_resources.create!(
       properties: json
     )
+    byebug
     api_namespace.create_api_actions.each{|action| action.execute_action}
   end
 end

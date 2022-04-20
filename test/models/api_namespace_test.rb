@@ -14,8 +14,12 @@ class ApiNamespaceTest < ActiveSupport::TestCase
   test "plugin: subdomain/subdomain_events -> tracks message creation by creating ApiResource" do
     service = SubdomainEventsService.new(@message)
     assert_difference "ApiResource.count", +1 do      
-      service.track_event
-      Sidekiq::Worker.drain_all
+      assert_changes "@subdomain_events_api.create_api_actions.first.lifecycle_stage" do        
+        service.track_event
+        Sidekiq::Worker.drain_all
+      end
     end
+    byebug
+    assert_not_equal @subdomain_events_api.create_api_actions.first.lifecycle_stage, 'failed'
   end
 end

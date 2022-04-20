@@ -89,5 +89,16 @@ error_api_action_two:
   redirect_url: '/'
   api_namespace: one
 
+create_api_action_plugin_subdomain_events:
+  type: CreateApiAction
+  action_type: send_web_request
+  include_api_resource_data: true
+  payload_mapping: >
+    {
+      "content": "#{self.representation.body}"
+    }
+  request_url: "http://www.example.com/success"
+  api_namespace: plugin_subdomain_events
+  http_method: post
 
 
