@@ -2,6 +2,8 @@ require "test_helper"
 
 class ApiNamespaceTest < ActiveSupport::TestCase
   setup do
+    @subdomain = subdomains(:public)
+    @subdomain.update(api_plugin_events_enabled: true)
     @subdomain_events_api = api_namespaces(:plugin_subdomain_events)
     @subdomain_events_api.api_resources.destroy_all
     @message_thread = message_threads(:public)
