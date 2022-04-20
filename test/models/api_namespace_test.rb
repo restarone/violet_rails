@@ -19,6 +19,7 @@ class ApiNamespaceTest < ActiveSupport::TestCase
         Sidekiq::Worker.drain_all
       end
     end
+    @subdomain_events_api.api_resources.reload.last.properties
   end
 
   test "plugin: subdomain/subdomain_events -> tracks message creation by creating ApiResource & running actions" do
