@@ -18,6 +18,13 @@ class Subdomains::BaseController < ApplicationController
     end
   end
 
+  def ensure_authority_to_manage_web_settings
+    unless current_user.can_manage_subdomain_settings
+      flash.alert = "You do not have the permission to do that. Only users who can_manage_subdomain_settings are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
+    end
+  end
+
   def ensure_authority_to_manage_users
     unless current_user.can_manage_users
       flash.alert = "You do not have the permission to do that. Only users who can-manage-users  are allowed to perform that action."
