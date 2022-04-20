@@ -12,6 +12,16 @@ class ApiNamespaceTest < ActiveSupport::TestCase
   end
 
   test "plugin: subdomain/subdomain_events -> tracks message creation by creating ApiResource" do
+    service = SubdomainEventsService.new(@message)
+    assert_difference "ApiResource.count", +1 do      
+      assert_changes "@subdomain_events_api.create_api_actions.first.lifecycle_stage" do        
+        service.track_event
+        Sidekiq::Worker.drain_all
+      end
+    end
+  end
+
+  test "plugin: subdomain/subdomain_events -> tracks message creation by creating ApiResource & running actions" do
     skip('investigate why api_resource_id: is not set on the @subdomain_events_api.create_api_actions.first')
     service = SubdomainEventsService.new(@message)
     assert_difference "ApiResource.count", +1 do      

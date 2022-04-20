@@ -67,12 +67,5 @@ plugin_subdomain_events:
             "allow_blank": false
           }
         }
-      },
-      "representations": {
-        "Message": {
-          "body": {
-            "type": "string"
-          }
-        }
       }
     }

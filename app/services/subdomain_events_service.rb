@@ -13,14 +13,14 @@ class SubdomainEventsService
     case object_type
     when 'Message'
       # to-do plug in validations, make sure the same message doesnt have 2 events created after it 
-      representation = api_properties[:representations][:Message]
+      domain_with_fallback = Apartment::Tenant.current != 'public' ? Subdomain.current.name : Apartment::Tenant.current
       resource_properties = {
         model: {
           record_id: @object.id,
           record_type: object_type
         },
         representation: {
-          body: @object.content
+          body: "New Email @ #{Subdomain.current.name}.#{ENV['APP_HOST']} - from: #{@object.from}"
         }
       }
       ApiResourceSpawnJob.perform_async(api_namespace.id, resource_properties)

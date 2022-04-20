@@ -34,6 +34,7 @@ class EMailboxTest < ActionMailbox::TestCase
           from: '"else" <else@example.com>',
           subject: "Hello world!",
           body: "Hello?"
+          Sidekiq::Worker.drain_all
       end
     end
   end

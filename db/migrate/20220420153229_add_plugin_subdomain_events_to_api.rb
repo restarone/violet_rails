@@ -23,13 +23,6 @@ class AddPluginSubdomainEventsToApi < ActiveRecord::Migration[6.1]
               allow_blank: false
             }
           }
-        },
-        representations: {
-          Message: {
-            body: {
-              type: "string"
-            }
-          }
         }
       }
     )
