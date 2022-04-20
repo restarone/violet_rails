@@ -45,6 +45,36 @@ class User < ApplicationRecord
     can_manage_api: true
   }
 
+  SESSION_TIMEOUT = [
+    {
+      label: '1 hour',
+      exec: '1.hour',
+      slug: '1-hour'
+    },
+    {
+      label: '3 hours',
+      exec: '3.hours',
+      slug: '3-hour'
+    },
+    {
+      label: '6 hours',
+      exec: '6.hours',
+      slug: '6-hour'
+    },
+    {
+      label: '1 day',
+      exec: '1.day',
+      slug: '1-day'
+    },
+    {
+      label: '1 week',
+      exec: '1.week',
+      slug: '1-week'
+    }
+  ]
+
+  validates :session_timeoutable_in, inclusion: { in: User::SESSION_TIMEOUT.map{ |n| n[:slug] } }
+
   has_one_attached :avatar
 
   def subdomain
@@ -66,6 +96,11 @@ class User < ApplicationRecord
   def self.public_attributes
     attribute_names - PRIVATE_ATTRIBUTES.map(&:to_s)
   end
+
+  def timeout_in
+    timeout = User::SESSION_TIMEOUT.detect{|n| n[:slug] == self.session_timeoutable_in }[:exec]
+    eval(timeout)
+   end
   
   private
 
