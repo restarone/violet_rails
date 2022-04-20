@@ -27,4 +27,8 @@ class UserTest < ActiveSupport::TestCase
     assert user.save
     user.destroy
   end
+
+  test "can infer session timeout time (default)" do
+    assert_equal @user.timeout_in, eval(User::SESSION_TIMEOUT[0][:exec])
+  end
 end

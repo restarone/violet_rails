@@ -70,7 +70,8 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
       :moderator,
       :name,
       :can_view_restricted_pages,
-      :deliver_analytics_report
+      :deliver_analytics_report,
+      :can_manage_subdomain_settings
     )
   end
 
