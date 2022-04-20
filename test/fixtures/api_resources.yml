@@ -23,3 +23,16 @@ two:
 user:
   api_namespace: users
   properties: {first_name: "Don", last_name: "Restarone"}
+
+plugin_subdomain_event:
+  api_namespace: plugin_subdomain_events
+  properties:  >
+    {
+      "object": {
+        "record_id": 1,
+        "record_type": "Message"
+      },
+      "representation": {
+        "body": "<h1>Hello</h1>"
+      }
+    }
