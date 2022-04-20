@@ -24,11 +24,11 @@ user:
   api_namespace: users
   properties: {first_name: "Don", last_name: "Restarone"}
 
-plugin_subdomain_event:
+plugin_subdomain_message_event:
   api_namespace: plugin_subdomain_events
   properties:  >
     {
-      "object": {
+      "model": {
         "record_id": 1,
         "record_type": "Message"
       },

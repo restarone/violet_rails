@@ -8,12 +8,28 @@ class AddPluginSubdomainEventsToApi < ActiveRecord::Migration[6.1]
       requires_authentication: true,
       namespace_type: 'create-read-update-delete',
       properties: {
-        object: {
-          record_id: "required",
-          record_type: "required"
+        model_definition: {
+          record_id: {
+            type: "integer",
+            validations: {
+              allow_blank: false,
+              primary_key: true,
+              unique: true
+            }
+          },
+          record_type: {
+            type: "string",
+            validations: {
+              allow_blank: false
+            }
+          }
         },
-        representation: {
-          body: ""
+        representations: {
+          Message: {
+            body: {
+              type: "string"
+            }
+          }
         }
       }
     )
