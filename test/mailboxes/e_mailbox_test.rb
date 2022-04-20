@@ -27,15 +27,14 @@ class EMailboxTest < ActionMailbox::TestCase
   end
 
   test "inbound mail is tracked if plugin: subdomain/subdomain_events is enabled" do
-    Apartment::Tenant.switch @restarone_subdomain do 
-      assert_difference "ApiResource.count", +1 do      
-        receive_inbound_email_from_mail \
-          to: '"Don Restarone" <restarone@restarone.solutions>',
-          from: '"else" <else@example.com>',
-          subject: "Hello world!",
-          body: "Hello?"
-          Sidekiq::Worker.drain_all
-      end
+    subdomains(:public).update(api_plugin_events_enabled: true)
+    assert_difference "ApiResource.count", +1 do      
+      receive_inbound_email_from_mail \
+        to: '"Don Restarone" <www@restarone.solutions>',
+        from: '"else" <else@example.com>',
+        subject: "Hello world!",
+        body: "Hello?"
+        Sidekiq::Worker.drain_all
     end
   end
 
