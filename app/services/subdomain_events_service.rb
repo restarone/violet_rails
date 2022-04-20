@@ -15,14 +15,12 @@ class SubdomainEventsService
       # to-do plug in validations, make sure the same message doesnt have 2 events created after it 
       representation = api_properties[:representations][:Message]
       resource_properties = {
-        properties: {
-          model: {
-            record_id: @object.id,
-            record_type: object_type
-          },
-          representation: {
-            body: @object.content
-          }
+        model: {
+          record_id: @object.id,
+          record_type: object_type
+        },
+        representation: {
+          body: @object.content
         }
       }
       ApiResourceSpawnJob.perform_async(api_namespace.id, resource_properties)
