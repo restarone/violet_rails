@@ -3,9 +3,8 @@ require "test_helper"
 class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
-    Apartment::Tenant.switch 'public' do
-      @other_user = User.create!(email: 'contact1@restarone.com', password: '123456', password_confirmation: '123456', confirmed_at: Time.now)
-    end
+    @other_user = User.create!(email: 'contact1@restarone.com', password: '123456', password_confirmation: '123456', confirmed_at: Time.now)
+    
     @user.update(global_admin: true)
     @restarone_subdomain = Subdomain.find_by(name: 'restarone')
     Apartment::Tenant.switch @restarone_subdomain.name do
@@ -92,7 +91,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     assert_redirected_to simple_discussion.forum_thread_path(id: ForumThread.last.slug)
   end
 
-  test 'notifies mods when thread is created' do
+  test 'notifies mods when thread/reply is created' do
     assert @user.update(moderator: true)
     sign_in(@other_user)
     payload = {
@@ -115,5 +114,15 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     end
     assert_response :redirect
     assert_redirected_to simple_discussion.forum_thread_path(id: ForumThread.last.slug)
+
+    assert_difference "ForumPost.count" do
+      perform_enqueued_jobs do
+        post simple_discussion.forum_thread_forum_posts_path(ForumThread.last), params: {
+          forum_post: {
+            body: "Reply"
+          }
+        }
+      end
+    end
   end
 end
