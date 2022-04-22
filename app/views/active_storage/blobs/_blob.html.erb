@@ -10,7 +10,7 @@
       <span class="attachment__name"><%= blob.filename %></span>
       <span class="attachment__size"><%= number_to_human_size blob.byte_size %></span>
     <% end %>
-    <%= link_to rails_blob_url(blob, subdomain: Apartment::Tenant.current),  target: '_blank' do %>
+    <%= link_to Rails.application.routes.url_helpers.rails_blob_url(blob, subdomain: Apartment::Tenant.current, host: Rails.application.config.action_mailer.default_url_options[:host]),  target: '_blank' do %>
       <span>Download</span>
     <% end %>
   </figcaption>
