@@ -3,7 +3,9 @@ class ApplicationController < ActionController::Base
     if session[:user_return_to] then return session[:user_return_to] end
     if resource.class == User
       if resource.global_admin
-        admin_subdomain_requests_url
+        admin_subdomain_requests_path
+      elsif resource.can_access_admin
+        comfy_admin_cms_path
       else
         # tenant
         root_url(subdomain: Apartment::Tenant.current)

@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 module RSolutions::DeviseAuth
   def authenticate
-    if current_user
+    if current_user && current_user.can_access_admin
       return true
     else
+      flash.alert = "You do not have the permission to do that. Only users who can_access_admin are allowed to perform that action."
       redirect_to root_url(subdomain: Apartment::Tenant.current)
     end
   end
