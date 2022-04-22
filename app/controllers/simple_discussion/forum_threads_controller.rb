@@ -45,6 +45,7 @@ class SimpleDiscussion::ForumThreadsController < SimpleDiscussion::ApplicationCo
 
     if @forum_thread.save
       SimpleDiscussion::ForumThreadNotificationJob.perform_later(@forum_thread)
+      SubdomainEventsService.new(@forum_thread).track_event
       redirect_to simple_discussion.forum_thread_path(@forum_thread)
     else
       render action: :new

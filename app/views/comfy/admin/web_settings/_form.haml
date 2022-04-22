@@ -30,7 +30,7 @@
 
 .my-5
   %strong
-    Extensions
+    Core Extensions
 .form-group
   %label
     Blog:
@@ -53,6 +53,14 @@
   %label
     Web console (experimental):
   = f.check_box :web_console_enabled
+
+.my-5
+  %strong
+    API Extensions
+.form-group
+  %label
+    Subdomain Events (subdomain/event v1):
+  = f.check_box :api_plugin_events_enabled
 
 
 .my-5
