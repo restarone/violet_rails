@@ -20,9 +20,9 @@ class Mailbox::BaseControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
   end
 
-  test "should allow passthrough if allowed to manage email" do
+  test "should allow access if allowed to manage email" do
     sign_in(@user)
-    @user.update(can_manage_email: true)
+    @user.update(can_manage_email: true, can_access_admin: true)
     get mailbox_url(subdomain: @restarone_subdomain.name)
     assert_response :success
     assert_template :show
