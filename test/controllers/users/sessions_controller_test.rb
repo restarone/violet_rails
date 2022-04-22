@@ -36,6 +36,55 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_url(subdomain: @restarone_subdomain)
   end
 
+  test 'redirects to subdomain admin if the user is allowed to access admin area + can manage web' do
+    payload = {
+      user: {
+        email: @user.email,
+        password: '123456'
+      }
+    }
+    @user.update!(can_access_admin: true, can_manage_web: true)
+    post user_session_path, params: payload
+    follow_redirect!
+    assert_redirected_to comfy_admin_cms_site_pages_path(site_id: Comfy::Cms::Site.first.id)
+  end
+
+  test 'redirects to subdomain sysadmin if the user is global admin' do
+    payload = {
+      user: {
+        email: @user.email,
+        password: '123456'
+      }
+    }
+    @user.update!(global_admin: true)
+    post user_session_path, params: payload
+    assert_redirected_to admin_subdomain_requests_path
+  end
+
+  test 'redirects to page if defined' do
+    @user.update!(can_access_admin: false)
+    layout = Comfy::Cms::Site.first.layouts.create(
+      label: 'default',
+      identifier: 'default',
+      content: "{{cms:wysiwyg content}}",
+      app_layout: 'website'
+    )
+    page = layout.pages.create(
+      site_id: Comfy::Cms::Site.first.id,
+      label: 'foo',
+      slug: 'foo'
+    )
+    subdomains(:public).update!(after_sign_in_path: '/foo')
+    payload = {
+      user: {
+        email: @user.email,
+        password: '123456'
+      }
+    }
+    post user_session_path, params: payload
+    assert_redirected_to '/foo'
+  end
+
   test 'tenant user is not found in global admin (public schema)' do
     payload = {
       user: {

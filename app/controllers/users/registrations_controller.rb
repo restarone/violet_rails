@@ -54,7 +54,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # The path used after sign up.
   def after_sign_up_path_for(resource)
-    return root_url(subdomain: Apartment::Tenant.current)
+    after_sign_up_path = Subdomain.current.after_sign_up_path
+    if after_sign_up_path
+      redirect_to after_sign_up_path
+    else
+      return root_url(subdomain: Apartment::Tenant.current)
+    end
   end
 
   # The path used after sign up for inactive accounts.

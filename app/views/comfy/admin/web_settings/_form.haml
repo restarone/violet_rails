@@ -30,7 +30,7 @@
 
 .my-5
   %strong
-    Extensions
+    Core Extensions
 .form-group
   %label
     Blog:
@@ -54,6 +54,14 @@
     Web console (experimental):
   = f.check_box :web_console_enabled
 
+.my-5
+  %strong
+    API Extensions
+.form-group
+  %label
+    Subdomain Events (subdomain/event v1):
+  = f.check_box :api_plugin_events_enabled
+
 
 .my-5
   %strong
@@ -66,6 +74,18 @@
   %label
     Private forum (if enabled, users must sign up first or be invited to be able to access the forum)
   = f.check_box :forum_is_private
+
+.my-5
+  %strong
+    Redirections
+.form-group
+  %label
+    After sign in, redirect users to (relative path)
+  = f.text_field :after_sign_in_path
+.form-group
+  %label
+    After sign up, redirect users to (relative path)
+  = f.text_field :after_sign_up_path
 
 .my-5
   %strong

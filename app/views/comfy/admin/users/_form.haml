@@ -1,0 +1,74 @@
+= form_with model: @user, url: admin_user_path, method: :patch do |f|
+  .form-group
+    %label 
+      Name
+    = f.text_field :name
+    .card.border-0.my-5
+      %h4 Permissions
+
+      .card.mt-5
+        .card-header
+          %strong
+            Internal permissions  
+        .card-body
+          .card
+            .card-header 
+              .d-inline
+                = f.check_box :can_access_admin
+                %label
+                  %strong 
+                    Can access admin panel (required for functions below)
+            .card-body
+              .form-group
+                = f.check_box :can_manage_web
+                %label 
+                  Can manage website (Layouts, Pages, Files, Snippets)
+              .form-group
+                = f.check_box :can_manage_email
+                %label 
+                  Can manage emailbox
+              .form-group
+                = f.check_box :can_manage_api
+                %label 
+                  Can manage API
+              .form-group
+                = f.check_box :can_manage_blog
+                %label 
+                  Can manage Blog
+          .card.my-5
+            .card-header 
+              %strong
+                Analytics, Compliance and Management Permissions 
+            .card-body
+              .form-group
+                = f.check_box :deliver_analytics_report
+                %label 
+                  Deliver Analytics Report
+              .form-group
+                = f.check_box :can_manage_users
+                %label 
+                  Can manage and invite users
+              .form-group
+                = f.check_box :can_manage_subdomain_settings
+                %label 
+                  Can manage subdomain
+      .card.mt-5
+        .card-header
+          %strong
+            External permissions  
+        .card-body
+          .card
+            .card-header 
+              %strong
+                Content permissions 
+            .card-body
+              .form-group
+                = f.check_box :can_view_restricted_pages
+                %label 
+                  Can view restricted web pages
+              .form-group
+                = f.check_box :moderator
+                %label 
+                  Can manage forum
+  = f.submit "Update", class: 'btn btn-success'
+  = link_to "Remove", admin_user_path(id: @user.id), method: :delete, class: 'btn btn-sm btn-danger', data: { confirm: 'Are you sure you want to remove this user? This cannot be undone' }
