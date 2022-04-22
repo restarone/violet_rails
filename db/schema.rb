@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_04_20_153229) do
+ActiveRecord::Schema.define(version: 2022_04_22_003307) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -464,6 +464,8 @@ ActiveRecord::Schema.define(version: 2022_04_20_153229) do
     t.boolean "ember_enabled", default: false
     t.boolean "graphql_enabled", default: false
     t.boolean "web_console_enabled", default: false
+    t.string "after_sign_up_path"
+    t.string "after_sign_in_path"
     t.boolean "api_plugin_events_enabled", default: false
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
     t.index ["name"], name: "index_subdomains_on_name"
@@ -509,6 +511,7 @@ ActiveRecord::Schema.define(version: 2022_04_20_153229) do
     t.boolean "can_manage_api", default: false
     t.boolean "can_manage_subdomain_settings", default: false
     t.string "session_timeoutable_in", default: "1-hour"
+    t.boolean "can_access_admin", default: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
