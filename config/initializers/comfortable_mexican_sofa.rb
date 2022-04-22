@@ -19,7 +19,7 @@ module ComfyPublicAuthentication
         return true
       else
         flash.alert = "You do not have the permission to do that. Only users who can_view_restricted_pages are allowed to perform that action."
-        redirect_to comfy_admin_cms_path
+        redirect_to root_path
       end
     else
       flash.alert = "Please login first to view that page"
