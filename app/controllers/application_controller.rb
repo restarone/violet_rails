@@ -15,4 +15,13 @@ class ApplicationController < ActionController::Base
       end
     end
   end
+
+  def after_accept_path_for(resource)
+    after_sign_up_path = Subdomain.current.after_sign_up_path
+    if after_sign_up_path
+      return after_sign_up_path
+    else
+      return root_url(subdomain: Apartment::Tenant.current)
+    end
+  end
 end

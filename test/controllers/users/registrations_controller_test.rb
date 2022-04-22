@@ -100,8 +100,36 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
         refute latest_user.can_manage_email
         refute latest_user.can_manage_users
         refute latest_user.can_manage_blog
+        assert_equal flash.notice, "A message with a confirmation link has been sent to your email address. Please follow the link to activate your account."
       end
     end
+  end
+
+  test "should allow sign up at subdomain scope be notified " do
+    layout = Comfy::Cms::Site.first.layouts.create(
+      label: 'default',
+      identifier: 'default',
+      content: "{{cms:wysiwyg content}}",
+      app_layout: 'website'
+    )
+    page = layout.pages.create(
+      site_id: Comfy::Cms::Site.first.id,
+      label: 'foo',
+      slug: 'foo'
+    )
+    after_path = '/foo'
+    @public_subdomain.update(after_sign_up_path: after_path)
+    email = 'test1@tester.com'
+    password = '123456'
+    payload = {
+      user: {
+        email: email,
+        password: password,
+        password_confirmation: password
+      }
+    }
+    post user_registration_url, params: payload
+    assert_redirected_to after_path
   end
 
 

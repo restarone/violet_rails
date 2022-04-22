@@ -54,20 +54,24 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # The path used after sign up.
   def after_sign_up_path_for(resource)
+    resolve_redirect
+  end
+
+  # The path used after sign up for inactive accounts. (when email isnt confirmed)
+  def after_inactive_sign_up_path_for(resource)
+    resolve_redirect
+  end
+
+  private
+
+  def resolve_redirect
     after_sign_up_path = Subdomain.current.after_sign_up_path
     if after_sign_up_path
-      redirect_to after_sign_up_path
+      return after_sign_up_path
     else
       return root_url(subdomain: Apartment::Tenant.current)
     end
   end
-
-  # The path used after sign up for inactive accounts.
-  def after_inactive_sign_up_path_for(resource)
-    return root_url(subdomain: Apartment::Tenant.current)
-  end
-
-  private
 
 
   def verify_ability_to_self_signup
