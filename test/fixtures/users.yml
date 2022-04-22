@@ -3,9 +3,11 @@ public:
   email: hello-world@restarone.solutions
   encrypted_password: $2a$12$PFNZqtrPOFmq6kouyeZTOutdHEb/nqOsZzJiIM.3XmpDYj8IglbXy # 123456
   confirmed_at: <%= Time.now %>
+  can_access_admin: true
 
 one:
   email: test@restarone.solutions
   encrypted_password: $2a$12$PFNZqtrPOFmq6kouyeZTOutdHEb/nqOsZzJiIM.3XmpDYj8IglbXy # 123456
   created_at: <%= 2.weeks.ago %>
   confirmed_at: <%= Time.now %>
+  can_access_admin: true

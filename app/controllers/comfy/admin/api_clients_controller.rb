@@ -1,5 +1,5 @@
 class Comfy::Admin::ApiClientsController < Comfy::Admin::Cms::BaseController
-  before_action :ensure_authority_to_manage_web
+  before_action :ensure_authority_to_manage_api
   before_action :set_api_client, only: %i[ show edit update destroy ]
   before_action :set_api_namespace
 

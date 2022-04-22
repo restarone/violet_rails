@@ -6,18 +6,25 @@ class Comfy::Admin::Cms::LayoutsControllerTest < ActionDispatch::IntegrationTest
     Apartment::Tenant.switch @restarone_subdomain do
       @site = Comfy::Cms::Site.first
       @user = User.first
-      refute @user.can_manage_web
       @layout = @site.layouts.last
       @page = @layout.pages.last
     end
   end
 
-  test 'allows #index if not permissioned' do
+  test 'allows #index if permissioned' do
+    @user.update(can_access_admin: true)
     sign_in(@user)
     get comfy_admin_cms_site_layouts_url(subdomain: @restarone_subdomain, site_id: @site.id)
     assert_template :index
     assert_response :success
   end
+
+  test 'denies #index if not permissioned' do
+    sign_in(@user)
+    get comfy_admin_cms_site_layouts_url(subdomain: @restarone_subdomain, site_id: @site.id)
+    assert_response :redirect
+  end
+
 
   test 'denies #new if not permissioned' do
     sign_in(@user)

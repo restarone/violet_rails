@@ -49,6 +49,10 @@
   %label
     Graphql (experimental):
   = f.check_box :graphql_enabled
+.form-group
+  %label
+    Web console (experimental):
+  = f.check_box :web_console_enabled
 
 
 .my-5
@@ -62,6 +66,18 @@
   %label
     Private forum (if enabled, users must sign up first or be invited to be able to access the forum)
   = f.check_box :forum_is_private
+
+.my-5
+  %strong
+    Redirections
+.form-group
+  %label
+    After sign in, redirect users to (relative path, eg: /foo )
+  = f.text_field :after_sign_in_path
+.form-group
+  %label
+    After sign up, redirect users to (relative path)
+  = f.text_field :after_sign_up_path
 
 .my-5
   %strong

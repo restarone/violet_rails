@@ -8,7 +8,7 @@ class Comfy::Admin::WebSettingsControllerTest < ActionDispatch::IntegrationTest
 
   test "get #edit by authorized personnel" do
     sign_in(@user)
-    @user.update(can_manage_web: true)
+    @user.update(can_manage_subdomain_settings: true)
     get edit_web_settings_url(subdomain: @domain)
     assert_response :success
     assert_template :edit
@@ -16,7 +16,7 @@ class Comfy::Admin::WebSettingsControllerTest < ActionDispatch::IntegrationTest
 
   test "denies #edit if not permissioned" do
     sign_in(@user)
-    @user.update(can_manage_web: false)
+    @user.update(can_manage_subdomain_settings: false)
     get edit_web_settings_url(subdomain: @domain)
     assert_response :redirect
     assert flash.alert
@@ -24,7 +24,7 @@ class Comfy::Admin::WebSettingsControllerTest < ActionDispatch::IntegrationTest
 
   test "#denies #update if not permissioned" do
     sign_in(@user)
-    @user.update(can_manage_web: false)
+    @user.update(can_manage_subdomain_settings: false)
     payload = {
     }
     patch web_settings_url(subdomain: @domain, id: @user.id), params: payload
@@ -33,7 +33,7 @@ class Comfy::Admin::WebSettingsControllerTest < ActionDispatch::IntegrationTest
 
   test "#update if permissioned" do
     sign_in(@user)
-    @user.update(can_manage_web: true)
+    @user.update(can_manage_subdomain_settings: true)
     payload = {
       subdomain: {
         html_title: 'foo',
@@ -47,5 +47,12 @@ class Comfy::Admin::WebSettingsControllerTest < ActionDispatch::IntegrationTest
       patch web_settings_url(subdomain: @domain, id: @user.id), params: payload
       assert_response :redirect
     end
+  end
+
+  test "#edit if permissioned" do
+    sign_in(@user)
+    @user.update(can_manage_subdomain_settings: true)
+    get edit_web_settings_path
+    assert_response :success
   end
 end

@@ -26,5 +26,8 @@ module RSolutions
     config.i18n.default_locale = :en
     config.i18n.available_locales = [:en]
     config.i18n.fallbacks = [:en]
+
+    # since web console usage depends on subdomain rules
+    config.web_console.development_only = false
   end
 end

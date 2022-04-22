@@ -15,6 +15,8 @@ class ApiNamespace < ApplicationRecord
   has_many :api_clients, dependent: :destroy
   accepts_nested_attributes_for :api_clients
 
+  has_many :external_api_clients, dependent: :destroy
+
   has_many :non_primitive_properties, dependent: :destroy
   accepts_nested_attributes_for :non_primitive_properties, allow_destroy: true
  
