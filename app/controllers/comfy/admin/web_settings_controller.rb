@@ -1,6 +1,6 @@
 class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
   layout "comfy/admin/cms"
-  before_action :ensure_authority_to_manage_web
+  before_action :ensure_authority_to_manage_web_settings
 
   def edit
   end
@@ -38,6 +38,8 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
       :ember_enabled,
       :graphql_enabled,
       :web_console_enabled,
+      :after_sign_in_path,
+      :after_sign_up_path
     )
   end
 end

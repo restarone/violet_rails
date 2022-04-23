@@ -51,7 +51,7 @@ class Comfy::Cms::ContentControllerTest < ActionDispatch::IntegrationTest
     sign_in(@user)
     get root_url(subdomain: @restarone_subdomain.name)
     assert_response :redirect
-    assert_redirected_to comfy_admin_cms_path
+    assert_redirected_to root_path
   end
 
   test "allow restricted page (if permissioned)" do

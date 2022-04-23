@@ -73,6 +73,18 @@
 
 .my-5
   %strong
+    Redirections
+.form-group
+  %label
+    After sign in, redirect users to (relative path, eg: /foo )
+  = f.text_field :after_sign_in_path
+.form-group
+  %label
+    After sign up, redirect users to (relative path)
+  = f.text_field :after_sign_up_path
+
+.my-5
+  %strong
     Maintenance
 .form-group
   %label
