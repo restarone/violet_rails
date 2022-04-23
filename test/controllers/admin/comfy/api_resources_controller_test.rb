@@ -45,13 +45,13 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
 
   test "should show api_resource" do
     sign_in(@user)
-    get api_namespace_resource_url(api_namespace_id: @api_namespace.id, id: ApiResource.last.id)
+    get api_namespace_resource_url(api_namespace_id: @api_namespace.id, id: @api_namespace.api_resources.sample.id)
     assert_response :success
   end
 
   test "should get edit" do
     sign_in(@user)
-    get edit_api_namespace_resource_url(api_namespace_id: @api_namespace.id, id: ApiResource.last.id)
+    get edit_api_namespace_resource_url(api_namespace_id: @api_namespace.id, id: @api_namespace.api_resources.sample.id)
     assert_response :success
   end
 

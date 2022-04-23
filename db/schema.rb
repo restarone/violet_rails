@@ -464,6 +464,7 @@ ActiveRecord::Schema.define(version: 2022_04_22_003307) do
     t.boolean "ember_enabled", default: false
     t.boolean "graphql_enabled", default: false
     t.boolean "web_console_enabled", default: false
+    t.boolean "api_plugin_events_enabled", default: false
     t.string "after_sign_up_path"
     t.string "after_sign_in_path"
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
