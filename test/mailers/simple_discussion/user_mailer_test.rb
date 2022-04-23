@@ -29,4 +29,18 @@ class SimpleDiscussion::UserMailerTest < ActionMailer::TestCase
 
     assert(action_txt_content.to_s, SimpleDiscussion::UserMailer.deliveries.first.body.to_s)
   end
+
+  test 'sends email successfully when the forum-post has image attachment' do
+    file_path = Rails.root.join('test','fixtures', 'files', 'fixture_image.png')
+    attachment = ActiveStorage::Blob.create_and_upload!(io: File.open(file_path), filename: 'fixture_image', content_type: 'image/png', metadata: nil)
+    action_txt_content = ActionText::Content.new(%Q(<action-text-attachment sgid="#{attachment.attachable_sgid}"></action-text-attachment>))
+
+    forum_post = ForumPost.create!(forum_thread_id: @forum_thread.id, user_id: @user.id, body: action_txt_content.to_s)
+
+    assert_difference "SimpleDiscussion::UserMailer.deliveries.size", +1 do
+      SimpleDiscussion::UserMailer.new_post(forum_post, @other_user).deliver_now
+    end
+
+    assert(action_txt_content.to_s, SimpleDiscussion::UserMailer.deliveries.first.body.to_s)
+  end
 end
