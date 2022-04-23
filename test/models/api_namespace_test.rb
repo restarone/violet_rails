@@ -14,12 +14,17 @@ class ApiNamespaceTest < ActiveSupport::TestCase
   test "plugin: subdomain/subdomain_events -> tracks message creation by creating ApiResource" do
     service = SubdomainEventsService.new(@message)
     assert_difference "ApiResource.count", +1 do      
-      assert_changes "@subdomain_events_api.create_api_actions.first.lifecycle_stage" do        
-        service.track_event
-        Sidekiq::Worker.drain_all
-      end
+      service.track_event
+      Sidekiq::Worker.drain_all
     end
-    @subdomain_events_api.api_resources.reload.last.properties
+    resource = @subdomain_events_api.api_resources.reload.last
+    model =  resource.properties["model"]
+    representation =  resource.properties["representation"]
+    assert_equal ["model", "representation"].sort, resource.properties.keys.sort
+    assert_equal ["record_id", "record_type"].sort, model.keys.sort
+    assert_equal model["record_type"].constantize, Message
+    assert model["record_type"].constantize.send(:find, model["record_id"])
+    assert_equal representation["body"].class, String
   end
 
   test "plugin: subdomain/subdomain_events -> tracks message creation by creating ApiResource & running actions" do
