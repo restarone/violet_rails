@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '2.6.6'
+ruby '3.0.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails', branch: 'main'
 gem 'rails', '~> 6.1.5'
@@ -98,6 +98,6 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem "graphql", "~> 2.0"
 gem 'graphiql-rails'
-gem "ember-cli-rails", "0.10.0"
+gem "ember-cli-rails", "0.11.0"
 # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
 gem 'web-console', '>= 4.1.0'
