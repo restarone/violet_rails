@@ -52,6 +52,7 @@ class ApiAction < ApplicationRecord
       end 
     rescue => e
       self.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
+      byebug
       execute_error_actions
     end
   end
@@ -62,6 +63,7 @@ class ApiAction < ApplicationRecord
 
   def evaluate_payload
     payload = payload_mapping.gsub('self.', 'self.api_resource.properties_object.')
+    byebug
     eval(payload).to_json
   end
 
