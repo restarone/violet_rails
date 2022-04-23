@@ -106,7 +106,7 @@ class SubdomainTest < ActiveSupport::TestCase
     @subdomain.update!(api_plugin_events_enabled: false)
     message_thread = message_threads(:public)
     message = message_thread.messages.create!(content: "Hello")
-    service = SubdomainEventsService.new(message)
+    service = ApiNamespace::Plugin::V1::SubdomainEventsService.new(message)
     assert_no_difference "ApiResource.count" do      
       service.track_event
       Sidekiq::Worker.drain_all
@@ -117,7 +117,7 @@ class SubdomainTest < ActiveSupport::TestCase
     @subdomain.update!(api_plugin_events_enabled: true)
     message_thread = message_threads(:public)
     message = message_thread.messages.create!(content: "Hello")
-    service = SubdomainEventsService.new(message)
+    service = ApiNamespace::Plugin::V1::SubdomainEventsService.new(message)
     assert_difference "ApiResource.count", +1 do      
       service.track_event
       Sidekiq::Worker.drain_all

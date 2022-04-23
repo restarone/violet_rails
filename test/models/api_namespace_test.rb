@@ -12,7 +12,7 @@ class ApiNamespaceTest < ActiveSupport::TestCase
   end
 
   test "plugin: subdomain/subdomain_events -> tracks message creation by creating ApiResource" do
-    service = SubdomainEventsService.new(@message)
+    service = ApiNamespace::Plugin::V1::SubdomainEventsService.new(@message)
     assert_difference "ApiResource.count", +1 do      
       service.track_event
       Sidekiq::Worker.drain_all
@@ -28,7 +28,7 @@ class ApiNamespaceTest < ActiveSupport::TestCase
   end
 
   test "plugin: subdomain/subdomain_events -> tracks message creation by creating ApiResource & running actions" do
-    service = SubdomainEventsService.new(@message)
+    service = ApiNamespace::Plugin::V1::SubdomainEventsService.new(@message)
     assert_difference "ApiResource.count", +1 do      
       service.track_event
       Sidekiq::Worker.drain_all

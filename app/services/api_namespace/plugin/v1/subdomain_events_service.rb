@@ -1,4 +1,4 @@
-class SubdomainEventsService
+class ApiNamespace::Plugin::V1::SubdomainEventsService
   def initialize(object)
     @object = object
   end
