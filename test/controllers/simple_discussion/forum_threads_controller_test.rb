@@ -11,6 +11,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
       @restarone_user = User.find_by(email: 'contact@restarone.com')
     end
     @forum_category = ForumCategory.create!(name: 'test', slug: 'test')
+    Sidekiq::Testing.fake!
   end
 
   test 'denies #index if forum is disabled' do
@@ -123,6 +124,51 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
           }
         }
       end
+    end
+  end
+
+  test 'allows new thread creation and tracks if plugin: subdomain/subdomain_events is enabled' do
+    subdomains(:public).update(api_plugin_events_enabled: true)
+    sign_in(@user)
+    payload = {
+      forum_thread: {
+        forum_category_id: @forum_category.id,
+        title: 'foo',
+        forum_posts_attributes: {
+          "0": {
+            body: 'bar'
+          }
+        }
+      }
+    }
+    assert_difference "ApiResource.count", +1 do
+      post simple_discussion.forum_threads_url, params: payload
+      Sidekiq::Worker.drain_all
+    end
+  end
+
+  test 'tracks new thread/reply creation if plugin: subdomain/subdomain_events is enabled' do
+    subdomains(:public).update(api_plugin_events_enabled: true)
+    sign_in(@user)
+    payload = {
+      forum_thread: {
+        forum_category_id: @forum_category.id,
+        title: 'foo',
+        forum_posts_attributes: {
+          "0": {
+            body: 'bar'
+          }
+        }
+      }
+    }
+    post simple_discussion.forum_threads_url, params: payload  
+    assert_difference "ApiResource.count", +2 do
+      post simple_discussion.forum_thread_forum_posts_path(ForumThread.last), params: {
+        forum_post: {
+          body: "Reply"
+        }
+      }
+      Sidekiq::Worker.drain_all
     end
   end
 end

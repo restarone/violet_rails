@@ -11,6 +11,7 @@ class SimpleDiscussion::ForumPostsController < SimpleDiscussion::ApplicationCont
 
     if @forum_post.save
       SimpleDiscussion::ForumPostNotificationJob.perform_later(@forum_post)
+      ApiNamespace::Plugin::V1::SubdomainEventsService.new(@forum_post).track_event
       redirect_to simple_discussion.forum_thread_path(@forum_thread, anchor: "forum_post_#{@forum_post.id}")
     else
       render template: "simple_discussion/forum_threads/show"
