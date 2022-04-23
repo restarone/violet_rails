@@ -1,4 +1,3 @@
-
 user = User.create!(
   email: 'violet@rails.com', 
   password: '123456', 
