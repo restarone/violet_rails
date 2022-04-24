@@ -5,7 +5,7 @@ namespace :api_action do
     Subdomain.all.each do |subdomain|
       Apartment::Tenant.switch subdomain.name do
         ApiAction.where(lifecycle_stage: 'failed', action_type: ['send_email', 'send_web_request']).each do |action|
-          ApiActionJob.perform_async(action.id)
+          action.execute_action
         end
       end
     end
@@ -15,7 +15,7 @@ namespace :api_action do
     Subdomain.all.each do |subdomain|
       Apartment::Tenant.switch subdomain.name do
         ApiAction.where(lifecycle_stage: 'initialized', action_type: ['send_email', 'send_web_request']).each do |action|
-          ApiActionJob.perform_async(action.id)
+          action.execute_action
         end
       end
     end
