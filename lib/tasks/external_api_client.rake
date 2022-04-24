@@ -8,7 +8,7 @@ namespace :external_api_client do
         api_clients = ExternalApiClient.cron_jobs(ENV['CRON_INTERVAL'])
         p "**running #{api_clients.size} ExternalApiClient cron jobs for #{subdomain.name}** @ #{Time.now}"
         api_clients.each do |api_client|
-          api_client.run
+          ExternalApiClientJob.perform_async(api_client.id)
         end
       end
     end
