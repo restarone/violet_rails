@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_04_22_003307) do
+ActiveRecord::Schema.define(version: 2022_04_23_235433) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -334,6 +334,7 @@ ActiveRecord::Schema.define(version: 2022_04_22_003307) do
     t.jsonb "metadata"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "drive_every"
     t.index ["api_namespace_id"], name: "index_external_api_clients_on_api_namespace_id"
   end
 
