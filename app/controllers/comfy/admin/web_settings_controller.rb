@@ -37,6 +37,7 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
       :ember_enabled,
       :graphql_enabled,
       :web_console_enabled,
+      :api_plugin_events_enabled,
       :after_sign_in_path,
       :after_sign_up_path
     )

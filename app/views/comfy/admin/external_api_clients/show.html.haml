@@ -28,6 +28,10 @@
 %p
   %b drive strategy:
   = @external_api_client.drive_strategy
+- if !@external_api_client.drive_every.blank?
+  %p
+    %b drive every:
+    = @external_api_client.drive_every
 %p
   %b Max requests/minute:
   = @external_api_client.max_requests_per_minute

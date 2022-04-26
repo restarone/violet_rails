@@ -33,8 +33,8 @@ tzdata \
 less \
 zsh \
 sqlite-dev \
-npm
-
+npm \
+gcompat
 
 
 # Copy wkhtmltopdf binary with QT patches for Alpine Linux
