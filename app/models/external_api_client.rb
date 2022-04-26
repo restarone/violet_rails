@@ -46,37 +46,7 @@ class ExternalApiClient < ApplicationRecord
 
   def run
     return false if !self.enabled || self.status == ExternalApiClient::STATUSES[:error]
-    external_api_interface = self.evaluated_model_definition
-    external_api_client_runner = external_api_interface.new(external_api_client: self)
-    retries = nil
-    begin
-      self.reload
-      retries = self.retries
-      self.update(status: ExternalApiClient::STATUSES[:running])
-      external_api_client_runner.start
-    rescue StandardError => e
-      self.update(error_message: e.message) 
-      if retries <= self.max_retries
-        self.update(retries: retries + 1)
-        max_sleep_seconds = Float(2 ** retries)
-        sleep_for_seconds = rand(0..max_sleep_seconds)
-        self.update(retry_in_seconds: max_sleep_seconds)
-        self.update(status: ExternalApiClient::STATUSES[:sleeping])
-        sleep sleep_for_seconds
-        retry
-      else
-        # client is considered dead at this point, fire off a flare
-        self.update(
-          error_message: "#{e.message}",
-          status: ExternalApiClient::STATUSES[:error],
-          error_metadata: {
-            backtrace: e.backtrace
-          }
-        )
-        external_api_client_runner.log
-      end
-    end
-    return external_api_client_runner
+    ExternalApiClientJob.perform_async(self.id)
   end
 
   def evaluated_model_definition

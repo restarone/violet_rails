@@ -5,10 +5,10 @@ namespace :external_api_client do
     Subdomain.all.to_a.push(Subdomain.new(name: 'public')).each do |subdomain|
       Apartment::Tenant.switch subdomain.name do
         # ENV['CRON_INTERVAL'] is passed by schedule.rb
-        api_clients = ExternalApiClient.cron_jobs(ENV['CRON_INTERVAL'])
-        p "**running #{api_clients.size} ExternalApiClient cron jobs for #{subdomain.name}** @ #{Time.now}"
-        api_clients.each do |api_client|
-          ExternalApiClientJob.perform_async(api_client.id)
+        external_api_clients = ExternalApiClient.cron_jobs(ENV['CRON_INTERVAL'])
+        p "**running #{external_api_clients.size} ExternalApiClient cron jobs for #{subdomain.name}** @ #{Time.now}"
+        external_api_clients.each do |external_api_client|
+          external_api_client.run
         end
       end
     end
