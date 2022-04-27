@@ -95,8 +95,6 @@ end
 every 1.year do
   rake "external_api_client:drive_cron_jobs CRON_INTERVAL=one_year"
 end
-
-
 #  end
 
 
@@ -109,10 +107,6 @@ end
 
 every 5.minutes do
   rake "api_action:rerun_failed_actions"
-end
-
-every 1.minute do
-  rake "api_action:run_initialized_actions"
 end
 
 every 1.day do
