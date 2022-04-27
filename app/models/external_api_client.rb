@@ -1,4 +1,6 @@
 class ExternalApiClient < ApplicationRecord
+  include JsonbFieldsParsable
+
   STATUSES = {
     stopped: 'stopped',
     running: 'running',
@@ -76,10 +78,10 @@ class ExternalApiClient < ApplicationRecord
   end
 
   def get_metadata
-    JSON.parse(self.reload.metadata).deep_symbolize_keys
+    self.reload.metadata.deep_symbolize_keys
   end
 
   def set_metadata(hash)
-    self.update(metadata: hash.to_json)
+    self.update(metadata: hash)
   end
 end
