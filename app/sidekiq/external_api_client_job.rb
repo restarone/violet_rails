@@ -33,5 +33,7 @@ class ExternalApiClientJob
         )
       end
     end
+    # after all set to stopped
+    external_api_client.update(status: ExternalApiClient::STATUSES[:stopped])
   end
 end

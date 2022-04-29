@@ -45,7 +45,10 @@ class ExternalApiClient < ApplicationRecord
   end
 
   def run
+    # prevent triggering if its not enabled or the status is error (means that the custom model definition raised an error and it bubbled up)
     return false if !self.enabled || self.status == ExternalApiClient::STATUSES[:error]
+    # prevent race conditions, if a client is running already-- dont run
+    return false if self.status == ExternalApiClient::STATUSES[:running]
     ExternalApiClientJob.perform_async(self.id)
   end
 
