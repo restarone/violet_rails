@@ -32,8 +32,9 @@ class ExternalApiClientJob
           }
         )
       end
+    else
+      # if run successfully we stop the job until the next invocation
+      external_api_client.update(status: ExternalApiClient::STATUSES[:stopped])
     end
-    # after all set to stopped
-    external_api_client.update(status: ExternalApiClient::STATUSES[:stopped])
   end
 end

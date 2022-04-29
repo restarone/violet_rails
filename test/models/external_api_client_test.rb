@@ -4,6 +4,7 @@ class ExternalApiClientTest < ActiveSupport::TestCase
   setup do
     @external_api_client = external_api_clients(:test)
     Sidekiq::Testing.fake!
+    @external_api_client.update!(status: ExternalApiClient::STATUSES[:sleeping])
   end
 
   test "returns false if not enabled" do
@@ -20,6 +21,7 @@ class ExternalApiClientTest < ActiveSupport::TestCase
     assert @external_api_client.retry_in_seconds == 0
     error_message = "Gateway unavailable"
     @external_api_client.evaluated_model_definition.any_instance.stubs(:start).raises(StandardError, error_message)
+    
     assert_changes "@external_api_client.reload.status" do
       @external_api_client.run
       Sidekiq::Worker.drain_all
