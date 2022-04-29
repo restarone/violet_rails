@@ -15,7 +15,6 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test "should allow #start" do
     sign_in(@user)
     @external_api_client.update(status: ExternalApiClient::STATUSES[:stopped], enabled: true)
-    previous_state = @external_api_client.reload
     get start_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
     assert_response :redirect
     Sidekiq::Worker.drain_all
