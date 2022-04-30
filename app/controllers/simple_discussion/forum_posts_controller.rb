@@ -10,7 +10,7 @@ class SimpleDiscussion::ForumPostsController < SimpleDiscussion::ApplicationCont
     @forum_post.user_id = current_user.id
 
     if @forum_post.save
-      SimpleDiscussion::ForumPostNotificationJob.perform_later(@forum_post)
+      ForumPostNotificationJob.perform_async(@forum_post.id)
       ApiNamespace::Plugin::V1::SubdomainEventsService.new(@forum_post).track_event
       redirect_to simple_discussion.forum_thread_path(@forum_thread, anchor: "forum_post_#{@forum_post.id}")
     else

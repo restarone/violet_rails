@@ -63,6 +63,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     }
     assert_no_difference "ForumThread.all.size" do
       post simple_discussion.forum_threads_url, params: payload
+      Sidekiq::Worker.drain_all
     end
       assert_response :redirect
       assert_redirected_to new_user_session_path
@@ -85,6 +86,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
       perform_enqueued_jobs do
         assert_no_changes "SimpleDiscussion::UserMailer.deliveries.size" do
           post simple_discussion.forum_threads_url, params: payload
+          Sidekiq::Worker.drain_all
         end
       end
     end
@@ -93,6 +95,8 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
   end
 
   test 'notifies mods when thread/reply is created' do
+    # stub subscribed users so the notification email gets enqueued
+    ForumThread.any_instance.stubs(:subscribed_users).returns(User.all)
     assert @user.update(moderator: true)
     sign_in(@other_user)
     payload = {
@@ -110,6 +114,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
       perform_enqueued_jobs do
         assert_changes "SimpleDiscussion::UserMailer.deliveries.size" do
           post simple_discussion.forum_threads_url, params: payload
+          Sidekiq::Worker.drain_all
         end
       end
     end
@@ -117,12 +122,15 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     assert_redirected_to simple_discussion.forum_thread_path(id: ForumThread.last.slug)
 
     assert_difference "ForumPost.count" do
-      perform_enqueued_jobs do
-        post simple_discussion.forum_thread_forum_posts_path(ForumThread.last), params: {
-          forum_post: {
-            body: "Reply"
+      perform_enqueued_jobs do          
+        assert_changes "SimpleDiscussion::UserMailer.deliveries.size" do
+          post simple_discussion.forum_thread_forum_posts_path(ForumThread.last), params: {
+            forum_post: {
+              body: "Reply"
+            }
           }
-        }
+          Sidekiq::Worker.drain_all
+        end  
       end
     end
   end
