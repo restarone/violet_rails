@@ -16,11 +16,10 @@ class ExternalApiClientCronJobTest < ActiveSupport::TestCase
   test 'invoke task for running external api client tasks' do
     error_msg = 'error!'
     @external_api_client.evaluated_model_definition.any_instance.stubs(:start).raises(StandardError, error_msg)
-    # passed by schedule.rb
-    ENV['CRON_INTERVAL'] = @external_api_client.drive_every
     refute @external_api_client.reload.error_message
     Rake::Task["external_api_client:drive_cron_jobs"].invoke
     Sidekiq::Worker.drain_all
     assert_equal @external_api_client.reload.error_message, error_msg
+    assert @external_api_client.last_run_at
   end
 end

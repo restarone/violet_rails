@@ -40,8 +40,21 @@ class ExternalApiClient < ApplicationRecord
 
   validates :drive_every, inclusion: { in: ExternalApiClient::DRIVE_INTERVALS.keys.map(&:to_s) }, allow_blank: true, allow_nil: true
 
-  def self.cron_jobs(interval)
-    ExternalApiClient.where(drive_strategy: ExternalApiClient::DRIVE_STRATEGIES[:cron], drive_every: interval)
+  def self.cron_jobs
+    intervals = ExternalApiClient.pluck(:drive_every).compact
+    runnable_external_api_clients = []
+    ExternalApiClient.where(drive_strategy: ExternalApiClient::DRIVE_STRATEGIES[:cron]).each do |external_api_client|
+      if !external_api_client.last_run_at
+        runnable_external_api_clients << external_api_client
+        next
+      end
+      last_run = ExternalApiClient::DRIVE_INTERVALS[external_api_client.drive_every.to_sym]
+      if external_api_client.last_run_at < Time.at(eval("#{last_run}.ago"))
+        runnable_external_api_clients << external_api_client
+      end
+      next
+    end
+    return runnable_external_api_clients
   end
 
   def run
