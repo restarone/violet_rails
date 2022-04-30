@@ -28,9 +28,16 @@
 %p
   %b drive strategy:
   = @external_api_client.drive_strategy
+- if !@external_api_client.drive_every.blank?
+  %p
+    %b drive every:
+    = @external_api_client.drive_every
 %p
   %b Max requests/minute:
   = @external_api_client.max_requests_per_minute
+%p
+  %b Last run at:
+  = @external_api_client.last_run_at
 %p
   %b Current requests/minute:
   = @external_api_client.current_requests_per_minute
@@ -40,6 +47,9 @@
 %p
   %b Current workers:
   = @external_api_client.current_workers
+%p
+  %b Current retries:
+  = @external_api_client.retries
 %p
   %b Retry in seconds:
   = @external_api_client.retry_in_seconds

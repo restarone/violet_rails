@@ -8,6 +8,25 @@ class ExternalApiClient < ApplicationRecord
 
   DRIVE_STRATEGIES = {
     on_demand: 'on_demand',
+    cron: 'cron'
+  }
+
+  DRIVE_INTERVALS = {
+    every_minute: '1.minute',
+    five_minutes: '5.minutes',
+    ten_minutes: '10.minutes',
+    thirty_minutes: '30.minutes',
+    every_hour: '1.hour',
+    three_hours: '3.hours',
+    six_hours: '6.hours',
+    twelve_hours: '12.hours',
+    one_day: '1.day',
+    one_week: '1.week',
+    two_weeks: '2.weeks',
+    one_month: '1.month',
+    three_months: '3.months',
+    six_months: '6.months',
+    one_year: '1.year',
   }
 
   extend FriendlyId
@@ -17,39 +36,33 @@ class ExternalApiClient < ApplicationRecord
   validates :status, inclusion: { in: ExternalApiClient::STATUSES.keys.map(&:to_s)  }
   validates :drive_strategy, inclusion: { in: ExternalApiClient::DRIVE_STRATEGIES.keys.map(&:to_s) }
 
-  def run
-    return false if !self.enabled || self.status == ExternalApiClient::STATUSES[:error]
-    external_api_interface = self.evaluated_model_definition
-    external_api_client_runner = external_api_interface.new(external_api_client: self)
-    retries = nil
-    begin
-      self.reload
-      retries = self.retries
-      self.update(status: ExternalApiClient::STATUSES[:running])
-      external_api_client_runner.start
-    rescue StandardError => e
-      self.update(error_message: e.message) 
-      if retries <= self.max_retries
-        self.update(retries: retries + 1)
-        max_sleep_seconds = Float(2 ** retries)
-        sleep_for_seconds = rand(0..max_sleep_seconds)
-        self.update(retry_in_seconds: max_sleep_seconds)
-        self.update(status: ExternalApiClient::STATUSES[:sleeping])
-        sleep sleep_for_seconds
-        retry
-      else
-        # client is considered dead at this point, fire off a flare
-        self.update(
-          error_message: "#{e.message}",
-          status: ExternalApiClient::STATUSES[:error],
-          error_metadata: {
-            backtrace: e.backtrace
-          }
-        )
-        external_api_client_runner.log
+  validates :drive_every, presence: true, if: -> { drive_strategy == ExternalApiClient::DRIVE_STRATEGIES[:cron] }
+
+  validates :drive_every, inclusion: { in: ExternalApiClient::DRIVE_INTERVALS.keys.map(&:to_s) }, allow_blank: true, allow_nil: true
+
+  def self.cron_jobs
+    intervals = ExternalApiClient.pluck(:drive_every).compact
+    runnable_external_api_clients = []
+    ExternalApiClient.where(drive_strategy: ExternalApiClient::DRIVE_STRATEGIES[:cron]).each do |external_api_client|
+      if !external_api_client.last_run_at
+        runnable_external_api_clients << external_api_client
+        next
       end
+      last_run = ExternalApiClient::DRIVE_INTERVALS[external_api_client.drive_every.to_sym]
+      if external_api_client.last_run_at < Time.at(eval("#{last_run}.ago"))
+        runnable_external_api_clients << external_api_client
+      end
+      next
     end
-    return external_api_client_runner
+    return runnable_external_api_clients
+  end
+
+  def run
+    # prevent triggering if its not enabled or the status is error (means that the custom model definition raised an error and it bubbled up)
+    return false if !self.enabled || self.status == ExternalApiClient::STATUSES[:error]
+    # prevent race conditions, if a client is running already-- dont run
+    return false if self.status == ExternalApiClient::STATUSES[:running]
+    ExternalApiClientJob.perform_async(self.id)
   end
 
   def evaluated_model_definition

@@ -42,6 +42,13 @@ class ApiNamespace < ApplicationRecord
   has_many :error_api_actions, dependent: :destroy
   accepts_nested_attributes_for :error_api_actions, allow_destroy: true
 
+  REGISTERED_PLUGINS = {
+    subdomain_events: {
+      slug: 'subdomain_events',
+      version: 1,
+    }
+  }
+
   def update_api_form
     if has_form == '1'
       if api_form.present? 

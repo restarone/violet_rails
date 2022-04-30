@@ -58,7 +58,7 @@ class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseContro
     end
 
     def start
-      ExternalApiClientJob.perform_async(@external_api_client.id)
+      @external_api_client.run
       redirect_back(fallback_location: api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id))
     end
 
@@ -99,7 +99,8 @@ class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseContro
             :drive_strategy,
             :max_requests_per_minute,
             :max_workers,
-            :model_definition
+            :model_definition,
+            :drive_every
           ).merge({
             api_namespace_id: @api_namespace.id,
           })

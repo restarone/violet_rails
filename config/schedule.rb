@@ -27,6 +27,10 @@ every 12.hours do
   rake "maintenance:clear_old_ahoy_visits"
 end
 
+every 1.minute do
+  rake "external_api_client:drive_cron_jobs"
+end
+
 every 1.day do
   rake "report:send_analytics_report"
 end

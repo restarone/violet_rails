@@ -2,6 +2,7 @@ require "test_helper"
 
 class SubdomainTest < ActiveSupport::TestCase
   setup do
+    Sidekiq::Testing.fake!
     @subdomain = subdomains(:public)
   end
 
@@ -98,6 +99,28 @@ class SubdomainTest < ActiveSupport::TestCase
     Apartment::Tenant.switch('public') do
       assert_equal Comfy::Cms::Site.last.hostname, ENV['APP_HOST']
       assert_equal Comfy::Cms::Page.last.url, "//#{ENV['APP_HOST']}/"
+    end
+  end
+
+  test "does not perform plugin: subdomain/subdomain_events routine if not enabled" do
+    @subdomain.update!(api_plugin_events_enabled: false)
+    message_thread = message_threads(:public)
+    message = message_thread.messages.create!(content: "Hello")
+    service = ApiNamespace::Plugin::V1::SubdomainEventsService.new(message)
+    assert_no_difference "ApiResource.count" do      
+      service.track_event
+      Sidekiq::Worker.drain_all
+    end
+  end
+
+  test "performs plugin: subdomain/subdomain_events routine if enabled" do
+    @subdomain.update!(api_plugin_events_enabled: true)
+    message_thread = message_threads(:public)
+    message = message_thread.messages.create!(content: "Hello")
+    service = ApiNamespace::Plugin::V1::SubdomainEventsService.new(message)
+    assert_difference "ApiResource.count", +1 do      
+      service.track_event
+      Sidekiq::Worker.drain_all
     end
   end
 end
