@@ -19,6 +19,10 @@
     = f.label :drive_strategy
     = f.select :drive_strategy, options_for_select(ExternalApiClient::DRIVE_STRATEGIES.keys, f.object.drive_strategy)
   .field
+    = f.label :drive_every
+    = f.select :drive_every, options_for_select(ExternalApiClient::DRIVE_INTERVALS.keys, f.object.drive_every), include_blank: true
+
+  .field
     = f.label :max_requests_per_minute
     = f.number_field :max_requests_per_minute
   .field

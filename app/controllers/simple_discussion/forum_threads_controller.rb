@@ -44,7 +44,8 @@ class SimpleDiscussion::ForumThreadsController < SimpleDiscussion::ApplicationCo
     @forum_thread.forum_posts.each { |post| post.user_id = current_user.id }
 
     if @forum_thread.save
-      SimpleDiscussion::ForumThreadNotificationJob.perform_later(@forum_thread)
+      ForumThreadNotificationJob.perform_async(@forum_thread.id)
+      ApiNamespace::Plugin::V1::SubdomainEventsService.new(@forum_thread).track_event
       redirect_to simple_discussion.forum_thread_path(@forum_thread)
     else
       render action: :new
