@@ -39,7 +39,7 @@ class ApiResource < ApplicationRecord
   end
 
   def presence_of_required_properties
-    return unless api_namespace.api_form
+    return unless api_namespace.api_form && properties&.is_a?(Enumerable)
 
     properties.each do |key, value|
       if api_namespace.api_form.properties.dig(key,"required") == '1' && !value.present?
