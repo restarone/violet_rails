@@ -1,6 +1,6 @@
 class ConvertJsonStringPropertiesToJson < ActiveRecord::Migration[6.1]
   def up
-    [ApiNamespace, ApiAction, ApiResource, ExternalApiClient].each do |klass|
+    [ApiNamespace, ApiAction, ApiResource, ExternalApiClient, ApiForm].each do |klass|
       klass.all.each do |obj|
         jsonb_fields = klass.columns.select{|cl| cl.type === :jsonb}.map(&:name).map(&:to_sym)
         jsonb_fields.each do |field|
@@ -14,7 +14,7 @@ class ConvertJsonStringPropertiesToJson < ActiveRecord::Migration[6.1]
   end
   
   def down
-    [ApiNamespace, ApiAction, ApiResource, ExternalApiClient].each do |klass|
+    [ApiNamespace, ApiAction, ApiResource, ExternalApiClient, ApiForm].each do |klass|
       klass.all.each do |obj|
         jsonb_fields = klass.columns.select{|cl| cl.type === :jsonb}.map(&:name).map(&:to_sym)
         jsonb_fields.each do |field|
