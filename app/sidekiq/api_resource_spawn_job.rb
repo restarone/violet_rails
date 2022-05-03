@@ -7,6 +7,6 @@ class ApiResourceSpawnJob
       # convert back to hash because sidekiq doesnt like taking a hash as an argument-- it prefers json instead
       properties: JSON.parse(json_string).to_h
     )
-    api_namespace.executed_api_actions.each{|action| action.execute_action}
+    api_resource.api_actions.each{|action| action.execute_action}
   end
 end
