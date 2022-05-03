@@ -8,8 +8,8 @@ class Mailbox::MessageThreadsControllerTest < ActionDispatch::IntegrationTest
     @subdomain = subdomains(:public)
     @message_thread = MessageThread.last
     @subdomain.initialize_mailbox
-    @restarone_subdomain = Subdomain.find_by(name: 'restarone').name
-    Apartment::Tenant.switch @restarone_subdomain do
+    @restarone_subdomain = Subdomain.find_by(name: 'restarone')
+    Apartment::Tenant.switch @restarone_subdomain.name do
       @unauthorized_user = User.first
       @unauthorized_user.update(can_manage_email: true)
     end
@@ -33,6 +33,42 @@ class Mailbox::MessageThreadsControllerTest < ActionDispatch::IntegrationTest
     sign_in(@user)
     get mailbox_message_thread_url(subdomain: @subdomain.name, id: @message_thread.id)
     assert_response :success
+  end
+
+  test "tracks message view (if tracking is enabled)" do
+    @restarone_subdomain.update(tracking_enabled: true)
+    @restarone_subdomain.initialize_mailbox
+
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_message_thread = MessageThread.create!(unread: true, subject: 'foo', recipients: [@unauthorized_user.email])
+
+      @unauthorized_user.update(can_access_admin: true)
+      sign_in(@unauthorized_user)
+
+      assert_difference "Ahoy::Event.count", +1 do
+        get mailbox_message_thread_url(subdomain: @restarone_subdomain.name, id: @unauthorized_user.id)
+        assert_response :success
+      end
+
+    end
+  end
+
+  test "does not track message view (if tracking is disabled)" do
+    @restarone_subdomain.update(tracking_enabled: false)
+    @restarone_subdomain.initialize_mailbox
+
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_message_thread = MessageThread.create!(unread: true, subject: 'foo', recipients: [@unauthorized_user.email])
+
+      @unauthorized_user.update(can_access_admin: true)
+      sign_in(@unauthorized_user)
+
+      assert_no_difference "Ahoy::Event.count", +1 do
+        get mailbox_message_thread_url(subdomain: @restarone_subdomain.name, id: @unauthorized_user.id)
+        assert_response :success
+      end
+
+    end
   end
 
   test 'renders #new' do
@@ -97,7 +133,7 @@ class Mailbox::MessageThreadsControllerTest < ActionDispatch::IntegrationTest
       }
     }
     Apartment::Tenant.switch @subdomain.name do
-      perform_enqueued_jobs do        
+      perform_enqueued_jobs do
         assert_no_difference "MessageThread.all.size" do
           assert_difference "Message.all.size", +1 do
             post send_message_mailbox_message_thread_url(subdomain: @subdomain.name, id: @message_thread.id), params: payload
@@ -119,8 +155,8 @@ class Mailbox::MessageThreadsControllerTest < ActionDispatch::IntegrationTest
         }
       }
     }
-    
-    perform_enqueued_jobs do        
+
+    perform_enqueued_jobs do
       assert_no_difference "MessageThread.all.size" do
         assert_difference "Message.all.size", +1 do
           post send_message_mailbox_message_thread_url(subdomain: 'www', id: @message_thread.id), params: payload
