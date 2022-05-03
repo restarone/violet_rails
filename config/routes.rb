@@ -10,7 +10,7 @@ end
 Rails.application.routes.draw do
   # analytics dashboard
   get 'dashboard', controller: 'comfy/admin/dashboard'
-  get 'dashboard/visits/:ahoy_visit_id', to: 'comfy/admin/dashboard#visit', as: :dashboard_visits
+  get 'dashboard/sessions/:ahoy_visit_id', to: 'comfy/admin/dashboard#visit', as: :dashboard_visits
 
   resources :signup_wizard
   resources :signin_wizard
