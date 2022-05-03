@@ -2,23 +2,21 @@
 
 one:
   api_namespace: one
-  properties: >
-    {
-      "can_edit": true,
-      "can_se": true,
-      "can_share": true,
-      "something_else": true
-    }
+  properties: {
+                "can_edit": true,
+                "can_se": true,
+                "can_share": true,
+                "something_else": true
+              }
 
 two:
   api_namespace: two
-  properties: >
-    {
-      "can_edit": true,
-      "can_se": true,
-      "can_share": true,
-      "something_else": true
-    }
+  properties: {
+                "can_edit": true,
+                "can_se": true,
+                "can_share": true,
+                "something_else": true
+              }
 
 user:
   api_namespace: users
@@ -26,13 +24,12 @@ user:
 
 plugin_subdomain_message_event:
   api_namespace: plugin_subdomain_events
-  properties:  >
-    {
-      "model": {
-        "record_id": 1,
-        "record_type": "Message"
-      },
-      "representation": {
-        "body": "<h1>Hello</h1>"
-      }
-    }
+  properties:  {
+                  "model": {
+                    "record_id": 1,
+                    "record_type": "Message"
+                  },
+                  "representation": {
+                    "body": "<h1>Hello</h1>"
+                  }
+                }
