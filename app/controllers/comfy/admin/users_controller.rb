@@ -78,7 +78,8 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
       :can_view_restricted_pages,
       :deliver_analytics_report,
       :can_manage_subdomain_settings,
-      :can_access_admin
+      :can_access_admin,
+      :deliver_error_notifications
     )
   end
 

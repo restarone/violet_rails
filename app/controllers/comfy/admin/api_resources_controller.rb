@@ -70,8 +70,6 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
 
     # Only allow a list of trusted parameters through.
     def api_resource_params
-      # it comes in as a json string which we need to parse into a ruby hash before saving it to the DB 
-      properties = params[:api_resource][:properties] ? JSON.parse(params[:api_resource][:properties]) : nil
-      params.require(:api_resource).permit(:properties, non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :_destroy]).merge({ api_namespace_id: params[:api_namespace_id], properties: properties })
+      params.require(:api_resource).permit(:properties, non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :_destroy]).merge({ api_namespace_id: params[:api_namespace_id] })
     end
 end

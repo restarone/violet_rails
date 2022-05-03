@@ -1,5 +1,6 @@
 class ApiNamespace < ApplicationRecord
   extend FriendlyId
+  include JsonbFieldsParsable
   friendly_id :name, use: :slugged
 
   attr_accessor :has_form
@@ -64,7 +65,7 @@ class ApiNamespace < ApplicationRecord
   def form_properties
     form_hash = {}
     form_properties = api_form.present? ? api_form.properties : {}
-    JSON.parse(properties).each do |key, value|
+    properties.each do |key, value|
       form_hash[key] = form_properties[key].present? ? form_properties[key] : { label: key.humanize, placeholder: '', required: false, type_validation:  (ApiForm::INPUT_TYPE_MAPPING[:tel] if  value.class.to_s == 'Integer')  }
     end
     non_primitive_properties.each do |prop|
