@@ -1,4 +1,4 @@
-class ConvertJsonStringPropertiesToJson < ActiveRecord::Migration[6.1]
+class ConvertJsonStringToHash < ActiveRecord::Migration[6.1]
   def up
     [ApiNamespace, ApiAction, ApiResource, ExternalApiClient, ApiForm].each do |klass|
       klass.all.each do |obj|
@@ -10,7 +10,7 @@ class ConvertJsonStringPropertiesToJson < ActiveRecord::Migration[6.1]
               obj.update(field => JSON.parse(field_value))
             rescue JSON::ParserError => e
               # Manually check and fix invalid JSON string
-              error_logger.error("Entity: #{klass.to_s}, Object Id: #{obj.id}, Field: #{field}, Field Value: #{field_value}")
+              error_logger.error("Tenant: #{Apartment::Tenant.current}, Entity: #{klass.to_s}, Object Id: #{obj.id}, Field: #{field}, Field Value: #{field_value}")
             end
           end
         end
