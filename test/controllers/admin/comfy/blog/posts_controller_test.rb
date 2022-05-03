@@ -8,6 +8,12 @@ class Comfy::Blog::PostsControllerTest < ActionDispatch::IntegrationTest
 
       @layout = @site.layouts.last
       @page = @layout.pages.last
+
+      @blog_post = @site.blog_posts.create!(
+        layout: @layout, 
+        title: 'foo',
+        slug: 'foo'
+      )
     end
   end
 
@@ -22,5 +28,25 @@ class Comfy::Blog::PostsControllerTest < ActionDispatch::IntegrationTest
     get comfy_blog_posts_url(subdomain: @restarone_subdomain.name)
     assert_response :success
     assert_template :index
+  end
+
+  test 'tracks blog post visit (if enabled)' do
+    @restarone_subdomain.update(tracking_enabled: true)
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      assert_difference "Ahoy::Event.count", +1 do
+        get comfy_blog_post_url(subdomain: @restarone_subdomain.name, year: @blog_post.year, month: @blog_post.month, slug: @blog_post.slug)
+      end
+    end
+    assert_response :success
+  end
+
+  test 'does not track blog post visit (if disabled)' do
+    @restarone_subdomain.update(tracking_enabled: false)
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      assert_no_difference "Ahoy::Event.count" do
+        get comfy_blog_post_url(subdomain: @restarone_subdomain.name, year: @blog_post.year, month: @blog_post.month, slug: @blog_post.slug)
+      end
+    end
+    assert_response :success
   end
 end
