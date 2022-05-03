@@ -6,7 +6,12 @@ class ConvertJsonStringPropertiesToJson < ActiveRecord::Migration[6.1]
         jsonb_fields.each do |field|
           field_value = obj[field]
           unless field_value.is_a?(Enumerable) || field_value.blank?
-            obj.update(field => JSON.parse(field_value))
+            begin
+              obj.update(field => JSON.parse(field_value))
+            rescue JSON::ParserError => e
+              # Manually check and fix invalid JSON string
+              error_logger.error("Entity: #{klass.to_s}, Object Id: #{obj.id}, Field: #{field}, Field Value: #{field_value}")
+            end
           end
         end
       end
@@ -25,5 +30,9 @@ class ConvertJsonStringPropertiesToJson < ActiveRecord::Migration[6.1]
         end
       end
     end
+  end
+
+  def error_logger
+    @@error_logger ||= Logger.new("#{Rails.root}/log/parse_json_string_error.log")
   end
 end
