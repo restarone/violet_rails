@@ -1,4 +1,7 @@
 class ApplicationController < ActionController::Base
+
+  before_action :prepare_exception_notifier
+
   def after_sign_in_path_for(resource)
     if session[:user_return_to] then return session[:user_return_to] end
     after_sign_in_path = Subdomain.current.after_sign_in_path
@@ -23,5 +26,14 @@ class ApplicationController < ActionController::Base
     else
       return root_url(subdomain: Apartment::Tenant.current)
     end
+  end
+
+
+  private
+
+  def prepare_exception_notifier
+    request.env["exception_notifier.exception_data"] = {
+      current_user: current_user
+    }
   end
 end
