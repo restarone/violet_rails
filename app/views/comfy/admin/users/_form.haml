@@ -45,6 +45,10 @@
                 %label 
                   Deliver Analytics Report
               .form-group
+                = f.check_box :deliver_error_notifications
+                %label 
+                  Deliver error notifications                  
+              .form-group
                 = f.check_box :can_manage_users
                 %label 
                   Can manage and invite users
