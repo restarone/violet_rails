@@ -2,7 +2,7 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
   layout "comfy/admin/cms"
   before_action :load_user, only: [:edit, :update, :destroy]
   before_action :ensure_authority_to_manage_users
-  
+
   def index
     params[:q] ||= {}
     @users_q = User.ransack(params[:q])
@@ -31,6 +31,11 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
 
   def update
     if @user.update(update_params)
+      ahoy.track(
+        "comfy-user-update",
+        {visit_id: current_visit.id, edited_user_id: @user.id, user_id: current_user.id}
+      ) if Subdomain.current.tracking_enabled
+
       flash.notice = "#{@user.email} was successfully updated!"
       redirect_to admin_users_path
     else
@@ -51,7 +56,7 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
   end
 
   private
-  
+
   def load_user
     @user = User.find_by(id: params[:id])
     unless @user
@@ -62,9 +67,9 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
 
   def update_params
     params.require(:user).permit(
-      :can_manage_web, 
-      :can_manage_blog, 
-      :can_manage_email, 
+      :can_manage_web,
+      :can_manage_blog,
+      :can_manage_email,
       :can_manage_users,
       :can_manage_api,
       :moderator,
