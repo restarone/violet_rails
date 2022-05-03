@@ -11,8 +11,8 @@ module ApiResourcesHelper
 
   def object_fields(properties) 
       keys = []
-      JSON.parse(properties).each do |key, value|
-        keys << key if value.class.to_s == 'Hash'
+      properties.each do |key, value|
+        keys << key if value.is_a?(Hash)
       end
       keys
   end
