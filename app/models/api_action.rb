@@ -1,5 +1,6 @@
 class ApiAction < ApplicationRecord
   include Encryptable
+  include JsonbFieldsParsable
   attr_encrypted :bearer_token
 
   belongs_to :api_namespace, optional: true
@@ -61,12 +62,12 @@ class ApiAction < ApplicationRecord
   def serve_file;end
 
   def evaluate_payload
-    payload = payload_mapping.gsub('self.', 'self.api_resource.properties_object.')
+    payload = payload_mapping.to_json.gsub('self.', 'self.api_resource.properties_object.')
     eval(payload).to_json
   end
 
   def request_headers
-    headers = custom_headers.gsub('SECRET_BEARER_TOKEN', bearer_token)
+    headers = custom_headers.to_json.gsub('SECRET_BEARER_TOKEN', bearer_token)
     { 'Content-Type' => 'application/json' }.merge(JSON.parse(headers))
   end
 

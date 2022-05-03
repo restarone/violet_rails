@@ -29,8 +29,7 @@ class ResourceController < ApplicationController
   end
   
   def resource_params
-    # it comes in as a json string which we need to parse into a ruby hash before saving it to the DB 
-    JSON.parse(@api_namespace.properties).each do |key, value|
+    @api_namespace.properties.each do |key, value|
       if value.class.to_s == 'Hash'
         params[:data][:properties][key] = JSON.parse params[:data][:properties][key]
       end

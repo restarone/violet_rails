@@ -21,7 +21,7 @@
                 <%= "#{prop}:" %>
                 </div>
                 <div>
-                <%= @api_resource.properties[prop].present? ? JSON.parse(@api_resource.properties[prop]) : 'nil' %>
+                <%= @api_resource.properties[prop]  %>
                 </div>
             </div>
             <% end %>

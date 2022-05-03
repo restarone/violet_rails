@@ -56,8 +56,8 @@ create_api_action_three:
   include_api_resource_data: false
   payload_mapping: 
   request_url: "http://www.example.com/success"
-  payload_mapping: "{\"first_name\":\"test\"}"
-  custom_headers: "{\"AUTHORIZATION\":\"SECRET_BEARER_TOKEN\"}"
+  payload_mapping: {"first_name":"test"}
+  custom_headers: {"AUTHORIZATION":"SECRET_BEARER_TOKEN"}
   api_resource: one
   http_method: post
 
@@ -65,8 +65,8 @@ create_api_action_four:
   type: CreateApiAction
   action_type: send_web_request
   include_api_resource_data: false
-  payload_mapping: "{\"first_name\":\"test\"}"
-  custom_headers: "{\"AUTHORIZATION\":\"SECRET_BEARER_TOKEN\"}"
+  payload_mapping: {"first_name":"test"}
+  custom_headers: {"AUTHORIZATION":"SECRET_BEARER_TOKEN"}
   request_url: "http://www.example.com/error"
   email: 
   api_resource: one
@@ -93,10 +93,9 @@ create_api_action_plugin_subdomain_events:
   type: CreateApiAction
   action_type: send_web_request
   include_api_resource_data: true
-  payload_mapping: >
-    {
-      "content": "#{self.representation.body}"
-    }
+  payload_mapping: {
+                      "content": "#{self.representation.body}"
+                    }
   request_url: "http://www.example.com/success"
   api_namespace: plugin_subdomain_events
   http_method: post
