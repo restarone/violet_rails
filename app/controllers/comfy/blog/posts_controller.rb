@@ -49,10 +49,10 @@ private
         post_scope.first!
       end
     @cms_layout = @cms_post.layout
-    if Subdomain.current.tracking_enabled
+    if Subdomain.current.tracking_enabled && current_visit
       user_id = current_user ? current_user.id : nil
       ahoy.track(
-        "comfy-blog-page-visit", 
+        "comfy-blog-page-visit",
         {visit_id: current_visit.id, comfy_blog_post_id: @cms_post.id, user_id: user_id}
       )
     end

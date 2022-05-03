@@ -35,7 +35,7 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
       ahoy.track(
         "comfy-user-update",
         {visit_id: current_visit.id, edited_user_id: @user.id, user_id: current_user.id}
-      ) if Subdomain.current.tracking_enabled
+      ) if Subdomain.current.tracking_enabled && current_visit
 
       flash.notice = "#{@user.email} was successfully updated!"
       redirect_to admin_users_path

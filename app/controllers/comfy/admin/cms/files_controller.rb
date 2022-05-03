@@ -103,7 +103,7 @@ class Comfy::Admin::Cms::FilesController < Comfy::Admin::Cms::BaseController
       ahoy.track(
         "comfy-file-update",
         {visit_id: current_visit.id, file_id: @file.id, user_id: current_user.id}
-      ) if Subdomain.current.tracking_enabled
+      ) if Subdomain.current.tracking_enabled && current_visit
 
       flash[:success] = I18n.t("comfy.admin.cms.files.updated")
       redirect_to action: :edit, id: @file
