@@ -1,14 +1,28 @@
+%br
+%br
 .table-responsive
   %table.table.table-bordered
     %thead
       %tr
-        %th= :name
-        %th= :user_id
-        %th= :visit_id
-        %th= :properties
-      - @events.each do |e|
+        %th{colspan: 2} Visit (#{'alish'})
+      - visit_display_attributes = { country: 'country', region: 'region', city: 'city', started_at: 'time', ip: 'IP', user_agent: 'user agent', referred: 'referrer', referring_domain: 'referring domain', landing_page: 'landing page', browser: 'browser', os: 'OS', device: 'device' }
+      - visit_display_attributes.each do |attr, display_name|
         %tr
-          %th= e.name
-          %th= e.user_id
-          %th= e.visit_id
-          %th= e.properties
+          %th= display_name
+          - if attr == :started_at
+            %td= @visit[attr].strftime('%b %d, %Y %I:%M %P')
+          - else
+            %td= @visit[attr].presence || 'N/A'
+%br
+%br
+.table-responsive
+  %table.table.table-bordered
+    %thead
+      %tr
+        %th{colspan: 2} Events (#{@events.count})
+    - event_names = @events.pluck(:name).uniq.sort
+    %thead
+      - event_names.each do |event_name|
+        %tr
+          %th= event_name.titleize
+          %td= "#{@events.where(name: event_name).size} times"
