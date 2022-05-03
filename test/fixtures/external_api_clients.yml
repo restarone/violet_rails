@@ -4,11 +4,10 @@ test:
   slug: test-second
   label: Test API 2
   enabled: true
-  metadata:  >
-    {
-      "api_key": "x-api-key-foo",
-      "bearer_token": "foo"
-    }
+  metadata: {
+              "api_key": "x-api-key-foo",
+              "bearer_token": "foo"
+            }
   model_definition: |
     class ExternalApiModelExample
       def initialize(parameters)  
@@ -29,11 +28,10 @@ open_json_server:
   slug: test-second
   label: Test API 2
   enabled: true
-  metadata:  >
-    {
-      "api_key": "x-api-key-foo",
-      "bearer_token": "foo"
-    }
+  metadata:  {
+                "api_key": "x-api-key-foo",
+                "bearer_token": "foo"
+              }
   model_definition: |
     class OpenJsonServer
       def initialize(parameters)  
@@ -58,11 +56,10 @@ modmed:
   slug: test-api
   label: Test API
   enabled: true
-  metadata:  >
-    {
-      "api_key": "x-api-key-foo",
-      "bearer_token": "foo"
-    }
+  metadata: {
+              "api_key": "x-api-key-foo",
+              "bearer_token": "foo"
+            }
   model_definition: |
     # ex; 
     # modmed = ExternalApiClient.find_by(slug: ExternalApiClient::CLIENTS[:modmed][:name])

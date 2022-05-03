@@ -76,6 +76,6 @@
 %p
   %b Metadata:
 #jsoneditor
-= hidden_field_tag :api_namespace_properties, @external_api_client.metadata
+= hidden_field_tag :api_namespace_properties, @external_api_client.metadata&.to_json
 
 = render 'comfy/admin/api_namespaces/init_editor', {read_only: true}

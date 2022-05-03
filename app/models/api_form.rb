@@ -1,4 +1,5 @@
 class ApiForm < ApplicationRecord
+  include JsonbFieldsParsable
   belongs_to :api_namespace
 
   INPUT_TYPE_MAPPING = {
