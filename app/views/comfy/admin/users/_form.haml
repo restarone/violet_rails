@@ -1,4 +1,4 @@
-= form_with model: @user, url: admin_user_path, method: :patch do |f|
+= form_with model: @user, url: admin_user_path, local: true, method: :patch do |f|
   .form-group
     %label 
       Name
