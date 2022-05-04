@@ -32,6 +32,11 @@ class SimpleDiscussion::ForumThreadsController < SimpleDiscussion::ApplicationCo
   def show
     @forum_post = ForumPost.new
     @forum_post.user = current_user
+
+    ahoy.track(
+      "forum-thread-visit",
+      {visit_id: current_visit.id, forum_thread_id: @forum_thread.id, user_id: current_user&.id}
+    ) if Subdomain.current.tracking_enabled && current_visit
   end
 
   def new

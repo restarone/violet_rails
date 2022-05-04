@@ -5,7 +5,7 @@
     = render 'form'
   %hr/
   %main{class: 'my-5'}
-    %h3 
+    %h3
       Stats
     .card.border-0
       %ul.list-group.list-group-flush
@@ -41,7 +41,7 @@
           = @user.locked_at
 
   %main{class: 'my-5'}
-    %h3 
+    %h3
       Sessions
     .card
       = render partial: 'pagination', locals: { objects: @visits }
@@ -49,27 +49,27 @@
         %table.table.table-bordered
           %thead
             %tr
-              %th 
+              %th
                 = sort_link @visits_q, :timestamp
               %th
                 = sort_link @visits_q, :ip
               %th
                 = sort_link @visits_q, :os
-              %th 
+              %th
                 = sort_link @visits_q, :browser
-              %th 
+              %th
                 = sort_link @visits_q, :device_type
-              %th 
+              %th
                 = sort_link @visits_q, :country
-              %th 
+              %th
                 = sort_link @visits_q, :region
-              %th 
+              %th
                 = sort_link @visits_q, :city
-              %th 
+              %th
                 = sort_link @visits_q, :user_agent
             - @visits.each do |v|
               %tr
-                %th= v.started_at.strftime('%I:%M %P - %b %d, %Y')
+                %th= link_to v.started_at.strftime('%I:%M %P - %b %d, %Y'), user_sessions_visit_admin_user_url(id: @user.id, ahoy_visit_id: v.id), title: 'View session details'
                 %th= v.ip
                 %th= v.os
                 %th= v.browser
@@ -77,6 +77,6 @@
                 %th= v.country
                 %th= v.region
                 %th= v.city
-                %th.text-wrap.text-break= v.user_agent  
+                %th.text-wrap.text-break= v.user_agent
       = render partial: 'pagination', locals: { objects: @visits }
 

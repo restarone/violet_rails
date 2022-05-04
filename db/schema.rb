@@ -463,6 +463,7 @@ ActiveRecord::Schema.define(version: 2022_05_03_151800) do
     t.string "purge_visits_every", default: "never"
     t.string "analytics_report_frequency", default: "never"
     t.datetime "analytics_report_last_sent"
+    t.boolean "tracking_enabled", default: false
     t.boolean "ember_enabled", default: false
     t.boolean "graphql_enabled", default: false
     t.boolean "web_console_enabled", default: false
