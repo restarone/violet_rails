@@ -8,8 +8,8 @@
     = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
     = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
   %body
-    = render partial: 'shared/flash'
     = cms_snippet_render('navbar').html_safe
+    = render partial: 'shared/flash'
     .d-flex.flex-column.justify-content-center.align-items-center
       .my-5
         - custom_logo_path = logo_url(Subdomain.current)
@@ -17,6 +17,6 @@
           = image_tag(custom_logo_path, class: "img-fluid", size: '100x100')
         - else
           %a{href: 'https://github.com/restarone/violet_rails', target: "_blank"}
-            = image_tag('violet-rails-vertical-logo', class: "img-fluid", size: '100x100')  
+            = image_tag('violet-rails-vertical-logo', class: "img-fluid", size: '100x100')
       = yield
     = cms_snippet_render('footer').html_safe
