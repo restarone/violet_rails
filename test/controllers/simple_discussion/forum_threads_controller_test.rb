@@ -4,7 +4,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
   setup do
     @user = users(:public)
     @other_user = User.create!(email: 'contact1@restarone.com', password: '123456', password_confirmation: '123456', confirmed_at: Time.now)
-    
+
     @user.update(global_admin: true)
     @restarone_subdomain = Subdomain.find_by(name: 'restarone')
     Apartment::Tenant.switch @restarone_subdomain.name do
@@ -35,7 +35,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
 
   test 'allows #index if not logged in' do
     get simple_discussion.root_url(subdomain: @restarone_subdomain.name)
-    assert_response :success    
+    assert_response :success
   end
 
   test 'disallows forum_threads#new if not logged in' do
@@ -122,7 +122,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     assert_redirected_to simple_discussion.forum_thread_path(id: ForumThread.last.slug)
 
     assert_difference "ForumPost.count" do
-      perform_enqueued_jobs do          
+      perform_enqueued_jobs do
         assert_changes "SimpleDiscussion::UserMailer.deliveries.size" do
           post simple_discussion.forum_thread_forum_posts_path(ForumThread.last), params: {
             forum_post: {
@@ -130,7 +130,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
             }
           }
           Sidekiq::Worker.drain_all
-        end  
+        end
       end
     end
   end
@@ -169,7 +169,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
         }
       }
     }
-    post simple_discussion.forum_threads_url, params: payload  
+    post simple_discussion.forum_threads_url, params: payload
     assert_difference "ApiResource.count", +2 do
       post simple_discussion.forum_thread_forum_posts_path(ForumThread.last), params: {
         forum_post: {
@@ -178,5 +178,45 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
       }
       Sidekiq::Worker.drain_all
     end
+  end
+
+  test 'tracks forum-thread view (if tracking is enabled)' do
+    @restarone_subdomain.update(tracking_enabled: true)
+
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      forum_category = ForumCategory.create!(name: 'test', slug: 'test')
+      forum_thread = @restarone_user.forum_threads.new(title: 'Test Thread', forum_category_id: forum_category.id)
+      forum_thread.save!
+      forum_post = ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @restarone_user.id, body: 'test body')
+
+
+      sign_in(@restarone_user)
+
+      assert_difference "Ahoy::Event.count", +1 do
+        get simple_discussion.forum_thread_url(subdomain: @restarone_subdomain.name, id: forum_thread.slug)
+      end
+
+    end
+    assert_response :success
+  end
+
+  test 'does not track forum-thread view (if tracking is disabled)' do
+    @restarone_subdomain.update(tracking_enabled: false)
+
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      forum_category = ForumCategory.create!(name: 'test', slug: 'test')
+      forum_thread = @restarone_user.forum_threads.new(title: 'Test Thread', forum_category_id: forum_category.id)
+      forum_thread.save!
+      forum_post = ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @restarone_user.id, body: 'test body')
+
+
+      sign_in(@restarone_user)
+
+      assert_no_difference "Ahoy::Event.count", +1 do
+        get simple_discussion.forum_thread_url(subdomain: @restarone_subdomain.name, id: forum_thread.slug)
+      end
+
+    end
+    assert_response :success
   end
 end

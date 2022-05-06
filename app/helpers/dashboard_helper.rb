@@ -14,4 +14,11 @@ module DashboardHelper
       url
     end
   end
+
+  def session_detail_title
+    return 'Visit' if params[:id].blank?
+
+    user_visit_count = Ahoy::Visit.where(user_id: params[:id]).where('started_at <= ?', @visit.started_at).size
+    "Visit (#{user_visit_count})"
+  end
 end
