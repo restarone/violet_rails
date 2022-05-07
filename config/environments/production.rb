@@ -133,6 +133,7 @@ end
 
 # exception notifier
 Rails.application.config.middleware.use ExceptionNotification::Rack,
+  ignore_exceptions: ['ActionController::ParameterMissing'],
   violet_rails_error: {
     app: {
       host: ENV["APP_HOST"]
