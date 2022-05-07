@@ -14,9 +14,10 @@ module ComfyPublicAuthentication
   def authenticate
     if Subdomain.current.tracking_enabled
       user_id = current_user ? current_user.id : nil
+      visit_id = current_visit ? current_visit.id : nil
       ahoy.track(
         "comfy-cms-page-visit", 
-        {visit_id: current_visit.id, comfy_cms_page_id: @cms_page.id, user_id: user_id}
+        {visit_id: visit_id, comfy_cms_page_id: @cms_page&.id, user_id: user_id}
       )
     end
     protected_paths = Comfy::Cms::Page.where(is_restricted: true).pluck(:full_path)
