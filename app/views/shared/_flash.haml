@@ -1,10 +1,17 @@
 = render 'shared/file_download'
-- flash.each do |key, value|
-  - unless key == 'file_url'
-    -alert_class = key == 'notice' ? 'success' : 'danger'
-    %div{:class => "alert alert-#{alert_class} alert-dismissible fade show"}
-      %strong
-        = value
-      %button.close{"aria-label" => "Close", "data-dismiss" => "alert", :type => "button"}
-        %span{"aria-hidden" => "true"} ×
-        
+- if flash.present?
+  %div{class: "flash-container p-3", "aria-label": "polite", "aria-atomic": "true"}
+    - flash.each do |key, value|
+      - unless key == 'file_url'
+        - alert_class = key == 'notice' ? 'success' : 'danger'
+        %div{class: "alert alert-#{alert_class} p-0", role: "alert", "aria-live": "assertive", "aria-atomic": "true"}
+          %div{class: "d-flex justify-content-between"}
+            %div{class: "toast-body"}
+              %strong
+                = value
+            %button{class: "btn-close btn-close-danger mr-2 bg-transparent border-0", type: "button", "data-dismiss": "toast", "aria-label": "Close"}
+              %span{"aria-hidden" => "true"} x
+  %script
+    $('.flash-container .alert').toast({ autohide: false});
+    $(".flash-container .alert").toast('show');
+    $('.flash-container .alert .btn-close').on('click', function() { $(this).closest('.toast').toast('hide') });
