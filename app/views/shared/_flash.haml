@@ -4,7 +4,7 @@
     - flash.each do |key, value|
       - unless key == 'file_url'
         - alert_class = key == 'notice' ? 'success' : 'danger'
-        %div{class: "alert alert-#{alert_class} p-0", role: "alert", "aria-live": "assertive", "aria-atomic": "true"}
+        %div{class: "toast alert alert-#{alert_class} p-0", role: "alert", "aria-live": "assertive", "aria-atomic": "true"}
           %div{class: "d-flex justify-content-between"}
             %div{class: "toast-body"}
               %strong
