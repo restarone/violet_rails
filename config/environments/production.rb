@@ -131,6 +131,9 @@ Rails.application.configure do
   # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
 end
 
+# use gzip compression
+Rails.application.config.middleware.use Rack::Deflater
+
 # exception notifier
 Rails.application.config.middleware.use ExceptionNotification::Rack,
   ignore_exceptions: ['ActionController::ParameterMissing', 'ActionController::RoutingError'],
