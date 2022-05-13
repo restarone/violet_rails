@@ -24,3 +24,20 @@ three:
   submit_button_label: MyString
   title: MyString
 
+renderable:
+  properties: { 'name': {'label': 'Test', 'placeholder': 'Test', 'field_type': 'input', 'renderable': '1' }}
+  api_namespace: one
+  success_message: MyString
+  failure_message: MyString
+  submit_button_label: MyString
+  title: MyString
+
+non_renderable:
+  properties: { 'name': {'label': 'Test', 'placeholder': 'Test', 'field_type': 'input', 'renderable': '0' }}
+  api_namespace: one
+  success_message: MyString
+  failure_message: MyString
+  submit_button_label: MyString
+  title: MyString
+
+
