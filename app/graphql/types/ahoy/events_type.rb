@@ -8,5 +8,12 @@ module Types
     field :name, String
     field :properties, GraphQL::Types::JSON
     field :time, GraphQL::Types::ISO8601DateTime
+
+    def self.authorized?(object, context)
+      if Subdomain.current.allow_external_analytics_query
+        return true
+      end
+      return false
+    end
   end
 end

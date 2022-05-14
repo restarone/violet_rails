@@ -29,6 +29,13 @@ module Types
     field :platform, String
     field :started_at, GraphQL::Types::ISO8601DateTime
 
+    def self.authorized?(object, context)
+      if Subdomain.current.allow_external_analytics_query
+        return true
+      end
+      return false
+    end
+
     field :events, [Types::Ahoy::EventsType], null: true do
       description "Returns a list of Ahoy Events with ordering dimension, order direction, offset and limit"
       argument :limit, Integer, required: false
