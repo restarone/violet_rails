@@ -29,7 +29,6 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
 
     respond_to do |format|
       if @api_resource.save
-        # TO DO: should be done in HTML only?
         handle_custom_action if @custom_action.present?
 
         format.html { redirect_to api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id,id: @api_resource.id), notice: "Api resource was successfully created." }
