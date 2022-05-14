@@ -11,6 +11,7 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
   # GET /api_resources/1 or /api_resources/1.json
   def show
     handle_redirection if @redirect_action.present?
+    handle_custom_action if @custom_action.present?
   end
 
   # GET /api_resources/new

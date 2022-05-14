@@ -6,12 +6,12 @@ class ApiAction < ApplicationRecord
   belongs_to :api_namespace, optional: true
   belongs_to :api_resource, optional: true
 
-  enum action_type: { send_email: 0, send_web_request: 1, redirect: 2, serve_file: 3 }
+  enum action_type: { send_email: 0, send_web_request: 1, redirect: 2, serve_file: 3, custom_action: 4 }
 
   enum lifecycle_stage: {initialized: 0, executing: 1, complete: 2, failed: 3, discarded: 4}
 
   HTTP_METHODS = ['get', 'post', 'patch', 'put', 'delete']
-  
+
   default_scope { order(position: 'ASC') }
 
   ransacker :action_type, formatter: proc {|v| action_types[v]}
@@ -43,19 +43,21 @@ class ApiAction < ApplicationRecord
 
   def send_web_request
     begin
-      response = HTTParty.send(http_method.to_s, request_url, 
+      response = HTTParty.send(http_method.to_s, request_url,
                     { body: evaluate_payload, headers: request_headers })
       if response.success?
         self.update(lifecycle_stage: 'complete', lifecycle_message: response.to_s)
       else
         self.update(lifecycle_stage: 'failed', lifecycle_message: response.to_s)
         execute_error_actions
-      end 
+      end
     rescue => e
       self.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
       execute_error_actions
     end
   end
+
+  def custom_action;end
 
   def redirect;end
 

@@ -2,12 +2,17 @@ module ApiActionable
   extend ActiveSupport::Concern
   included do
     before_action :initialize_api_actions, only: [:update, :show, :destroy]
+    before_action :check_for_custom_action, only: [:create, :update, :show, :destroy]
     before_action :check_for_redirect_action, only: [:create, :update, :show, :destroy]
     after_action :execute_api_actions, only: [:show, :create, :update, :destroy]
     before_action :check_for_serve_file_action, only: [:show, :create, :update, :destroy]
     rescue_from StandardError, with: :handle_error
   end
 
+
+  def check_for_custom_action
+    @custom_action = @api_namespace.send(api_action_name).where(action_type: 'custom_action').last
+  end
 
   def check_for_redirect_action
     @redirect_action = @api_namespace.send(api_action_name).where(action_type: 'redirect').last
@@ -26,6 +31,27 @@ module ApiActionable
       flash[:file_url] = rails_blob_url(file.attachment)
     end
     serve_file_action.update(lifecycle_stage: 'complete', lifecycle_message: "label: #{file.label} id: #{file.id} mime_type: #{file.attachment.content_type}")
+  end
+
+  def handle_custom_action
+    flash[:notice] = @api_namespace.api_form.success_message
+    if @custom_action.present?
+      begin
+        custom_api_action == ApiAction::CustomApiAction.new
+
+        eval("def custom_api_action.run_custom_action(api_action: , api_namespace:, api_resource: , current_visit: , current_user: nil); #{@custom_action.method_definition};end;")
+
+        response = custom_api_action.run_custom_action(api_action: @custom_action, api_namespace: @api_namespace, api_resource: @api_resource, current_visit: current_visit, current_user: current_user)
+
+        # TO DO: what should we use for lifecycle_message
+        self.update(lifecycle_stage: 'complete', lifecycle_message: response.to_s)
+      rescue => e
+        self.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
+        execute_error_actions
+      end
+    end
+
+    #redirect_back(fallback_location: root_path, notice: "Api resource was successfully updated.")
   end
 
   def handle_redirection
@@ -64,7 +90,7 @@ module ApiActionable
 
     if redirect_action
       redirect_action.update(lifecycle_stage: 'complete', lifecycle_message: redirect_action.redirect_url)
-      redirect_to redirect_action.redirect_url and return 
+      redirect_to redirect_action.redirect_url and return
     end
   end
 
