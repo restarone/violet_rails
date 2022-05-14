@@ -29,7 +29,7 @@ module Types
     end
 
     # {
-    #   ahoyVisits(limit: 30, orderDirection:"desc", orderDimension: "started_at", offset: 0) {
+    #   ahoyVisits(limit: 100,orderDirection:"desc", orderDimension: "started_at") {
     #     id
     #     ip
     #     userAgent
@@ -38,6 +38,13 @@ module Types
     #     country
     #     city
     #     platform
+    #     events {
+    #       id
+    #       visitId
+    #       userId
+    #       name
+    #       properties
+    #     }
     #   }
     # }
     field :ahoy_visits, [Types::Ahoy::VisitsType], null: false do
