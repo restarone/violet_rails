@@ -28,14 +28,18 @@ class ResourceController < ApplicationController
 
   def load_api_namespace
     @api_namespace = ApiNamespace.find_by(id: params[:api_namespace_id])
+    parse_incoming_resource_parameters
   end
 
-  def resource_params
+  def parse_incoming_resource_parameters
     @api_namespace.properties.each do |key, value|
       if value.class.to_s == 'Hash'
         params[:data][:properties][key] = JSON.parse params[:data][:properties][key]
       end
     end
+  end
+
+  def resource_params
     params.require(:data).permit(properties: {}, non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :_destroy])
   end
 end
