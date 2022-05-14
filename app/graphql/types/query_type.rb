@@ -19,7 +19,6 @@ module Types
     #     }
     #   }
     # }
-    
     field :api_namespaces, [Types::ApiNamespaceType], null: false do
       description "Returns a list of public ApiNamespaces with ordering dimension, order direction, offset and limit"
       argument :limit, Integer, required: false
@@ -29,7 +28,19 @@ module Types
       argument :slug, String, required: false
     end
 
-    field :ahoy_visits, [Types::VisitType], null: false do
+    # {
+    #   ahoyVisits(limit: 30, orderDirection:"desc", orderDimension: "started_at", offset: 0) {
+    #     id
+    #     ip
+    #     userAgent
+    #     referringDomain
+    #     landingPage
+    #     country
+    #     city
+    #     platform
+    #   }
+    # }
+    field :ahoy_visits, [Types::Ahoy::VisitsType], null: false do
       description "Returns a list of ahoy visits"
       argument :limit, Integer, required: false
       argument :order_direction, String, required: false
@@ -51,11 +62,12 @@ module Types
     end
 
     def ahoy_visits(args = {})
-      args[:order_dimension] ||= 'created_at'
+      args[:order_dimension] ||= 'started_at'
       args[:order_direction] ||= 'desc'
       args[:limit] ||= 50
       args[:offset] ||= 0
-      return Ahoy::Visit.all.order("#{args[:order_dimension].underscore} #{args[:order_direction]}").limit(args[:limit]).offset(args[:offset])
+      # the trailing :: is required to look for this namespace at the top level instead of in Types:: 
+      return ::Ahoy::Visit.all.order("#{args[:order_dimension].underscore} #{args[:order_direction]}").limit(args[:limit]).offset(args[:offset])
     end
   end
 end

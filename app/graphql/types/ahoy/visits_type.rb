@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Types
-  class Ahoy::VisitType < Types::BaseObject
+  class Ahoy::VisitsType < Types::BaseObject
     field :id, ID, null: false
     field :visit_token, String
     field :visitor_token, String
