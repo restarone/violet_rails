@@ -60,6 +60,14 @@ class GraphqlControllerTest < ActionDispatch::IntegrationTest
     assert_equal ["data"], json_response.keys
   end
 
+  test "[if enabled] && [subdomain allows analytics query via API] allows ahoy visit query" do
+    skip
+  end
+
+  test "[if enabled] && [subdomain allows analytics query via API] allows ahoy event query" do
+    skip
+  end
+
   test "[not enabled] presents error" do
     @subdomain.update(graphql_enabled: false)
     query_string = "{ apiNamespaces { id } }"

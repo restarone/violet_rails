@@ -28,6 +28,14 @@ module Types
       argument :offset, Integer, required: false
       argument :slug, String, required: false
     end
+
+    field :ahoy_visits, [Types::VisitType], null: false do
+      description "Returns a list of ahoy visits"
+      argument :limit, Integer, required: false
+      argument :order_direction, String, required: false
+      argument :order_dimension, String, required: false
+      argument :offset, Integer, required: false
+    end
     
     def api_namespaces(args = {})
       args[:order_dimension] ||= 'created_at'
@@ -40,6 +48,14 @@ module Types
       else
         return ApiNamespace.where(requires_authentication: false).order("#{args[:order_dimension].underscore} #{args[:order_direction]}").limit(args[:limit]).offset(args[:offset])
       end
+    end
+
+    def ahoy_visits(args = {})
+      args[:order_dimension] ||= 'created_at'
+      args[:order_direction] ||= 'desc'
+      args[:limit] ||= 50
+      args[:offset] ||= 0
+      return Ahoy::Visit.all.order("#{args[:order_dimension].underscore} #{args[:order_direction]}").limit(args[:limit]).offset(args[:offset])
     end
   end
 end
