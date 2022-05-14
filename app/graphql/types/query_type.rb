@@ -54,6 +54,32 @@ module Types
       argument :order_dimension, String, required: false
       argument :offset, Integer, required: false
     end
+    # {
+    #   ahoyEvents(limit: 100, orderDirection:"desc", orderDimension: "time", name: "comfy-cms-page-visit") {
+    #     id
+    #     visitId
+    #     name
+    #     properties
+    #     time
+    #   }
+    # }
+    field :ahoy_events, [Types::Ahoy::EventsType], null: false do
+      description "Returns a list of ahoy events"
+      argument :limit, Integer, required: false
+      argument :order_direction, String, required: false
+      argument :order_dimension, String, required: false
+      argument :offset, Integer, required: false
+
+      argument :name, String, required: false
+    end
+    # {
+    #   ahoyEventNames {
+    #     name
+    #   }
+    # }
+    field :ahoy_event_names, [Types::Ahoy::EventNamesType], null: false do
+      description "Returns all the ahoy event names that are being used in the system"
+    end
     
     def api_namespaces(args = {})
       args[:order_dimension] ||= 'created_at'
@@ -74,7 +100,23 @@ module Types
       args[:limit] ||= 50
       args[:offset] ||= 0
       # the trailing :: is required to look for this namespace at the top level instead of in Types:: 
-      return ::Ahoy::Visit.all.order("#{args[:order_dimension].underscore} #{args[:order_direction]}").limit(args[:limit]).offset(args[:offset])
+      return ::Ahoy::Visit.all.includes(:events).order("#{args[:order_dimension].underscore} #{args[:order_direction]}").limit(args[:limit]).offset(args[:offset])
+    end
+
+    def ahoy_events(args = {})
+      args[:order_dimension] ||= 'time'
+      args[:order_direction] ||= 'desc'
+      args[:limit] ||= 50
+      args[:offset] ||= 0
+      if args[:name]
+        return ::Ahoy::Event.where(name: args[:name]).order("#{args[:order_dimension].underscore} #{args[:order_direction]}").limit(args[:limit]).offset(args[:offset])
+      else
+        return ::Ahoy::Event.all.order("#{args[:order_dimension].underscore} #{args[:order_direction]}").limit(args[:limit]).offset(args[:offset])
+      end
+    end
+
+    def ahoy_event_names
+      return ::Ahoy::Event.distinct.pluck(:name).map{|name| {name: name} }
     end
   end
 end

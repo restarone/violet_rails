@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Types
-  class Ahoy::EventType < Types::BaseObject
+  class Ahoy::EventsType < Types::BaseObject
     field :id, ID, null: false
     field :visit_id, Integer
     field :user_id, Integer

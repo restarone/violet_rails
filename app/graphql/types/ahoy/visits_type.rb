@@ -29,7 +29,7 @@ module Types
     field :platform, String
     field :started_at, GraphQL::Types::ISO8601DateTime
 
-    field :events, [Types::Ahoy::EventType], null: true do
+    field :events, [Types::Ahoy::EventsType], null: true do
       description "Returns a list of Ahoy Events with ordering dimension, order direction, offset and limit"
       argument :limit, Integer, required: false
       argument :order_direction, String, required: false
