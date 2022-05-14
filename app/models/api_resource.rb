@@ -51,6 +51,9 @@ class ApiResource < ApplicationRecord
   private
 
   def inject_inherited_properties
+    # you can make certain primitive properties (inherited from the parent API namespace) non renderable, in these cases we have to populate the values
+    # to - do write test
+    return if !api_namespace&.api_form&.properties
     api_form_properties = api_namespace.api_form.properties
     api_namespace.properties.each do |key, value|
       if api_form_properties[key]['renderable'] == '0'
