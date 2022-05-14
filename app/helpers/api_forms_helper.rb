@@ -16,9 +16,40 @@ module ApiFormsHelper
         render partial: 'comfy/admin/api_forms/radio', locals: {form: form, key: key, value: value, form_properties: form_properties}
       else
         if form_properties[key]['select_type'] == 'multi' || !value.present?
-          form.select key, options_for_select(value), { multiple: true, include_blank: true}, {class: "form-control array_select", name: "data[properties][#{key}][]", required: form_properties.dig(key, 'required') == '1', default_value: form_properties.dig(key, 'prepopulated_options').present? ? form_properties.dig(key, 'prepopulated_options').to_s : "[]" , placeholder: form_properties.dig(key, 'placeholder'), 'data-tags': !value.present? }
+          form.select( 
+            key, 
+            options_for_select(value), 
+            { 
+              multiple: true, 
+              # how can we include/not include blank in a better way here? 
+              include_blank: true
+            }, 
+            {
+              class: "form-control array_select", 
+              name: "data[properties][#{key}][]", 
+              required: form_properties.dig(key, 'required') == '1', 
+              default_value: form_properties.dig(key, 'prepopulated_options').present? ? form_properties.dig(key, 'prepopulated_options').to_s : "[]" , 
+              placeholder: form_properties.dig(key, 'placeholder'), 
+              'data-tags': !value.present? 
+            }
+          )
         else
-          form.select key, options_for_select(value, form_properties[key]['prepopulated_options_single']), { include_blank: form_properties[key]['placeholder'] }, {class: "form-control", name: "data[properties][#{key}", required: form_properties[key]['required'] == '1' }
+          form.select(
+            key, 
+            # to do - define what ['prepopulated_options_single'] does
+            options_for_select(value, form_properties[key]['prepopulated_options_single']), 
+            { 
+              # to do - confirm if this is a good approach to use, does placeholder get shown on its own blank option?
+              include_blank: form_properties[key]['placeholder'].blank? ? true : false,
+              multiple: false,
+            }, 
+            {
+              class: "form-control", 
+              name: "data[properties][#{key}", 
+              required: form_properties[key]['required'] == '1' ,
+              placeholder: form_properties.dig(key, 'placeholder')
+            }
+          )
         end
       end
     when 'TrueClass', 'FalseClass'

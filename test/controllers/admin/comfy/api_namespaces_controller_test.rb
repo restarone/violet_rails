@@ -47,6 +47,16 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_response :success
   end
 
+  test 'should api_namespace (array => dropdown)' do
+    # to do - write test that asserts the blank select dropdown option is not rendered
+    sign_in(@user)
+    api_namespace = api_namespaces(:array_namespace)
+    byebug
+    api_namespace.api_form.update!(properties: { 'name': {'label': 'name', 'placeholder': 'Test', 'input_type': '', 'select_type': 'single' }})
+    get api_namespace_url(api_namespace)
+    assert_response :success
+  end
+
   test "should get edit" do
     sign_in(@user)
     get edit_api_namespace_url(@api_namespace)
