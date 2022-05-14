@@ -10,6 +10,7 @@ module ApiFormsHelper
   end
 
   def map_form_field(form, key, value, form_properties)
+    byebug
     case value.class.to_s
     when 'Array'
       if form_properties[key]['input_type'] == 'radio'

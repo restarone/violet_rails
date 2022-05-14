@@ -44,6 +44,7 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
   def update
     respond_to do |format|
       if @api_namespace.update(api_namespace_params)
+        byebug
         format.html { handle_success_redirect }
         format.json { render :show, status: :ok, location: @api_namespace }
       else
