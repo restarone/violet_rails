@@ -124,7 +124,7 @@ ActiveRecord::Schema.define(version: 2022_05_13_034804) do
     t.datetime "updated_at", precision: 6, null: false
     t.jsonb "custom_headers"
     t.string "http_method"
-    t.text "method_definition", default: "ApiAction::CustomApiAction.class_eval do\n\tdef run_custom_action(current_user = nil, current_visit, api_object)\n\t\traise 'not implemented error'\n\tend\nend"
+    t.text "method_definition", default: "# You have access to vaiables: api_action, api_namespace, api_resource, current_visit, current_user\n# Write your custom code here\nraise 'not implemented error'"
     t.index ["api_namespace_id"], name: "index_api_actions_on_api_namespace_id"
     t.index ["api_resource_id"], name: "index_api_actions_on_api_resource_id"
   end

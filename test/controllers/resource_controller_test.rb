@@ -39,12 +39,12 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
           },
           non_primitive_properties_attributes: [
              {
-              label: "image", 
+              label: "image",
               field_type: "file",
               attachment: file,
             },
             {
-              label: "image", 
+              label: "image",
               field_type: "richtext",
               content: "<div>test</div>"
             }
@@ -153,6 +153,28 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     }
     assert_difference "api_namespace.api_resources.count", +1 do
       post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+  end
+
+  test 'should allow #create and the custom action should be executed' do
+    api_namespace = api_namespaces(:one)
+    api_namespace.api_form.update(properties: { 'name': {'label': 'name', 'placeholder': 'Test', 'type_validation': 'tel'}})
+
+    api_action = api_actions(:create_custom_api_action_one)
+    api_action.update!(method_definition: "User.create!(email: 'contact1@restarone.com', password: '123456', password_confirmation: '123456', confirmed_at: Time.now)")
+
+    payload = {
+      data: {
+          properties: {
+            name: 123,
+          }
+      }
+    }
+    assert_difference "api_namespace.api_resources.count", +1 do
+      # Custom Action creates a new user
+      assert_difference "User.count", +1 do
+        post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+      end
     end
   end
 end

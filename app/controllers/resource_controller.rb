@@ -1,12 +1,13 @@
 class ResourceController < ApplicationController
   before_action :load_api_namespace
-  
+
   include ApiActionable
 
   def create
     @api_resource = @api_namespace.api_resources.new(resource_params)
     if @api_namespace&.api_form&.show_recaptcha
       if verify_recaptcha(model: @api_resource) && @api_resource.save
+        handle_custom_action
         handle_redirection
       else
         execute_error_actions
@@ -14,6 +15,7 @@ class ResourceController < ApplicationController
         redirect_back(fallback_location: root_path)
       end
     elsif @api_resource.save
+      handle_custom_action
       handle_redirection
     else
       execute_error_actions
@@ -21,13 +23,13 @@ class ResourceController < ApplicationController
       redirect_back(fallback_location: root_path)
     end
   end
-  
+
   private
 
   def load_api_namespace
     @api_namespace = ApiNamespace.find_by(id: params[:api_namespace_id])
   end
-  
+
   def resource_params
     @api_namespace.properties.each do |key, value|
       if value.class.to_s == 'Hash'

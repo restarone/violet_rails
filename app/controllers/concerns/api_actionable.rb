@@ -37,21 +37,18 @@ module ApiActionable
     flash[:notice] = @api_namespace.api_form.success_message
     if @custom_action.present?
       begin
-        custom_api_action == ApiAction::CustomApiAction.new
+        custom_api_action = CustomApiAction.new
 
         eval("def custom_api_action.run_custom_action(api_action: , api_namespace:, api_resource: , current_visit: , current_user: nil); #{@custom_action.method_definition};end;")
-
         response = custom_api_action.run_custom_action(api_action: @custom_action, api_namespace: @api_namespace, api_resource: @api_resource, current_visit: current_visit, current_user: current_user)
 
         # TO DO: what should we use for lifecycle_message
-        self.update(lifecycle_stage: 'complete', lifecycle_message: response.to_s)
+        @custom_action.update(lifecycle_stage: 'complete', lifecycle_message: response.to_s)
       rescue => e
-        self.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
+        @custom_action.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
         execute_error_actions
       end
     end
-
-    #redirect_back(fallback_location: root_path, notice: "Api resource was successfully updated.")
   end
 
   def handle_redirection

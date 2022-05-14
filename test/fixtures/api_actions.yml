@@ -4,7 +4,7 @@ one:
   type: NewApiAction
   action_type: redirect
   include_api_resource_data: false
-  payload_mapping: 
+  payload_mapping:
   redirect_url: MyString
   api_namespace: one
 
@@ -12,7 +12,7 @@ two:
   type: NewApiAction
   action_type: redirect
   include_api_resource_data: false
-  payload_mapping: 
+  payload_mapping:
   redirect_url: MyString
   api_resource: one
 
@@ -20,7 +20,7 @@ three:
   type: NewApiAction
   action_type: send_email
   include_api_resource_data: false
-  payload_mapping: 
+  payload_mapping:
   email: 'test@rest.com'
   api_resource: one
 
@@ -28,7 +28,7 @@ create_api_action_one:
   type: CreateApiAction
   action_type: redirect
   include_api_resource_data: false
-  payload_mapping: 
+  payload_mapping:
   redirect_url: MyString
   api_namespace: one
 
@@ -36,8 +36,8 @@ show_api_action_one:
   type: ShowApiAction
   action_type: send_email
   include_api_resource_data: false
-  payload_mapping: 
-  redirect_url: 
+  payload_mapping:
+  redirect_url:
   email: test@restarone.com
   api_namespace: one
 
@@ -45,8 +45,8 @@ create_api_action_two:
   type: CreateApiAction
   action_type: send_email
   include_api_resource_data: false
-  payload_mapping: 
-  redirect_url: 
+  payload_mapping:
+  redirect_url:
   email: test@restarone.com
   api_namespace: one
 
@@ -54,7 +54,7 @@ create_api_action_three:
   type: CreateApiAction
   action_type: send_web_request
   include_api_resource_data: false
-  payload_mapping: 
+  payload_mapping:
   request_url: "http://www.example.com/success"
   payload_mapping: {"first_name":"test"}
   custom_headers: {"AUTHORIZATION":"SECRET_BEARER_TOKEN"}
@@ -68,7 +68,7 @@ create_api_action_four:
   payload_mapping: {"first_name":"test"}
   custom_headers: {"AUTHORIZATION":"SECRET_BEARER_TOKEN"}
   request_url: "http://www.example.com/error"
-  email: 
+  email:
   api_resource: one
   http_method: post
 
@@ -76,8 +76,8 @@ error_api_action_one:
   type: ErrorApiAction
   action_type: send_email
   include_api_resource_data: false
-  payload_mapping: 
-  redirect_url: 
+  payload_mapping:
+  redirect_url:
   email: test@restarone.com
   api_namespace: one
 
@@ -85,7 +85,7 @@ error_api_action_two:
   type: ErrorApiAction
   action_type: redirect
   include_api_resource_data: false
-  payload_mapping: 
+  payload_mapping:
   redirect_url: '/'
   api_namespace: one
 
@@ -99,5 +99,13 @@ create_api_action_plugin_subdomain_events:
   request_url: "http://www.example.com/success"
   api_namespace: plugin_subdomain_events
   http_method: post
+
+create_custom_api_action_one:
+  type: CreateApiAction
+  action_type: custom_action
+  include_api_resource_data: false
+  payload_mapping:
+  method_definition: ""
+  api_namespace: one
 
 
