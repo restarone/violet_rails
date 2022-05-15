@@ -113,6 +113,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # ahoy analytics
+  mount Ahoy::Engine => "/ahoy", as: :my_ahoy
+
   # to query CMS pages
   post '/query', to: 'search#query'
   # to query the rest of the system
