@@ -25,13 +25,5 @@ module Types
       argument :order_dimension, String, required: false
       argument :offset, Integer, required: false
     end
-
-    def api_resources(args = {})
-      args[:order_dimension] ||= 'created_at'
-      args[:order_direction] ||= 'desc'
-      args[:limit] ||= 50
-      args[:offset] ||= 0
-      ApiResource.all.order("#{args[:order_dimension].underscore} #{args[:order_direction]}").limit(args[:limit]).offset(args[:offset])
-    end
   end
 end
