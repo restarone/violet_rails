@@ -24,14 +24,15 @@ module Types
       argument :order_direction, String, required: false
       argument :order_dimension, String, required: false
       argument :offset, Integer, required: false
-    end
 
-    def api_resources(args = {})
-      args[:order_dimension] ||= 'created_at'
-      args[:order_direction] ||= 'desc'
-      args[:limit] ||= 50
-      args[:offset] ||= 0
-      ApiResource.all.order("#{args[:order_dimension].underscore} #{args[:order_direction]}").limit(args[:limit]).offset(args[:offset])
+      def resolve(parent, frozen_parameters, context)
+        parameters = { **frozen_parameters }
+        parameters[:order_dimension] ||= 'created_at'
+        parameters[:order_direction] ||= 'desc'
+        parameters[:limit] ||= 50
+        parameters[:offset] ||= 0
+        parent.object.api_resources.order("#{parameters[:order_dimension].underscore} #{parameters[:order_direction]}").limit(parameters[:limit]).offset(parameters[:offset])
+      end
     end
   end
 end
