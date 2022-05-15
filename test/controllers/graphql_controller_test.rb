@@ -48,12 +48,16 @@ class GraphqlControllerTest < ActionDispatch::IntegrationTest
     post '/graphql', params: { query: query_string }
     json_response = JSON.parse(@response.body)
     assert_equal ["data"], json_response.keys
+  end
 
+  test "[if enabled] query public API Namespaces with nested apiResources" do
     query_string = "{ apiNamespaces(orderDirection: \"desc\", orderDimension: \"updatedAt\") { id apiResources { id } } }"
     post '/graphql', params: { query: query_string }
     json_response = JSON.parse(@response.body)
     assert_equal ["data"], json_response.keys
+  end
 
+  test "[if enabled] query public API Namespaces with nested apiResources with sorting" do
     query_string = "{ apiNamespaces { id apiResources(orderDirection: \"desc\", orderDimension: \"updatedAt\") { id } } }"
     post '/graphql', params: { query: query_string }
     json_response = JSON.parse(@response.body)
