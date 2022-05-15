@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_03_151800) do
+ActiveRecord::Schema.define(version: 2022_05_13_034804) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -124,6 +124,7 @@ ActiveRecord::Schema.define(version: 2022_05_03_151800) do
     t.datetime "updated_at", precision: 6, null: false
     t.jsonb "custom_headers"
     t.string "http_method"
+    t.text "method_definition", default: "# You have access to vaiables: api_action, api_namespace, api_resource, current_visit, current_user\n# Write your custom code here\nraise 'not implemented error'"
     t.index ["api_namespace_id"], name: "index_api_actions_on_api_namespace_id"
     t.index ["api_resource_id"], name: "index_api_actions_on_api_resource_id"
   end
@@ -463,13 +464,13 @@ ActiveRecord::Schema.define(version: 2022_05_03_151800) do
     t.string "purge_visits_every", default: "never"
     t.string "analytics_report_frequency", default: "never"
     t.datetime "analytics_report_last_sent"
-    t.boolean "tracking_enabled", default: false
     t.boolean "ember_enabled", default: false
     t.boolean "graphql_enabled", default: false
     t.boolean "web_console_enabled", default: false
-    t.boolean "api_plugin_events_enabled", default: false
     t.string "after_sign_up_path"
     t.string "after_sign_in_path"
+    t.boolean "api_plugin_events_enabled", default: false
+    t.boolean "tracking_enabled", default: false
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
     t.index ["name"], name: "index_subdomains_on_name"
   end

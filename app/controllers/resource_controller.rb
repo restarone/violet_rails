@@ -1,12 +1,13 @@
 class ResourceController < ApplicationController
   before_action :load_api_namespace
-  
+
   include ApiActionable
 
   def create
     @api_resource = @api_namespace.api_resources.new(resource_params)
     if @api_namespace&.api_form&.show_recaptcha
       if verify_recaptcha(model: @api_resource) && @api_resource.save
+        handle_custom_actions
         handle_redirection
       else
         execute_error_actions
@@ -14,6 +15,7 @@ class ResourceController < ApplicationController
         redirect_back(fallback_location: root_path)
       end
     elsif @api_resource.save
+      handle_custom_actions
       handle_redirection
     else
       execute_error_actions
@@ -21,7 +23,7 @@ class ResourceController < ApplicationController
       redirect_back(fallback_location: root_path)
     end
   end
-  
+
   private
 
   def load_api_namespace
@@ -36,7 +38,7 @@ class ResourceController < ApplicationController
       end
     end
   end
-  
+
   def resource_params
     params.require(:data).permit(properties: {}, non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :_destroy])
   end

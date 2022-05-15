@@ -24,4 +24,12 @@ three:
   submit_button_label: MyString
   title: MyString
 
+four:
+  properties: { 'name': {'label': 'Test', 'placeholder': 'Test', 'field_type': 'input' }}
+  api_namespace: three
+  success_message: MyString
+  failure_message: MyString
+  submit_button_label: MyString
+  title: MyString
+
 
