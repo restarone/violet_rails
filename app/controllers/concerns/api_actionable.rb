@@ -2,7 +2,7 @@ module ApiActionable
   extend ActiveSupport::Concern
   included do
     before_action :initialize_api_actions, only: [:update, :show, :destroy]
-    before_action :check_for_custom_action, only: [:create, :update, :show, :destroy]
+    before_action :check_for_custom_actions, only: [:create, :update, :show, :destroy]
     before_action :check_for_redirect_action, only: [:create, :update, :show, :destroy]
     after_action :execute_api_actions, only: [:show, :create, :update, :destroy]
     before_action :check_for_serve_file_action, only: [:show, :create, :update, :destroy]
@@ -10,8 +10,8 @@ module ApiActionable
   end
 
 
-  def check_for_custom_action
-    @custom_action = @api_namespace.send(api_action_name).where(action_type: 'custom_action').last
+  def check_for_custom_actions
+    @custom_actions = @api_namespace.send(api_action_name).where(action_type: 'custom_action')
   end
 
   def check_for_redirect_action
@@ -33,20 +33,23 @@ module ApiActionable
     serve_file_action.update(lifecycle_stage: 'complete', lifecycle_message: "label: #{file.label} id: #{file.id} mime_type: #{file.attachment.content_type}")
   end
 
-  def handle_custom_action
+  def handle_custom_actions
     flash[:notice] = @api_namespace.api_form.success_message
-    if @custom_action.present?
-      begin
-        custom_api_action = CustomApiAction.new
+    if @custom_actions.present?
+      @custom_actions.each do |custom_action|
+        begin
+          custom_api_action = CustomApiAction.new
 
-        eval("def custom_api_action.run_custom_action(api_action: , api_namespace:, api_resource: , current_visit: , current_user: nil); #{@custom_action.method_definition};end;")
-        response = custom_api_action.run_custom_action(api_action: @custom_action, api_namespace: @api_namespace, api_resource: @api_resource, current_visit: current_visit, current_user: current_user)
+          eval("def custom_api_action.run_custom_action(api_action: , api_namespace:, api_resource: , current_visit: , current_user: nil); #{custom_action.method_definition};end;")
+          custom_api_action.run_custom_action(api_action: custom_action, api_namespace: @api_namespace, api_resource: @api_resource, current_visit: current_visit, current_user: current_user)
 
-        # TO DO: what should we use for lifecycle_message
-        @custom_action.update(lifecycle_stage: 'complete', lifecycle_message: response.to_s)
-      rescue => e
-        @custom_action.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
-        execute_error_actions
+          custom_action.update(lifecycle_stage: 'complete', lifecycle_message: "everything went well")
+        rescue => e
+          custom_action.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
+          execute_error_actions
+
+          raise
+        end
       end
     end
   end

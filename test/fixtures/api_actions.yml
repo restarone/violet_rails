@@ -100,12 +100,12 @@ create_api_action_plugin_subdomain_events:
   api_namespace: plugin_subdomain_events
   http_method: post
 
-create_custom_api_action_one:
+create_custom_api_action_three:
   type: CreateApiAction
   action_type: custom_action
   include_api_resource_data: false
   payload_mapping:
-  method_definition: ""
-  api_namespace: one
+  method_definition: "logger = Logger.new(\"#{Rails.root}/log/api_action_response.log\"); logger.info 'Test log message!'"
+  api_namespace: three
 
 
