@@ -39,12 +39,12 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
           },
           non_primitive_properties_attributes: [
              {
-              label: "image", 
+              label: "image",
               field_type: "file",
               attachment: file,
             },
             {
-              label: "image", 
+              label: "image",
               field_type: "richtext",
               content: "<div>test</div>"
             }
@@ -155,4 +155,59 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
     end
   end
+
+  test 'should allow #create and the custom action should be executed' do
+    api_namespace = api_namespaces(:three)
+    api_namespace.api_form.update(properties: { 'name': {'label': 'name', 'placeholder': 'Test', 'type_validation': 'tel'}})
+    api_action = api_actions(:create_custom_api_action_three)
+    api_action.update!(method_definition: "User.create!(email: 'contact1@restarone.com', password: '123456', password_confirmation: '123456', confirmed_at: Time.now)")
+
+    payload = {
+      data: {
+          properties: {
+            name: 123,
+          }
+      }
+    }
+    assert_difference "api_namespace.api_resources.count", +1 do
+      # Custom Action creates a new user
+      assert_difference "User.count", +1 do
+        post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+      end
+    end
+  end
+
+  test 'should allow #create and the custom action should be executed in the order that is defined' do
+    api_namespace = api_namespaces(:three)
+    api_namespace.api_form.update(properties: { 'name': {'label': 'name', 'placeholder': 'Test', 'type_validation': 'tel'}})
+    api_action = api_actions(:create_custom_api_action_three)
+    api_action.update!(position: 0, method_definition: "User.create!(email: 'custom_action_0@restarone.com', password: '123456', password_confirmation: '123456', confirmed_at: Time.now)")
+
+    2.times.each do |n|
+      new_custom_action = api_actions(:create_custom_api_action_three).dup
+      new_custom_action.method_definition = "User.create!(email: 'custom_action_#{ n + 1 }@restarone.com', password: '123456', password_confirmation: '123456', confirmed_at: Time.now)"
+      new_custom_action.position = n + 1
+      new_custom_action.save!
+    end
+
+    payload = {
+      data: {
+          properties: {
+            name: 123,
+          }
+      }
+    }
+    assert_difference "api_namespace.api_resources.count", +1 do
+      # Total 3 Custom Action. Each creates a new user
+      assert_difference "User.count", +3 do
+        post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+      end
+    end
+
+    # According to the order of custom_api_actions, the users should be created in the order: 1) custom_action_0@restarone.com   2) custom_action_1@restarone.com  3) custom_action_2@restarone.com
+    assert User.find_by_email('custom_action_1@restarone.com').created_at > User.find_by_email('custom_action_0@restarone.com').created_at
+    assert User.find_by_email('custom_action_1@restarone.com').created_at < User.find_by_email('custom_action_2@restarone.com').created_at
+  end
+
+
 end
