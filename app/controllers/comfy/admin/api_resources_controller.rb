@@ -36,7 +36,13 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
         # TO DO: this needs to be handled as well
         # handle_redirection if @redirect_action.present?
 
-        format.html { redirect_to api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id,id: @api_resource.id), notice: "Api resource was successfully created." }
+        format.html {
+          if @redirect_action.present?
+            handle_redirection
+          else
+            redirect_to api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id,id: @api_resource.id), notice: "Api resource was successfully created."
+          end
+        }
         format.json { render :show, status: :created, location: @api_resource }
       else
         execute_error_actions
