@@ -58,7 +58,7 @@ module ApiActionable
 
           eval("def custom_api_action.run_custom_action(api_action: , api_namespace:, api_resource: , current_visit: , current_user: nil); #{custom_action.method_definition};end;")
           response = custom_api_action.run_custom_action(api_action: custom_action, api_namespace: @api_namespace, api_resource: @api_resource, current_visit: current_visit, current_user: current_user)
-          response = response.present? ? response.to_s : "everything went well."
+          response = response.present? ? response.as_json : "everything went well."
           custom_action.update(lifecycle_stage: 'complete', lifecycle_message: response)
         rescue => e
           custom_action.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
