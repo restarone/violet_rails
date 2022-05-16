@@ -2,38 +2,20 @@ require "test_helper"
 
 class ApiResourceTest < ActiveSupport::TestCase
   test "when initialized - inherits parent properties" do
-    skip('need to add before going GA with API pipelines v0.2')
-  end
+    api_namespace = api_namespaces(:one)
+    api_resource = ApiResource.new(api_namespace_id: api_namespace.id)
 
-  test "when updated - adheres to type validations enforced by API form" do
-    skip('need to add before going GA with API pipelines v0.2')
+    assert_equal api_resource.properties, api_namespace.properties
   end
 
   test "when updated - adheres to presence validations enforced by API form" do
-    skip('need to add before going GA with API pipelines v0.2')
-  end
+    api_namespace = api_namespaces(:one)
+    api_form = api_forms(:one)
+    api_form.update(properties: { 'name': {'label': 'name', 'placeholder': 'Name', 'field_type': 'input', 'required': '1' }})
 
-  test "when updated - adheres to includes validations enforced by API form" do
-    skip('need to add before going GA with API pipelines v0.2')
-  end
+    api_resource = ApiResource.create(api_namespace_id: api_namespace.id, properties: {'name': ''})
+    refute api_resource.id
 
-  test "when updated - adheres to regex validations enforced by API form" do
-    skip('need to add before going GA with API pipelines v0.2')
-  end
-
-  test "when initialized - fires contextual API actions" do
-    skip('need to add before going GA with API pipelines v0.2')
-  end
-
-  test "when created - fires contextual API actions" do
-    skip('need to add before going GA with API pipelines v0.2')
-  end
-
-  test "when updated - fires contextual API actions" do
-    skip('need to add before going GA with API pipelines v0.2')
-  end
-
-  test "when destroyed - fires contextual API actions" do
-    skip('need to add before going GA with API pipelines v0.2')
+    assert_includes api_resource.errors.messages[:properties], 'name is required'
   end
 end
