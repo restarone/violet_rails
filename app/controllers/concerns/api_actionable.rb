@@ -11,26 +11,42 @@ module ApiActionable
 
 
   def check_for_custom_actions
-    @custom_actions = @api_namespace.send(api_action_name).where(action_type: 'custom_action')
+    @custom_actions = if @api_resource.present?
+                        @api_resource.send(api_action_name).where(action_type: 'custom_action', lifecycle_stage: 'initialized')
+                      else
+                        @api_namespace.send(api_action_name).where(action_type: 'custom_action')
+                      end
+
   end
 
   def check_for_redirect_action
-    @redirect_action = @api_namespace.send(api_action_name).where(action_type: 'redirect').last
+    @redirect_action = if @api_resource.present?
+                          @api_resource.send(api_action_name).where(action_type: 'redirect', lifecycle_stage: 'initialized').last
+                        else
+                          @api_namespace.send(api_action_name).where(action_type: 'redirect').last
+                        end
   end
 
   def check_for_serve_file_action
-    serve_file_action = @api_namespace.send(api_action_name).where(action_type: 'serve_file').last
-    return if serve_file_action.nil?
+    @serve_file_action = if @api_resource.present?
+                            @api_resource.send(api_action_name).where(action_type: 'serve_file', lifecycle_stage: 'initialized').last
+                          else
+                            @api_namespace.send(api_action_name).where(action_type: 'serve_file').last
+                          end
+  end
 
-    serve_file_action.update(lifecycle_stage: 'executing')
-    file_id = helpers.file_id_from_snippet(serve_file_action.file_snippet)
+  def handle_serve_file_action
+    return if @serve_file_action.nil?
+
+    @serve_file_action.update(lifecycle_stage: 'executing')
+    file_id = helpers.file_id_from_snippet(@serve_file_action.file_snippet)
     file = Comfy::Cms::File.find(file_id)
     if params[:action] == 'show' && @redirect_action.nil?
       flash.now[:file_url] = rails_blob_url(file.attachment)
     else
       flash[:file_url] = rails_blob_url(file.attachment)
     end
-    serve_file_action.update(lifecycle_stage: 'complete', lifecycle_message: "label: #{file.label} id: #{file.id} mime_type: #{file.attachment.content_type}")
+    @serve_file_action.update(lifecycle_stage: 'complete', lifecycle_message: "label: #{file.label} id: #{file.id} mime_type: #{file.attachment.content_type}")
   end
 
   def handle_custom_actions
@@ -41,9 +57,9 @@ module ApiActionable
           custom_api_action = CustomApiAction.new
 
           eval("def custom_api_action.run_custom_action(api_action: , api_namespace:, api_resource: , current_visit: , current_user: nil); #{custom_action.method_definition};end;")
-          custom_api_action.run_custom_action(api_action: custom_action, api_namespace: @api_namespace, api_resource: @api_resource, current_visit: current_visit, current_user: current_user)
-
-          custom_action.update(lifecycle_stage: 'complete', lifecycle_message: "everything went well")
+          response = custom_api_action.run_custom_action(api_action: custom_action, api_namespace: @api_namespace, api_resource: @api_resource, current_visit: current_visit, current_user: current_user)
+          response = response.present? ? response.as_json : "everything went well."
+          custom_action.update(lifecycle_stage: 'complete', lifecycle_message: response)
         rescue => e
           custom_action.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
           execute_error_actions
@@ -109,5 +125,11 @@ module ApiActionable
     @api_namespace.send(action_name).each do |action|
       @api_resource.send(action_name).create(action.attributes.merge(custom_message: action.custom_message.to_s).except("id", "created_at", "updated_at", "api_namespace_id"))
     end
+  end
+
+  def load_api_actions_from_api_resource
+    @custom_actions = @api_resource.send(api_action_name).where(action_type: 'custom_action', lifecycle_stage: 'initialized') if @custom_actions.present?
+    @redirect_action = @api_resource.send(api_action_name).where(action_type: 'redirect', lifecycle_stage: 'initialized').last if @redirect_action.present?
+    @serve_file_action = @api_resource.send(api_action_name).where(action_type: 'serve_file', lifecycle_stage: 'initialized').last if @serve_file_action.present?
   end
 end

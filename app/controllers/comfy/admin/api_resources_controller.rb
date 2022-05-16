@@ -11,6 +11,7 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
   # GET /api_resources/1 or /api_resources/1.json
   def show
     handle_custom_actions if @custom_actions.present?
+    handle_serve_file_action if @serve_file_action.present?
     handle_redirection if @redirect_action.present?
   end
 
@@ -29,9 +30,19 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
 
     respond_to do |format|
       if @api_resource.save
+        load_api_actions_from_api_resource
         handle_custom_actions if @custom_actions.present?
+        handle_serve_file_action if @serve_file_action.present?
+        # TO DO: this needs to be handled as well
+        # handle_redirection if @redirect_action.present?
 
-        format.html { redirect_to api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id,id: @api_resource.id), notice: "Api resource was successfully created." }
+        format.html {
+          if @redirect_action.present?
+            handle_redirection
+          else
+            redirect_to api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id,id: @api_resource.id), notice: "Api resource was successfully created."
+          end
+        }
         format.json { render :show, status: :created, location: @api_resource }
       else
         execute_error_actions
@@ -46,6 +57,7 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
     respond_to do |format|
       if @api_resource.update(api_resource_params)
         handle_custom_actions if @custom_actions.present?
+        handle_serve_file_action if @serve_file_action.present?
 
         format.html { handle_redirection }
         format.json { render :show, status: :ok, location: @api_resource }
@@ -60,7 +72,7 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
   # DELETE /api_resources/1 or /api_resources/1.json
   def destroy
     @api_resource.destroy
-    handle_custom_actions if @custom_actions.present?
+
     respond_to do |format|
       format.html { redirect_to api_namespace_resources_url(api_namespace_id: @api_namespace.id), notice: "Api resource was successfully destroyed." }
       format.json { head :no_content }
