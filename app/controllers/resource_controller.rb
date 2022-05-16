@@ -7,7 +7,9 @@ class ResourceController < ApplicationController
     @api_resource = @api_namespace.api_resources.new(resource_params)
     if @api_namespace&.api_form&.show_recaptcha
       if verify_recaptcha(model: @api_resource) && @api_resource.save
+        load_api_actions_from_api_resource
         handle_custom_actions
+        handle_serve_file_action
         handle_redirection
       else
         execute_error_actions
@@ -15,7 +17,9 @@ class ResourceController < ApplicationController
         redirect_back(fallback_location: root_path)
       end
     elsif @api_resource.save
+      load_api_actions_from_api_resource
       handle_custom_actions
+      handle_serve_file_action
       handle_redirection
     else
       execute_error_actions
