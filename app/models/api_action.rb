@@ -20,6 +20,8 @@ class ApiAction < ApplicationRecord
 
   validates :http_method, inclusion: { in: ApiAction::HTTP_METHODS}, allow_blank: true
 
+  EXECUTION_ORDER = ['serve_file', 'redirect', 'send_email', 'send_web_request', 'custom_action']
+
   def self.children
     ['new_api_actions', 'create_api_actions', 'show_api_actions', 'update_api_actions', 'destroy_api_actions', 'error_api_actions']
   end

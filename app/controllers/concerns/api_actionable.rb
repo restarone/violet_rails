@@ -4,7 +4,7 @@ module ApiActionable
     before_action :initialize_api_actions, only: [:update, :show, :destroy]
     before_action :check_for_custom_actions, only: [:create, :update, :show, :destroy]
     before_action :check_for_redirect_action, only: [:create, :update, :show, :destroy]
-    after_action :execute_api_actions, only: [:show, :create, :update, :destroy]
+    #after_action :execute_api_actions, only: [:show, :create, :update, :destroy]
     before_action :check_for_serve_file_action, only: [:show, :create, :update, :destroy]
     rescue_from StandardError, with: :handle_error
   end
