@@ -1,6 +1,8 @@
 class ApiResource < ApplicationRecord
   include JsonbFieldsParsable
 
+  after_initialize :inherit_properties_from_parent
+
   belongs_to :api_namespace
 
   before_create :initialize_api_actions, :inject_inherited_properties
@@ -49,6 +51,12 @@ class ApiResource < ApplicationRecord
   end
 
   private
+
+  def inherit_properties_from_parent
+    return unless self.properties.nil?
+
+    self.properties = api_namespace&.properties
+  end
 
   def inject_inherited_properties
     # you can make certain primitive properties (inherited from the parent API namespace) non renderable, in these cases we have to populate the values
