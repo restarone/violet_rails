@@ -4,7 +4,6 @@ module ApiActionable
     before_action :initialize_api_actions, only: [:update, :show, :destroy]
     before_action :check_for_custom_actions, only: [:create, :update, :show, :destroy]
     before_action :check_for_redirect_action, only: [:create, :update, :show, :destroy]
-    after_action :execute_api_actions, only: [:show, :create, :update, :destroy]
     before_action :check_for_serve_file_action, only: [:show, :create, :update, :destroy]
     rescue_from StandardError, with: :handle_error
   end
@@ -58,8 +57,8 @@ module ApiActionable
 
           eval("def custom_api_action.run_custom_action(api_action: , api_namespace:, api_resource: , current_visit: , current_user: nil); #{custom_action.method_definition};end;")
           response = custom_api_action.run_custom_action(api_action: custom_action, api_namespace: @api_namespace, api_resource: @api_resource, current_visit: current_visit, current_user: current_user)
-          response = response.present? ? response.as_json : "everything went well."
-          custom_action.update(lifecycle_stage: 'complete', lifecycle_message: response)
+
+          custom_action.update(lifecycle_stage: 'complete', lifecycle_message: response.to_json)
         rescue => e
           custom_action.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
           execute_error_actions
@@ -85,7 +84,21 @@ module ApiActionable
   end
 
   def execute_api_actions
-    helpers.execute_actions(@api_resource, api_action_name)
+    api_actions = @api_resource.send(api_action_name)
+
+    ApiAction::EXECUTION_ORDER.each do |action_type|
+      if ApiAction.action_types[action_type] == ApiAction.action_types[:serve_file]
+        handle_serve_file_action if @serve_file_action.present?
+      elsif ApiAction.action_types[action_type] == ApiAction.action_types[:redirect]
+        handle_redirection if @redirect_action.present?
+      elsif ApiAction.action_types[action_type] == ApiAction.action_types[:custom_action]
+        handle_custom_actions if @custom_actions.present?
+      elsif [ApiAction.action_types[:send_email], ApiAction.action_types[:send_web_request]].include?(ApiAction.action_types[action_type])
+        api_actions.where(action_type: ApiAction.action_types[action_type]).each do |api_action|
+          api_action.execute_action
+        end
+      end
+    end
   end
 
   def handle_error(e)
