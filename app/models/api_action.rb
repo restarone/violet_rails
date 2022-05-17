@@ -12,6 +12,8 @@ class ApiAction < ApplicationRecord
 
   HTTP_METHODS = ['get', 'post', 'patch', 'put', 'delete']
 
+  EXECUTION_ORDER = ['serve_file', 'redirect', 'send_email', 'send_web_request', 'custom_action']
+
   default_scope { order(position: 'ASC') }
 
   ransacker :action_type, formatter: proc {|v| action_types[v]}
