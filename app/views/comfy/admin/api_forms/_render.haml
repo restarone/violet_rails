@@ -6,9 +6,10 @@
   .form-group
     - properties.each do |key, value|
       = f.fields_for :properties do |fff|
-        .form-group{class: "vr-#{key}"}
-          = fff.label key, form_properties[key]["label"]
-          = map_form_field(fff, key, value, form_properties)
+        - if @api_form.is_field_renderable?(key)
+          .form-group{class: "vr-#{key}"}
+            = fff.label key, form_properties[key]["label"]
+            = map_form_field(fff, key, value, form_properties)
     - @api_namespace.non_primitive_properties.each_with_index do |property, index|
       = fields_for "data[non_primitive_properties_attributes][#{index}]", property do |ff|
         .form-group{class: "vr-#{ff.object.label}"}
