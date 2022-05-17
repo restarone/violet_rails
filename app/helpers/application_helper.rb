@@ -15,9 +15,8 @@ module ApplicationHelper
 
   def execute_actions(resource, class_name)
     api_actions = resource.send(class_name)
-
     api_actions.each do |api_action|
-     api_action.execute_action unless api_action.serve_file? || api_action.redirect? || api_action.custom_action?
+      api_action.execute_action unless api_action.serve_file? || api_action.redirect? || api_action.custom_action?
     end
   end
 

@@ -93,13 +93,9 @@ module ApiActionable
         handle_redirection if @redirect_action.present?
       elsif ApiAction.action_types[action_type] == ApiAction.action_types[:custom_action]
         handle_custom_actions if @custom_actions.present?
-      elsif ApiAction.action_types[action_type] == ApiAction.action_types[:send_email]
-        api_actions.where(action_type: ApiAction.action_types[:send_email]).each do |send_email_action|
-          send_email_action.execute_action
-        end
-      elsif ApiAction.action_types[action_type] == ApiAction.action_types[:send_web_request]
-        api_actions.where(action_type: ApiAction.action_types[:send_web_request]).each do |send_web_request_action|
-          send_web_request_action.execute_action
+      elsif [ApiAction.action_types[:send_email], ApiAction.action_types[:send_web_request]].include?(ApiAction.action_types[action_type])
+        api_actions.where(action_type: ApiAction.action_types[action_type]).each do |api_action|
+          api_action.execute_action
         end
       end
     end

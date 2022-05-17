@@ -285,8 +285,8 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       assert_equal 'complete', action.lifecycle_stage
     end
 
-    assert_equal api_namespace.as_json.to_s, api_resource.create_api_actions.first.lifecycle_message
-    assert_equal api_resource.as_json.to_s, api_resource.create_api_actions.second.lifecycle_message
+    assert_equal api_namespace.as_json.to_json, api_resource.create_api_actions.first.lifecycle_message
+    assert_equal api_resource.as_json.to_json, api_resource.create_api_actions.second.lifecycle_message
   end
 
   test 'should allow #create and the custom actions (sending emails) should be executed in the order that is defined with other api_actions' do
