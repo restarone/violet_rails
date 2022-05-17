@@ -9,10 +9,6 @@ class ResourceController < ApplicationController
       if verify_recaptcha(model: @api_resource) && @api_resource.save
         load_api_actions_from_api_resource
         execute_api_actions
-        #handle_custom_actions
-        #handle_serve_file_action
-        #handle_redirection
-
       else
         execute_error_actions
         flash[:error] = @api_resource.errors.full_messages.to_sentence
@@ -21,9 +17,6 @@ class ResourceController < ApplicationController
     elsif @api_resource.save
       load_api_actions_from_api_resource
       execute_api_actions
-      #handle_custom_actions
-      #handle_serve_file_action
-      #handle_redirection
     else
       execute_error_actions
       flash[:error] = @api_namespace.api_form.failure_message if @api_namespace.api_form.present?

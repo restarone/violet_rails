@@ -11,9 +11,6 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
   # GET /api_resources/1 or /api_resources/1.json
   def show
     execute_api_actions
-    #handle_custom_actions if @custom_actions.present?
-    #handle_serve_file_action if @serve_file_action.present?
-    #handle_redirection if @redirect_action.present?
   end
 
   # GET /api_resources/new
@@ -33,15 +30,11 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
       if @api_resource.save
         load_api_actions_from_api_resource
         execute_api_actions
-        #handle_custom_actions if @custom_actions.present?
-        #handle_serve_file_action if @serve_file_action.present?
-        # TO DO: this needs to be handled as well
-        # handle_redirection if @redirect_action.present?
 
-        # Preventing double renderer error
-        unless @redirect_action.present?
-          format.html { redirect_to api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id,id: @api_resource.id), notice: "Api resource was successfully created." }
-        end
+        # Preventing double render error
+        return if @redirect_action.present?
+
+        format.html { redirect_to api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id,id: @api_resource.id), notice: "Api resource was successfully created." }
         format.json { render :show, status: :created, location: @api_resource }
       else
         execute_error_actions
@@ -56,11 +49,11 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
     respond_to do |format|
       if @api_resource.update(api_resource_params)
         execute_api_actions
-        #handle_custom_actions if @custom_actions.present?
-        #handle_serve_file_action if @serve_file_action.present?
 
-        # TO DO: need to handle redirection for html request below
-        format.html { handle_redirection }
+        # Preventing double render error
+        return if @redirect_action.present?
+
+        format.html { redirect_to edit_api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id,id: @api_resource.id), notice: "Api resource was successfully updates." }
         format.json { render :show, status: :ok, location: @api_resource }
       else
         execute_error_actions

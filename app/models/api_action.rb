@@ -12,6 +12,8 @@ class ApiAction < ApplicationRecord
 
   HTTP_METHODS = ['get', 'post', 'patch', 'put', 'delete']
 
+  EXECUTION_ORDER = ['serve_file', 'redirect', 'send_email', 'send_web_request', 'custom_action']
+
   default_scope { order(position: 'ASC') }
 
   ransacker :action_type, formatter: proc {|v| action_types[v]}
@@ -19,8 +21,6 @@ class ApiAction < ApplicationRecord
   has_rich_text :custom_message
 
   validates :http_method, inclusion: { in: ApiAction::HTTP_METHODS}, allow_blank: true
-
-  EXECUTION_ORDER = ['serve_file', 'redirect', 'send_email', 'send_web_request', 'custom_action']
 
   def self.children
     ['new_api_actions', 'create_api_actions', 'show_api_actions', 'update_api_actions', 'destroy_api_actions', 'error_api_actions']

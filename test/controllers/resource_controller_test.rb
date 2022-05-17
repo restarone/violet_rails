@@ -336,11 +336,81 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       assert_equal 'complete', action.lifecycle_stage
     end
 
+    # At first, email is sent to 'custom_action_3@restarone.com' through send_email_action
+    assert_includes ActionMailer::Base.deliveries.first.to, "custom_action_3@restarone.com"
+
     # According to the order of custom_api_actions, the emails should be sent to email-addresses in the order: 1) custom_action_0@restarone.com   2) custom_action_1@restarone.com  3) custom_action_2@restarone.com
-    # At the end, email is sent to 'custom_action_3@restarone.com' through send_email_action
-    4.times.each do |n|
-      assert_includes ActionMailer::Base.deliveries[n].to, "custom_action_#{ n }@restarone.com"
+    3.times.each do |n|
+      assert_includes ActionMailer::Base.deliveries[n+1].to, "custom_action_#{ n }@restarone.com"
     end
+  end
+
+  test 'should allow #create and the api_actions should be executed in the defined order in ApiAction.EXECUTION_ORDER' do
+    api_namespace = api_namespaces(:three)
+    api_namespace.api_form.update(properties: { 'name': {'label': 'name', 'placeholder': 'Test', 'type_validation': 'tel'}})
+    custom_api_action_1 = api_actions(:create_custom_api_action_three)
+    custom_api_action_1.update!(position: 0, method_definition: "User.invite!({email: 'custom_action_0@restarone.com'}, current_user)")
+
+    custom_custom_action_2 = api_actions(:create_custom_api_action_three).dup
+    custom_custom_action_2.method_definition = "User.invite!({email: 'custom_action_1@restarone.com'}, current_user)"
+    custom_custom_action_2.position = 4
+    custom_custom_action_2.save!
+
+    send_email_action = api_actions(:create_custom_api_action_three).dup
+    send_email_action.action_type = "send_email"
+    send_email_action.email = "custom_action_3@restarone.com"
+    send_email_action.position = 1
+    send_email_action.save!
+
+    redirect_action = api_actions(:create_custom_api_action_three).dup
+    redirect_action.action_type = "redirect"
+    redirect_action.redirect_url = "/"
+    redirect_action.position = 2
+    redirect_action.save!
+
+    send_web_request_action = api_actions(:create_api_action_three).dup
+    send_web_request_action.api_namespace_id = api_namespace.id
+    send_web_request_action.api_resource_id = nil
+    send_web_request_action.position = 3
+    send_web_request_action.save!
+
+    site = Comfy::Cms::Site.first
+    file = site.files.create(
+      label:        "test",
+      description:  "test file",
+      file:         fixture_file_upload("fixture_image.png", "image/jpeg")
+    )
+
+    serve_file_action = api_actions(:create_custom_api_action_three).dup
+    serve_file_action.action_type = "serve_file"
+    serve_file_action.file_snippet = "{{ cms:file_link #{file.id} }}"
+    serve_file_action.position = 2
+    serve_file_action.save!
+
+    payload = {
+      data: {
+          properties: {
+            name: 123,
+          }
+      }
+    }
+    assert_difference "api_namespace.api_resources.count", +1 do
+      # Total 2 Custom Action & 1 Send-Email Action. Each sends an email.
+      assert_difference "ActionMailer::Base.deliveries.count", +3 do
+        post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+      end
+    end
+
+    assert_redirected_to redirect_action.redirect_url
+
+    api_resource = @controller.view_assigns['api_resource']
+
+    # Different type of ApiActions are executed in the defined order
+    assert_equal ApiAction::EXECUTION_ORDER, api_resource.create_api_actions.reorder(nil).order(updated_at: :asc).pluck(:action_type).uniq
+
+    # Custom Api Action are executed according to their position
+    custom_actions = api_resource.create_api_actions.where(action_type: 'custom_action').reorder(nil)
+    assert_equal custom_actions.order(updated_at: :asc).pluck(:id), custom_actions.order(position: :asc).pluck(:id)
   end
 
 end
