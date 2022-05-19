@@ -11,6 +11,8 @@ Rails.application.routes.draw do
   # analytics dashboard
   get 'dashboard', controller: 'comfy/admin/dashboard'
   get 'dashboard/sessions/:ahoy_visit_id', to: 'comfy/admin/dashboard#visit', as: :dashboard_visits
+  get 'dashboard/events/:ahoy_event_type', to: 'comfy/admin/dashboard#events_detail', as: :dashboard_events
+  get 'dashboard/events_list', to: 'comfy/admin/dashboard#events_list', as: :dashboard_events_list
 
   resources :signup_wizard
   resources :signin_wizard
