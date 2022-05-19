@@ -17,7 +17,7 @@ class ResourceController < ApplicationController
       handle_redirection
     else
       execute_error_actions
-      flash[:error] = @api_namespace.api_form.failure_message if @api_namespace.api_form.present?
+      flash[:custom_notice] = @api_namespace&.api_form&.failure_message
       redirect_back(fallback_location: root_path)
     end
   end
