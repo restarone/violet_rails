@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_14_215146) do
+ActiveRecord::Schema.define(version: 2022_05_19_092534) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -143,8 +143,8 @@ ActiveRecord::Schema.define(version: 2022_05_14_215146) do
   create_table "api_forms", force: :cascade do |t|
     t.jsonb "properties"
     t.bigint "api_namespace_id", null: false
-    t.string "success_message"
-    t.string "failure_message"
+    t.text "success_message"
+    t.text "failure_message"
     t.string "submit_button_label", default: "Submit"
     t.string "title"
     t.boolean "show_recaptcha", default: false
