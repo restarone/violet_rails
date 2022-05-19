@@ -29,8 +29,5 @@ module RSolutions
 
     # since web console usage depends on subdomain rules
     config.web_console.development_only = false
-
-    # generates remote forms with form_with 
-    config.action_view.form_with_generates_remote_forms = true
   end
 end
