@@ -93,7 +93,7 @@ class AhoyEventsHelperTest < ActionView::TestCase
     event = Ahoy::Visit.last.events.create!(
       name: 'comfy-cms-page-visit',
       time: Time.zone.now,
-      properties: { comfy_cms_page_id: page.id }
+      properties: { page_id: page.id }
     )
 
     assert_equal expected_output, event_name_detail(event)
@@ -118,13 +118,13 @@ class AhoyEventsHelperTest < ActionView::TestCase
     event = Ahoy::Visit.last.events.create!(
       name: 'comfy-cms-page-visit',
       time: Time.zone.now,
-      properties: { comfy_cms_page_id: page.id }
+      properties: { page_id: page.id }
     )
 
     assert_equal expected_output, event_name_detail(event)
   end
 
-  test 'returns file label as event_name_detail for events with name: comfy-file-update' do
+  test 'returns file label as event_name_detail for events with name: comfy-cms-file-update' do
     site = Comfy::Cms::Site.first
     file = site.files.create(
       label:        "test",
@@ -135,7 +135,7 @@ class AhoyEventsHelperTest < ActionView::TestCase
     expected_output = file.label
 
     event = Ahoy::Visit.last.events.create!(
-      name: 'comfy-file-update',
+      name: 'comfy-cms-file-update',
       time: Time.zone.now,
       properties: { file_id: file.id }
     )
@@ -143,13 +143,13 @@ class AhoyEventsHelperTest < ActionView::TestCase
     assert_equal expected_output, event_name_detail(event)
   end
 
-  test 'returns user email as event_name_detail for events with name: comfy-user-update' do
+  test 'returns user email as event_name_detail for events with name: subdomain-user-update' do
     user = User.first
 
     expected_output = user.email
 
     event = Ahoy::Visit.last.events.create!(
-      name: 'comfy-user-update',
+      name: 'subdomain-user-update',
       time: Time.zone.now,
       properties: { edited_user_id: user.id }
     )
@@ -157,13 +157,13 @@ class AhoyEventsHelperTest < ActionView::TestCase
     assert_equal expected_output, event_name_detail(event)
   end
 
-  test 'returns email subject as event_name_detail for events with name: email-visit' do
+  test 'returns email subject as event_name_detail for events with name: subdomain-email-visit' do
     email = message_threads(:public)
 
     expected_output = email.subject
 
     event = Ahoy::Visit.last.events.create!(
-      name: 'email-visit',
+      name: 'subdomain-email-visit',
       time: Time.zone.now,
       properties: { message_thread_id: email.id }
     )
@@ -171,7 +171,7 @@ class AhoyEventsHelperTest < ActionView::TestCase
     assert_equal expected_output, event_name_detail(event)
   end
 
-  test 'returns forum_post_path with updated_forum_post id as event_name_detail for events with name: forum-post-update' do
+  test 'returns forum_post_path with updated_forum_post id as event_name_detail for events with name: subdomain-forum-post-update' do
     category = ForumCategory.create!(name: 'test', slug: 'test')
     user = User.first
     forum_thread = user.forum_threads.create!(title: 'Test Thread', forum_category_id: category.id)
@@ -180,7 +180,7 @@ class AhoyEventsHelperTest < ActionView::TestCase
     expected_output = "#{simple_discussion.forum_thread_path(id: forum_post.forum_thread.slug)}#forum_post_#{forum_post.id}"
 
     event = Ahoy::Visit.last.events.create!(
-      name: 'forum-post-update',
+      name: 'subdomain-forum-post-update',
       time: Time.zone.now,
       properties: { forum_post_id: forum_post.id }
     )
@@ -188,7 +188,7 @@ class AhoyEventsHelperTest < ActionView::TestCase
     assert_equal expected_output, event_name_detail(event)
   end
 
-  test 'returns forum_post_path with updated_forum_post id as event_name_detail for events with name: forum-thread-visit' do
+  test 'returns forum_post_path with updated_forum_post id as event_name_detail for events with name: subdomain-forum-thread-visit' do
     category = ForumCategory.create!(name: 'test', slug: 'test')
     user = User.first
     forum_thread = user.forum_threads.create!(title: 'Test Thread', forum_category_id: category.id)
@@ -196,7 +196,7 @@ class AhoyEventsHelperTest < ActionView::TestCase
     expected_output = simple_discussion.forum_thread_path(id: forum_thread.slug)
 
     event = Ahoy::Visit.last.events.create!(
-      name: 'forum-thread-visit',
+      name: 'subdomain-forum-thread-visit',
       time: Time.zone.now,
       properties: { forum_thread_id: forum_thread.id }
     )
