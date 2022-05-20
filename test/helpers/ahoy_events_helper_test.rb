@@ -205,13 +205,27 @@ class AhoyEventsHelperTest < ActionView::TestCase
   end
 
   test 'returns nil with event_name_detail for events with non-system defined event names' do
-    expected_output = nil
-
     event = Ahoy::Visit.last.events.create!(
       name: 'test-event',
       time: Time.zone.now
     )
 
-    assert_equal expected_output, event_name_detail(event)
+    assert_nil event_name_detail(event)
+  end
+
+  test 'returns error_message as event_name_detail for events having irregular properties detail' do
+    category = ForumCategory.create!(name: 'test', slug: 'test')
+    user = User.first
+    forum_thread = user.forum_threads.create!(title: 'Test Thread', forum_category_id: category.id)
+
+    pattern = /Couldn\'t find .* without an ID/
+
+    event = Ahoy::Visit.last.events.create!(
+      name: 'subdomain-forum-thread-visit',
+      time: Time.zone.now,
+      properties: { test_id: forum_thread.id } # not setting required property key: forum_thread_id
+    )
+
+    assert_match pattern, event_name_detail(event)
   end
 end
