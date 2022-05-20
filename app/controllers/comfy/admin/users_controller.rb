@@ -33,7 +33,7 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
   def update
     if @user.update(update_params)
       ahoy.track(
-        "comfy-user-update",
+        "subdomain-user-update",
         {visit_id: current_visit.id, edited_user_id: @user.id, user_id: current_user.id}
       ) if Subdomain.current.tracking_enabled && current_visit
 

@@ -24,7 +24,7 @@ class SimpleDiscussion::ForumPostsController < SimpleDiscussion::ApplicationCont
   def update
     if @forum_post.update(forum_post_params)
       ahoy.track(
-        "forum-post-update",
+        "subdomain-forum-post-update",
         {visit_id: current_visit.id, forum_post_id: @forum_post.id, user_id: current_user.id}
       ) if Subdomain.current.tracking_enabled && current_visit
 

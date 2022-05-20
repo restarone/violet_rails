@@ -34,7 +34,7 @@ class SimpleDiscussion::ForumThreadsController < SimpleDiscussion::ApplicationCo
     @forum_post.user = current_user
 
     ahoy.track(
-      "forum-thread-visit",
+      "subdomain-forum-thread-visit",
       {visit_id: current_visit.id, forum_thread_id: @forum_thread.id, user_id: current_user&.id}
     ) if Subdomain.current.tracking_enabled && current_visit
   end
