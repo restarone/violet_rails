@@ -1,0 +1,26 @@
+.page-header
+  .h3
+    Events list
+
+%main{class: 'm-5'}
+  %h5
+    Total type of events:
+    %span.font-weight-bold
+      = @events_list.total_entries
+  .table-responsive.my-5
+    %table.table
+      %thead
+        %tr
+          %th.px-3= sort_link @events_list_q, :distinct_name, 'Event'
+          %th.px-3= sort_link @events_list_q, :count
+          %th.px-3= sort_link @events_list_q, :first_created_at
+
+      = render partial: 'comfy/admin/dashboard/pagination', locals: { data: @events_list }
+      %tbody
+        - @events_list.each do |event|
+          %tr
+            %td.px-3= link_to event.distinct_name, dashboard_events_path(ahoy_event_type: event.distinct_name)
+            %td.px-3= event.count
+            %td.px-3= event.first_created_at.strftime('%F %T')
+
+    = render partial: 'comfy/admin/dashboard/pagination', locals: { data: @events_list }
