@@ -102,3 +102,5 @@ gem "ember-cli-rails", "0.10.0"
 # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
 gem 'web-console', '>= 4.1.0'
 gem "exception_notification", "~> 4.5"
+
+gem "turnout", "~> 2.5"
