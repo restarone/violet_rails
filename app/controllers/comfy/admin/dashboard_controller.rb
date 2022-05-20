@@ -11,7 +11,7 @@ class Comfy::Admin::DashboardController < Comfy::Admin::Cms::BaseController
   end
 
   def visit
-    @visit_specific_events_q = Ahoy::Event.where(visit_id: @visit.id).ransack(params[:q])
+    @visit_specific_events_q = Ahoy::Event.where(visit_id: @visit.id).order(time: :asc).ransack(params[:q])
     @visit_specific_events = @visit_specific_events_q.result.paginate(page: params[:page], per_page: 10)
   end
 
