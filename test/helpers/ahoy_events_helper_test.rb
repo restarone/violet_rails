@@ -203,4 +203,15 @@ class AhoyEventsHelperTest < ActionView::TestCase
 
     assert_equal expected_output, event_name_detail(event)
   end
+
+  test 'returns nil with event_name_detail for events with non-system defined event names' do
+    expected_output = nil
+
+    event = Ahoy::Visit.last.events.create!(
+      name: 'test-event',
+      time: Time.zone.now
+    )
+
+    assert_equal expected_output, event_name_detail(event)
+  end
 end
