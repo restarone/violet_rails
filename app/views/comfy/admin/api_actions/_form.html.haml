@@ -52,7 +52,7 @@
 
 
   = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][_destroy]", false ,{id: "api_action_form_destroy_field_#{type}_#{index}"}
-  = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][position]", resource.position ,{class: "position_field"}
+  = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][position]", index ,{class: "position_field"}
 
 :javascript
 
