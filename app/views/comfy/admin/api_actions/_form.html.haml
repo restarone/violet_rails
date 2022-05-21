@@ -45,6 +45,10 @@
       .form-group
         = label_tag 'Bearer Token'
         = text_field_tag "api_namespace[#{type}_attributes][#{index}][bearer_token]", resource.bearer_token, { class: "form-control form-control-sm" }
+    .custom_action.col-12{style: "#{'display:none' unless resource.action_type == 'custom_action'}", id: "custom_action_fields_#{type}_#{index}"}
+      .form-group
+        = label_tag 'Method Definition'
+        = text_area_tag "api_namespace[#{type}_attributes][#{index}][method_definition]", resource.method_definition, { class: "form-control form-control-sm" }
 
 
   = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][_destroy]", false ,{id: "api_action_form_destroy_field_#{type}_#{index}"}

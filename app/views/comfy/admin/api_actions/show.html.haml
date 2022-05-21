@@ -11,9 +11,9 @@
         = @api_action.request_url
       .col-12.d-flex.mb-3
         .mr-3
-          Payload: 
+          Payload:
         = @api_action.payload_mapping
-    
+
     - if @api_action.action_type == 'redirect'
       .col-12.d-flex.mb-3
         .mr-3
@@ -44,6 +44,12 @@
         - url = rails_blob_url(Comfy::Cms::File.find(file_id_from_snippet(@api_action.file_snippet)).attachment)
         = link_to url, url
 
+    - if @api_action.action_type == 'custom_action'
+      .col-12.d-flex.mb-3
+        .mr-3
+          Custom Action:
+        = @api_action.method_definition
+
     - if @api_action.api_resource.present?
       .col-12.d-flex.mb-3
         .mr-3
@@ -54,4 +60,3 @@
         .mr-3
           Lifecycle Message:
         = @api_action.lifecycle_message
-    
