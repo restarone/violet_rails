@@ -206,7 +206,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
 
     api_resource = @controller.view_assigns['api_resource']
     # The different triggered actions should be completed
-    api_resource.create_api_actions.each do |action|
+    api_resource.reload.create_api_actions.each do |action|
       assert_equal 'complete', action.lifecycle_stage
     end
 
@@ -244,7 +244,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
 
     api_resource = @controller.view_assigns['api_resource']
     # The different triggered actions should be completed
-    api_resource.create_api_actions.each do |action|
+    api_resource.reload.create_api_actions.each do |action|
       assert_equal 'complete', action.lifecycle_stage
     end
 
@@ -281,7 +281,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     api_resource = @controller.view_assigns['api_resource']
 
     # The different triggered actions should be completed
-    api_resource.create_api_actions.each do |action|
+    api_resource.reload.create_api_actions.each do |action|
       assert_equal 'complete', action.lifecycle_stage
     end
 
@@ -332,7 +332,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
 
     api_resource = @controller.view_assigns['api_resource']
     # The different triggered actions should be completed
-    api_resource.create_api_actions.each do |action|
+    api_resource.reload.create_api_actions.each do |action|
       assert_equal 'complete', action.lifecycle_stage
     end
 
@@ -410,7 +410,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     assert_equal ApiAction::EXECUTION_ORDER, api_resource.create_api_actions.reorder(nil).order(updated_at: :asc).pluck(:action_type).uniq
 
     # Custom Api Action are executed according to their position
-    custom_actions = api_resource.create_api_actions.where(action_type: 'custom_action').reorder(nil)
+    custom_actions = api_resource.reload.create_api_actions.where(action_type: 'custom_action').reorder(nil)
     assert_equal custom_actions.order(updated_at: :asc).pluck(:id), custom_actions.order(position: :asc).pluck(:id)
   end
 end

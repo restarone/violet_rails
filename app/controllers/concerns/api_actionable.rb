@@ -53,7 +53,7 @@ module ApiActionable
       @custom_actions.each do |custom_action|
         begin
           custom_api_action = CustomApiAction.new
-          eval("def custom_api_action.run_custom_action(api_action: , api_namespace:, api_resource: , current_visit: , current_user: nil); #{custom_action.method_definition};end;")
+          eval("def custom_api_action.run_custom_action(api_action: , api_namespace: , api_resource: , current_visit: , current_user: nil); #{custom_action.method_definition}; end")
 
           custom_action.update(lifecycle_stage: 'executing')
 
@@ -99,7 +99,7 @@ module ApiActionable
           api_action.execute_action
         end
       end
-    end
+    end if api_actions.present?
   end
 
   def handle_error(e)
