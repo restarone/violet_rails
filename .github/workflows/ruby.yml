@@ -64,3 +64,9 @@ jobs:
 
     - name: Run Tests
       run: bin/rails test -f
+    - name: deploy test app to heroku
+      uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+      with:
+        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+        heroku_app_name: "violetrails"
+        heroku_email: "contact@restarone.com"
