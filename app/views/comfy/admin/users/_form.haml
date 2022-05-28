@@ -1,6 +1,6 @@
 = form_with model: @user, url: admin_user_path, method: :patch do |f|
   .form-group
-    %label 
+    %label
       Name
     = f.text_field :name
     .card.border-0.my-5
@@ -9,70 +9,74 @@
       .card.mt-5
         .card-header
           %strong
-            Internal permissions  
+            Internal permissions
         .card-body
           .card
-            .card-header 
+            .card-header
               .d-inline
                 = f.check_box :can_access_admin
                 %label
-                  %strong 
+                  %strong
                     Can access admin panel (required for functions below)
             .card-body
               .form-group
                 = f.check_box :can_manage_web
-                %label 
+                %label
                   Can manage website (Layouts, Pages, Files, Snippets)
               .form-group
+                = f.check_box :can_manage_analytics
+                %label
+                  Can manage analytics
+              .form-group
                 = f.check_box :can_manage_email
-                %label 
+                %label
                   Can manage emailbox
               .form-group
                 = f.check_box :can_manage_api
-                %label 
+                %label
                   Can manage API
               .form-group
                 = f.check_box :can_manage_blog
-                %label 
+                %label
                   Can manage Blog
           .card.my-5
-            .card-header 
+            .card-header
               %strong
-                Analytics, Compliance and Management Permissions 
+                Analytics, Compliance and Management Permissions
             .card-body
               .form-group
                 = f.check_box :deliver_analytics_report
-                %label 
+                %label
                   Deliver Analytics Report
               .form-group
                 = f.check_box :deliver_error_notifications
-                %label 
-                  Deliver error notifications                  
+                %label
+                  Deliver error notifications
               .form-group
                 = f.check_box :can_manage_users
-                %label 
+                %label
                   Can manage and invite users
               .form-group
                 = f.check_box :can_manage_subdomain_settings
-                %label 
+                %label
                   Can manage subdomain
       .card.mt-5
         .card-header
           %strong
-            External permissions  
+            External permissions
         .card-body
           .card
-            .card-header 
+            .card-header
               %strong
-                Content permissions 
+                Content permissions
             .card-body
               .form-group
                 = f.check_box :can_view_restricted_pages
-                %label 
+                %label
                   Can view restricted web pages
               .form-group
                 = f.check_box :moderator
-                %label 
+                %label
                   Can manage forum
   = f.submit "Update", class: 'btn btn-success'
   = link_to "Remove", admin_user_path(id: @user.id), method: :delete, class: 'btn btn-sm btn-danger', data: { confirm: 'Are you sure you want to remove this user? This cannot be undone' }

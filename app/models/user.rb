@@ -40,6 +40,7 @@ class User < ApplicationRecord
   FULL_PERMISSIONS = {
     can_access_admin: true,
     can_manage_web: true,
+    can_manage_analytics: true,
     can_manage_email: true,
     can_manage_users: true,
     can_manage_blog: true,
@@ -110,7 +111,7 @@ class User < ApplicationRecord
     timeout = User::SESSION_TIMEOUT.detect{|n| n[:slug] == self.session_timeoutable_in }[:exec]
     eval(timeout)
    end
-  
+
   private
 
 
@@ -118,7 +119,7 @@ class User < ApplicationRecord
     if Rails.env != 'test'
       if User.all.size - 1 == 0
         throw :abort
-      end 
+      end
     end
   end
 end
