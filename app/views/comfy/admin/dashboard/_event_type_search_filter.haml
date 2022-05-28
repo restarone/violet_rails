@@ -1,0 +1,8 @@
+= search_form_for objects, url: path do |f|
+  .form-group.mb-2
+    = f.label "Event name", class: 'col-form-label'
+    = f.select :name_eq, options_for_select(select_options, params.dig(:q, :name_eq)), {include_blank: true}, {class: 'form-control'}
+
+  .text-center
+    = f.submit class: 'btn btn-primary my-2'
+    = link_to "Clear Search", request.path, class:"cancel-button"

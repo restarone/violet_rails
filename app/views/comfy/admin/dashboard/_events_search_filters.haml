@@ -1,0 +1,22 @@
+= search_form_for @events_q, url: dashboard_events_path(ahoy_event_type: params[:ahoy_event_type]) do |f|
+  .form-group
+    = f.label "browser, user agent, operating system or device type", class: 'col-form-label'
+    = f.search_field :visit_browser_or_visit_user_agent_or_visit_os_or_visit_device_type_cont, value: params.dig(:q, :visit_browser_or_visit_user_agent_or_visit_os_or_visit_device_type_cont), class: 'form-control'
+    = f.label "referring domain", class: 'col-form-label'
+    = f.search_field :visit_referrer_or_visit_referring_domain_cont, value: params.dig(:q, :visit_referrer_or_visit_referring_domain_cont), class: 'form-control'
+    = f.label "country, region or city", class: 'col-form-label'
+    = f.search_field :visit_country_or_visit_region_or_visit_city_cont, value: params.dig(:q, :visit_country_or_visit_region_or_visit_city_cont), class: 'form-control'
+    = f.label "IP addresses (include)", class: 'col-form-label'
+    = f.search_field :visit_ip_in, value: params.dig(:q, :visit_ip_in), class: 'form-control'
+    = f.label "IP addresses (exclude)", class: 'col-form-label'
+    = f.search_field :visit_ip_does_not_match_all, value: params.dig(:q, :visit_ip_does_not_match_all), class: 'form-control'
+    .form-row.p-5
+      .col
+        = f.label "start date", class: 'col-form-label'
+        = f.search_field :visit_started_at_gteq, class: 'form-control', type: 'date', value: params.dig(:q, :visit_started_at_gteq)
+      .col
+        = f.label "end date", class: 'col-form-label'
+        = f.search_field :visit_started_at_lteq, class: 'form-control', type: 'date', value: params.dig(:q, :visit_started_at_lteq)
+    .text-center
+      = f.submit class: 'btn btn-primary my-2'
+      = link_to "Clear Search", request.path, class:"cancel-button"
