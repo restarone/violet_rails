@@ -4,7 +4,7 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
     @subdomain = subdomains(:public)
-    @user.update(can_manage_web: true)
+    @user.update(can_manage_analytics: true)
   end
 
   test "should deny #dashboard if not signed in" do
@@ -14,7 +14,7 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
 
   test "should deny #dashboard if not permissioned" do
     sign_in(@user)
-    @user.update(can_manage_web: false)
+    @user.update(can_manage_analytics: false)
     get dashboard_url
     assert_response :redirect
   end
@@ -29,7 +29,7 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     @subdomain.update!(tracking_enabled: true)
     get root_url
     sign_in(@user)
-    @user.update(can_manage_web: false)
+    @user.update(can_manage_analytics: false)
     get dashboard_visits_url(ahoy_visit_id: Ahoy::Visit.first.id)
     assert_response :redirect
   end
@@ -46,7 +46,7 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     @subdomain.update!(tracking_enabled: true)
     get root_url
     sign_in(@user)
-    @user.update(can_manage_web: false)
+    @user.update(can_manage_analytics: false)
     Ahoy::Visit.first.events.create(name: 'test', user_id: @user.id, time: Time.zone.now)
     get dashboard_events_url(ahoy_event_type: 'test')
     assert_response :redirect
@@ -65,7 +65,7 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     @subdomain.update!(tracking_enabled: true)
     get root_url
     sign_in(@user)
-    @user.update(can_manage_web: false)
+    @user.update(can_manage_analytics: false)
     get dashboard_events_list_url
     assert_response :redirect
   end
