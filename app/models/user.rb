@@ -111,7 +111,7 @@ class User < ApplicationRecord
     timeout = User::SESSION_TIMEOUT.detect{|n| n[:slug] == self.session_timeoutable_in }[:exec]
     eval(timeout)
    end
-
+  
   private
 
 
@@ -119,7 +119,7 @@ class User < ApplicationRecord
     if Rails.env != 'test'
       if User.all.size - 1 == 0
         throw :abort
-      end
+      end 
     end
   end
 end
