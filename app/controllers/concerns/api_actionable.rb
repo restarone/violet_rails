@@ -29,7 +29,7 @@ module ApiActionable
   end
 
   def handle_redirection
-    flash[:custom_notice] = @api_namespace.api_form&.success_message
+    flash[:custom_notice] = helpers.parse_snippet(@api_namespace.api_form&.success_message, @api_resource)
 
     if @redirect_action.present?
       if @redirect_action.update!(lifecycle_stage: 'complete', lifecycle_message: @redirect_action.redirect_url.to_s)

@@ -19,4 +19,11 @@ class ApiFormsHelperTest < ActionView::TestCase
     assert_includes(resp, 'type="checkbox"')
     assert_template partial: "comfy/admin/api_forms/_radio"
   end
+
+  test 'evaluate and returns parsed custom snippet' do
+    api_resource = api_resources(:user)
+    custom_snippet = "\#{api_resource.properties[\"first_name\"]}"
+    resp = parse_snippet(custom_snippet, api_resource)
+    assert_equal resp, api_resource.properties["first_name"]
+  end
 end

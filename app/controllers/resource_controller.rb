@@ -17,7 +17,7 @@ class ResourceController < ApplicationController
       handle_redirection
     else
       execute_error_actions
-      flash[:custom_notice] = @api_namespace&.api_form&.failure_message
+      flash[:custom_notice] = helpers.parse_snippet(@api_namespace&.api_form&.failure_message)
       redirect_back(fallback_location: root_path)
     end
   end
