@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_19_092534) do
+ActiveRecord::Schema.define(version: 2022_05_24_080242) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -124,6 +124,7 @@ ActiveRecord::Schema.define(version: 2022_05_19_092534) do
     t.datetime "updated_at", precision: 6, null: false
     t.jsonb "custom_headers"
     t.string "http_method"
+    t.text "method_definition", default: "# You have access to vaiables: api_action, api_namespace, api_resource, current_visit, current_user\n# Write your custom code here\nraise 'not implemented error'"
     t.index ["api_namespace_id"], name: "index_api_actions_on_api_namespace_id"
     t.index ["api_resource_id"], name: "index_api_actions_on_api_resource_id"
   end
@@ -463,16 +464,14 @@ ActiveRecord::Schema.define(version: 2022_05_19_092534) do
     t.string "purge_visits_every", default: "never"
     t.string "analytics_report_frequency", default: "never"
     t.datetime "analytics_report_last_sent"
-    t.boolean "tracking_enabled", default: false
     t.boolean "ember_enabled", default: false
     t.boolean "graphql_enabled", default: false
     t.boolean "web_console_enabled", default: false
     t.boolean "api_plugin_events_enabled", default: false
     t.string "after_sign_up_path"
     t.string "after_sign_in_path"
-    t.boolean "allow_external_analytics_query", default: false
-    t.boolean "api_plugin_events_enabled", default: false
     t.boolean "tracking_enabled", default: false
+    t.boolean "allow_external_analytics_query", default: false
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
     t.index ["name"], name: "index_subdomains_on_name"
   end
@@ -519,6 +518,7 @@ ActiveRecord::Schema.define(version: 2022_05_19_092534) do
     t.string "session_timeoutable_in", default: "1-hour"
     t.boolean "can_access_admin", default: false
     t.boolean "deliver_error_notifications", default: false
+    t.boolean "can_manage_analytics", default: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
