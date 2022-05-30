@@ -29,7 +29,9 @@ module ApiActionable
   end
 
   def handle_redirection
-    flash[:custom_notice] = helpers.parse_snippet(@api_namespace.api_form&.success_message, @api_resource)
+    # show custom snippet only if success_message contains valid html tags
+    notice_type = @api_namespace.api_form&.success_message_has_html? ? :custom_notice : :notice
+    flash[notice_type] = helpers.parse_snippet(@api_namespace.api_form&.success_message, @api_resource)
 
     if @redirect_action.present?
       if @redirect_action.update!(lifecycle_stage: 'complete', lifecycle_message: @redirect_action.redirect_url.to_s)
