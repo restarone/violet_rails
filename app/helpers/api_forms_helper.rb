@@ -73,6 +73,8 @@ module ApiFormsHelper
 
   # custom_message format: api_resource.properties["first_name"]
   def parse_snippet(custom_snippet, api_resource)
+    return unless custom_snippet.present?
+
     parsed_snippet = custom_snippet
     # couldn't gsub directly because of escape characters added by ruby
     # eval failed on "\#{api_resource.properties[\"String\"]}"
