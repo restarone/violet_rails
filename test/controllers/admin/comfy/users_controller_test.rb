@@ -59,6 +59,22 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     assert flash.alert
   end
 
+  test "#edit: shows session details if the logged-in user can_manage_analytics" do
+    @user.update(can_manage_analytics: true)
+    sign_in(@user)
+    get edit_admin_user_url(subdomain: @domain, id: @user.id)
+    assert_response :success
+    assert_select 'h3', {count: 1, text: 'Sessions'}, 'This page must contain Sessions details.'
+  end
+
+  test "#edit: does not show session details if the logged-in user can_manage_analytics permission is false" do
+    @user.update(can_manage_analytics: false)
+    sign_in(@user)
+    get edit_admin_user_url(subdomain: @domain, id: @user.id)
+    assert_response :success
+    assert_select 'h3', {count: 0, text: 'Sessions'}, 'This page must not contain Sessions details.'
+  end
+
   test "#update" do
     sign_in(@user)
     @user.update(can_manage_users: true)
