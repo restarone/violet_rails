@@ -6,7 +6,7 @@
     "@rails/actiontext": "^6.1.3-1",
     "@rails/activestorage": "^6.0.0",
     "@rails/ujs": "^6.0.0",
-    "@rails/webpacker": "5.2.1",
+    "@rails/webpacker": "5.4.3",
     "ahoy.js": "^0.3.8",
     "bootstrap": "^4.6.0",
     "chart.js": "^3.3.0",
@@ -23,5 +23,8 @@
   "devDependencies": {
     "webpack-dev-server": "^3.11.2"
   },
-  "cacheDirectories": ["client/node_modules","node_modules"]
+  "cacheDirectories": [
+    "client/node_modules",
+    "node_modules"
+  ]
 }
