@@ -2,7 +2,7 @@ name: Deploy to Heroku
 
 on:
   push:
-    branches: [ master, rc ]
+    branches: [ master, rc, automating-heroku-deployment-2 ]
   pull_request:
     branches: [ master, rc ]
 jobs:
