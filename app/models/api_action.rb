@@ -19,6 +19,8 @@ class ApiAction < ApplicationRecord
   has_rich_text :custom_message
 
   validates :http_method, inclusion: { in: ApiAction::HTTP_METHODS}, allow_blank: true
+  
+  validates :payload, safe_executable: true
 
   def self.children
     ['new_api_actions', 'create_api_actions', 'show_api_actions', 'update_api_actions', 'destroy_api_actions', 'error_api_actions']
