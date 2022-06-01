@@ -1,0 +1,14 @@
+- headers = ApiNamespace.column_names
+- headers.each do |header|
+  - data = @api_namespace.send(header)
+  - if header == 'properties'
+    - props = data
+    - props.keys.each do |key|
+      - if props[key].class == String
+        = CSV.generate_line([key, props[key]])
+      - elsif props[key].class == Array
+        = CSV.generate_line([key, props[key].map{|n| n.to_s}.join(', ')])
+      - else
+        = CSV.generate_line([key, props.to_s])
+  - else
+    = CSV.generate_line([header, data])
