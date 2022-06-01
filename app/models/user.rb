@@ -117,7 +117,8 @@ class User < ApplicationRecord
 
   def ensure_final_user
     if Rails.env != 'test'
-      if User.all.size - 1 == 0
+      is_last_admin = User.all.size == 1 || (self.can_manage_users && User.where(can_manage_users: true).size == 1)
+      if is_last_admin
         throw :abort
       end 
     end
