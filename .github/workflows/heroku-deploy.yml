@@ -15,3 +15,13 @@ jobs:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "violetrails " #Must be unique in Heroku
           heroku_email: "contact@restarone.com"
+          branch: "dev" # make sure that your change is merged to dev
+        env:
+          APP_HOST: "violetrails.herokuapp.com"
+          REDIS_URL: ${{secrets.HEROKU_REDIS_URL}}
+          AWS_REGION: ${{secrets.HEROKU_AWS_REGION}}
+          AWS_ACCESS_KEY_ID: ${{secrets.HEROKU_AWS_ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: ${{secrets.HEROKU_AWS_SECRET_ACCESS_KEY}}
+          AWS_BUCKET: ${{secrets.HEROKU_AWS_BUCKET}}
+          RECAPTCHA_SITE_KEY: ${{secrets.HEROKU_RECAPTCHA_SITE_KEY}}
+          RECAPTCHA_SECRET_KEY: ${{secrets.HEROKU_RECAPTCHA_SECRET_KEY}}
