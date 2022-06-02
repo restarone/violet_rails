@@ -44,7 +44,6 @@ class User < ApplicationRecord
     can_manage_email: true,
     can_manage_users: true,
     can_manage_blog: true,
-    can_manage_api: true,
     can_manage_subdomain_settings: true,
     can_manage_api: true,
     can_view_restricted_pages: true,
