@@ -48,16 +48,83 @@ class GraphqlControllerTest < ActionDispatch::IntegrationTest
     post '/graphql', params: { query: query_string }
     json_response = JSON.parse(@response.body)
     assert_equal ["data"], json_response.keys
+  end
 
+  test "[if enabled] query public API Namespaces with nested apiResources" do
     query_string = "{ apiNamespaces(orderDirection: \"desc\", orderDimension: \"updatedAt\") { id apiResources { id } } }"
     post '/graphql', params: { query: query_string }
     json_response = JSON.parse(@response.body)
     assert_equal ["data"], json_response.keys
+  end
 
+  test "[if enabled] query public API Namespaces with nested apiResources with sorting" do
     query_string = "{ apiNamespaces { id apiResources(orderDirection: \"desc\", orderDimension: \"updatedAt\") { id } } }"
     post '/graphql', params: { query: query_string }
     json_response = JSON.parse(@response.body)
     assert_equal ["data"], json_response.keys
+  end
+
+  test "[if enabled] && [if subdomain allows analytics query via API] allows ahoy visit query" do
+    @subdomain.update(allow_external_analytics_query: true)
+    get root_url
+    Ahoy::Visit.first.events.create
+    query_string = "{ ahoyVisits { id ip events { id } } }"
+    post '/graphql', params: { query: query_string }
+    json_response = JSON.parse(@response.body)
+    assert_equal ["data"], json_response.keys
+    assert_equal ["ahoyVisits"], json_response["data"].keys
+  end
+
+  test "[if enabled] && [if subdomain disallows analytics query via API] raises error for ahoy visit query" do
+    @subdomain.update(allow_external_analytics_query: false)
+    get root_url
+    Ahoy::Visit.first.events.create
+    query_string = "{ ahoyVisits { id ip events { id } } }"
+    post '/graphql', params: { query: query_string }
+    json_response = JSON.parse(@response.body)
+    assert_nil json_response["data"]
+  end
+
+  test "[if enabled] && [if subdomain allows analytics query via API] allows ahoy event query" do
+    @subdomain.update(allow_external_analytics_query: true)
+    get root_url
+    Ahoy::Visit.first.events.create
+    query_string = "{ ahoyEvents { id visitId } }"
+    post '/graphql', params: { query: query_string }
+    json_response = JSON.parse(@response.body)
+    assert_equal ["data"], json_response.keys
+    assert_equal ["ahoyEvents"], json_response["data"].keys
+  end
+
+  test "[if enabled] && [if subdomain disallows analytics query via API] raises error for ahoy event query" do
+    @subdomain.update(allow_external_analytics_query: false)
+    get root_url
+    Ahoy::Visit.first.events.create
+    query_string = "{ ahoyEvents { id visitId } }"
+    post '/graphql', params: { query: query_string }
+    json_response = JSON.parse(@response.body)
+    assert_nil json_response["data"]
+  end
+
+  test "[if enabled] && [if subdomain allows analytics query via API] allows ahoy event names query" do
+    @subdomain.update(allow_external_analytics_query: true)
+    get root_url
+    Ahoy::Visit.first.events.create(name: 'foo')
+    query_string = "{ ahoyEventNames { name } }"
+    post '/graphql', params: { query: query_string }
+    json_response = JSON.parse(@response.body)
+    assert_equal ["data"], json_response.keys
+    assert_equal ["ahoyEventNames"], json_response["data"].keys
+  end
+
+  test "[if enabled] && [if subdomain disallows analytics query via API] raises error for ahoy event names query" do
+    @subdomain.update(allow_external_analytics_query: false)
+    get root_url
+    Ahoy::Visit.first.events.create(name: 'foo')
+    query_string = "{ ahoyEventNames { name } }"
+    post '/graphql', params: { query: query_string }
+    json_response = JSON.parse(@response.body)
+    assert_nil json_response["data"]
   end
 
   test "[not enabled] presents error" do

@@ -1,0 +1,80 @@
+= javascript_include_tag "//www.google.com/jsapi"
+.page-header
+  .h3
+    Event Type:
+    %strong #{params[:ahoy_event_type]}
+
+%main{class: 'm-5'}
+  = render partial: 'events_search_filters'
+
+  %h4.mb-5.font-weight-bold
+    Event Details:
+  %h5
+    Total events:
+    %span.font-weight-bold
+      = @events.except(:limit, :offset).size
+
+  .row.align-items-center.justify-content-center.text-center
+    .col-12.my-5
+      %h5 Grouped by date
+      .d-flex.justify-content-center.align-items-center
+        = line_chart @events.group_by_day(:time).count, label: "events"
+
+    .col-12.my-5
+      %h5 Grouped by days of a week
+      .d-flex.justify-content-center.align-items-center
+        = column_chart @events.group_by_day_of_week(:time, format: "%a").count, label: "events"
+
+    .col-12.my-5
+      %h5 Grouped by country
+      .d-flex.justify-content-center.align-items-center
+        = geo_chart @events.group('ahoy_visits.country').count, label: "events"
+
+    .col-12.my-5
+      .row
+        .mx-5.my-3
+          %p By device type
+          = pie_chart @events.where.not('ahoy_visits.device_type': nil).group('ahoy_visits.device_type').count, width: "300px", height: "300px", label: "events"
+
+        .mx-5.my-3
+          %p By OS
+          = pie_chart @events.where.not('ahoy_visits.os': nil).group('ahoy_visits.os').count, width: "300px", height: "300px", label: "events"
+
+        .mx-5.my-3
+          %p By browser
+          = pie_chart @events.where.not('ahoy_visits.browser': nil).group('ahoy_visits.browser').count, width: "300px", height: "300px", label: "events"
+
+        .mx-5.my-3
+          %p By referring domain
+          = pie_chart @events.where.not('ahoy_visits.referring_domain': nil).group('ahoy_visits.referring_domain').count, width: "300px", height: "300px", label: "events"
+
+  = render partial: 'comfy/admin/dashboard/pagination', locals: { data: @event_visits }
+  .table-responsive
+    %table.table.table-bordered
+      %thead
+        %tr
+          %th= sort_link @event_visits_s, :started_at
+          %th= sort_link @event_visits_s, :ip
+          %th= sort_link @event_visits_s, :os
+          %th= sort_link @event_visits_s, :browser
+          %th= sort_link @event_visits_s, :device_type
+          %th= sort_link @event_visits_s, :country
+          %th= sort_link @event_visits_s, :region
+          %th= sort_link @event_visits_s, :city
+          %th= sort_link @event_visits_s, :referring_domain
+          %th= sort_link @event_visits_s, :landing_page
+          %th= sort_link @event_visits_s, :user_agent
+        - @event_visits.each do |v|
+          %tr
+            %th= link_to v.started_at.strftime('%I:%M %P - %b %d, %Y'), dashboard_visits_path(ahoy_visit_id: v.id)
+            %th= v.ip
+            %th= v.os
+            %th= v.browser
+            %th= v.device_type
+            %th= v.country
+            %th= v.region
+            %th= v.city
+            %th= redact_private_urls(v.referring_domain)
+            %th= redact_private_urls(v.landing_page)
+            %th= v.user_agent
+    = render partial: 'comfy/admin/dashboard/pagination', locals: { data: @event_visits }

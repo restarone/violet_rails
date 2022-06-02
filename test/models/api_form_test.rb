@@ -1,7 +1,20 @@
 require "test_helper"
 
 class ApiFormTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test "return true if renderable property is nil" do
+    api_form = api_forms(:one)
+    assert api_form.is_field_renderable?('Test')
+  end
+
+  test "return true if renderable property is 1" do
+    api_form = api_forms(:one)
+    api_form.update(properties: { 'name': {'label': 'Test', 'placeholder': 'Test', 'field_type': 'input', 'renderable': '1' }})
+    assert api_form.is_field_renderable?('Test')
+  end
+
+  test "return false if renderable property is 0" do
+    api_form = api_forms(:one)
+    api_form.update(properties: { 'name': {'label': 'Test', 'placeholder': 'Test', 'field_type': 'input', 'renderable': '0' }})
+    assert api_form.is_field_renderable?('Test')
+  end
 end
