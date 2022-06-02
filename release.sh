@@ -1,5 +1,7 @@
 ## Step to execute
+echo "Migration: START"
 bundle exec rails db:migrate
+echo "Migration: END"
 
 initial_deploy_flag=$(heroku config:get INITIAL_DEPLOY_FLAG)
 
