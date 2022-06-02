@@ -147,6 +147,8 @@ GEM
       capistrano (~> 3.1)
     capistrano-local-precompile (1.2.0)
       capistrano (>= 3.8)
+    capistrano-nvm (0.0.7)
+      capistrano (~> 3.1)
     capistrano-rails (1.6.1)
       capistrano (~> 3.1)
       capistrano-bundler (>= 1.1, < 3)
@@ -494,6 +496,7 @@ DEPENDENCIES
   byebug
   capistrano
   capistrano-local-precompile
+  capistrano-nvm
   capistrano-rails
   capistrano-rbenv
   capistrano3-puma

@@ -14,7 +14,6 @@ set :branch, ENV['BRANCH'] if ENV['BRANCH']
 set :rbenv_type, :user
 set :rbenv_ruby, File.read('.ruby-version').strip
 set :rbenv_prefix, "RBENV_ROOT=#{fetch(:rbenv_path)} RBENV_VERSION=#{fetch(:rbenv_ruby)} #{fetch(:rbenv_path)}/bin/rbenv exec"
-set :nvm_node, "v14.19.0"
 
 # Default value for :format is :airbrussh.
 # set :format, :airbrussh

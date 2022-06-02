@@ -79,6 +79,7 @@ group :development do
   gem 'capistrano3-puma'
   gem 'capistrano-rbenv'
   gem 'capistrano-local-precompile'
+  gem 'capistrano-nvm', require: false
 end
 
 group :test do
