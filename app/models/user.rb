@@ -40,6 +40,7 @@ class User < ApplicationRecord
   FULL_PERMISSIONS = {
     can_access_admin: true,
     can_manage_web: true,
+    can_manage_analytics: true,
     can_manage_email: true,
     can_manage_users: true,
     can_manage_blog: true,
