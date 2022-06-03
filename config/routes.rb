@@ -48,7 +48,13 @@ Rails.application.routes.draw do
   end
 
   # api admin
+  post 'users/sign_in', to: 'users/sessions#create'
   resources :api_namespaces, controller: 'comfy/admin/api_namespaces' do
+    member do
+      post 'duplicate_with_associations'
+      post 'duplicate_without_associations'
+    end
+
     resources :resources, controller: 'comfy/admin/api_resources'
     resources :api_clients, controller: 'comfy/admin/api_clients'
     resources :external_api_clients, controller: 'comfy/admin/external_api_clients' do

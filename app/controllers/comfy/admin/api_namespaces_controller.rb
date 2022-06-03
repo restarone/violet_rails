@@ -1,6 +1,6 @@
 class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
   before_action :ensure_authority_to_manage_api
-  before_action :set_api_namespace, only: %i[ show edit update destroy discard_failed_api_actions rerun_failed_api_actions export]
+  before_action :set_api_namespace, only: %i[ show edit update destroy discard_failed_api_actions rerun_failed_api_actions export duplicate_with_associations duplicate_without_associations ]
 
   # GET /api_namespaces or /api_namespaces.json
   def index
@@ -75,6 +75,38 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
     respond_to do |format|
       format.html { redirect_back(fallback_location: root_path, notice: "Failed api actions reran") }
       format.json { render json: { message: 'Failed api actions reran', status: :ok } }
+    end
+  end
+
+  def duplicate_with_associations
+    response = @api_namespace.duplicate_api_namespace(duplicate_associations: true)
+
+    respond_to do |format|
+      if response[:success]
+        cloned_api_namespace = response[:data]
+
+        format.html { redirect_to api_namespace_path(id: cloned_api_namespace.id), notice: "Api namespace was successfully created." }
+        format.json { render :show, status: :created, location: cloned_api_namespace }
+      else
+        format.html { redirect_to @api_namespace, alert: "Duplicating Api namespace failed due to: #{response[:message]}." }
+        format.json { render json: response, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def duplicate_without_associations
+    response = @api_namespace.duplicate_api_namespace
+
+    respond_to do |format|
+      if response[:success]
+        cloned_api_namespace = response[:data]
+
+        format.html { redirect_to api_namespace_path(id: cloned_api_namespace.id), notice: "Api namespace was successfully created." }
+        format.json { render :show, status: :created, location: cloned_api_namespace }
+      else
+        format.html { redirect_to @api_namespace, alert: "Duplicating Api namespace failed due to: #{response[:message]}." }
+        format.json { render json: response, status: :unprocessable_entity }
+      end
     end
   end
 
