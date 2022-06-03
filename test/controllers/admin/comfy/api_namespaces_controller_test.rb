@@ -12,7 +12,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_redirected_to new_user_session_url
   end
 
-  test "should not get index if signed in but not allowed to manage web" do
+  test "should not get index if signed in but not allowed to manage api" do
     sign_in(@user)
     @user.update(can_manage_api: false)
     get api_namespaces_url
@@ -136,6 +136,105 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
         post discard_failed_api_actions_api_namespace_url(@api_namespace)
       end
     end
+  end
+
+  test "should not allow duplicate_without_associations if not allowed to manage api" do
+    api_form = api_forms(:one)
+    @user.update(can_manage_api: false)
+
+    sign_in(@user)
+    
+    post duplicate_without_associations_api_namespace_url(id: @api_namespace.id)
+    assert_response :redirect
+    
+    error_message = "You do not have the permission to do that. Only users who can_manage_api are allowed to perform that action."
+    assert_match error_message, request.flash[:alert]
+  end
+
+  test "should not allow duplicate_without_associations if api_namespace has api_form" do
+    api_form = api_forms(:one)
+
+    sign_in(@user)
+    assert_no_difference('ApiNamespace.count') do
+      assert_no_difference('ApiResource.count') do
+        assert_no_difference('ApiAction.count') do
+          assert_no_difference('ApiClient.count') do
+            assert_no_difference('ExternalApiClient.count') do
+              assert_no_difference('NonPrimitiveProperty.count') do
+                post duplicate_without_associations_api_namespace_url(id: @api_namespace.id)
+                assert_response :redirect
+              end
+            end
+          end
+        end
+      end
+    end
+
+    error_message = "Duplicating Api namespace failed due to: You cannot duplicate the api_namespace without associations if it has api_form."
+    assert_match error_message, request.flash[:alert]
+  end
+
+  test "should allow duplicate_without_associations if api_namespace does not have api_form" do
+    @api_namespace.api_form.destroy
+
+    sign_in(@user)
+    assert_difference('ApiNamespace.count', +1) do
+      assert_no_difference('ApiResource.count') do
+        assert_no_difference('ApiAction.count') do
+          assert_no_difference('ApiClient.count') do
+            assert_no_difference('ExternalApiClient.count') do
+              assert_no_difference('NonPrimitiveProperty.count') do
+                post duplicate_without_associations_api_namespace_url(id: @api_namespace.id)
+                assert_response :redirect
+              end
+            end
+          end
+        end
+      end
+    end
+
+    success_message = "Api namespace was successfully created."
+    assert_match success_message, request.flash[:notice]
+  end
+
+  test "should not allow duplicate_with_associations if not allowed to manage api" do
+    api_form = api_forms(:one)
+    @user.update(can_manage_api: false)
+
+    sign_in(@user)
+    
+    post duplicate_with_associations_api_namespace_url(id: @api_namespace.id)
+    assert_response :redirect
+    
+    error_message = "You do not have the permission to do that. Only users who can_manage_api are allowed to perform that action."
+    assert_match error_message, request.flash[:alert]
+  end
+
+  test "should allow duplicate_with_associations" do
+    api_resources_count = @api_namespace.api_resources.count
+    api_actions_count = @api_namespace.api_actions.count + @api_namespace.api_resources.map(&:api_actions).flatten.count
+    api_clients_count = @api_namespace.api_clients.count
+    external_api_clients_count = @api_namespace.external_api_clients.count
+    non_primitive_properties_count = @api_namespace.non_primitive_properties.count
+
+    sign_in(@user)
+    assert_difference('ApiNamespace.count', +1) do
+      assert_difference('ApiResource.count', +api_resources_count) do
+        assert_difference('ApiAction.count', +api_actions_count) do
+          assert_difference('ApiClient.count', +api_clients_count) do
+            assert_difference('ExternalApiClient.count', +external_api_clients_count) do
+              assert_difference('NonPrimitiveProperty.count', +non_primitive_properties_count) do
+                post duplicate_with_associations_api_namespace_url(id: @api_namespace.id)
+                assert_response :redirect
+              end
+            end
+          end
+        end
+      end
+    end
+
+    success_message = "Api namespace was successfully created."
+    assert_match success_message, request.flash[:notice]
   end
 
   test "should export api_namespace" do
