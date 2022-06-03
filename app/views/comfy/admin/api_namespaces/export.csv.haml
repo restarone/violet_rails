@@ -1,0 +1,9 @@
+- headers = ApiNamespace.column_names
+- headers.each do |header|
+  - data = @api_namespace.send(header)
+  - if header == 'properties'
+    - props = data
+    - props.keys.each do |key|
+      = CSV.generate_line([key, props[key]], row_sep: "").html_safe
+  - else
+    = CSV.generate_line([header, data], row_sep: "").html_safe

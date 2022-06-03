@@ -1,6 +1,6 @@
 class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
   before_action :ensure_authority_to_manage_api
-  before_action :set_api_namespace, only: %i[ show edit update destroy discard_failed_api_actions rerun_failed_api_actions]
+  before_action :set_api_namespace, only: %i[ show edit update destroy discard_failed_api_actions rerun_failed_api_actions export]
 
   # GET /api_namespaces or /api_namespaces.json
   def index
@@ -75,6 +75,18 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
     respond_to do |format|
       format.html { redirect_back(fallback_location: root_path, notice: "Failed api actions reran") }
       format.json { render json: { message: 'Failed api actions reran', status: :ok } }
+    end
+  end
+
+  def export
+    # Naming convention: api_namespace_<API NAMESPACE ID>_<CURRENT TIMESTAMP>.csv
+    filename = "api_namespace_#{@api_namespace.id}_#{DateTime.now.to_i}.csv"
+    respond_to do |format|
+      format.csv do
+        response.headers['Content-Type'] = 'text/csv'
+        response.headers['Content-Disposition'] = "attachment; filename=#{filename}"
+        render template: "comfy/admin/api_namespaces/export"
+      end
     end
   end
 
