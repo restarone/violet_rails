@@ -85,4 +85,72 @@ class ApiNamespace < ApplicationRecord
   def discard_failed_actions
     executed_api_actions.where(lifecycle_stage: 'failed').update_all(lifecycle_stage: 'discarded')
   end
+
+  def duplicate_api_namespace(duplicate_associations: false)
+    begin
+      ActiveRecord::Base.transaction do
+        raise 'You cannot duplicate the api_namespace without associations if it has api_form' if duplicate_associations == false && self.api_form.present?
+
+        new_api_namespace = self.dup
+        new_api_namespace.name = self.name + '-copy-' + SecureRandom.hex(4)
+        new_api_namespace.requires_authentication = duplicate_associations ? self.requires_authentication : false
+        new_api_namespace.save!
+    
+        if duplicate_associations
+          # Duplicate ApiForm
+          if self.api_form.present?
+            new_api_form = self.api_form.dup
+            new_api_form.api_namespace = new_api_namespace
+            new_api_form.save!
+          end
+    
+          # Duplicate ApiClients
+          self.api_clients.each do |api_client|
+            new_api_client = api_client.dup
+            new_api_client.api_namespace = new_api_namespace
+            new_api_client.save!
+          end
+    
+          # Duplicate ExternalApiClients
+          self.external_api_clients.each do |external_api_client|
+            new_external_api_client = external_api_client.dup
+            new_external_api_client.api_namespace = new_api_namespace
+            new_external_api_client.save!
+          end
+    
+          # Duplicate NonPrimitiveProperties
+          self.non_primitive_properties.each do |non_primitive_property|
+            new_non_primitive_property = non_primitive_property.dup
+            new_non_primitive_property.api_namespace = new_api_namespace
+            new_non_primitive_property.save!
+          end
+    
+          # Duplicate ApiActions
+          self.api_actions.each do |api_action|
+            new_api_action = api_action.dup
+            new_api_action.api_namespace = new_api_namespace
+            new_api_action.save!
+          end
+    
+          # Duplicate ApiResources & ExecutedApiActions
+          self.api_resources.each do |api_resource|
+            # For skipping before_create callback for ApiResource
+            current_date_time = Time.zone.now
+            ApiResource.insert(api_resource.attributes.except("id", "created_at", "updated_at", 'api_namespace_id').merge({api_namespace_id: new_api_namespace.id, created_at: Time.zone.now, updated_at: Time.zone.now}))
+            new_api_resource = new_api_namespace.reload.api_resources.last
+    
+            api_resource.api_actions.each do |executed_api_action|
+              new_executed_api_action = executed_api_action.dup
+              new_executed_api_action.api_resource = new_api_resource
+              new_executed_api_action.save!
+            end
+          end
+        end
+
+        { success: true, data: new_api_namespace }
+      end
+    rescue => e
+      { success: false, message: e.message }
+    end
+  end
 end
