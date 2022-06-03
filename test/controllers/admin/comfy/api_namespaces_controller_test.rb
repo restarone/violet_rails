@@ -144,7 +144,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\n\nname,namespace_with_all_types\n\nslug,namespace_with_all_types\n\nversion,1\n\nnull,\n\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\n\nnumber,123\n\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\n\nstring,string\n\nboolean,true\n\nrequires_authentication,false\n\nnamespace_type,create-read-update-delete\n\ncreated_at,#{api_namespace.created_at}\n\nupdated_at,#{api_namespace.updated_at}\n\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"

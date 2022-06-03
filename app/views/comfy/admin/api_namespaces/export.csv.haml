@@ -4,6 +4,6 @@
   - if header == 'properties'
     - props = data
     - props.keys.each do |key|
-      = CSV.generate_line([key, props[key]]).html_safe
+      = CSV.generate_line([key, props[key]], row_sep: "").html_safe
   - else
-    = CSV.generate_line([header, data]).html_safe
+    = CSV.generate_line([header, data], row_sep: "").html_safe
