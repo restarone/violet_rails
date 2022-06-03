@@ -93,7 +93,6 @@ class ApiNamespace < ApplicationRecord
 
         new_api_namespace = self.dup
         new_api_namespace.name = self.name + '-copy-' + SecureRandom.hex(4)
-        new_api_namespace.requires_authentication = duplicate_associations ? self.requires_authentication : false
         new_api_namespace.save!
     
         if duplicate_associations
