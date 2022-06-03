@@ -79,10 +79,12 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
   end
 
   def export
+    # Naming convention: api_namespace_<API NAMESPACE ID>_<CURRENT TIMESTAMP>.csv
+    filename = "api_namespace_#{@api_namespace.id}_#{DateTime.now.to_i}.csv"
     respond_to do |format|
       format.csv do
         response.headers['Content-Type'] = 'text/csv'
-        response.headers['Content-Disposition'] = "attachment; filename=leads.csv"
+        response.headers['Content-Disposition'] = "attachment; filename=#{filename}"
         render template: "comfy/admin/api_namespaces/export"
       end
     end
