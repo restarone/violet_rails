@@ -4,11 +4,6 @@
   - if header == 'properties'
     - props = data
     - props.keys.each do |key|
-      - if props[key].class == String
-        = CSV.generate_line([key, props[key]])
-      - elsif props[key].class == Array
-        = CSV.generate_line([key, props[key].map{|n| n.to_s}.join(', ')])
-      - else
-        = CSV.generate_line([key, props.to_s])
+      = CSV.generate_line([key, props[key]]).html_safe
   - else
-    = CSV.generate_line([header, data])
+    = CSV.generate_line([header, data]).html_safe
