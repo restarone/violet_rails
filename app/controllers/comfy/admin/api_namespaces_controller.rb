@@ -85,7 +85,7 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
       if response[:success]
         cloned_api_namespace = response[:data]
 
-        format.html { redirect_to cloned_api_namespace, notice: "Api namespace was successfully created." }
+        format.html { redirect_to api_namespace_path(id: cloned_api_namespace.id), notice: "Api namespace was successfully created." }
         format.json { render :show, status: :created, location: cloned_api_namespace }
       else
         format.html { redirect_to @api_namespace, alert: "Duplicating Api namespace failed due to: #{response[:message]}." }
@@ -101,7 +101,7 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
       if response[:success]
         cloned_api_namespace = response[:data]
 
-        format.html { redirect_to cloned_api_namespace, notice: "Api namespace was successfully created." }
+        format.html { redirect_to api_namespace_path(id: cloned_api_namespace.id), notice: "Api namespace was successfully created." }
         format.json { render :show, status: :created, location: cloned_api_namespace }
       else
         format.html { redirect_to @api_namespace, alert: "Duplicating Api namespace failed due to: #{response[:message]}." }
