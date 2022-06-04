@@ -10,9 +10,6 @@ require 'capistrano/local_precompile'
 # to generate the sitemap
 require 'capistrano/sitemap_generator'
 
-# to set node version
-require 'capistrano/nvm'
-
 # whenever / cron
 require "whenever/capistrano"
 
@@ -53,9 +50,6 @@ Dir.glob("lib/capistrano/tasks/*.rake").each { |r| import r }
 
 set :rbenv_type, :user
 set :rbenv_ruby, '2.6.6'
-
-set :nvm_type, :user
-set :nvm_node, 'v14.19.0'
 
 
 # for local precompile, we have a timeout error sometimes, add a longer timeout
