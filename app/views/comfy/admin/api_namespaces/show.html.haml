@@ -122,7 +122,14 @@
       .card.p-3
         = render_form @api_namespace.api_form.id
   #settings.tab-pane.fade{"aria-labelledby" => "settings-tab", :role => "tabpanel"} 
-    = link_to 'Delete', @api_namespace, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'  
+    .my-3
+      = link_to 'Delete', @api_namespace, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'
+    .my-3
+      = link_to 'Download CSV', export_api_namespace_path(@api_namespace, format: :csv), class: 'btn btn-warning'
+    .my-3
+      = link_to 'Duplicate with associations', duplicate_with_associations_api_namespace_path(id: @api_namespace.id), method: :post, target: '_blank', class: 'btn btn-primary'
+    .my-3
+      = link_to 'Duplicate without associations', duplicate_without_associations_api_namespace_path(id: @api_namespace.id), method: :post, target: '_blank', class: 'btn btn-primary'
 
 .container-fluid.mt-5
   .d-flex.justify-content-between.py-2.page-header
