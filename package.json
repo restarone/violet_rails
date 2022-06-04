@@ -23,9 +23,5 @@
   "devDependencies": {
     "webpack-dev-server": "^3.11.2"
   },
-  "cacheDirectories": ["client/node_modules","node_modules"],
-  "engines": {
-    "node": "14.19.x",
-    "yarn": "1.22.x"
-  }
+  "cacheDirectories": ["client/node_modules","node_modules"]
 }
