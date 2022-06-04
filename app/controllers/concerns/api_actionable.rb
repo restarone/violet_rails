@@ -29,7 +29,10 @@ module ApiActionable
   end
 
   def handle_redirection
-    flash[:notice] = @api_namespace.api_form.success_message
+    # show custom snippet only if success_message contains valid html tags
+    notice_type = @api_namespace.api_form&.success_message_has_html? ? :custom_notice : :notice
+    flash[notice_type] = helpers.parse_snippet(@api_namespace.api_form&.success_message, @api_resource)
+
     if @redirect_action.present?
       if @redirect_action.update!(lifecycle_stage: 'complete', lifecycle_message: @redirect_action.redirect_url.to_s)
         redirect_to @redirect_action.redirect_url and return
@@ -39,7 +42,7 @@ module ApiActionable
       end
     end
 
-    redirect_back(fallback_location: root_path, notice: "Api resource was successfully updated.")
+    redirect_back(fallback_location: root_path)
   end
 
   def execute_api_actions

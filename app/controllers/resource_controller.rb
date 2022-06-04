@@ -17,7 +17,9 @@ class ResourceController < ApplicationController
       handle_redirection
     else
       execute_error_actions
-      flash[:error] = @api_namespace.api_form.failure_message if @api_namespace.api_form.present?
+      # show custom snippet only if failure_message contains valid html tags
+      notice_type = @api_namespace.api_form&.failure_message_has_html? ? :custom_notice : :error
+      flash[notice_type] = helpers.parse_snippet(@api_namespace.api_form&.failure_message, @api_resource)
       redirect_back(fallback_location: root_path)
     end
   end
