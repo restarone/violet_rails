@@ -25,8 +25,7 @@
   },
   "cacheDirectories": ["client/node_modules","node_modules"],
   "engines": {
-    "node": "10.19.x",
-    "yarn": "1.22.x",
-    "npm": "6.13.7"
+    "node": "14.19.x || 10.19.x",
+    "yarn": "1.22.x"
   }
 }
