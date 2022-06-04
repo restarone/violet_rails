@@ -494,7 +494,6 @@ DEPENDENCIES
   byebug
   capistrano
   capistrano-local-precompile
-  capistrano-nvm
   capistrano-rails
   capistrano-rbenv
   capistrano3-puma
