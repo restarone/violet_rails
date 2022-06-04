@@ -471,6 +471,8 @@ ActiveRecord::Schema.define(version: 2022_05_24_080242) do
     t.string "after_sign_up_path"
     t.string "after_sign_in_path"
     t.boolean "allow_external_analytics_query", default: false
+    t.boolean "api_plugin_events_enabled", default: false
+    t.boolean "tracking_enabled", default: false
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
     t.index ["name"], name: "index_subdomains_on_name"
   end
