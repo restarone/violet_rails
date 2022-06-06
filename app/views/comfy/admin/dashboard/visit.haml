@@ -1,0 +1,37 @@
+.page-header
+  .h3
+    Visit Details
+
+%main{class: 'm-5'}
+  .table-responsive.my-5
+    %table.table.table-bordered
+      %thead
+        %tr
+          %th{colspan: 2} #{session_detail_title}
+        - visit_display_attributes = { country: 'country', region: 'region', city: 'city', started_at: 'time', ip: 'IP', user_agent: 'user agent', referred: 'referrer', referring_domain: 'referring domain', landing_page: 'landing page', browser: 'browser', os: 'OS', device: 'device' }
+        - visit_display_attributes.each do |attr, display_name|
+          %tr
+            %td= display_name
+            - if attr == :started_at
+              %td= @visit[attr].strftime('%b %d, %Y %I:%M %P')
+            - else
+              %td= @visit[attr].presence || 'N/A'
+
+  = render partial: 'comfy/admin/dashboard/event_type_search_filter', locals: { objects: @visit_specific_events_q, path: dashboard_visits_path(ahoy_visit_id: @visit.id), select_options: Ahoy::Event.group(:name).pluck(:name).sort }
+  .table-responsive.my-5
+    = render partial: 'comfy/admin/dashboard/pagination', locals: { data: @visit_specific_events }
+    %table.table.table-bordered
+      %thead
+        %tr
+          %th Events (#{@visit_specific_events.count})
+          %th Created at
+
+      %thead
+        - @visit_specific_events.each do |event|
+          %tr
+            - event_detail = event_name_detail(event)
+            - event_detail = event_detail.present? ? " (#{event_detail})" : ''
+            %td= link_to(event.name, dashboard_events_path(ahoy_event_type: event.name)) + event_detail.to_s
+            %td= event.time.strftime('%F %T')
+
+    = render partial: 'comfy/admin/dashboard/pagination', locals: { data: @visit_specific_events }

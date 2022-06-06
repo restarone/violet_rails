@@ -13,79 +13,93 @@
 %p
   %b Properties:
 #jsoneditor
-= hidden_field_tag :api_namespace_properties, @api_namespace.properties
+= hidden_field_tag :api_namespace_properties, @api_namespace.properties&.to_json
 
 = render 'init_editor', {read_only: true}
 
-.py-3.d-flex
-  .btn.btn-primary.mr-3{'data-toggle': "collapse", 'data-target': "#infoCollapse", 'aria-expanded': "false", 'aria-controls': "infoCollapse"}
-    View Info
-  = link_to 'Delete', @api_namespace, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'
+%ul.nav.my-2.nav-tabs{:role => "tablist"}
+  %li.nav-item
+    %a#interface-tab.nav-link.active{"aria-controls" => "interface", "aria-selected" => "true", "data-toggle" => "tab", :href => "#interface", :role => "tab"} 
+      View Interface
+  %li.nav-item
+    %a#connections-tab.nav-link{"aria-controls" => "connections", "aria-selected" => "false", "data-toggle" => "tab", :href => "#connections", :role => "tab"} 
+      View Connections
+  - if @api_namespace.api_form.present?
+    %li.nav-item
+      %a#form-tab.nav-link{"aria-controls" => "form", "aria-selected" => "false", "data-toggle" => "tab", :href => "#form", :role => "tab"} 
+        View Form
+  %li.nav-item
+    %a#settings-tab.nav-link{"aria-controls" => "settings", "aria-selected" => "false", "data-toggle" => "tab", :href => "#settings", :role => "tab"} 
+      Settings
 
+.tab-content
+  #interface.tab-pane.fade.show.active{"aria-labelledby" => "interface-tab", :role => "tabpanel"} 
+    .card.p-3
+      .card-title
+        = link_to 'Api Actions', api_namespace_api_actions_path(api_namespace_id: @api_namespace.id), class: 'btn btn-primary'
+      %p
+        %b Requires authentication:
+        = @api_namespace.requires_authentication
+      %p
+        %b Namespace type:
+        = @api_namespace.namespace_type
 
-.collapse#infoCollapse
-  .card.p-3
-    %p
-      %b Requires authentication:
-      = @api_namespace.requires_authentication
-    %p
-      %b Namespace type:
-      = @api_namespace.namespace_type
+      .card
+        .card-body
+          %h4
+            REST Interface
+          %strong
+            Request description endpoint:
+          %p
+            GET
+          %pre
+            = "#{api_base_url(Subdomain.current, @api_namespace)}/describe"
 
-    .card
-      .card-body
-        %h4
-          REST Interface
-        %strong
-          Request description endpoint:
-        %p
-          GET
-        %pre
-          = "#{api_base_url(Subdomain.current, @api_namespace)}/describe"
+          %strong
+            Request index endpoint:
+          %p
+            GET
+          %pre
 
-        %strong
-          Request index endpoint:
-        %p
-          GET
-        %pre
+            = api_base_url(Subdomain.current, @api_namespace)
 
-          = api_base_url(Subdomain.current, @api_namespace)
+          %strong
+            Request query endpoint:
+          %p
+            POST
+          %pre
+            = "#{api_base_url(Subdomain.current, @api_namespace)}/query"
 
-        %strong
-          Request query endpoint:
-        %p
-          POST
-        %pre
-          = "#{api_base_url(Subdomain.current, @api_namespace)}/query"
+        .card-body
+          %h4
+            Graph Interface
+          %strong
+            Request description endpoint:
+          %p
+            GET
+          %pre
+            = "#{graphql_base_url(Subdomain.current, @api_namespace)}/describe"
 
-      .card-body
-        %h4
-          Graph Interface
-        %strong
-          Request description endpoint:
-        %p
-          GET
-        %pre
-          = "#{graphql_base_url(Subdomain.current, @api_namespace)}/describe"
-
-        %strong
-          Request query endpoint:
-        %p
-          POST
-        %pre
-          = "#{graphql_base_url(Subdomain.current, @api_namespace)}"
-        %p
-          Payload (this)
-        %pre
-          = "query: { apiNamespaces(slug: \"#{@api_namespace.slug.camelize(:lower)}\") { id } }"
-        %p
-          Payload (this + children)
-        %pre
-          = "query: { apiNamespaces(slug: \"#{@api_namespace.slug.camelize(:lower)}\") { id apiResources { id } } }"
-        %p
-          Payload (global)
-        %pre
-          = "query: { apiNamespaces { id } }"
+          %strong
+            Request query endpoint:
+          %p
+            POST
+          %pre
+            = "#{graphql_base_url(Subdomain.current, @api_namespace)}"
+          %p
+            Payload (this)
+          %pre
+            = "query: { apiNamespaces(slug: \"#{@api_namespace.slug.camelize(:lower)}\") { id } }"
+          %p
+            Payload (this + children)
+          %pre
+            = "query: { apiNamespaces(slug: \"#{@api_namespace.slug.camelize(:lower)}\") { id apiResources { id } } }"
+          %p
+            Payload (global)
+          %pre
+            = "query: { apiNamespaces { id } }"
+  #connections.tab-pane.fade{"aria-labelledby" => "connections-tab", :role => "tabpanel"} 
+    .card.p-3
       .card-body
         %h4
           = link_to "External API connections", api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)
@@ -98,30 +112,24 @@
             = link_to "API Clients", api_namespace_api_clients_path(api_namespace_id: @api_namespace.id)
           .my-3
             = link_to "Create new key for client", new_api_namespace_api_client_path(api_namespace_id: @api_namespace.id)
-
-
-.d-flex.justify-content-between.align-items-center.py-3
-  %div
-    %strong
-      %b Has Form:
-      = @api_namespace.api_form.present?
   - if @api_namespace.api_form.present?
-    .btn.btn-primary{'data-toggle': "collapse", 'data-target': "#previewCollapse", 'aria-expanded': "false", 'aria-controls': "previewCollapse"}
-      View
-
-- if @api_namespace.api_form.present?
-  .collapse#previewCollapse
-    %p
-      .d-flex.justify-content-between
-        %b Preview (outer border is present in preview only):
-        %div
-          = link_to 'Edit', edit_api_namespace_api_form_path(api_namespace_id: @api_namespace.id, id: @api_namespace.api_form.id)
-    .card.p-3
-      = render_form @api_namespace.api_form.id
-
-
-.my-5
-  = link_to 'Api Actions', api_namespace_api_actions_path(api_namespace_id: @api_namespace.id)
+    #form.tab-pane.fade{"aria-labelledby" => "form-tab", :role => "tabpanel"} 
+      %p
+        .d-flex.justify-content-between
+          %b Preview (outer border is present in preview only):
+          %div
+            = link_to 'Edit', edit_api_namespace_api_form_path(api_namespace_id: @api_namespace.id, id: @api_namespace.api_form.id)
+      .card.p-3
+        = render_form @api_namespace.api_form.id
+  #settings.tab-pane.fade{"aria-labelledby" => "settings-tab", :role => "tabpanel"} 
+    .my-3
+      = link_to 'Delete', @api_namespace, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'
+    .my-3
+      = link_to 'Download CSV', export_api_namespace_path(@api_namespace, format: :csv), class: 'btn btn-warning'
+    .my-3
+      = link_to 'Duplicate with associations', duplicate_with_associations_api_namespace_path(id: @api_namespace.id), method: :post, target: '_blank', class: 'btn btn-primary'
+    .my-3
+      = link_to 'Duplicate without associations', duplicate_without_associations_api_namespace_path(id: @api_namespace.id), method: :post, target: '_blank', class: 'btn btn-primary'
 
 .container-fluid.mt-5
   .d-flex.justify-content-between.py-2.page-header

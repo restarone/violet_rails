@@ -10,7 +10,7 @@ class SimpleDiscussion::ForumPostsController < SimpleDiscussion::ApplicationCont
     @forum_post.user_id = current_user.id
 
     if @forum_post.save
-      SimpleDiscussion::ForumPostNotificationJob.perform_later(@forum_post)
+      ForumPostNotificationJob.perform_async(@forum_post.id)
       ApiNamespace::Plugin::V1::SubdomainEventsService.new(@forum_post).track_event
       redirect_to simple_discussion.forum_thread_path(@forum_thread, anchor: "forum_post_#{@forum_post.id}")
     else
@@ -23,6 +23,11 @@ class SimpleDiscussion::ForumPostsController < SimpleDiscussion::ApplicationCont
 
   def update
     if @forum_post.update(forum_post_params)
+      ahoy.track(
+        "subdomain-forum-post-update",
+        {visit_id: current_visit.id, forum_post_id: @forum_post.id, user_id: current_user.id}
+      ) if Subdomain.current.tracking_enabled && current_visit
+
       redirect_to simple_discussion.forum_thread_path(@forum_thread)
     else
       render action: :edit

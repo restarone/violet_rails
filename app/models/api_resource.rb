@@ -1,7 +1,11 @@
 class ApiResource < ApplicationRecord
+  include JsonbFieldsParsable
+
+  after_initialize :inherit_properties_from_parent
+
   belongs_to :api_namespace
 
-  before_create :initialize_api_actions
+  before_create :initialize_api_actions, :inject_inherited_properties
 
   validate :presence_of_required_properties
 
@@ -37,17 +41,31 @@ class ApiResource < ApplicationRecord
   end
 
   def presence_of_required_properties
-    return unless api_namespace.api_form
-    # violet rails is expecting a hash stored in the DB. But when we shove a stringified json object in here we will need to check first. This is a stop gap fix
-    if properties.is_a? Enumerable
-      props = properties
-    else
-      # properties is a json string
-      props = JSON.parse(properties).deep_symbolize_keys
-    end
-    props.each do |key, value|
+    return unless api_namespace.api_form && properties&.is_a?(Enumerable)
+
+    properties.each do |key, value|
       if api_namespace.api_form.properties.dig(key,"required") == '1' && !value.present?
         errors.add(:properties, "#{key} is required")
+      end
+    end
+  end
+
+  private
+
+  def inherit_properties_from_parent
+    return unless self.properties.nil?
+
+    self.properties = api_namespace&.properties
+  end
+
+  def inject_inherited_properties
+    # you can make certain primitive properties (inherited from the parent API namespace) non renderable, in these cases we have to populate the values
+    # to - do write test
+    return if !api_namespace&.api_form&.properties
+    api_form_properties = api_namespace.api_form.properties
+    api_namespace.properties.each do |key, value|
+      if api_form_properties[key]['renderable'] == '0'
+        self.properties[key] =  api_namespace.properties[key]
       end
     end
   end

@@ -34,12 +34,14 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
       :forum_is_private,
       :purge_visits_every,
       :analytics_report_frequency,
+      :tracking_enabled,
       :ember_enabled,
       :graphql_enabled,
       :web_console_enabled,
       :api_plugin_events_enabled,
       :after_sign_in_path,
-      :after_sign_up_path
+      :after_sign_up_path,
+      :allow_external_analytics_query
     )
   end
 end

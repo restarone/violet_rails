@@ -1,0 +1,22 @@
+// Place all the styles related to the Flash messages here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: https://sass-lang.com/
+
+/* flash toast */
+
+.flash-container {
+  position: absolute;
+  z-index: 10000;
+  top: 100px;
+  right: 0;
+
+  .alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+  }
+
+  .alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+  }
+}

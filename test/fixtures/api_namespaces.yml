@@ -4,10 +4,9 @@ one:
   name: clients
   slug: clients
   version: 1
-  properties:  >
-    {
-      "name": "test"
-    }
+  properties: {
+                "name": "test"
+              }
   requires_authentication: false
   namespace_type: create-read-update-delete
 
@@ -15,10 +14,9 @@ two:
   name: pages
   slug: pages
   version: 1
-  properties:  >
-    {
-      "name": "Anny Frank"
-    }
+  properties: {
+                "name": "Anny Frank"
+              }
   requires_authentication: false
   namespace_type: create-read-update-delete
 
@@ -26,10 +24,9 @@ users:
   name: internal_users
   slug: internal_users
   version: 1
-  properties: >
-    {
-      "release_date": "1/1/1995"
-    }
+  properties: {
+                "release_date": "1/1/1995"
+              }
   requires_authentication: false
   namespace_type: create-read-update-delete
 
@@ -37,10 +34,9 @@ array_namespace:
   name: namespace_with_array
   slug: namespace_with_array
   version: 1
-  properties: >
-    {
-      "name": ["yes","no"]
-    }
+  properties: {
+                "name": ["yes","no"]
+              }
   requires_authentication: false
   namespace_type: create-read-update-delete
 
@@ -50,22 +46,39 @@ plugin_subdomain_events:
   version: 1
   requires_authentication: true
   namespace_type: create-read-update-delete
-  properties:  >
-    {
-      "model_definition": {
-        "record_id": {
-          "type": "integer",
-          "validations": {
-            "allow_blank": false,
-            "primary_key": true,
-            "unique": true
-          }
-        },
-        "record_type": {
-          "type": "string",
-          "validations": {
-            "allow_blank": false
-          }
-        }
-      }
-    }
+  properties:  {
+                "model_definition": {
+                  "record_id": {
+                    "type": "integer",
+                    "validations": {
+                      "allow_blank": false,
+                      "primary_key": true,
+                      "unique": true
+                    }
+                  },
+                  "record_type": {
+                    "type": "string",
+                    "validations": {
+                      "allow_blank": false
+                    }
+                  }
+                }
+              }
+
+namespace_with_all_types:
+  name: namespace_with_all_types
+  slug: namespace_with_all_types
+  version: 1
+  properties: {
+                "array": ["yes","no"],
+                "object": {
+                  "a": "b",
+                  "c": "d"
+                },
+                "string": "string",
+                "number": 123,
+                "boolean": true,
+                "null": null
+              }
+  requires_authentication: false
+  namespace_type: create-read-update-delete

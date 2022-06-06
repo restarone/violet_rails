@@ -26,7 +26,7 @@
   %h3 Fields
   .row
     = f.fields_for :properties do |p|
-      - JSON.parse(@api_namespace.properties).each do |key, value|
+      - @api_namespace.properties.each do |key, value|
         .col-12.col-md-4.mb-4
           .card.p-3
             %h4.mb-3
@@ -83,6 +83,10 @@
                 .form-group.col-12
                   = a.label :required, 'Required:', class: 'mr-4'
                   = a.check_box :required, checked: properties[key]["required"] == "1"
+
+                .form-group.col-12
+                  = a.label :renderable, 'Renderable', class: 'mr-4'
+                  = a.check_box :renderable, checked: @api_form.is_field_renderable?(key)
       
       - @api_namespace.non_primitive_properties.each do |prop|
         .col-12.col-md-4.mb-4

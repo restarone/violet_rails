@@ -37,7 +37,7 @@
     = f.text_area :model_definition
 
   #jsoneditor
-  = f.hidden_field :metadata
+  = hidden_field_tag "external_api_client[metadata]", @external_api_client.metadata&.to_json 
 
   .actions
     = f.submit 'Save'

@@ -17,6 +17,9 @@ jobs:
     name: Brakeman Scan
     runs-on: ubuntu-latest
     steps:
+    - name: Update App dependencies
+      run: |
+        sudo apt-get update
     # Checkout the repository to the GitHub Actions runner
     - name: Checkout
       uses: actions/checkout@v2

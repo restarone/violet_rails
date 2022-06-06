@@ -1,4 +1,5 @@
 class ApiForm < ApplicationRecord
+  include JsonbFieldsParsable
   belongs_to :api_namespace
 
   INPUT_TYPE_MAPPING = {
@@ -11,4 +12,8 @@ class ApiForm < ApplicationRecord
     datetime: 'datetime-local',
     tel: 'tel'
   }
+
+  def is_field_renderable?(field)
+    properties.dig(field.to_s, 'renderable').nil? || properties.dig(field.to_s, 'renderable') == '1'
+  end
 end

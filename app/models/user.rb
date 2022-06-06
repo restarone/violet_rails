@@ -40,10 +40,10 @@ class User < ApplicationRecord
   FULL_PERMISSIONS = {
     can_access_admin: true,
     can_manage_web: true,
+    can_manage_analytics: true,
     can_manage_email: true,
     can_manage_users: true,
     can_manage_blog: true,
-    can_manage_api: true,
     can_manage_subdomain_settings: true,
     can_manage_api: true,
     can_view_restricted_pages: true,
@@ -81,6 +81,10 @@ class User < ApplicationRecord
   validates :session_timeoutable_in, inclusion: { in: User::SESSION_TIMEOUT.map{ |n| n[:slug] } }
 
   has_one_attached :avatar
+
+  # to run User.find(123).visits
+  has_many :visits, class_name: "Ahoy::Visit"
+
 
   def subdomain
     Apartment::Tenant.current

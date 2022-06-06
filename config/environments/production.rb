@@ -130,3 +130,12 @@ Rails.application.configure do
   # config.active_record.database_resolver = ActiveRecord::Middleware::DatabaseSelector::Resolver
   # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
 end
+
+# exception notifier
+Rails.application.config.middleware.use ExceptionNotification::Rack,
+  ignore_exceptions: ['ActionController::ParameterMissing', 'ActionController::RoutingError'],
+  violet_rails_error: {
+    app: {
+      host: ENV["APP_HOST"]
+    }
+  }

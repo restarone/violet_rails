@@ -1,8 +1,8 @@
 - read_only = false if local_assigns[:read_only].nil?
 - non_primitive_properties = api_resource.persisted? ? api_resource.non_primitive_properties : api_resource.api_namespace.non_primitive_properties
 #jsoneditor  
-= hidden_field_tag :api_namespace_properties, api_resource.api_namespace.properties
-= hidden_field_tag "api_resource[properties]", api_resource.properties ? api_resource.properties.to_json : nil
+= hidden_field_tag :api_namespace_properties, api_resource.api_namespace.properties.to_json
+= hidden_field_tag "api_resource[properties]", api_resource.properties&.to_json
 - unless read_only
   - non_primitive_properties.each_with_index do |property, index|
     = fields_for "api_resource[non_primitive_properties_attributes][#{index}]", property do |ff|

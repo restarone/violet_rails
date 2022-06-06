@@ -1,4 +1,6 @@
 class ExternalApiClient < ApplicationRecord
+  include JsonbFieldsParsable
+
   STATUSES = {
     stopped: 'stopped',
     running: 'running',
@@ -40,43 +42,29 @@ class ExternalApiClient < ApplicationRecord
 
   validates :drive_every, inclusion: { in: ExternalApiClient::DRIVE_INTERVALS.keys.map(&:to_s) }, allow_blank: true, allow_nil: true
 
-  def self.cron_jobs(interval)
-    ExternalApiClient.where(drive_strategy: ExternalApiClient::DRIVE_STRATEGIES[:cron], drive_every: interval)
+  def self.cron_jobs
+    intervals = ExternalApiClient.pluck(:drive_every).compact
+    runnable_external_api_clients = []
+    ExternalApiClient.where(drive_strategy: ExternalApiClient::DRIVE_STRATEGIES[:cron]).each do |external_api_client|
+      if !external_api_client.last_run_at
+        runnable_external_api_clients << external_api_client
+        next
+      end
+      last_run = ExternalApiClient::DRIVE_INTERVALS[external_api_client.drive_every.to_sym]
+      if external_api_client.last_run_at < Time.at(eval("#{last_run}.ago"))
+        runnable_external_api_clients << external_api_client
+      end
+      next
+    end
+    return runnable_external_api_clients
   end
 
   def run
+    # prevent triggering if its not enabled or the status is error (means that the custom model definition raised an error and it bubbled up)
     return false if !self.enabled || self.status == ExternalApiClient::STATUSES[:error]
-    external_api_interface = self.evaluated_model_definition
-    external_api_client_runner = external_api_interface.new(external_api_client: self)
-    retries = nil
-    begin
-      self.reload
-      retries = self.retries
-      self.update(status: ExternalApiClient::STATUSES[:running])
-      external_api_client_runner.start
-    rescue StandardError => e
-      self.update(error_message: e.message) 
-      if retries <= self.max_retries
-        self.update(retries: retries + 1)
-        max_sleep_seconds = Float(2 ** retries)
-        sleep_for_seconds = rand(0..max_sleep_seconds)
-        self.update(retry_in_seconds: max_sleep_seconds)
-        self.update(status: ExternalApiClient::STATUSES[:sleeping])
-        sleep sleep_for_seconds
-        retry
-      else
-        # client is considered dead at this point, fire off a flare
-        self.update(
-          error_message: "#{e.message}",
-          status: ExternalApiClient::STATUSES[:error],
-          error_metadata: {
-            backtrace: e.backtrace
-          }
-        )
-        external_api_client_runner.log
-      end
-    end
-    return external_api_client_runner
+    # prevent race conditions, if a client is running already-- dont run
+    return false if self.status == ExternalApiClient::STATUSES[:running]
+    ExternalApiClientJob.perform_async(self.id)
   end
 
   def evaluated_model_definition
@@ -103,10 +91,10 @@ class ExternalApiClient < ApplicationRecord
   end
 
   def get_metadata
-    JSON.parse(self.reload.metadata).deep_symbolize_keys
+    self.reload.metadata.deep_symbolize_keys
   end
 
   def set_metadata(hash)
-    self.update(metadata: hash.to_json)
+    self.update(metadata: hash)
   end
 end

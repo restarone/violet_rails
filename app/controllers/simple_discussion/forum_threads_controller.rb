@@ -32,6 +32,11 @@ class SimpleDiscussion::ForumThreadsController < SimpleDiscussion::ApplicationCo
   def show
     @forum_post = ForumPost.new
     @forum_post.user = current_user
+
+    ahoy.track(
+      "subdomain-forum-thread-visit",
+      {visit_id: current_visit.id, forum_thread_id: @forum_thread.id, user_id: current_user&.id}
+    ) if Subdomain.current.tracking_enabled && current_visit
   end
 
   def new
@@ -44,7 +49,7 @@ class SimpleDiscussion::ForumThreadsController < SimpleDiscussion::ApplicationCo
     @forum_thread.forum_posts.each { |post| post.user_id = current_user.id }
 
     if @forum_thread.save
-      SimpleDiscussion::ForumThreadNotificationJob.perform_later(@forum_thread)
+      ForumThreadNotificationJob.perform_async(@forum_thread.id)
       ApiNamespace::Plugin::V1::SubdomainEventsService.new(@forum_thread).track_event
       redirect_to simple_discussion.forum_thread_path(@forum_thread)
     else

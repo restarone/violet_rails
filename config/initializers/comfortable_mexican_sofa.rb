@@ -12,6 +12,14 @@ end
 
 module ComfyPublicAuthentication
   def authenticate
+    if Subdomain.current.tracking_enabled
+      user_id = current_user ? current_user.id : nil
+      visit_id = current_visit ? current_visit.id : nil
+      ahoy.track(
+        "comfy-cms-page-visit",
+        { visit_id: visit_id, page_id: @cms_page&.id, user_id: user_id }
+      )
+    end
     protected_paths = Comfy::Cms::Page.where(is_restricted: true).pluck(:full_path)
     return unless protected_paths.member?(@cms_page.full_path)
     if current_user
@@ -34,7 +42,7 @@ module RSolutions::ComfyAdminAuthorization
     if (self.class.name == "Comfy::Admin::Cms::SitesController")
       redirect_back(fallback_location: root_url)
     else
-      return true 
+      return true
     end
   end
 
@@ -43,7 +51,7 @@ module RSolutions::ComfyAdminAuthorization
       flash.alert = "You do not have the permission to do that. Only users who can_manage_web are allowed to perform that action."
       redirect_back(fallback_location: root_url)
     else
-      return true 
+      return true
     end
   end
 
@@ -52,7 +60,7 @@ module RSolutions::ComfyAdminAuthorization
       flash.alert = "You do not have the permission to do that. Only users who can_manage_blog are allowed to perform that action."
       redirect_back(fallback_location: root_url)
     else
-      return true 
+      return true
     end
   end
 
@@ -66,7 +74,7 @@ module RSolutions::ComfyAdminAuthorization
       :destroy,
     ]
     restricted_controllers = ['files', 'snippets', 'web_settings']
-    
+
     if (restricted_controllers.include?(controller_name)) || restricted_actions.include?(action_name.to_sym)
       ensure_webmaster
     end

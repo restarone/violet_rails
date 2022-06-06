@@ -29,7 +29,7 @@ gem 'ros-apartment', require: 'apartment'
 gem 'ros-apartment-sidekiq', require: 'apartment-sidekiq'
 gem 'apartment-activejob'
 gem 'devise'
-gem "comfortable_mexican_sofa",git: 'https://github.com/restarone/comfortable-mexican-sofa', tag: '3.3'
+gem "comfortable_mexican_sofa",git: 'https://github.com/restarone/comfortable-mexican-sofa', tag: '3.4'
 gem "comfy_blog", git: 'https://github.com/restarone/comfy-blog', branch: 'master'
 gem 'simple_discussion', git: 'https://github.com/restarone/simple_discussion', branch: 'master'
 gem 'gravatar_image_tag'
@@ -101,3 +101,7 @@ gem 'graphiql-rails'
 gem "ember-cli-rails", "0.11.0"
 # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
 gem 'web-console', '>= 4.1.0'
+gem "exception_notification", "~> 4.5"
+gem 'rails_12factor', group: [:staging, :production]
+
+gem "turnout", "~> 2.5"

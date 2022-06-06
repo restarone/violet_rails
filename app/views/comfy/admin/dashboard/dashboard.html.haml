@@ -1,9 +1,12 @@
 = javascript_include_tag "//www.google.com/jsapi"
-.page-header  
-  .h2
-    Visitor Analytics
+.page-header
+  .d-flex.my-2.justify-content-between.align-items-center
+    .h2.mb-0
+      Visitor Analytics
+    = link_to 'See All Events', dashboard_events_list_path, role: 'button', class: 'btn btn-primary'
+
 %main{class: 'my-5'}
-  %h3 
+  %h3
     Visits
 
   = render partial: 'search_filters'
@@ -31,7 +34,7 @@
           %p By referring domain
           = pie_chart @visits.where.not(referring_domain: nil).group(:referring_domain).count, width: "300px", height: "300px", label: "visits"
 
-  = render partial: 'pagination'
+  = render partial: 'comfy/admin/dashboard/pagination', locals: { data: @visits }
   .table-responsive
     %table.table.table-bordered
       %thead
@@ -49,7 +52,7 @@
           %th= sort_link @visits_q, :user_agent
         - @visits.each do |v|
           %tr
-            %th= v.started_at.strftime('%I:%M %P - %b %d, %Y')
+            %th= link_to v.started_at.strftime('%I:%M %P - %b %d, %Y'), dashboard_visits_path(ahoy_visit_id: v.id)
             %th= v.ip
             %th= v.os
             %th= v.browser
@@ -59,5 +62,5 @@
             %th= v.city
             %th= redact_private_urls(v.referring_domain)
             %th= redact_private_urls(v.landing_page)
-            %th= v.user_agent  
-    = render partial: 'pagination'
+            %th= v.user_agent
+    = render partial: 'comfy/admin/dashboard/pagination', locals: { data: @visits }
