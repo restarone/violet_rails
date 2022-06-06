@@ -74,3 +74,21 @@ plugin_subdomain_events:
                   }
                 }
               }
+
+namespace_with_all_types:
+  name: namespace_with_all_types
+  slug: namespace_with_all_types
+  version: 1
+  properties: {
+                "array": ["yes","no"],
+                "object": {
+                  "a": "b",
+                  "c": "d"
+                },
+                "string": "string",
+                "number": 123,
+                "boolean": true,
+                "null": null
+              }
+  requires_authentication: false
+  namespace_type: create-read-update-delete

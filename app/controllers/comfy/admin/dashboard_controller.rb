@@ -1,7 +1,7 @@
 class Comfy::Admin::DashboardController < Comfy::Admin::Cms::BaseController
   include AhoyEventsHelper
 
-  before_action :ensure_authority_to_manage_web
+  before_action :ensure_authority_to_manage_analytics
   before_action :set_visit, only: [:visit]
 
   def dashboard
