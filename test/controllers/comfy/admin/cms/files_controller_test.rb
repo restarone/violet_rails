@@ -9,7 +9,7 @@ class Comfy::Admin::Cms::FilesControllerTest < ActionDispatch::IntegrationTest
 
     Apartment::Tenant.switch @restarone_subdomain.name do
       @restarone_user = User.find_by(email: 'contact@restarone.com')
-      @restarone_user.update(can_access_admin: true, can_manage_web: true)
+      @restarone_user.update(can_access_admin: true, can_manage_files: true)
 
       @site = Comfy::Cms::Site.first
       @file = @site.files.create(
