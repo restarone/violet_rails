@@ -20,6 +20,16 @@ two:
   requires_authentication: false
   namespace_type: create-read-update-delete
 
+three:
+  name: testApi
+  slug: testApi
+  version: 1
+  properties: {
+                "name": "testApi"
+              }
+  requires_authentication: false
+  namespace_type: create-read-update-delete
+
 users:
   name: internal_users
   slug: internal_users

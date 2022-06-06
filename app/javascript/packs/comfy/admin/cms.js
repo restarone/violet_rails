@@ -20,7 +20,7 @@ function initializeSortable(containerId) {
 
 function resetIndex(containerId) {
     $("#" + containerId)
-      .children()
+      .children('.form-container')
       .each(function (index) {
         $(this)
           .find(".position_field").val(index)

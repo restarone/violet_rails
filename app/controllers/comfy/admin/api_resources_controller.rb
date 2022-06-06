@@ -10,7 +10,7 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
 
   # GET /api_resources/1 or /api_resources/1.json
   def show
-    handle_redirection if @redirect_action.present?
+    execute_api_actions
   end
 
   # GET /api_resources/new
@@ -28,6 +28,12 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
 
     respond_to do |format|
       if @api_resource.save
+        load_api_actions_from_api_resource
+        execute_api_actions
+
+        # Preventing double render error
+        return if @redirect_action.present?
+
         format.html { redirect_to api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id,id: @api_resource.id), notice: "Api resource was successfully created." }
         format.json { render :show, status: :created, location: @api_resource }
       else
@@ -42,7 +48,12 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
   def update
     respond_to do |format|
       if @api_resource.update(api_resource_params)
-        format.html {  handle_redirection }
+        execute_api_actions
+
+        # Preventing double render error
+        return if @redirect_action.present?
+
+        format.html { redirect_to edit_api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id,id: @api_resource.id), notice: "Api resource was successfully updates." }
         format.json { render :show, status: :ok, location: @api_resource }
       else
         execute_error_actions
@@ -55,6 +66,7 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
   # DELETE /api_resources/1 or /api_resources/1.json
   def destroy
     @api_resource.destroy
+
     respond_to do |format|
       format.html { redirect_to api_namespace_resources_url(api_namespace_id: @api_namespace.id), notice: "Api resource was successfully destroyed." }
       format.json { head :no_content }
