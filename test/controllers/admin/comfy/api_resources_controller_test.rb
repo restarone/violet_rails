@@ -8,6 +8,24 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
     @api_resource = api_resources(:one)
   end
 
+  test "should not get index if not logged in" do
+    get api_namespace_resources_url(api_namespace_id: @api_namespace.id)
+    assert_redirected_to new_user_session_url
+  end
+
+  test "should not get index if signed in but not allowed to manage api" do
+    sign_in(@user)
+    @user.update(can_manage_api: false)
+    get api_namespace_resources_url(api_namespace_id: @api_namespace.id)
+    assert_response :redirect
+  end
+
+  test "should get index" do
+    sign_in(@user)
+    get api_namespace_resources_url(api_namespace_id: @api_namespace.id)
+    assert_response :success
+  end
+
   test "should get new" do
     sign_in(@user)
     get new_api_namespace_resource_url(api_namespace_id: @api_namespace.id)
