@@ -78,14 +78,14 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should deny #destroy_specific_events if not permissioned" do
+  test "should deny #destroy_event if not permissioned" do
     @subdomain.update!(tracking_enabled: true)
     event = Ahoy::Visit.first.events.create(name: 'test', user_id: @user.id, time: Time.zone.now)
 
     @user.update(can_manage_analytics: false)
     sign_in(@user)
 
-    delete dashboard_destroy_specific_events_url(ahoy_event_type: event.name)
+    delete dashboard_destroy_event_url(ahoy_event_type: event.name)
 
     assert_response :redirect
 
@@ -93,14 +93,14 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_equal expected_message, request.flash[:alert]
   end
 
-  test "should sucessfully #destroy_specific_events if signed in and permissioned" do
+  test "should sucessfully #destroy_event if signed in and permissioned" do
     @subdomain.update!(tracking_enabled: true)
     event = Ahoy::Visit.first.events.create(name: 'test', user_id: @user.id, time: Time.zone.now)
 
     @user.update(can_manage_analytics: true)
     sign_in(@user)
 
-    delete dashboard_destroy_specific_events_url(ahoy_event_type: event.name)
+    delete dashboard_destroy_event_url(ahoy_event_type: event.name)
 
     assert_response :redirect
 
@@ -108,14 +108,14 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_equal expected_message, request.flash[:notice]
   end
 
-  test "#destroy_specific_events should give error if system-event is provided" do
+  test "#destroy_event should give error if system-event is provided" do
     @subdomain.update!(tracking_enabled: true)
     event = Ahoy::Visit.first.events.create(name: Ahoy::Event::SYSTEM_EVENTS.keys.first, user_id: @user.id, time: Time.zone.now)
 
     @user.update(can_manage_analytics: true)
     sign_in(@user)
 
-    delete dashboard_destroy_specific_events_url(ahoy_event_type: event.name)
+    delete dashboard_destroy_event_url(ahoy_event_type: event.name)
 
     assert_response :redirect
 
@@ -123,7 +123,7 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_match expected_message, request.flash[:alert]
   end
 
-  test "#destroy_specific_events should delete only the specified event-type and its associated visits" do
+  test "#destroy_event should delete only the specified event-type and its associated visits" do
     @subdomain.update!(tracking_enabled: true)
     visit = Ahoy::Visit.first
     event = visit.events.create(name: 'test', user_id: @user.id, time: Time.zone.now)
@@ -143,7 +143,7 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     @user.update(can_manage_analytics: true)
     sign_in(@user)
 
-    delete dashboard_destroy_specific_events_url(ahoy_event_type: event.name)
+    delete dashboard_destroy_event_url(ahoy_event_type: event.name)
 
     assert_response :redirect
 
@@ -159,14 +159,14 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, Ahoy::Visit.where(id: [visit_3.id]).size
   end
 
-  test "should deny #dashboard_destroy_associated_visits_of_specific_events if not permissioned" do
+  test "should deny #dashboard_destroy_visits if not permissioned" do
     @subdomain.update!(tracking_enabled: true)
     event = Ahoy::Visit.first.events.create(name: 'test', user_id: @user.id, time: Time.zone.now)
 
     @user.update(can_manage_analytics: false)
     sign_in(@user)
 
-    delete dashboard_destroy_associated_visits_of_specific_events_url(ahoy_event_type: event.name)
+    delete dashboard_destroy_visits_url(ahoy_event_type: event.name)
 
     assert_response :redirect
 
@@ -174,14 +174,14 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_equal expected_message, request.flash[:alert]
   end
 
-  test "should sucessfully #dashboard_destroy_associated_visits_of_specific_events if signed in and permissioned" do
+  test "should sucessfully #dashboard_destroy_visits if signed in and permissioned" do
     @subdomain.update!(tracking_enabled: true)
     event = Ahoy::Visit.first.events.create(name: 'test', user_id: @user.id, time: Time.zone.now)
 
     @user.update(can_manage_analytics: true)
     sign_in(@user)
 
-    delete dashboard_destroy_associated_visits_of_specific_events_url(ahoy_event_type: event.name)
+    delete dashboard_destroy_visits_url(ahoy_event_type: event.name)
 
     assert_response :redirect
 
@@ -190,14 +190,14 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
   end
 
 
-  test "#dashboard_destroy_associated_visits_of_specific_events should give error if system-event is provided" do
+  test "#dashboard_destroy_visits should give error if system-event is provided" do
     @subdomain.update!(tracking_enabled: true)
     event = Ahoy::Visit.first.events.create(name: Ahoy::Event::SYSTEM_EVENTS.keys.first, user_id: @user.id, time: Time.zone.now)
 
     @user.update(can_manage_analytics: true)
     sign_in(@user)
 
-    delete dashboard_destroy_associated_visits_of_specific_events_url(ahoy_event_type: event.name)
+    delete dashboard_destroy_visits_url(ahoy_event_type: event.name)
 
     assert_response :redirect
 
@@ -205,7 +205,7 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_match expected_message, request.flash[:alert]
   end
 
-  test "#dashboard_destroy_associated_visits_of_specific_events should delete only the specified event-type and its associated visits" do
+  test "#dashboard_destroy_visits should delete only the specified event-type and its associated visits" do
     @subdomain.update!(tracking_enabled: true)
     visit = Ahoy::Visit.first
     event = visit.events.create(name: 'test', user_id: @user.id, time: Time.zone.now)
@@ -225,7 +225,7 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     @user.update(can_manage_analytics: true)
     sign_in(@user)
 
-    delete dashboard_destroy_associated_visits_of_specific_events_url(ahoy_event_type: event.name)
+    delete dashboard_destroy_visits_url(ahoy_event_type: event.name)
 
     assert_response :redirect
 

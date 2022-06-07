@@ -28,7 +28,7 @@ class Comfy::Admin::DashboardController < Comfy::Admin::Cms::BaseController
     @events_list = @events_list_q.result.paginate(page: params[:page], per_page: 10)
   end
 
-  def destroy_specific_events
+  def destroy_event
     response = Ahoy::Event.delete_specific_events_and_associated_visits(delete_events: true, event_type: params[:ahoy_event_type])
 
     if response[:success]
@@ -38,7 +38,7 @@ class Comfy::Admin::DashboardController < Comfy::Admin::Cms::BaseController
     end
   end
 
-  def destroy_associated_visits_of_specific_events
+  def destroy_visits
     response = Ahoy::Event.delete_specific_events_and_associated_visits(delete_events: false, event_type: params[:ahoy_event_type])
 
     if response[:success]

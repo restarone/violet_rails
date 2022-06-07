@@ -13,8 +13,8 @@ Rails.application.routes.draw do
   get 'dashboard/sessions/:ahoy_visit_id', to: 'comfy/admin/dashboard#visit', as: :dashboard_visits
   get 'dashboard/events/:ahoy_event_type', to: 'comfy/admin/dashboard#events_detail', as: :dashboard_events
   get 'dashboard/events_list', to: 'comfy/admin/dashboard#events_list', as: :dashboard_events_list
-  delete 'dashboard/events/:ahoy_event_type/destroy_specific_events', to: 'comfy/admin/dashboard#destroy_specific_events', as: :dashboard_destroy_specific_events
-  delete 'dashboard/events/:ahoy_event_type/destroy_associated_visits_of_specific_events', to: 'comfy/admin/dashboard#destroy_associated_visits_of_specific_events', as: :dashboard_destroy_associated_visits_of_specific_events
+  delete 'dashboard/events/:ahoy_event_type/destroy_event', to: 'comfy/admin/dashboard#destroy_event', as: :dashboard_destroy_event
+  delete 'dashboard/events/:ahoy_event_type/destroy_visits', to: 'comfy/admin/dashboard#destroy_visits', as: :dashboard_destroy_visits
 
   resources :signup_wizard
   resources :signin_wizard

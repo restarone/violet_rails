@@ -5,7 +5,7 @@
       Event Type:
       %strong #{params[:ahoy_event_type]}
     - unless Ahoy::Event::SYSTEM_EVENTS.keys.include?(params[:ahoy_event_type])
-      = link_to 'Delete', dashboard_destroy_specific_events_path(ahoy_event_type: params[:ahoy_event_type]), method: :delete, data: { confirm: 'This will delete all such events and its associated visits data. Are you sure you?' }, class: 'btn btn-sm btn-danger'
+      = link_to 'Delete', dashboard_destroy_event_path(ahoy_event_type: params[:ahoy_event_type]), method: :delete, data: { confirm: 'This will delete all such events and its associated visits data. Are you sure you?' }, class: 'btn btn-sm btn-danger'
 
 %main{class: 'm-5'}
   = render partial: 'events_search_filters'
@@ -52,7 +52,7 @@
           = pie_chart @events.where.not('ahoy_visits.referring_domain': nil).group('ahoy_visits.referring_domain').count, width: "300px", height: "300px", label: "events"
 
   - unless Ahoy::Event::SYSTEM_EVENTS.keys.include?(params[:ahoy_event_type])
-    = link_to 'Delete all associated visits', dashboard_destroy_associated_visits_of_specific_events_path(ahoy_event_type: params[:ahoy_event_type]), method: :delete, data: { confirm: 'This will delete all associated visits. Are you sure?' }, class: 'btn btn-sm btn-danger my-2'
+    = link_to 'Delete all associated visits', dashboard_destroy_visits_path(ahoy_event_type: params[:ahoy_event_type]), method: :delete, data: { confirm: 'This will delete all associated visits. Are you sure?' }, class: 'btn btn-sm btn-danger my-2'
   = render partial: 'comfy/admin/dashboard/pagination', locals: { data: @event_visits }
   .table-responsive
     %table.table.table-bordered
