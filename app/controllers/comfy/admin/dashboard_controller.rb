@@ -53,6 +53,4 @@ class Comfy::Admin::DashboardController < Comfy::Admin::Cms::BaseController
   def set_visit
     @visit = Ahoy::Visit.find_by(id: params[:ahoy_visit_id])
   end
-
-  
 end
