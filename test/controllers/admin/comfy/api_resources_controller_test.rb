@@ -76,6 +76,6 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
     assert_difference('ApiResource.count', -1) do
       delete api_namespace_resource_url(@api_resource, api_namespace_id: @api_resource.api_namespace_id)
     end
-    assert_redirected_to api_namespace_resources_url(api_namespace_id: @api_namespace.id)
+    assert_redirected_to api_namespace_url(id: @api_namespace.id)
   end
 end
