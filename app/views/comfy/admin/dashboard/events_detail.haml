@@ -3,6 +3,7 @@
   .h3
     Event Type:
     %strong #{params[:ahoy_event_type]}
+    = link_to 'Delete', destroy_event_path, method: :delete, data: { confirm: 'Are you sure you?' }, class: 'btn btn-sm btn-danger'
 
 %main{class: 'm-5'}
   = render partial: 'events_search_filters'
@@ -48,6 +49,7 @@
           %p By referring domain
           = pie_chart @events.where.not('ahoy_visits.referring_domain': nil).group('ahoy_visits.referring_domain').count, width: "300px", height: "300px", label: "events"
 
+  -# = link_to 'Delete', destroy_visits_path, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-sm btn-danger'
   = render partial: 'comfy/admin/dashboard/pagination', locals: { data: @event_visits }
   .table-responsive
     %table.table.table-bordered
