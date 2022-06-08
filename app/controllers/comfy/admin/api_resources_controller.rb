@@ -3,11 +3,6 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
   before_action :set_api_resource
 
   include ApiActionable
-  # GET /api_resources or /api_resources.json
-  def index
-    @api_resources = ApiResource.all
-  end
-
   # GET /api_resources/1 or /api_resources/1.json
   def show
     handle_redirection if @redirect_action.present?
