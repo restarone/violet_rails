@@ -25,7 +25,7 @@ class SafeExecutableValidator < ActiveModel::EachValidator
     SPLIT_DELIMITERS = ['(', ')', /\s/, '.', /\n/, ':']
 
     def validate_each(record,attribute,value)
-        keywords = value.split(Regexp.union(SPLIT_DELIMITERS)).reject(&:blank?)
+        keywords = value.to_s.split(Regexp.union(SPLIT_DELIMITERS)).reject(&:blank?)
         blacklisted_keywords_in_attribute = keywords & BLACKLISTED_KEYWORDS
         unless blacklisted_keywords_in_attribute.empty?
             record.errors.add(attribute, "contains blacklisted keyword: #{blacklisted_keywords_in_attribute.to_s}. Please refactor #{attribute} accordingly")
