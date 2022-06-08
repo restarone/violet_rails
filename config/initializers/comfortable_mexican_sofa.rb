@@ -75,8 +75,7 @@ module RSolutions::ComfyAdminAuthorization
     ]
     restricted_controllers = ['snippets', 'web_settings']
     
-    # TODO: the logic should be AND?
-    if (restricted_controllers.include?(controller_name)) || restricted_actions.include?(action_name.to_sym)
+    if (restricted_controllers.include?(controller_name)) && restricted_actions.include?(action_name.to_sym)
       ensure_webmaster
     end
   end
