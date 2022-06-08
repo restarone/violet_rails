@@ -5,7 +5,7 @@ class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseContro
   
     # GET /api_clients or /api_clients.json
     def index
-      @external_api_clients = ExternalApiClient.all
+      @external_api_clients = @api_namespace.external_api_clients
     end
   
     # GET /api_clients/1 or /api_clients/1.json

@@ -101,7 +101,7 @@ class Comfy::Admin::Cms::FilesController < Comfy::Admin::Cms::BaseController
     if @file.update(file_params)
 
       ahoy.track(
-        "comfy-file-update",
+        "comfy-cms-file-update",
         {visit_id: current_visit.id, file_id: @file.id, user_id: current_user.id}
       ) if Subdomain.current.tracking_enabled && current_visit
 

@@ -37,6 +37,7 @@ jobs:
         sudo sysctl -w vm.max_map_count=262144
     - name: Install App dependencies
       run: |
+        sudo apt-get update
         sudo apt-get -yqq install libxml2-dev libxslt-dev nodejs yarn tzdata less imagemagick libpq-dev postgresql-client jq bc
     - uses: actions/checkout@v2
     - name: Set Environment Variables
