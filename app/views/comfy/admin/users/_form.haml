@@ -22,11 +22,15 @@
               .form-group
                 = f.check_box :can_manage_web
                 %label 
-                  Can manage website (Layouts, Pages, Files, Snippets)
+                  Can manage website (Layouts, Pages, Snippets)
               .form-group
                 = f.check_box :can_manage_analytics
                 %label
                   Can manage analytics
+              .form-group
+                = f.check_box :can_manage_files
+                %label
+                  Can manage files
               .form-group
                 = f.check_box :can_manage_email
                 %label 

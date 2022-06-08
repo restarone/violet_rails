@@ -22,6 +22,28 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
   end
 
+  test "should only show api_clients of specified api_namespace" do
+    # Creating new api_clients of @api_namespace
+    @api_client.dup.save!
+    @api_client.dup.save!
+
+    # Creating another api_namespace and its api_clients
+    new_api_namespace = api_namespaces(:two)
+    new_api_client = api_clients(:two)
+    new_api_client.dup.save!
+    new_api_client.dup.save!
+
+    sign_in(@user)
+    get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
+    assert_response :success
+
+    @controller.view_assigns['api_clients'].each do |api_client|
+      assert_equal api_client.api_namespace_id, @api_namespace.id
+    end
+
+    assert_not_includes @controller.view_assigns['api_clients'].pluck(:api_namespace_id), new_api_namespace.id
+  end
+
   test "should get index" do
     sign_in(@user)
     get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
