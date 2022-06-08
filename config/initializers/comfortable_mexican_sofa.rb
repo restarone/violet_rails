@@ -73,7 +73,7 @@ module RSolutions::ComfyAdminAuthorization
       :update,
       :destroy,
     ]
-    restricted_controllers = ['snippets', 'web_settings']
+    restricted_controllers = ['pages', 'layouts', 'snippets']
     
     if (restricted_controllers.include?(controller_name)) && restricted_actions.include?(action_name.to_sym)
       ensure_webmaster
