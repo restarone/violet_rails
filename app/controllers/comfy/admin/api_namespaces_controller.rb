@@ -130,7 +130,7 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
 
     # Only allow a list of trusted parameters through.
     def api_namespace_params
-      api_actions_attributes =  [:id, :trigger, :action_type, :properties, :include_api_resource_data, :email,:custom_message, :payload_mapping, :request_url, :redirect_url, :bearer_token, :file_snippet, :position, :custom_headers, :http_method, :_destroy]
+      api_actions_attributes =  [:id, :trigger, :action_type, :properties, :include_api_resource_data, :email, :email_subject, :custom_message, :payload_mapping, :request_url, :redirect_url, :bearer_token, :file_snippet, :position, :custom_headers, :http_method, :_destroy]
       params.require(:api_namespace).permit(:name,
                                             :version,
                                             :properties,
@@ -155,6 +155,7 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
     end
 
     def handle_error_redirect
+      flash[:error] = @api_namespace.errors.full_messages
       redirect_to action_workflow_api_namespace_api_actions_path(api_namespace_id: @api_namespace.id) and return  if params[:source] == 'action_workflow'
 
       render :edit, status: :unprocessable_entity
