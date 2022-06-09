@@ -125,7 +125,7 @@ modmed:
       end
 
       def get_patient_documents(patient_id)
-        # search documents in postman looks the same as this call but with an additional query parameter (_count)
+        # search documents in postman looks the same as this #call but with an additional query parameter (_count)
         endpoint = "#{@base_url}/#{@clinic_id}/ema/fhir/v2/DocumentReference?patient=#{patient_id}"
         response = HTTParty.get(endpoint, headers: @headers).body
         return JSON.parse(response).deep_symbolize_keys
