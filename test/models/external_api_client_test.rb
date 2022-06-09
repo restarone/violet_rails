@@ -87,4 +87,32 @@ class ExternalApiClientTest < ActiveSupport::TestCase
     discovered_jobs = ExternalApiClient.cron_jobs
     assert discovered_jobs.size == 0
   end
+
+  test 'should be invalid if blacklisted keywords are present' do
+    api_namespace = api_namespaces(:one)
+    invalid_model_definations = [
+      'Subdomain.destroy_all',
+      'exit()',
+      'subdomain.constantize.last.update(id: 1)',
+      'eval("1 + 1")',
+      'User.last.update(can_manage_users: true)',
+      'User.send(:new)'
+    ]
+
+    invalid_model_definations.each do |invalid_executable|
+      external_api_client = ExternalApiClient.new(api_namespace_id: api_namespace.id, model_definition: invalid_executable)
+      refute external_api_client.valid?
+      assert_includes external_api_client.errors.messages[:model_definition].to_s, 'contains blacklisted keyword'
+    end
+  end
+
+  test 'should be invalid if users private attributes are accessed' do
+    api_namespace = api_namespaces(:one)
+
+    User::PRIVATE_ATTRIBUTES.each do |private_attr|
+      external_api_client = ExternalApiClient.new(api_namespace_id: api_namespace.id, model_definition: "User.last.#{private_attr}")
+      refute external_api_client.valid?
+      assert_includes external_api_client.errors.messages[:model_definition].to_s, 'contains blacklisted keyword'
+    end
+  end
 end
