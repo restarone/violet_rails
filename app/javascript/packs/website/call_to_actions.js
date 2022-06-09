@@ -3,3 +3,10 @@ export default function ctaSuccessHandler() {
     $(this).find(':input[type="submit"]').prop('disabled', false);
 });
 }
+
+export function ctaSuccessHandlerRecaptchaV3(elemId, token) {
+  ctaSuccessHandler();
+
+  const element = document.getElementById(elemId);
+  element.value = token;
+}
