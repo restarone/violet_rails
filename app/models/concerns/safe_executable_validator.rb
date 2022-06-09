@@ -13,12 +13,12 @@ class SafeExecutableValidator < ActiveModel::EachValidator
         'update_all',
         'destroy_all',
         'switch',
-        'can_manage_users',
         'global_admin',
         'Subdomain',
         'Tenant',
         'Apartment',
-    ] + User::PRIVATE_ATTRIBUTES.map(&:to_s)
+    ] + User::PRIVATE_ATTRIBUTES.map(&:to_s) + User::FULL_PERMISSIONS.keys.map(&:to_s)
+    
 
     # BLACKLISTED_KEYWORDS are usually attached to one of these delimiters
     # eg: exit(), .constantize, Subdomain.destroy_all, can_manage_users:

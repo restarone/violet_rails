@@ -22,8 +22,6 @@ class ApiAction < ApplicationRecord
   has_rich_text :custom_message
 
   validates :http_method, inclusion: { in: ApiAction::HTTP_METHODS}, allow_blank: true
-  
-  validates :payload_mapping, safe_executable: true
 
   def self.children
     ['new_api_actions', 'create_api_actions', 'show_api_actions', 'update_api_actions', 'destroy_api_actions', 'error_api_actions']
@@ -49,7 +47,7 @@ class ApiAction < ApplicationRecord
   def send_web_request
     begin
       response = HTTParty.send(http_method.to_s, request_url, 
-                    { body: evaluate_payload, headers: request_headers })
+                    { body: payload_mapping_evaluated, headers: request_headers })
       if response.success?
         self.update(lifecycle_stage: 'complete', lifecycle_message: response.to_s)
       else
@@ -65,11 +63,6 @@ class ApiAction < ApplicationRecord
   def redirect;end
 
   def serve_file;end
-
-  def evaluate_payload
-    payload = payload_mapping.to_json.gsub('self.', 'self.api_resource.properties_object.')
-    eval(payload).to_json
-  end
 
   def request_headers
     headers = custom_headers.to_json.gsub('SECRET_BEARER_TOKEN', bearer_token)

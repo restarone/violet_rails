@@ -1,12 +1,13 @@
+# evaluate dynamic columns
 # adding attribute defined by attr_dynamic parameters
-# method attributed will be created as decrypted from column "encrypted_" attribute name
-# example attr_dynamic :password will save encrypted password on column encrypted_password
-# also create salt if not exist
+# method attributed will be created as <coulmn_name>_evaluated
+# example attr_dynamic :custom_message will add a method custom_message_evaluated
+# column content example: Hi my name is #{api_resource.properties["first_name"]}
+
 module DynamicAttribute
     extend ActiveSupport::Concern
 
     included do
-      # custom_message format: api_resource.properties["first_name"]
       def parse_dynamic_attribute(value)
         return unless value.present?
 
@@ -14,7 +15,6 @@ module DynamicAttribute
         # couldn't gsub directly because of escape characters added by ruby
         # eval failed on "\#{api_resource.properties[\"String\"]}"
         value.scan(/\#\{(.*?)\}/).each do |code|
-          # TODO: sanitize code before eval  
           parsed_text = parsed_text.sub!("\#{#{code[0]}}", eval(code[0]).to_s)
         end
         parsed_text.html_safe
@@ -29,6 +29,9 @@ module DynamicAttribute
     class_methods do
       def attr_dynamic(*attributes) # rubocop:disable Metrics/AbcSize
         attributes.each do |attribute|
+          # all dynamic attributes should be safe
+          validates attribute.to_sym, safe_executable: true
+
           define_method("#{attribute}_evaluated") do
             parse_dynamic_attribute(attribute_value_string(attribute))
           end
