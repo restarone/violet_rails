@@ -116,4 +116,14 @@ class ExternalApiClientTest < ActiveSupport::TestCase
       assert_includes external_api_client.errors.messages[:model_definition].to_s, 'contains blacklisted keyword'
     end
   end
+
+  test 'should be invalid if users permissions are referenced' do
+    api_namespace = api_namespaces(:one)
+
+    User::FULL_PERMISSIONS.keys.each do |permission_attr|
+      external_api_client = ExternalApiClient.new(api_namespace_id: api_namespace.id, model_definition: "User.last.update(#{permission_attr} => false)")
+      refute external_api_client.valid?
+      assert_includes external_api_client.errors.messages[:model_definition].to_s, 'contains blacklisted keyword'
+    end
+  end
 end
