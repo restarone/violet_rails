@@ -24,7 +24,20 @@
   - if @api_form.show_recaptcha
     = recaptcha_tags callback: 'ctaSuccessHandler'
   - elsif @api_form.show_recaptcha_v3
-    = recaptcha_v3(callback: 'ctaSuccessHandlerRecaptchaV3', action: @api_namespace.name, site_key: ENV['RECAPTCHA_SITE_KEY_V3'])
+    -# Hiding the recaptch v3 badge.
+    -# reference: https://developers.google.com/recaptcha/docs/faq#id-like-to-hide-the-recaptcha-badge.-what-is-allowed
+    :css
+      .grecaptcha-badge {
+        visibility: hidden;
+      }
+    %div{ style: "font-size: small;"}
+      *This site is protected by reCAPTCHA and the Google
+      = link_to 'Privacy Policy', 'https://policies.google.com/privacy', target: '_blank'
+      and
+      = link_to 'Terms of Service', 'https://policies.google.com/terms', target: '_blank'
+      apply.
+
+    = recaptcha_v3(callback: 'ctaSuccessHandlerRecaptchaV3', action: sanitize_recaptcha_action_name(@api_namespace.name), site_key: ENV['RECAPTCHA_SITE_KEY_V3'])
   = f.submit @api_form.submit_button_label, disabled: @api_form.show_recaptcha || @api_form.show_recaptcha_v3, class: 'my-2 btn btn-primary'
 
 :javascript

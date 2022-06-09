@@ -15,6 +15,7 @@ class ApiForm < ApplicationRecord
     tel: 'tel'
   }
 
+  # reference: https://developers.google.com/recaptcha/docs/v3#interpreting_the_score
   RECAPTCHA_V3_MINIMUM_SCORE = 0.5
 
   def is_field_renderable?(field)
