@@ -15,6 +15,8 @@ class ApiForm < ApplicationRecord
     tel: 'tel'
   }
 
+  RECAPTCHA_V3_MINIMUM_SCORE = 0.5
+
   def is_field_renderable?(field)
     properties.dig(field.to_s, 'renderable').nil? || properties.dig(field.to_s, 'renderable') == '1'
   end

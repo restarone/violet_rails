@@ -14,7 +14,7 @@ class ResourceController < ApplicationController
         redirect_back(fallback_location: root_path)
       end
     elsif @api_namespace&.api_form&.show_recaptcha_v3
-      if verify_recaptcha(model: @api_resource, action: 'api_form_submit', minimum_score: 0.5, secret_key: '6Lc3F1cgAAAAAFQSX_Im8dCBr3--YoPPw2nGuzd4') && @api_resource.save
+      if verify_recaptcha(model: @api_resource, action: @api_namespace.name, minimum_score: ApiForm::RECAPTCHA_V3_MINIMUM_SCORE, secret_key: ENV['RECAPTCHA_SECRET_KEY_V3']) && @api_resource.save
         handle_redirection
       else
         execute_error_actions

@@ -24,7 +24,7 @@
   - if @api_form.show_recaptcha
     = recaptcha_tags callback: 'ctaSuccessHandler'
   - elsif @api_form.show_recaptcha_v3
-    = recaptcha_v3(callback: 'ctaSuccessHandlerRecaptchaV3', action: 'api_form_submit', site_key: '6Lc3F1cgAAAAAItAeurQujKr2fetVqcIHrOZ_f2-')
+    = recaptcha_v3(callback: 'ctaSuccessHandlerRecaptchaV3', action: @api_namespace.name, site_key: ENV['RECAPTCHA_SITE_KEY_V3'])
   = f.submit @api_form.submit_button_label, disabled: @api_form.show_recaptcha || @api_form.show_recaptcha_v3, class: 'my-2 btn btn-primary'
 
 :javascript
