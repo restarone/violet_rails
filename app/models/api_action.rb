@@ -46,7 +46,7 @@ class ApiAction < ApplicationRecord
 
   def send_web_request
     begin
-      response = HTTParty.send(http_method.to_s, request_url, 
+      response = HTTParty.send(http_method.to_s, request_url_evaluated, 
                     { body: payload_mapping_evaluated, headers: request_headers })
       if response.success?
         self.update(lifecycle_stage: 'complete', lifecycle_message: response.to_s)
