@@ -21,4 +21,26 @@ class Ahoy::Event < ApplicationRecord
   ransacker :distinct_name do
     Arel.sql('distinct_name')
   end
+
+  def self.delete_specific_events_and_associated_visits(delete_events: false, event_type:)
+    begin
+      ActiveRecord::Base.transaction do
+        raise 'System defined events and their visits cannot be deleted.' if Ahoy::Event::SYSTEM_EVENTS.keys.include?(event_type)
+
+        events = Ahoy::Event.where(name: event_type)
+        associated_visits = Ahoy::Visit.joins(:events).where(ahoy_events: { id: events }).distinct
+
+        associated_visits.destroy_all
+        events.destroy_all if delete_events
+
+        message = delete_events ? "All #{event_type} events and its associated visits has been deleted successfully." : "All associated visits of #{event_type} events has been deleted successfully."
+
+        { success: true, message: message }
+      end
+    rescue => e
+      error_message = delete_events ? "Deleting specific events failed due to: #{e.message}" : "Deleting associated visits of specific events failed due to: #{e.message}"
+
+      { success: false, message: e.message }
+    end
+  end
 end

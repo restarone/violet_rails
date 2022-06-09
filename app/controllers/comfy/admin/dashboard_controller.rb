@@ -28,6 +28,26 @@ class Comfy::Admin::DashboardController < Comfy::Admin::Cms::BaseController
     @events_list = @events_list_q.result.paginate(page: params[:page], per_page: 10)
   end
 
+  def destroy_event
+    response = Ahoy::Event.delete_specific_events_and_associated_visits(delete_events: true, event_type: params[:ahoy_event_type])
+
+    if response[:success]
+      redirect_to dashboard_events_list_path, notice: response[:message]
+    else
+      redirect_to dashboard_events_list_path, alert: "Deleting specific events failed due to: #{response[:message]}"
+    end
+  end
+
+  def destroy_visits
+    response = Ahoy::Event.delete_specific_events_and_associated_visits(delete_events: false, event_type: params[:ahoy_event_type])
+
+    if response[:success]
+      redirect_to dashboard_events_list_path, notice: response[:message]
+    else
+      redirect_to dashboard_events_list_path, alert: "Deleting associated visits of specific events failed due to: #{response[:message]}"
+    end
+  end
+
   private
 
   def set_visit
