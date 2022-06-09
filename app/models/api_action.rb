@@ -1,7 +1,10 @@
 class ApiAction < ApplicationRecord
   include Encryptable
   include JsonbFieldsParsable
+  include DynamicAttribute
+
   attr_encrypted :bearer_token
+  attr_dynamic :email_subject, :custom_message, :payload_mapping
 
   belongs_to :api_namespace, optional: true
   belongs_to :api_resource, optional: true
