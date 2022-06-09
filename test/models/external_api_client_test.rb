@@ -96,7 +96,8 @@ class ExternalApiClientTest < ActiveSupport::TestCase
       'subdomain.constantize.last.update(id: 1)',
       'eval("1 + 1")',
       'User.last.update(can_manage_users: true)',
-      'User.send(:new)'
+      'User.send(:new)',
+      '#{User.destroy_all}'
     ]
 
     invalid_model_definations.each do |invalid_executable|
