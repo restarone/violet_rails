@@ -11,6 +11,8 @@ module DynamicAttribute
       def parse_dynamic_attribute(value)
         return unless value.present?
 
+        raise ActiveRecord::RecordInvalid.new(self) unless self.valid?
+
         parsed_text = value
         # couldn't gsub directly because of escape characters added by ruby
         # eval failed on "\#{api_resource.properties[\"String\"]}"
