@@ -120,10 +120,8 @@ class User < ApplicationRecord
 
 
   def ensure_final_user
-    if Rails.env != 'test'
-      if self.is_last_admin?
-        throw :abort
-      end 
-    end
+    if self.is_last_admin?
+      throw :abort
+    end 
   end
 end
