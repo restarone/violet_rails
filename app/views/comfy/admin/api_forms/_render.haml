@@ -44,7 +44,7 @@
 
       = recaptcha_v3(callback: 'ctaSuccessHandlerRecaptchaV3', action: sanitize_recaptcha_action_name(@api_namespace.name), site_key: ENV['RECAPTCHA_SITE_KEY_V3'])
       
-    = f.submit @api_form.submit_button_label, disabled: @api_form.show_recaptcha || @api_form.show_recaptch_v3, class: 'my-2 btn btn-primary'
+    = f.submit @api_form.submit_button_label, disabled: @api_form.show_recaptcha || @api_form.show_recaptcha_v3, class: 'my-2 btn btn-primary'
 
 - else 
   %h3.text-danger{ style: "font-size: small;" }
