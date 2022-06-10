@@ -4,7 +4,10 @@
 - form_properties = @api_form.properties.symbolize_keys
 
 -# There must be recaptcha keys set if recaptcha v2/v3 is used in the api_form.
-- if (@api_form.show_recaptcha.blank? && @api_form.show_recaptcha_v3.blank?) || (Recaptcha.configuration.site_key.present? || ENV['RECAPTCHA_SITE_KEY_V3'].present?)
+- recaptcha_keys_set = @api_form.show_recaptcha && Recaptcha.configuration.site_key.present? && Recaptcha.configuration.secret_key.present?
+- recaptcha_keys_set = @api_form.show_recaptcha_v3 && ENV['RECAPTCHA_SITE_KEY_V3'].present? && ENV['RECAPTCHA_SECRET_KEY_V3'].present? unless recaptcha_keys_set
+
+- if (@api_form.show_recaptcha.blank? && @api_form.show_recaptcha_v3.blank?) || recaptcha_keys_set
   = form_for :data, url: api_namespace_resource_index_path(api_namespace_id: @api_namespace.id), method: :post, html: {class: 'violet-cta-form', 'data-type': 'json', multipart: true, id: 'api_form'} do |f|
     .form-group
       - properties.each do |key, value|
