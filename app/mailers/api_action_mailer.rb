@@ -8,7 +8,7 @@ class ApiActionMailer < ApplicationMailer
       @api_resource = api_action.api_resource
       mail(
         to: mail_to,
-        subject: api_action.email_subject_evaluated
+        subject: api_action.email_subject_evaluated || "#{api_action.type} #{@api_resource.api_namespace.name.pluralize} v#{@api_resource.api_namespace.version}"
       )
     end
 end
