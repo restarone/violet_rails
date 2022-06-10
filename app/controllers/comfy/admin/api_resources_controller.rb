@@ -3,11 +3,6 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
   before_action :set_api_resource
 
   include ApiActionable
-  # GET /api_resources or /api_resources.json
-  def index
-    @api_resources = ApiResource.all
-  end
-
   # GET /api_resources/1 or /api_resources/1.json
   def show
     handle_redirection if @redirect_action.present?
@@ -56,7 +51,7 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
   def destroy
     @api_resource.destroy
     respond_to do |format|
-      format.html { redirect_to api_namespace_resources_url(api_namespace_id: @api_namespace.id), notice: "Api resource was successfully destroyed." }
+      format.html { redirect_to api_namespace_path(id: @api_namespace.id), notice: "Api resource was successfully destroyed." }
       format.json { head :no_content }
     end
   end
