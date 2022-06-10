@@ -177,7 +177,7 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
   test "#destroy" do
     assert_difference "User.all.size", -1 do
       sign_in(@user)
-      delete admin_user_url(subdomain: @domain, id: @user.id)
+      delete admin_user_url(subdomain: @domain, id: users(:one).id)
       assert flash.notice
       refute flash.alert
       assert_redirected_to admin_users_url(subdomain: @domain)
