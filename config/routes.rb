@@ -13,6 +13,8 @@ Rails.application.routes.draw do
   get 'dashboard/sessions/:ahoy_visit_id', to: 'comfy/admin/dashboard#visit', as: :dashboard_visits
   get 'dashboard/events/:ahoy_event_type', to: 'comfy/admin/dashboard#events_detail', as: :dashboard_events
   get 'dashboard/events_list', to: 'comfy/admin/dashboard#events_list', as: :dashboard_events_list
+  delete 'dashboard/events/:ahoy_event_type/destroy_event', to: 'comfy/admin/dashboard#destroy_event', as: :dashboard_destroy_event
+  delete 'dashboard/events/:ahoy_event_type/destroy_visits', to: 'comfy/admin/dashboard#destroy_visits', as: :dashboard_destroy_visits
 
   resources :signup_wizard
   resources :signin_wizard
@@ -48,8 +50,14 @@ Rails.application.routes.draw do
   end
 
   # api admin
+  post 'users/sign_in', to: 'users/sessions#create'
   resources :api_namespaces, controller: 'comfy/admin/api_namespaces' do
-    resources :resources, controller: 'comfy/admin/api_resources'
+    member do
+      post 'duplicate_with_associations'
+      post 'duplicate_without_associations'
+    end
+
+    resources :resources, except: [:index], controller: 'comfy/admin/api_resources'
     resources :api_clients, controller: 'comfy/admin/api_clients'
     resources :external_api_clients, controller: 'comfy/admin/external_api_clients' do
       member do
@@ -72,6 +80,7 @@ Rails.application.routes.draw do
     member do
       post 'discard_failed_api_actions'
       post 'rerun_failed_api_actions'
+      get 'export'
     end
   end
   resources :non_primitive_properties, controller: 'comfy/admin/non_primitive_properties', only: [:new]
