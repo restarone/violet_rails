@@ -133,7 +133,13 @@ end
 
 # exception notifier
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  ignore_exceptions: ['ActionController::ParameterMissing', 'ActionController::RoutingError'],
+  ignore_exceptions: [
+    'ActionController::ParameterMissing', 
+    'ActionController::RoutingError',
+    'ActionController::InvalidAuthenticityToken',
+    'ActionDispatch::Http::MimeNegotiation::InvalidType',
+    'ActiveRecord::RecordNotFound',
+  ],
   violet_rails_error: {
     app: {
       host: ENV["APP_HOST"]

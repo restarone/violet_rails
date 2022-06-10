@@ -27,12 +27,14 @@ class Comfy::Admin::Cms::PagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'denies #new if not permissioned' do
+    @user.update(can_access_admin: false)
     sign_in(@user)
     get new_comfy_admin_cms_site_page_url(subdomain: @restarone_subdomain.name, site_id: @site.id)
     assert_response :redirect
   end
 
   test 'denies #edit if not permissioned' do
+    @user.update(can_access_admin: false)
     sign_in(@user)
     get edit_comfy_admin_cms_site_page_url(subdomain: @restarone_subdomain.name, site_id: @site.id, id: @page.id)
     assert_response :redirect
