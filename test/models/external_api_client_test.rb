@@ -103,7 +103,7 @@ class ExternalApiClientTest < ActiveSupport::TestCase
     invalid_model_definations.each do |invalid_executable|
       external_api_client = ExternalApiClient.new(api_namespace_id: api_namespace.id, model_definition: invalid_executable)
       refute external_api_client.valid?
-      assert_includes external_api_client.errors.messages[:model_definition].to_s, 'contains blacklisted keyword'
+      assert_includes external_api_client.errors.messages[:model_definition].to_s, 'contains disallowed keyword'
     end
   end
 
@@ -113,7 +113,7 @@ class ExternalApiClientTest < ActiveSupport::TestCase
     User::PRIVATE_ATTRIBUTES.each do |private_attr|
       external_api_client = ExternalApiClient.new(api_namespace_id: api_namespace.id, model_definition: "User.last.#{private_attr}")
       refute external_api_client.valid?
-      assert_includes external_api_client.errors.messages[:model_definition].to_s, 'contains blacklisted keyword'
+      assert_includes external_api_client.errors.messages[:model_definition].to_s, 'contains disallowed keyword'
     end
   end
 
@@ -123,7 +123,7 @@ class ExternalApiClientTest < ActiveSupport::TestCase
     User::FULL_PERMISSIONS.keys.each do |permission_attr|
       external_api_client = ExternalApiClient.new(api_namespace_id: api_namespace.id, model_definition: "User.last.update(#{permission_attr} => false)")
       refute external_api_client.valid?
-      assert_includes external_api_client.errors.messages[:model_definition].to_s, 'contains blacklisted keyword'
+      assert_includes external_api_client.errors.messages[:model_definition].to_s, 'contains disallowed keyword'
     end
   end
 end

@@ -1,7 +1,10 @@
 class ApiAction < ApplicationRecord
   include Encryptable
   include JsonbFieldsParsable
+  include DynamicAttribute
+
   attr_encrypted :bearer_token
+  attr_dynamic :email_subject, :custom_message, :payload_mapping, :request_url
 
   belongs_to :api_namespace, optional: true
   belongs_to :api_resource, optional: true
@@ -45,8 +48,8 @@ class ApiAction < ApplicationRecord
 
   def send_web_request
     begin
-      response = HTTParty.send(http_method.to_s, request_url, 
-                    { body: evaluate_payload, headers: request_headers })
+      response = HTTParty.send(http_method.to_s, request_url_evaluated, 
+                    { body: payload_mapping_evaluated, headers: request_headers })
       if response.success?
         self.update(lifecycle_stage: 'complete', lifecycle_message: response.to_s)
       else
@@ -62,11 +65,6 @@ class ApiAction < ApplicationRecord
   def redirect;end
 
   def serve_file;end
-
-  def evaluate_payload
-    payload = payload_mapping.to_json.gsub('self.', 'self.api_resource.properties_object.')
-    eval(payload).to_json
-  end
 
   def request_headers
     headers = custom_headers.to_json.gsub('SECRET_BEARER_TOKEN', bearer_token)
