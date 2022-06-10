@@ -27,7 +27,7 @@ class SafeExecutableValidator < ActiveModel::EachValidator
         keywords = value.to_s.split(Regexp.union(SPLIT_DELIMITERS)).reject(&:blank?)
         blacklisted_keywords_in_attribute = keywords & BLACKLISTED_KEYWORDS
         unless blacklisted_keywords_in_attribute.empty?
-            record.errors.add(attribute, "contains blacklisted keyword: #{blacklisted_keywords_in_attribute.to_s}. Please refactor #{attribute} accordingly")
+            record.errors.add(attribute, "contains disallowed keyword: #{blacklisted_keywords_in_attribute.to_s}. Please refactor #{attribute} accordingly")
         end
     end
 end
