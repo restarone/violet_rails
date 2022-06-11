@@ -41,6 +41,7 @@ class ExternalApiClient < ApplicationRecord
   validates :drive_every, presence: true, if: -> { drive_strategy == ExternalApiClient::DRIVE_STRATEGIES[:cron] }
 
   validates :drive_every, inclusion: { in: ExternalApiClient::DRIVE_INTERVALS.keys.map(&:to_s) }, allow_blank: true, allow_nil: true
+  validates :model_definition, safe_executable: true
 
   def self.cron_jobs
     intervals = ExternalApiClient.pluck(:drive_every).compact
