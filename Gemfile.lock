@@ -499,7 +499,7 @@ DEPENDENCIES
   devise
   devise_invitable
   ed25519 (>= 1.2, < 2.0)
-  ember-cli-rails (= 0.10.0)
+  ember-cli-rails (= 0.11.0)
   exception_notification (~> 4.5)
   friendly_id
   graphiql-rails
