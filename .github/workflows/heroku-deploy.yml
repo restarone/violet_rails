@@ -13,8 +13,10 @@ jobs:
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "violetrails " #Must be unique in Heroku
-          heroku_email: "contact@restarone.com"
+          # heroku_app_name: "violetrails " #Must be unique in Heroku
+          heroku_app_name: "murmuring-everglades-11225" #Must be unique in Heroku
+          # heroku_email: "contact@restarone.com"
+          heroku_email: "alish.khadka@gmail.com"
         env:
           APP_HOST: "violetrails.herokuapp.com"
           REDIS_URL: ${{secrets.HEROKU_REDIS_URL}}
