@@ -30,7 +30,7 @@ jobs:
           - 6379:6379
     strategy:
       matrix:
-        node_version: [14.x, 10.19.x]
+        node_version: [14.x, 10.x]
     steps:
     - name: Configure sysctl limits
       run: |
