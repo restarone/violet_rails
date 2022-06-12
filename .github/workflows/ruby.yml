@@ -54,7 +54,7 @@ jobs:
       with:
         node-version: ${{ matrix.node_version }}
     - name: Setup npm@6.14.17
-      run |
+      run: |
         yarn install -g npm@6.14.17 
     - name: Setup main DB
       run: |
