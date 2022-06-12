@@ -28,6 +28,9 @@ jobs:
         image: redis:4.0-alpine
         ports:
           - 6379:6379
+    strategy:
+      matrix:
+        node_version: [14.x, 10.19.x]
     steps:
     - name: Configure sysctl limits
       run: |
@@ -48,8 +51,9 @@ jobs:
         ruby-version: 2.6.6 # Not needed with a .ruby-version file but it's good to be clear here
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - uses: actions/setup-node@v2
+      name: Setup Node ${{ matrix.node_version }}
       with:
-        node-version: 14.x
+        node-version: ${{ matrix.node_version }}
     - name: Setup main DB
       run: |
         bin/rails db:create
