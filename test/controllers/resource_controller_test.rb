@@ -97,6 +97,42 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     Recaptcha.configuration.skip_verify_env.push("test")
   end
 
+  test 'should allow #create when recaptcha-v3 is enabled and recaptcha is verified' do
+    @api_namespace.api_form.update(show_recaptcha_v3: true)
+    payload = {
+      data: {
+          properties: {
+            first_name: 'Don',
+            last_name: 'Restarone'
+          }
+      }
+    }
+    assert_difference "@api_namespace.api_resources.count", +1 do
+      post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
+      assert_response :redirect
+    end
+  end
+
+  test 'should not allow #create when recaptcha-v3 is enabled and recaptcha verification failed' do
+    @api_namespace.api_form.update(show_recaptcha_v3: true)
+    payload = {
+      data: {
+          properties: {
+            first_name: 'Don',
+            last_name: 'Restarone'
+          }
+      }
+    }
+    # Recaptcha is disabled for test env by deafult
+    Recaptcha.configuration.skip_verify_env.delete("test")
+    assert_difference "@api_namespace.api_resources.count", +0 do
+      post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
+      assert_response :redirect
+      assert_match "reCAPTCHA verification failed, please try again.", flash[:error]
+    end
+
+    Recaptcha.configuration.skip_verify_env.push("test")
+  end
 
   test 'should not allow #create if required properties is missing' do
     @api_namespace.api_form.update(properties: { 'name': {'label': 'Test', 'placeholder': 'Test', 'field_type': 'input', 'required': '1' }})
