@@ -39,11 +39,12 @@
         }
 
       %div{ style: "font-size: small;" }
-        * This site is protected by reCAPTCHA and the Google
+        * This site is protected by Google
+        = link_to 'reCAPTCHA.', 'https://www.google.com/recaptcha/about/', target: '_blank'
+        By submitting this form, you agree to Google's
         = link_to 'Privacy Policy', 'https://policies.google.com/privacy', target: '_blank'
         and
-        = link_to 'Terms of Service', 'https://policies.google.com/terms', target: '_blank'
-        apply.
+        = link_to 'Terms of Service.', 'https://policies.google.com/terms', target: '_blank'
 
       = recaptcha_v3(callback: 'ctaSuccessHandlerRecaptchaV3', action: sanitize_recaptcha_action_name(@api_namespace.name), site_key: ENV['RECAPTCHA_SITE_KEY_V3'])
       
