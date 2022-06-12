@@ -51,7 +51,6 @@ jobs:
         ruby-version: 2.6.6 # Not needed with a .ruby-version file but it's good to be clear here
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - uses: actions/setup-node@v2
-      name: Setup Node ${{ matrix.node_version }}
       with:
         node-version: ${{ matrix.node_version }}
     - name: Setup main DB
@@ -60,8 +59,6 @@ jobs:
         bin/rails db:migrate
     - name: compile assets/javascript
       run: |
-        echo "NPM version is"
-        npm -v
         yarn install
         bin/rails assets:precompile
     - name: compile ember client
