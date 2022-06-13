@@ -23,4 +23,10 @@ module ApplicationHelper
   def file_id_from_snippet(file_snippet)
     ComfortableMexicanSofa::Content::Renderer.new(:page).tokenize(file_snippet).last[:tag_params]
   end
+
+  # Action name supports only alphanumeric characters, underscores and slash(/)
+  # reference: https://developers.google.com/recaptcha/docs/faq#what-action-names-are-valid
+  def sanitize_recaptcha_action_name(action_name)
+    action_name.strip.gsub(/[- ]/, '_').scan(/[\/\_a-zA-Z0-9]/).join
+  end
 end
