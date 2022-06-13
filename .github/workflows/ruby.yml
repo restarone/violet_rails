@@ -60,15 +60,14 @@ jobs:
         bin/rails db:migrate
     - name: Check changes to schema after running migration
       run: |
-        echo "Testing tmpfile content in here"
-        # if ! diff -q tmpfile ./db/schema.rb &>/dev/null; then
-        #   rm tmpfile
-        #   >&2 echo "Migration changes have not been committed."
-        # fi
+        if ! diff -q tmpfile ./db/schema.rb &>/dev/null; then
+          rm tmpfile
+          >&2 echo "Migration changes have not been committed."
+          # Exits the github workflow
+          exit 1
+        fi
         rm tmpfile
-        >&2 echo "Migration changes have not been committed."
-        exit 1
-        echo "Passed"
+        echo "Migrations have been comitted."
     - name: compile assets/javascript
       run: |
         yarn install
