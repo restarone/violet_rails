@@ -6,6 +6,11 @@ class SubdomainTest < ActiveSupport::TestCase
     @subdomain = subdomains(:public)
   end
 
+  test "can be created" do
+    subdomain = Subdomain.new(name: "test")
+    assert subdomain.save
+  end
+
   test "uniqness" do
     duplicate = Subdomain.new(
       name: @subdomain.name
