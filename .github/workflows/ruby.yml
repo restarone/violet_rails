@@ -61,6 +61,7 @@ jobs:
         bin/rails db:create
         bin/rails db:migrate
     - name: Check changes to schema after running migration
+      run: |
         echo "Testing tmpfile content in here"
         if ! diff -q tmpfile ./db/schema.rb &>/dev/null; then
           rm tmpfile
