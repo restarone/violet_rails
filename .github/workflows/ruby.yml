@@ -55,10 +55,13 @@ jobs:
         tmpfile=$(mktemp)
         echo "directories list"
         ls -a
+        cp ./db/schema.rb tmpfile
     - name: Setup main DB
       run: |
         bin/rails db:create
         bin/rails db:migrate
+        echo "Testing tmpfile content in here"
+        cat tmpfile
     - name: compile assets/javascript
       run: |
         yarn install
