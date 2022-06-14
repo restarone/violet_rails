@@ -30,6 +30,6 @@ class Comfy::Admin::ApiFormsController < Comfy::Admin::Cms::BaseController
   end
 
   def api_form_params
-    params.require(:api_form).permit(:api_namespace_id, :show_recaptcha, :submit_button_label, :title, :success_message, :failure_message, properties: {}).merge({api_namespace_id: @api_namespace.id})
+    params.require(:api_form).permit(:api_namespace_id, :show_recaptcha, :show_recaptcha_v3, :submit_button_label, :title, :success_message, :failure_message, properties: {}).merge({api_namespace_id: @api_namespace.id})
   end
 end

@@ -117,9 +117,18 @@
     = f.label :submit_button_label
     = f.text_field :submit_button_label, class: 'form-control'
 
-  .form-group.mt-4
-    = f.label :show_recaptcha
-    = f.check_box :show_recaptcha
+  %h3.mt-4
+    Recaptcha Type
+    %span{ style: "font-size: small;"}
+      ( *Select only one )
+
+  .form-group.mb-0
+    = f.label :show_recaptcha, 'Show recaptcha v2'
+    = f.check_box :show_recaptcha, data: { group: 'recaptcha-type' }
+
+  .form-group.mt-0
+    = f.label :show_recaptcha_v3
+    = f.check_box :show_recaptcha_v3, data: { group: 'recaptcha-type' }
     
   .actions
     = f.submit 'Save', class: 'btn btn-primary'
@@ -135,6 +144,8 @@
     $('.array_select').each(function() {
       $(this).val(JSON.parse($(this).attr('default_value'))).change();
     })
+
+    toggleRecaptchaTypeChecboxes();
   });
 
 
@@ -159,7 +170,20 @@
       $('#' + key + '_prepopulate_single').hide();
       $('#' + key +  '_prepopulate_multi').show();
     }
-    
+  }
+
+  function toggleRecaptchaTypeChecboxes() {
+    $("input[type='checkbox'][data-group='recaptcha-type']").on('click', function() {
+      if (this.checked) {
+        const currentElement = this;
+
+        $("input[type='checkbox'][data-group='recaptcha-type']").each(function() {
+          if (this != currentElement) {
+            this.checked = false;
+          }
+        })
+      }
+    })
   }
 
 
