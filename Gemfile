@@ -105,3 +105,5 @@ gem "exception_notification", "~> 4.5"
 
 
 gem "turnout", "~> 2.5"
+
+gem "turbo-rails", "~> 1.1"
