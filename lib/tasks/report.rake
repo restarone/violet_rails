@@ -3,7 +3,7 @@ namespace :report do
 
   task :send_analytics_report => [:environment] do 
     p "starting send_analytics_report task  @ #{Time.now}"
-    subdomains = Subdomain.add_to_subdomains('public')
+    subdomains = Subdomain.all_with_public_schema
     subdomains.reject {|subdomain| subdomain.analytics_report_frequency == Subdomain::REPORT_FREQUENCY_MAPPING[:never]}.each do |subdomain|
       if (subdomain.analytics_report_last_sent.nil? || subdomain.analytics_report_last_sent <= eval(subdomain.analytics_report_frequency).ago)
         Apartment::Tenant.switch subdomain.name do
