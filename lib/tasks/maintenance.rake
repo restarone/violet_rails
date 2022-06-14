@@ -2,7 +2,7 @@ namespace :maintenance do
   desc "system maintenance tasks"
 
   task :clear_old_ahoy_visits => [:environment] do 
-    Subdomain.all.each do |subdomain|
+    Subdomain.add_to_subdomains('public').each do |subdomain|
       Apartment::Tenant.switch subdomain.name do
         if subdomain.purge_visits_every != Subdomain::TRACKING_PURGE_MAPPING[:never]
           p "clearing old ahoy visits for [#{subdomain.name}] @ #{Time.now}"
@@ -25,7 +25,7 @@ namespace :maintenance do
 
   task :clear_discarded_api_actions => [:environment] do 
     p "clearing old discarded api_actions @ #{Time.now}"
-    Subdomain.all.each do |subdomain|
+    Subdomain.add_to_subdomains('public').each do |subdomain|
       Apartment::Tenant.switch subdomain.name do
         p "clearing old discarded api_actions for [#{subdomain.name}] @ #{Time.now}"
         ApiAction.where(lifecycle_stage: 'discarded').where('created_at < ?', 1.years.ago).destroy_all
