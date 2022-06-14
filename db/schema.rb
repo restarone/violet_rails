@@ -28,7 +28,7 @@ ActiveRecord::Schema.define(version: 2022_06_09_041057) do
     t.string "name", null: false
     t.text "body"
     t.string "record_type", null: false
-    t.bigint "record_id", null: false
+    t.integer "record_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
@@ -262,7 +262,7 @@ ActiveRecord::Schema.define(version: 2022_06_09_041057) do
     t.boolean "is_published", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "is_restricted"
+    t.boolean "is_restricted", default: false
     t.text "preview_content"
     t.index ["is_published"], name: "index_comfy_cms_pages_on_is_published"
     t.index ["parent_id", "position"], name: "index_comfy_cms_pages_on_parent_id_and_position"
@@ -464,13 +464,13 @@ ActiveRecord::Schema.define(version: 2022_06_09_041057) do
     t.string "purge_visits_every", default: "never"
     t.string "analytics_report_frequency", default: "never"
     t.datetime "analytics_report_last_sent"
+    t.boolean "tracking_enabled", default: false
     t.boolean "ember_enabled", default: false
     t.boolean "graphql_enabled", default: false
     t.boolean "web_console_enabled", default: false
+    t.boolean "api_plugin_events_enabled", default: false
     t.string "after_sign_up_path"
     t.string "after_sign_in_path"
-    t.boolean "api_plugin_events_enabled", default: false
-    t.boolean "tracking_enabled", default: false
     t.boolean "allow_external_analytics_query", default: false
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
     t.index ["name"], name: "index_subdomains_on_name"
