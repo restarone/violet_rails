@@ -103,17 +103,27 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
     assert_response :success
   end
 
-  test "#create: should allow when permissioned user is signed-in" do
+  test "#create: should allow when permissioned user is signed-in and sets only the permitted atrributes" do
     payload = {
       external_api_client: {
         api_namespace_id: @api_namespace.id,
-        slug: 'create-test-api',
         label: 'Create Test API',
         enabled: true,
         metadata: {
                     "api_key": "x-api-key-foo",
-                    "bearer_token": "foo"
-                  },
+                    "bearer_token": "foo",
+                    "test_object": {'a': 'test string', 'b': [1,2,3]}
+                  }.to_json,
+        state_metadata: {
+                    "api_key": "x-api-key-foo",
+                    "bearer_token": "foo",
+                    "test_object": {'a': 'test string', 'b': [1,2,3]}
+                  }.to_json,
+        error_metadata: {
+                    "api_key": "x-api-key-foo",
+                    "bearer_token": "foo",
+                    "test_object": {'a': 'test string', 'b': [1,2,3]}
+                  }.to_json,
         model_definition: "class ExternalApiModelExample; def initialize(parameters); # do init stuff; end; def start; return true; end; def log; return true; end; end; # at the end of the file we have to implicitly return the class; ExternalApiModelExample;"
       }
     }
@@ -128,6 +138,18 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
     expected_message = "Api client was successfully created."
     assert_match expected_message, flash[:notice]
     assert_response :redirect
+
+    new_external_api_client = ExternalApiClient.last
+
+    assert_equal @api_namespace.id, new_external_api_client.api_namespace_id
+    assert_equal 'Create Test API', new_external_api_client.label
+    assert_equal JSON.parse(payload[:external_api_client][:metadata]), new_external_api_client.metadata
+    assert_equal payload[:external_api_client][:model_definition], new_external_api_client.model_definition
+    assert new_external_api_client.enabled
+
+    # Should not be set: state_metadata & error_metadata. These are set internally.
+    refute new_external_api_client.state_metadata
+    refute new_external_api_client.error_metadata
   end
 
   test "#create: should deny when user is not signed-in" do
@@ -237,17 +259,27 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
     assert_response :success
   end
 
-  test "#update: should allow when permissioned user is signed-in" do
+  test "#update: should allow when permissioned user is signed-in and sets only the permitted atrributes" do
     payload = {
       external_api_client: {
         api_namespace_id: @api_namespace.id,
-        slug: 'create-test-api',
-        label: 'Create Test API',
+        label: 'Update Test API',
         enabled: true,
         metadata: {
                     "api_key": "x-api-key-foo",
-                    "bearer_token": "foo"
-                  },
+                    "bearer_token": "foo",
+                    "test_object": {'a': 'test string', 'b': [1,2,3]}
+                  }.to_json,
+        state_metadata: {
+                    "api_key": "x-api-key-foo",
+                    "bearer_token": "foo",
+                    "test_object": {'a': 'test string', 'b': [1,2,3]}
+                  }.to_json,
+        error_metadata: {
+                    "api_key": "x-api-key-foo",
+                    "bearer_token": "foo",
+                    "test_object": {'a': 'test string', 'b': [1,2,3]}
+                  }.to_json,
         model_definition: "class ExternalApiModelExample; def initialize(parameters); # do init stuff; end; def start; return true; end; def log; return true; end; end; # at the end of the file we have to implicitly return the class; ExternalApiModelExample;"
       }
     }
@@ -260,6 +292,18 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
     expected_message = "Api client was successfully updated."
     assert_match expected_message, flash[:notice]
     assert_response :redirect
+
+    @external_api_client.reload
+
+    assert_equal @api_namespace.id, @external_api_client.api_namespace_id
+    assert_equal 'Update Test API', @external_api_client.label
+    assert_equal JSON.parse(payload[:external_api_client][:metadata]), @external_api_client.metadata
+    assert_equal payload[:external_api_client][:model_definition], @external_api_client.model_definition
+    assert @external_api_client.enabled
+
+    # Should not be set: state_metadata & error_metadata. These are set internally.
+    refute @external_api_client.state_metadata
+    refute @external_api_client.error_metadata
   end
 
   test "#update: should deny when user is not signed-in" do
