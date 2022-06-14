@@ -1,0 +1,67 @@
+name: Deploy Review App
+
+on:
+  pull_request:
+    types: [opened, reopened, closed, synchronize]
+
+jobs:
+  deploy-review-app:
+    runs-on: ubuntu-latest
+    env:
+      HEROKU_APP_NAME: violet-rails-review-app-${{ github.event.number }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: ${{ github.event.action == 'closed' && 1 || 0 }}
+          ref: ${{ github.event.action != 'closed' && github.head_ref || '' }}
+
+      - name: Login to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_email: contact@restarone.com
+          heroku_app_name: ${{ env.HEROKU_APP_NAME }}
+          justlogin: true
+
+      - name: Create Heroku app
+        if: github.event.action == 'opened' || github.event.action == 'reopened'
+        run: heroku apps:create ${{ env.HEROKU_APP_NAME }} --team=restarone
+
+      - name: Add buildpacks
+        if: github.event.action == 'opened' || github.event.action == 'reopened'
+        run: |
+          heroku buildpacks:add heroku/nodejs --app ${{ env.HEROKU_APP_NAME }}
+          heroku buildpacks:add heroku/ruby --app ${{ env.HEROKU_APP_NAME }}
+
+      - name: Add addons
+        if: github.event.action == 'opened' || github.event.action == 'reopened'
+        run: |
+          heroku addons:create heroku-postgresql:hobby-dev --app=${{ env.HEROKU_APP_NAME }}
+          heroku addons:create heroku-redis:hobby-dev --app=${{ env.HEROKU_APP_NAME }}
+
+      - name: Add Heroku app to pipeline
+        if: github.event.action == 'opened' || github.event.action == 'reopened'
+        run: heroku pipelines:add violet-rails --app=${{ env.HEROKU_APP_NAME }} --stage=staging
+
+      - name: Copy environment variables to Heroku app
+        if: github.event.action == 'opened' || github.event.action == 'reopened'
+        run: |
+          heroku config --shell --app=violet-rails > .env
+          grep -Ev '^(DATABASE_URL|REDIS_URL|APP_HOST)=' .env | tr '\n' ' ' | xargs heroku config:set --app=${{ env.HEROKU_APP_NAME }}
+
+      - name: Set APP_HOST environment variables
+        if: github.event.action == 'opened' || github.event.action == 'reopened'
+        run: |
+          heroku config:set APP_HOST=https://${{ env.HEROKU_APP_NAME }}.herokuapp.com --app=${{ env.HEROKU_APP_NAME }}
+
+      - name: Push code to heroku
+        if: github.event.action != 'closed'
+        run: |
+          heroku git:remote --app=${{ env.HEROKU_APP_NAME }}
+          git push heroku ${{ github.head_ref }}:master --force
+
+
+      - name: Destroy Heroku app
+        if: github.event.action == 'closed'
+        run: heroku apps:destroy --app=${{ env.HEROKU_APP_NAME }} --confirm=${{ env.HEROKU_APP_NAME }}
