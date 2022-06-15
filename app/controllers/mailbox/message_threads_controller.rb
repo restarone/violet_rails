@@ -14,6 +14,8 @@ class Mailbox::MessageThreadsController < Mailbox::BaseController
   end
 
   def create
+    # remove empty string (a side-effect of rails select fields)
+    params[:message_thread][:recipients].delete("")
     @message_thread = MessageThread.new(message_thread_params)
     @message = Message.new(message_params[:message].merge!(message_thread: @message_thread))
     if @message_thread.save && @message.save
