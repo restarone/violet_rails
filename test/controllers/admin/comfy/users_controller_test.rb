@@ -51,6 +51,20 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "#edit: show forum button if selected " do
+    sign_in(@user)
+    get admin_users_url(subdomain: @domain)
+    @restarone_subdomain.update(forum_enabled: true)
+    assert_select 'a', {count: 1, text: 'Forum'}
+  end
+
+  test "#edit: show blog button if selected " do
+    sign_in(@user)
+    get admin_users_url(subdomain: @domain)
+    @restarone_subdomain.update(blog_enabled: true)
+    assert_select 'a', {count: 1, text: 'Blog'}
+  end
+
   test "denies #edit if not permissioned" do
     @user.update(can_manage_users: false)
     sign_in(@user)
