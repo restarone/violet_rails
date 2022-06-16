@@ -2,9 +2,19 @@
   .form-group
     %label
       recipients: 
-    = f.text_field :recipients, multiple: true, required: true, class: 'form-control'
+    = f.select :recipients, options_for_select([]), { include_blank: false }, { multiple: true }
   .form-group
     %label
       Subject: 
     = f.text_field :subject, class: 'form-control'
   = render partial: 'messages/form', locals: { f: f }
+
+:javascript
+  $(document).ready( function() {
+    $("#message_thread_recipients").select2({
+      multiple: true,
+      required: true,
+      tags: true,
+      tokenSeparators: [',', ' '],
+    })
+  });
