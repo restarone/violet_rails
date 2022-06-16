@@ -89,6 +89,26 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     @restarone_subdomain.update(blog_enabled: true)
     assert_select 'a', {count: 1, text: 'Blog'}
   end
+  
+  test "#edit: hide forum button if unselected " do
+    sign_in(@user)
+    get '/mailbox'
+    payload = {
+      forum_enabled:false
+    }
+    patch web_settings_url(subdomain: @domain, id: @user.id), params: payload
+    assert_select 'a', {count: 0, text:'Forum'}
+  end
+  
+  test "#edit: hide blog button if unselected " do
+    sign_in(@user)
+    get '/mailbox'
+    payload = {
+      blog_enabled:false
+    }
+    patch web_settings_url(subdomain: @domain, id: @user.id), params: payload
+    assert_select 'a', {count: 0, text: 'Blog'}
+  end
 
   test "denies #edit if not permissioned" do
     @user.update(can_manage_users: false)
