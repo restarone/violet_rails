@@ -21,6 +21,7 @@ class ApiAction < ApplicationRecord
   validates :http_method, inclusion: { in: ApiAction::HTTP_METHODS}, allow_blank: true
   
   validates :payload_mapping, safe_executable: true
+  validates :custom_headers, safe_executable: true
 
   def self.children
     ['new_api_actions', 'create_api_actions', 'show_api_actions', 'update_api_actions', 'destroy_api_actions', 'error_api_actions']
@@ -45,8 +46,13 @@ class ApiAction < ApplicationRecord
 
   def send_web_request
     begin
+      # Fetch current_user & current_visit
+      current_user = Current.user
+      current_visit = Current.visit
+
       response = HTTParty.send(http_method.to_s, request_url, 
-                    { body: evaluate_payload, headers: request_headers })
+                    { body: evaluate_payload(current_user, current_visit), headers: evaluate_request_headers(current_user, current_visit) })
+
       if response.success?
         self.update(lifecycle_stage: 'complete', lifecycle_message: response.to_s)
       else
@@ -63,13 +69,14 @@ class ApiAction < ApplicationRecord
 
   def serve_file;end
 
-  def evaluate_payload
+  def evaluate_payload(current_user, current_visit)
     payload = payload_mapping.to_json.gsub('self.', 'self.api_resource.properties_object.')
     eval(payload).to_json
   end
 
-  def request_headers
+  def evaluate_request_headers(current_user, current_visit)
     headers = custom_headers.to_json.gsub('SECRET_BEARER_TOKEN', bearer_token)
+    headers = eval(headers).to_json
     { 'Content-Type' => 'application/json' }.merge(JSON.parse(headers))
   end
 
