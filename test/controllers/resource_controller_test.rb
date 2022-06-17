@@ -191,4 +191,40 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
     end
   end
+
+  test 'should allow #create with the current_user & current_visit being available in the ' do
+    @api_namespace.api_form.update(properties: { 'name': {'label': 'name', 'placeholder': 'Test', 'type_validation': 'tel'}})
+
+    api_action = api_actions(:one)
+    api_action.update!(
+                      type: 'CreateApiAction',
+                      bearer_token: 'test-token',
+                      position: 0,
+                      action_type: 'send_web_request',
+                      request_url: "http://www.example.com/success",
+                      payload_mapping: {"email": '#{current_user.email}'},
+                      custom_headers: {"User-Id": '#{current_visit.user_id}'},
+                      http_method: 'post'
+                    )
+    @api_namespace.api_actions.where.not(id: api_action.id).destroy_all
+    user = users(:public)
+    sign_in(user)
+
+    stub_post = stub_request(:post, "http://www.example.com/success").with(headers: { 'User-Id' => user.id.to_s }, body: {'email' => user.email}).to_return(:body => "abc")
+
+    payload = {
+      data: {
+          properties: {
+            name: 123,
+          }
+      }
+    }
+
+    assert_difference "@api_namespace.api_resources.count", +1 do
+      post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
+    end
+
+    # Provided current_user & current_visit variable data are used while through send_web_request api-action
+    assert_requested stub_post
+  end
 end
