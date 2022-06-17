@@ -224,7 +224,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
     end
 
-    # Provided current_user & current_visit variable data are used while through send_web_request api-action
+    # Provided current_user & current_visit variable are available through send_web_request api-action
     assert_requested stub_post
   end
 end
