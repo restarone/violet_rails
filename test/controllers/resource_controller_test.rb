@@ -192,7 +192,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'should allow #create with the current_user & current_visit being available in the ' do
+  test 'should allow #create with the current_user & current_visit being available in the send_web_request action' do
     @api_namespace.api_form.update(properties: { 'name': {'label': 'name', 'placeholder': 'Test', 'type_validation': 'tel'}})
 
     api_action = api_actions(:one)
