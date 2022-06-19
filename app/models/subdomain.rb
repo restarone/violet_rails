@@ -217,4 +217,9 @@ class Subdomain < ApplicationRecord
   def create_tenant
     Apartment::Tenant.create(self.name)
   end
+
+  def self.all_with_public_schema
+    subdomain = Subdomain.new(name: 'public')
+    Subdomain.all.to_a.push(subdomain)
+  end
 end

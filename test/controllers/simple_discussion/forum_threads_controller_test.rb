@@ -51,6 +51,38 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     assert_response :success
   end
 
+  test '#index: shows the latest post.body in the thread preview' do
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      forum_category = ForumCategory.create!(name: 'test', slug: 'test')
+    
+      forum_thread_1 = @restarone_user.forum_threads.create!(title: 'Test Thread 1', forum_category_id: forum_category.id)
+      ForumPost.create!(forum_thread_id: forum_thread_1.id, user_id: @restarone_user.id, body: 'test body 1')
+      ForumPost.create!(forum_thread_id: forum_thread_1.id, user_id: @restarone_user.id, body: 'test body 2')
+      ForumPost.create!(forum_thread_id: forum_thread_1.id, user_id: @restarone_user.id, body: 'test body 3')
+    
+      forum_thread_2 = @restarone_user.forum_threads.create!(title: 'Test Thread 2', forum_category_id: forum_category.id)
+      ForumPost.create!(forum_thread_id: forum_thread_2.id, user_id: @restarone_user.id, body: 'test body 4')
+      forum_post = ForumPost.create!(forum_thread_id: forum_thread_2.id, user_id: @restarone_user.id, body: 'test body 5')
+      ForumPost.create!(forum_thread_id: forum_thread_2.id, user_id: @restarone_user.id, body: 'test body 6')
+      forum_post.update!(body: 'test body 5 updated')
+
+      sign_in(@restarone_user)
+      get simple_discussion.root_url(subdomain: @restarone_subdomain.name)
+      
+      assert_response :success
+
+      # Middle forum-post was updated in the end for forum_thread_2 which should be shown in the thread preview.
+      assert_select '.card-body .forum-thread .row .col', html: /Test Thread 2/ do
+        assert_select 'p.text-muted', text: /test body 5 updated/
+      end
+
+      # If no middle forum-post was updated in the end, then the last created/updated forum-post should be shown in the thread preview for forum_thread_1.
+      assert_select '.card-body .forum-thread .row .col', html: /Test Thread 1/ do
+        assert_select 'p.text-muted', text: /test body 3/
+      end
+    end
+  end
+
   test 'denies new thread creation if not logged in' do
     payload = {
       forum_thread: {

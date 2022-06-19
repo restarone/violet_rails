@@ -2,7 +2,7 @@ namespace :api_action do
   desc "subdomain analytics and report tasks"
   
   task :rerun_failed_actions => [:environment] do 
-    Subdomain.all.each do |subdomain|
+    Subdomain.all_with_public_schema.each do |subdomain|
       Apartment::Tenant.switch subdomain.name do
         ApiAction.where(lifecycle_stage: 'failed', action_type: ['send_email', 'send_web_request']).each do |action|
           action.execute_action
