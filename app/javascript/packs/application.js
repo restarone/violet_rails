@@ -26,8 +26,8 @@ require("./select2")
 require("./common")
 
 $(document).on("turbolinks:load", () => {
-  console.log("turbolinks!");
+  console.log("Violet Rails uses turbolinks!");
 });
 $(document).on("turbo:load", () => {
-  console.log("turbo!");
+  console.log("Violet Rails uses turbo!");
 });
