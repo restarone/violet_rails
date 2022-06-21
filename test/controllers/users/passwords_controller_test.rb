@@ -12,6 +12,7 @@ class Users::PasswordsControllerTest < ActionDispatch::IntegrationTest
   end
 
   [:html, :turbo_stream].each do |request_format|
+    # raised UnknownFormat Error when I tried to use format: :turbo_stream
     headers = { Accept: 'text/vnd.turbo-stream.html, text/html, application/xhtml+xml', 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' } if request_format == :turbo_stream
 
     test "Request Format: #{request_format}, should send email for resetting password of the user in apex domain" do
