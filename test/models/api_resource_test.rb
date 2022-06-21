@@ -18,4 +18,11 @@ class ApiResourceTest < ActiveSupport::TestCase
 
     assert_includes api_resource.errors.messages[:properties], 'name is required'
   end
+
+  test "should set api_form's api_resource on initialization" do
+    api_namespace = api_namespaces(:one)
+    api_resource = ApiResource.new(api_namespace_id: api_namespace.id)
+
+    assert_equal api_resource.api_namespace.api_form.api_resource, api_resource
+  end
 end
