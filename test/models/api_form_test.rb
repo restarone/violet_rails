@@ -59,4 +59,11 @@ class ApiFormTest < ActiveSupport::TestCase
     api_form.update(failure_message: nil)
     refute api_form.failure_message_has_html?
   end
+  
+  test "should not set both: show_recaptcha and show_recaptcha_v3" do
+    api_form = api_forms(:one)
+    api_form.update(show_recaptcha: true, show_recaptcha_v3: true)
+    assert_equal true, api_form.show_recaptcha
+    assert_equal false, api_form.show_recaptcha_v3
+  end
 end
