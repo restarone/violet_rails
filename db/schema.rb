@@ -151,6 +151,7 @@ ActiveRecord::Schema.define(version: 2022_06_09_092515) do
     t.boolean "show_recaptcha", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "show_recaptcha_v3", default: false
     t.index ["api_namespace_id"], name: "index_api_forms_on_api_namespace_id"
   end
 
