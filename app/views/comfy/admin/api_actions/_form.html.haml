@@ -14,6 +14,9 @@
         = label_tag 'Email Address'
         = text_field_tag "api_namespace[#{type}_attributes][#{index}][email]", resource.email, { class: "form-control form-control-sm" }
       .form-group
+        = label_tag 'Subject'
+        =  text_field_tag "api_namespace[#{type}_attributes][#{index}][email_subject]", resource.email_subject, { class: "form-control form-control-sm" }
+      .form-group
         = label_tag 'Custom Message'
         = rich_text_area_tag "api_namespace[#{type}_attributes][#{index}][custom_message]", resource.custom_message, { class: "form-control form-control-sm" }
 

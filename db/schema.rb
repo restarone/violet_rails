@@ -124,7 +124,11 @@ ActiveRecord::Schema.define(version: 2022_06_09_041057) do
     t.datetime "updated_at", precision: 6, null: false
     t.jsonb "custom_headers"
     t.string "http_method"
+<<<<<<< HEAD
     t.text "method_definition", default: "# You have access to vaiables: api_action, api_namespace, api_resource, current_visit, current_user\n# Write your custom code here\nraise 'not implemented error'"
+=======
+    t.text "email_subject"
+>>>>>>> acf65e73722cccc5e91577c2945fe5b685c307c5
     t.index ["api_namespace_id"], name: "index_api_actions_on_api_namespace_id"
     t.index ["api_resource_id"], name: "index_api_actions_on_api_resource_id"
   end
