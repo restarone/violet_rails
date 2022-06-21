@@ -70,19 +70,5 @@ module ApiFormsHelper
       'String'
     end
   end
-
-  # custom_message format: api_resource.properties["first_name"]
-  def parse_snippet(custom_snippet, api_resource)
-    return unless custom_snippet.present?
-
-    parsed_snippet = custom_snippet
-    # couldn't gsub directly because of escape characters added by ruby
-    # eval failed on "\#{api_resource.properties[\"String\"]}"
-    custom_snippet.scan(/\#\{(.*?)\}/).each do |code|
-      # TODO: sanitize code before eval  
-      parsed_snippet = parsed_snippet.sub!("\#{#{code[0]}}", eval(code[0]))
-    end
-    parsed_snippet.html_safe
-  end
 end
   

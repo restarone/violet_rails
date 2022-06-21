@@ -2,6 +2,12 @@ class ApiResource < ApplicationRecord
   include JsonbFieldsParsable
 
   after_initialize :inherit_properties_from_parent
+  
+  after_initialize do
+    return if api_namespace.api_form.nil?
+  
+    api_namespace.api_form.api_resource = self
+  end
 
   belongs_to :api_namespace
 
