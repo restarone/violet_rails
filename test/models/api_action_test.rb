@@ -55,7 +55,7 @@ class ApiActionTest < ActiveSupport::TestCase
       email_subject: "API Resource Accessed \#{api_resource.id}",
       custom_message: "API Namespace Accessed \#{api_resource.api_namespace.id}",
       request_url: "API Resource Property Accessed  \#{api_resource.properties['can_edit']}",
-      email: "test\#{api_resource.id}@test.com"
+      email: "test\#{api_resource.id}@test.com",
       payload_mapping: {
         test_key: "\#{User.destroy_all}"
       }
