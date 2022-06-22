@@ -11,57 +11,62 @@ class Users::PasswordsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "should send email for resetting password of the user in apex domain" do
-    payload = {
-      user: { email: @root_user.email }
-    }
+  [:html, :turbo_stream].each do |request_format|
+    # raised UnknownFormat Error when I tried to use format: :turbo_stream
+    headers = { Accept: 'text/vnd.turbo-stream.html, text/html, application/xhtml+xml', 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' } if request_format == :turbo_stream
 
-    Apartment::Tenant.switch(@root_subdomain.name) do
-      assert_difference "Devise::Mailer.deliveries.size", +1 do
-        post user_password_url(subdomain: Apartment::Tenant.current), params: payload
-        assert_response :redirect
-      end
-
-      assert_match "<p><a href=\"http://#{@root_subdomain.name}.", Devise::Mailer.deliveries.last.body.to_s
-    end
-  end
-
-  test "should send email for resetting password of the user in subdomain" do
-    Apartment::Tenant.switch(@restarone_subdomain.name) do
-      payload = {
-        user: { email: @restarone_user.email }
-      }
-
-      assert_difference "Devise::Mailer.deliveries.size", +1 do
-        post user_password_url(subdomain: Apartment::Tenant.current), params: payload
-        assert_response :redirect
-      end
-
-      assert_match "<p><a href=\"http://#{@restarone_subdomain.name}.", Devise::Mailer.deliveries.last.body.to_s
-    end
-  end
-
-  test "should send email for resetting password of the user in apex domain using the current Apartment::Tenant instead of current Subdomain name" do
-    previous_name = @root_subdomain.name
-    @root_subdomain.update!(name: 'root')
-
-    Apartment::Tenant.switch(previous_name) do
+    test "Request Format: #{request_format}, should send email for resetting password of the user in apex domain" do
       payload = {
         user: { email: @root_user.email }
       }
-
-      assert_difference "Devise::Mailer.deliveries.size", +1 do
-        post user_password_url(subdomain: Apartment::Tenant.current), params: payload
-        assert_response :redirect
+  
+      Apartment::Tenant.switch(@root_subdomain.name) do
+        assert_difference "Devise::Mailer.deliveries.size", +1 do
+          post user_password_url(subdomain: Apartment::Tenant.current), params: payload, headers: headers
+          assert_response :redirect
+        end
+  
+        assert_match "<p><a href=\"http://#{@root_subdomain.name}.", Devise::Mailer.deliveries.last.body.to_s
       end
-
-      current_apartment_tenant_name = Apartment::Tenant.current
-      current_subdomain_name = @root_subdomain.name
-
-      # Subdomain in url should be 'public'
-      assert_match "<p><a href=\"http://#{current_apartment_tenant_name}.", Devise::Mailer.deliveries.last.body.to_s
-      # Subdomain in url should not be 'root'
-      assert_no_match "<p><a href=\"http://#{current_subdomain_name}.", Devise::Mailer.deliveries.last.body.to_s
+    end
+  
+    test "Request Format: #{request_format}, should send email for resetting password of the user in subdomain" do
+      Apartment::Tenant.switch(@restarone_subdomain.name) do
+        payload = {
+          user: { email: @restarone_user.email }
+        }
+  
+        assert_difference "Devise::Mailer.deliveries.size", +1 do
+          post user_password_url(subdomain: Apartment::Tenant.current), params: payload, headers: headers
+          assert_response :redirect
+        end
+  
+        assert_match "<p><a href=\"http://#{@restarone_subdomain.name}.", Devise::Mailer.deliveries.last.body.to_s
+      end
+    end
+  
+    test "Request Format: #{request_format}, should send email for resetting password of the user in apex domain using the current Apartment::Tenant instead of current Subdomain name" do
+      previous_name = @root_subdomain.name
+      @root_subdomain.update!(name: 'root')
+  
+      Apartment::Tenant.switch(previous_name) do
+        payload = {
+          user: { email: @root_user.email }
+        }
+  
+        assert_difference "Devise::Mailer.deliveries.size", +1 do
+          post user_password_url(subdomain: Apartment::Tenant.current), params: payload, headers: headers
+          assert_response :redirect
+        end
+  
+        current_apartment_tenant_name = Apartment::Tenant.current
+        current_subdomain_name = @root_subdomain.name
+  
+        # Subdomain in url should be 'public'
+        assert_match "<p><a href=\"http://#{current_apartment_tenant_name}.", Devise::Mailer.deliveries.last.body.to_s
+        # Subdomain in url should not be 'root'
+        assert_no_match "<p><a href=\"http://#{current_subdomain_name}.", Devise::Mailer.deliveries.last.body.to_s
+      end
     end
   end
 end
