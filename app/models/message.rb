@@ -5,6 +5,7 @@ class Message < ApplicationRecord
   accepts_nested_attributes_for :message_thread
 
   has_rich_text :content
+  has_one :content, class_name: 'ActionText::RichText', as: :record
   has_many_attached :attachments
 
   default_scope { order(created_at: 'DESC') }
