@@ -4,8 +4,9 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
   setup do
     @restarone_subdomain = Subdomain.find_by(name: 'restarone')
     @user = users(:public)
+    @public_subdomain = subdomains(:public)
     @domain = @user.subdomain
-    @user.update(can_manage_users: true)
+    @user.update(can_manage_users: true, can_manage_email: true)
 
     @restarone_subdomain = Subdomain.find_by(name: 'restarone')
 
@@ -78,36 +79,30 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "#edit: show forum button if selected " do
     sign_in(@user)
-    get admin_users_url(subdomain: @domain)
-    @restarone_subdomain.update(forum_enabled: true)
+    @public_subdomain.update(forum_enabled: true)
+    get mailbox_path
     assert_select 'a', {count: 1, text: 'Forum'}
   end
 
   test "#edit: show blog button if selected " do
     sign_in(@user)
-    get admin_users_url(subdomain: @domain)
-    @restarone_subdomain.update(blog_enabled: true)
+    @public_subdomain.update(blog_enabled: true)
+    get mailbox_path
     assert_select 'a', {count: 1, text: 'Blog'}
   end
   
   test "#edit: hide forum button if unselected " do
     sign_in(@user)
-    get '/mailbox'
-    payload = {
-      forum_enabled:false
-    }
-    patch web_settings_url(subdomain: @domain, id: @user.id), params: payload
+    @public_subdomain.update(forum_enabled: false)
+    get mailbox_path
     assert_select 'a', {count: 0, text:'Forum'}
   end
   
   test "#edit: hide blog button if unselected " do
     sign_in(@user)
-    get '/mailbox'
-    payload = {
-      blog_enabled:false
-    }
-    patch web_settings_url(subdomain: @domain, id: @user.id), params: payload
-    assert_select 'a', {count: 0, text: 'Blog'}
+    @public_subdomain.update(blog_enabled: false)
+    get mailbox_path
+    assert_select 'a', {count: 0, text:'Blog'}
   end
 
   test "denies #edit if not permissioned" do
