@@ -6,6 +6,7 @@ ENV BUNDLE_VERSION 2.1.4
 ENV BUNDLE_PATH /usr/local/bundle/gems
 ENV TMP_PATH /tmp/
 ENV RAILS_LOG_TO_STDOUT true
+ENV RUBY_BUILD 3.0.0
 
 # Default Rails port
 ENV RAILS_PORT 5250
