@@ -135,7 +135,8 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
   end
 
   def import_as_json
-    json_str = File.read(params[:file])
+    file_path = params[:file].tempfile.path
+    json_str = File.read(file_path)
     response = ApiNamespace.import_as_json(json_str)
 
     if response[:success]
