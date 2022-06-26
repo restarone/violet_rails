@@ -105,4 +105,4 @@
 </div>
 
 <% parent_layout("forum") %>
-<%= cms_snippet_render('footer').html_safe %>
+<%= cms_snippet_render('footer').html_safe unless mobile? %>

@@ -29,4 +29,8 @@ module ApplicationHelper
   def sanitize_recaptcha_action_name(action_name)
     action_name.strip.gsub(/[- ]/, '_').scan(/[\/\_a-zA-Z0-9]/).join
   end
+
+  def mobile?
+    request.user_agent.include?('VioletRailsiOS')
+  end
 end
