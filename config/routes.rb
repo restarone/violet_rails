@@ -16,6 +16,8 @@ Rails.application.routes.draw do
   delete 'dashboard/events/:ahoy_event_type/destroy_event', to: 'comfy/admin/dashboard#destroy_event', as: :dashboard_destroy_event
   delete 'dashboard/events/:ahoy_event_type/destroy_visits', to: 'comfy/admin/dashboard#destroy_visits', as: :dashboard_destroy_visits
 
+  post 'import_api_namespace', to: 'comfy/admin/api_namespaces#import_as_json', as: :import_as_json_api_namespaces
+
   resources :signup_wizard
   resources :signin_wizard
   constraints SubdomainConstraint do
@@ -57,10 +59,6 @@ Rails.application.routes.draw do
       post 'duplicate_without_associations'
       get 'export_with_associations_as_json'
       get 'export_without_associations_as_json'
-    end
-
-    collection do
-      post 'import_as_json'
     end
 
     resources :resources, except: [:index], controller: 'comfy/admin/api_resources'
