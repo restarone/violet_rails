@@ -136,7 +136,7 @@
       = link_to 'Export JSON without associations', export_without_associations_as_json_api_namespace_path(id: @api_namespace.id), method: :get, class: 'btn btn-primary'
     .my-3
       = form_with(url: import_as_json_api_namespaces_path, method: :post, multipart: true) do
-        = file_field_tag 'file', style: 'margin-right: -40px;'
+        = file_field_tag 'file', style: 'margin-right: -40px;', required: true
         = submit_tag('Import JSON', class: 'btn btn-primary')
 
 .container-fluid.mt-5

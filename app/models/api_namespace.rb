@@ -181,7 +181,7 @@ class ApiNamespace < ApplicationRecord
             }
           }
         ]
-        )
+      )
     else
       self.to_json(root: 'api_namespace')
     end
