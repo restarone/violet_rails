@@ -55,6 +55,12 @@ Rails.application.routes.draw do
     member do
       post 'duplicate_with_associations'
       post 'duplicate_without_associations'
+      get 'export_with_associations_as_json'
+      get 'export_without_associations_as_json'
+    end
+
+    collection do
+      post 'import_as_json'
     end
 
     resources :resources, except: [:index], controller: 'comfy/admin/api_resources'

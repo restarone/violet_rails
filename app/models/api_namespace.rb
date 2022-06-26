@@ -152,4 +152,135 @@ class ApiNamespace < ApplicationRecord
       { success: false, message: e.message }
     end
   end
+
+  def export_as_json(include_associations: false)
+    if include_associations
+      self.to_json(
+        root: 'api_namespace',
+        include: [
+          :api_form,
+          :api_clients,
+          :external_api_clients,
+          :non_primitive_properties,
+          {
+            api_actions: {
+              except: [:salt, :encrypted_bearer_token],
+              methods: [:bearer_token]
+            }
+          },
+          {
+            api_resources: {
+              include: [
+                {
+                  api_actions: {
+                    except: [:salt, :encrypted_bearer_token],
+                    methods: [:bearer_token]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+        )
+    else
+      self.to_json(root: 'api_namespace')
+    end
+  end
+
+  def self.import_as_json(json_str)
+    begin
+      ActiveRecord::Base.transaction do
+        neglected_attributes = {
+          api_action: ['id', 'created_at', 'updated_at', 'encrypted_bearer_token', 'salt', 'api_namespace_id', 'api_resource_id'],
+          api_client: ['id', 'created_at', 'updated_at', 'api_namespace_id', 'slug'],
+          api_form: ['id', 'created_at', 'updated_at', 'api_namespace_id'],
+          api_namespace: ['id', 'created_at', 'updated_at', 'slug'],
+          api_resource: ['id', 'created_at', 'updated_at', 'api_namespace_id'],
+          external_api_client: ['id', 'created_at', 'updated_at', 'slug', 'api_namespace_id'],
+          non_primitive_property: ['id', 'created_at', 'updated_at', 'api_resource_id', 'api_namespace_id'],
+        }
+
+        hash = begin
+                JSON.parse(json_str)['api_namespace']
+              rescue JSON::ParserError => e
+                json_str = json_str.gsub('=>',':').gsub('nil','null')
+                JSON.parse(json_str)['api_namespace']
+              end
+      
+        # creating api_namespace
+        if ApiNamespace.find_by(slug: hash['slug']).present?
+          hash['name'] = hash['name'] + '-' + SecureRandom.hex(4)
+        end
+
+        api_namespace_hash = hash.except(*neglected_attributes[:api_namespace])
+        # Remove keys that are not available in table since we have associations as well.
+        api_namespace_attributes = ApiNamespace.new.attributes.keys
+        api_namespace_hash = api_namespace_hash.reject{ |k| !api_namespace_attributes.include?(k.to_s) }
+
+        new_api_namespace = ApiNamespace.create!(api_namespace_hash)
+
+        # Creating api_form
+        if hash['api_form'].present?
+          api_form_hash = hash['api_form'].except(*neglected_attributes[:api_form]).merge({'api_namespace_id': new_api_namespace.id})
+          ApiForm.create!(api_form_hash)
+        end
+        
+        # Creating api_clients
+        if hash['api_clients'].present? && hash['api_clients'].is_a?(Array)
+          hash['api_clients'].each do |api_client_hash|
+            api_client_hash = api_client_hash.except(*neglected_attributes[:api_client]).merge({'api_namespace_id': new_api_namespace.id})
+            ApiClient.create!(api_client_hash)
+          end
+        end
+        
+        # Creating external_api_clients
+        if hash['external_api_clients'].present? && hash['external_api_clients'].is_a?(Array)
+          hash['external_api_clients'].each do |external_api_client_hash|
+            external_api_client_hash = external_api_client_hash.except(*neglected_attributes[:external_api_client]).merge({'api_namespace_id': new_api_namespace.id})
+            ExternalApiClient.create!(external_api_client_hash)
+          end
+        end
+        
+        # Creating non_primitive_properties
+        if hash['non_primitive_properties'].present? && hash['non_primitive_properties'].is_a?(Array)
+          hash['non_primitive_properties'].each do |non_primitive_property_hash|
+            non_primitive_property_hash = non_primitive_property_hash.except(*neglected_attributes[:non_primitive_property]).merge({'api_namespace_id': new_api_namespace.id})
+            NonPrimitiveProperty.create!(non_primitive_property_hash)
+          end
+        end
+        
+        # Creating api_actions
+        if hash['api_actions'].present? && hash['api_actions'].is_a?(Array)
+          hash['api_actions'].each do |api_action_hash|
+            api_action_hash = api_action_hash.except(*neglected_attributes[:api_action]).merge({'api_namespace_id': new_api_namespace.id})
+            ApiAction.create!(api_action_hash)
+          end
+        end
+        
+        # Creating api_resources & executed_api_actions
+        if hash['api_resources'].present? && hash['api_resources'].is_a?(Array)
+          hash['api_resources'].each do |api_resource_hash|
+            current_date_time = Time.zone.now
+            filtered_api_resource_hash = api_resource_hash.except(*neglected_attributes[:api_resource]).merge({'api_namespace_id': new_api_namespace.id, 'created_at': current_date_time, 'updated_at': current_date_time})
+            # Remove keys that are not available in table since we have association:api_actions as well.
+            api_resource_attributes = ApiResource.new.attributes.keys
+            filtered_api_resource_hash = filtered_api_resource_hash.reject{ |k| !api_resource_attributes.include?(k.to_s) }
+            
+            # For skipping before_create callback for ApiResource
+            ApiResource.insert(filtered_api_resource_hash)
+            new_api_resource = new_api_namespace.reload.api_resources.last
+
+            api_resource_hash['api_actions'].each do |api_resource_api_action_hash|
+              api_resource_api_action_hash = api_resource_api_action_hash.except(*neglected_attributes[:api_action]).merge({'api_resource_id': new_api_resource.id})
+              ApiAction.create!(api_resource_api_action_hash)
+            end
+          end
+        end
+
+        { success: true, data: new_api_namespace }
+      end
+    rescue => e
+      { success: false, message: e.message }
+    end
+  end
 end
