@@ -1,5 +1,8 @@
 ![violet-logo-horizontal-with-wordmark](https://user-images.githubusercontent.com/35935196/121615020-efc5f880-ca2d-11eb-9e0c-08e2c7926b3a.png)
-![Ruby](https://github.com/restarone/violet_rails/workflows/Ruby/badge.svg)
+![Ruby/Node.js Build](https://github.com/restarone/violet_rails/workflows/Ruby/badge.svg)
+[![Brakeman Scan](https://github.com/restarone/violet_rails/actions/workflows/brakeman-analysis.yml/badge.svg)](https://github.com/restarone/violet_rails/actions/workflows/brakeman-analysis.yml)
+[![Heroku Deployments](https://github.com/restarone/violet_rails/actions/workflows/heroku-deploy.yml/badge.svg)](https://github.com/restarone/violet_rails/actions/workflows/heroku-deploy.yml)
+[![AWS EC2 Deployments](https://github.com/restarone/violet_rails/actions/workflows/deploy.yml/badge.svg)](https://github.com/restarone/violet_rails/actions/workflows/deploy.yml)
 ## What is Violet Rails?
 The ultimate open-source, self-hosted web and automation platform. Violet is a Ruby on Rails based complete web engine for business that includes professional email, blog, forum, analytics, automation and collaboration tools packaged into your web domain.
 
