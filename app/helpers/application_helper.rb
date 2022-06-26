@@ -31,6 +31,6 @@ module ApplicationHelper
   end
 
   def mobile?
-    request.user_agent.include?('VioletRailsiOS')
+    request&.user_agent&.include?('VioletRailsiOS')
   end
 end
