@@ -33,4 +33,18 @@ module ApplicationHelper
   def mobile?
     request&.user_agent&.include?('VioletRailsiOS')
   end
+
+  def render_smart_navbar
+    # conditionally renders a navbar for web / none for native in CMS
+    unless mobile?
+      return cms_snippet_render('navbar').html_safe
+    end
+  end
+
+  def render_smart_footer
+    # conditionally renders a navbar for footer / none for native in CMS
+    unless mobile?
+      return cms_snippet_render('footer').html_safe
+    end
+  end
 end
