@@ -1,4 +1,5 @@
 ![violet-logo-horizontal-with-wordmark](https://user-images.githubusercontent.com/35935196/121615020-efc5f880-ca2d-11eb-9e0c-08e2c7926b3a.png)
+------
 ![Ruby/Node.js Build](https://github.com/restarone/violet_rails/workflows/Ruby/badge.svg)
 [![Brakeman Scan](https://github.com/restarone/violet_rails/actions/workflows/brakeman-analysis.yml/badge.svg)](https://github.com/restarone/violet_rails/actions/workflows/brakeman-analysis.yml)
 [![Heroku Deployments](https://github.com/restarone/violet_rails/actions/workflows/heroku-deploy.yml/badge.svg)](https://github.com/restarone/violet_rails/actions/workflows/heroku-deploy.yml)
@@ -7,17 +8,16 @@
 The ultimate open-source, self-hosted web and automation platform. Violet is a Ruby on Rails based complete web engine for business that includes professional email, blog, forum, analytics, automation and collaboration tools packaged into your web domain.
 
 ## Features ✨
-
 ### ✨ **A powerful website builder** 🌍
 Powered by a rich Content Management System with out of the box support for Bootstrap 4 and jQuery, you can edit HTML templates either with a content first or markup first approach. Create both public and private web pages with ease. 
 ![Screenshot from 2021-05-21 17-21-45](https://user-images.githubusercontent.com/35935196/119199494-288b3700-ba59-11eb-8f6b-b97255ab3273.png)
-
+***
 #### Examples of inspirational websites built with Violet Rails 🚀
 
 1. Coffee Oysters Champagne: https://www.sipshucksip.com
 2. Marked Restaurant: http://markedrestaurant.com
 3. a toi: https://a-toi.ca
-
+***
 
 ### ✨ **Rich user management system with invites and granular permissions** 🧑‍🤝‍🧑
 Allow your outreach team to support the forum and blog, while the designers and developers work on the web pages. 
@@ -41,7 +41,12 @@ Easily build funnels and data analytics systems with Violet Rails Data pipeline.
 Every Violet Rails app transition seamlessly between web (left) and iOS (right)
 <img width="1728" alt="Screen Shot 2022-06-26 at 1 46 32 PM" src="https://user-images.githubusercontent.com/35935196/175827355-b7d7e41b-c116-4d22-b9c2-226bd9ca0dad.png">
 
+#### Examples of inspirational ✨ apps 🗺️ built with Violet Rails 🚀
 
+1. Nikean Foundation: https://www.nikean.org
+2. Restarone Solutions Tech Support: https://support.restarone.solutions
+3. Restarone Software Solutions: https://restarone.com
+***
 
 ### ✨ **Simplest Email Service** 📧
 Each Violet Rails 
