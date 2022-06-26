@@ -11,7 +11,7 @@
 
   %body
     = render partial: 'shared/flash'
-    = cms_snippet_render('navbar').html_safe
+    = cms_snippet_render('navbar').html_safe unless mobile?
     .d-flex.flex-column.justify-content-center.align-items-center
       .my-5
         - custom_logo_path = logo_url(Subdomain.current)
