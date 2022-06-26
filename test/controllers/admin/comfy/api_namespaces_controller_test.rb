@@ -284,7 +284,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
         {
           api_actions: {
             except: [:salt, :encrypted_bearer_token],
-            methods: [:bearer_token]
+            methods: [:bearer_token, :type]
           }
         },
         {
@@ -293,7 +293,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
               {
                 api_actions: {
                   except: [:salt, :encrypted_bearer_token],
-                  methods: [:bearer_token]
+                  methods: [:bearer_token, :type]
                 }
               }
             ]

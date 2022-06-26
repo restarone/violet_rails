@@ -164,8 +164,8 @@ class ApiNamespace < ApplicationRecord
           :non_primitive_properties,
           {
             api_actions: {
-              except: [:salt, :encrypted_bearer_token],
-              methods: [:bearer_token]
+              except: [:salt, :encrypted_bearer_token], # Copying salt raises error related to encoding and these are encypted data. So, we should not copy such values.
+              methods: [:bearer_token, :type]
             }
           },
           {
@@ -174,7 +174,7 @@ class ApiNamespace < ApplicationRecord
                 {
                   api_actions: {
                     except: [:salt, :encrypted_bearer_token],
-                    methods: [:bearer_token]
+                    methods: [:bearer_token, :type]
                   }
                 }
               ]
