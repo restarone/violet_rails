@@ -11,7 +11,7 @@
 
   %body
     = render partial: 'shared/flash'
-    = cms_snippet_render('navbar').html_safe
+    = cms_snippet_render('navbar').html_safe unless mobile?
     .d-flex.flex-column.justify-content-center.align-items-center
       .my-5
         - custom_logo_path = logo_url(Subdomain.current)
@@ -21,4 +21,4 @@
           %a{href: 'https://github.com/restarone/violet_rails', target: "_blank"}
             = image_tag('violet-rails-vertical-logo.png', class: "img-fluid", size: '100x100')  
       = yield
-    = cms_snippet_render('footer').html_safe
+    = cms_snippet_render('footer').html_safe unless mobile?
