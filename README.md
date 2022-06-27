@@ -19,11 +19,6 @@ Powered by a rich Content Management System with out of the box support for Boot
 3. a toi: https://a-toi.ca
 ***
 
-### ✨ **Rich user management system with invites and granular permissions** 🧑‍🤝‍🧑
-Allow your outreach team to support the forum and blog, while the designers and developers work on the web pages. 
-![Screenshot from 2021-05-21 17-25-15](https://user-images.githubusercontent.com/35935196/119199693-86b81a00-ba59-11eb-8543-96df36b44968.png)
-
-
 ### ✨ **A flexible app, automation and analytics platform** 🦾
 Build apps and automation with Violet Rails API Namespace: https://github.com/restarone/violet_rails/wiki/API:-Entities,-Form-Rendering,-Interfaces-and-Actions
 #### **Building forms** 📜
@@ -47,6 +42,10 @@ Every Violet Rails app transition seamlessly between web (left) and iOS (right)
 2. Restarone Solutions Tech Support: https://support.restarone.solutions
 3. Restarone Software Solutions: https://restarone.com
 ***
+
+### ✨ **Rich user management system with invites and granular permissions** 🧑‍🤝‍🧑
+Allow your outreach team to support the forum and blog, while the designers and developers work on the web pages. 
+![Screenshot from 2021-05-21 17-25-15](https://user-images.githubusercontent.com/35935196/119199693-86b81a00-ba59-11eb-8543-96df36b44968.png)
 
 ### ✨ **Simplest Email Service** 📧
 Each Violet Rails 
