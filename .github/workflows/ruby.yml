@@ -89,4 +89,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: code-coverage-report(Ruby - ${{ matrix.ruby_version }}, Node.js - ${{ matrix.node_version }})
-        path: coverage/index.html
+        path: coverage/
