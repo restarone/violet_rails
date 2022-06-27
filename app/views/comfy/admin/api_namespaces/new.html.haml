@@ -1,9 +1,9 @@
-.page-header.mb-5.d-flex.justify-content-between.align-items-center
+.page-header.mb-5.d-lg-flex.justify-content-between.align-items-center
   .h1
-    New api_namespace
-  = form_with(url: import_as_json_api_namespaces_path, method: :post, multipart: true, class: 'mb-1') do
-    = file_field_tag 'file', class: 'd-block mb-2', required: true
-    = submit_tag('Import JSON', class: 'btn btn-primary')
+    New API Namespace
+  = form_with(url: import_as_json_api_namespaces_path, method: :post, multipart: true, class: 'my-lg-2 mt-5 mb-1') do
+    = file_field_tag 'file', class: 'd-block mb-2', required: true , style: 'max-width: 220px;'
+    = submit_tag('Import JSON', class: 'btn btn-primary btn-sm')
 
 = render 'form'
 
