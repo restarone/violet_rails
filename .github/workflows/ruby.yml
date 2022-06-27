@@ -83,6 +83,10 @@ jobs:
       run: |
         cd client
         npm install -g ember-cli
-
     - name: Run Tests
       run: bin/rails test -f
+    - name: Save code coverage report
+      uses: actions/upload-artifact@v3
+      with:
+        name: code-coverage-report(Ruby - ${{ matrix.ruby_version }}, Node.js - ${{ matrix.node_version }})
+        path: coverage/index.html
