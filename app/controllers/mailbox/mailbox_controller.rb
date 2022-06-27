@@ -1,5 +1,8 @@
 class Mailbox::MailboxController < Mailbox::BaseController
   def show
-    @message_threads = MessageThread.all.order(created_at: :desc)
+    params[:q] ||= {}
+    @message_threads_q = MessageThread.all.includes(:messages).ransack(params[:q])
+    @message_threads_q.sorts = ['created_at desc'] if @message_threads_q.sorts.empty?
+    @message_threads = @message_threads_q.result(distinct: true).paginate(page: params[:page], per_page: params[:per_page] || 10)
   end
 end
