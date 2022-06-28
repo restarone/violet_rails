@@ -133,7 +133,7 @@ Rails.application.routes.draw do
   post "/graphql", to: "graphql#execute"
 
   # catch web client route before it gets hijacked by the server
-  if RUBY_VERSION != "3.0.0"
+  if RUBY_VERSION != "3.0.0" && ENV["EMBER_ENABLED"]
     mount_ember_app :client, to: "/app"
   end
 

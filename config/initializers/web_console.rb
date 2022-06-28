@@ -1,4 +1,4 @@
-
+Rails.application.reloader.to_prepare do
   module WebConsole
     class Permissions
       # monkey patch for dynamically allowing web console rendering
@@ -7,3 +7,4 @@
       end
     end
   end
+end
