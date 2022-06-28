@@ -12,8 +12,11 @@
   .form-group{style: "#{'display:none' unless resource.field_type == 'richtext'}", id: "rich_text_field_#{index}"}
     = label_tag 'Default Content'
     = rich_text_area_tag "api_namespace[non_primitive_properties_attributes][#{index}][content]", resource.content
+  .form-group.toggle-file-attachment.align-items-center{style: "#{resource.field_type == 'richtext' ? 'display:flex' : 'display:none'}", id: "rich_text_field_disable_attachment_#{index}"}
+    = label_tag 'Disable File Attachment', nil, class: 'm-0 mr-1'
+    = check_box_tag "api_namespace[non_primitive_properties_attributes][#{index}][disable_file_attachment]", nil, resource.disable_file_attachment, onclick: 'toggleFileAttachment(this)'
   .form-group.mb-0{style: "#{'display:none' unless resource.field_type == 'file'}", id: "file_field_#{index}"}
-    = label_tag 'Deafult attachment'
+    = label_tag 'Default attachment'
     = file_field_tag "api_namespace[non_primitive_properties_attributes][#{index}][attachment]", class: "form-control form-control-sm", onchange: "previewFile(event, 'file_field_#{index}_preview')"
     .mt-3
       %video{id: "file_field_#{index}_preview_video", controls: true, style: "max-height: 150px; display: none"}
@@ -21,3 +24,27 @@
     
 
   = hidden_field_tag "api_namespace[non_primitive_properties_attributes][#{index}][_destroy]", false ,{id: "form_destroy_field_#{index}"}
+
+:javascript
+  addEventListener('trix-initialize', function() {
+    $('.toggle-file-attachment input[type="checkbox"]').each(function() {
+      toggleFileAttachment(this);
+    })
+  });
+
+  function toggleFileAttachment(element) {
+    const fileAttachIcon = $(element).parents('.card').find('trix-toolbar .trix-button-group--file-tools');
+    const trixEditor = $(element).parents('.card').find('trix-editor');
+
+    if (element.checked) {
+      fileAttachIcon.hide();
+    } else {
+      fileAttachIcon.show();
+    }
+
+    trixEditor.on('trix-file-accept', function(e) {
+      if (element.checked) {
+        e.preventDefault();
+      }
+    })
+  }
