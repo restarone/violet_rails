@@ -14,7 +14,9 @@
     = rich_text_area_tag "api_namespace[non_primitive_properties_attributes][#{index}][content]", resource.content
   .form-group.toggle-file-attachment.align-items-center{style: "#{resource.field_type == 'richtext' ? 'display:flex' : 'display:none'}", id: "rich_text_field_disable_attachment_#{index}"}
     = label_tag 'Disable File Attachment', nil, class: 'm-0 mr-1'
-    = check_box_tag "api_namespace[non_primitive_properties_attributes][#{index}][disable_file_attachment]", nil, resource.disable_file_attachment, onclick: 'toggleFileAttachment(this)'
+    -# workaround reference: https://github.com/rails/rails/issues/5937, https://stackoverflow.com/a/20380051
+    = hidden_field_tag "api_namespace[non_primitive_properties_attributes][#{index}][disable_file_attachment]", false
+    = check_box_tag "api_namespace[non_primitive_properties_attributes][#{index}][disable_file_attachment]", true, resource.disable_file_attachment, onclick: 'toggleFileAttachment(this)'
   .form-group.mb-0{style: "#{'display:none' unless resource.field_type == 'file'}", id: "file_field_#{index}"}
     = label_tag 'Default attachment'
     = file_field_tag "api_namespace[non_primitive_properties_attributes][#{index}][attachment]", class: "form-control form-control-sm", onchange: "previewFile(event, 'file_field_#{index}_preview')"
