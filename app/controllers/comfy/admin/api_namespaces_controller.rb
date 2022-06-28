@@ -137,7 +137,7 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
                                             :requires_authentication,
                                             :namespace_type,
                                             :has_form,
-                                            non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :disable_file_attachment, :_destroy],
+                                            non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :allow_attachments, :_destroy],
                                             new_api_actions_attributes: api_actions_attributes,
                                             create_api_actions_attributes: api_actions_attributes,
                                             show_api_actions_attributes: api_actions_attributes,

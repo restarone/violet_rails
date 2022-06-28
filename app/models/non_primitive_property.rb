@@ -9,11 +9,11 @@ class NonPrimitiveProperty < ApplicationRecord
 
   validates_presence_of :label
 
-  before_save :reset_disable_file_attachment
+  before_save :reset_allow_attachments
 
   private
 
-  def reset_disable_file_attachment
-    self.disable_file_attachment = false if self.field_type != 'richtext' && self.disable_file_attachment
+  def reset_allow_attachments
+    self.allow_attachments = true if self.field_type != 'richtext' && !self.allow_attachments
   end
 end

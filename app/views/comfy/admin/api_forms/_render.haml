@@ -18,7 +18,7 @@
               = map_form_field(fff, key, value, form_properties)
       - @api_namespace.non_primitive_properties.each_with_index do |property, index|
         = fields_for "data[non_primitive_properties_attributes][#{index}]", property do |ff|
-          .form-group{class: "vr-#{ff.object.label} #{'disable-trix-file-attachment' if ff.object.disable_file_attachment}"}
+          .form-group{class: "vr-#{ff.object.label} #{'disable-trix-file-attachment' unless ff.object.allow_attachments}"}
             = label_tag property.label
             = map_non_primitive_data_type(ff, property.field_type, form_properties)
             - if property.field_type == 'file'
