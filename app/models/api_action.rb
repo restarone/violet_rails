@@ -6,6 +6,8 @@ class ApiAction < ApplicationRecord
   attr_encrypted :bearer_token
   attr_dynamic :email, :email_subject, :custom_message, :payload_mapping, :request_url
 
+  after_update :update_executed_actions_payload, if: Proc.new { api_namespace.present? && saved_change_to_payload_mapping? }
+
   belongs_to :api_namespace, optional: true
   belongs_to :api_resource, optional: true
 
@@ -35,6 +37,10 @@ class ApiAction < ApplicationRecord
   end
 
   private
+
+  def update_executed_actions_payload
+    ApiAction.where(api_resource_id: api_namespace.api_resources.pluck(:id), payload_mapping: payload_mapping_previously_was, type: type, action_type: action_type).update_all(payload_mapping: payload_mapping)
+  end
 
   def send_email
     begin

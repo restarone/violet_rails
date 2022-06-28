@@ -8,11 +8,11 @@
       .col-12.d-flex.mb-3
         .mr-3
           Request Url:
-        = @api_action.request_url
+        = @api_action.request_url_evaluated
       .col-12.d-flex.mb-3
         .mr-3
           Payload: 
-        = @api_action.payload_mapping
+        = @api_action.payload_mapping_evaluated
     
     - if @api_action.action_type == 'redirect'
       .col-12.d-flex.mb-3
@@ -23,11 +23,15 @@
       .col-12.d-flex.mb-3
         .mr-3
           Email:
-        = @api_action.email
+        = @api_action.email_evaluated
+      .col-12.d-flex.mb-3
+        .mr-3
+          Email Subject:
+        = @api_action.email_subject_evaluated
       .col-12.d-flex.mb-3
         .mr-3
           Custom message:
-        = @api_action.custom_message
+        = @api_action.custom_message_evaluated
       .col-12.d-flex.mb-3
         .mr-3
           Include resource:
