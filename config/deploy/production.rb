@@ -9,6 +9,9 @@
 
 server ENV['SERVER_IP'], user: 'ubuntu', roles: %w{app db web}
 
+# for local precompile, we have a timeout error sometimes, add a longer timeout
+set :rsync_cmd, "rsync -av --delete --timeout 300"                  # default: "rsync -av --delete"
+
 # role-based syntax
 # ==================
 
