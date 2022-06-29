@@ -1,0 +1,7 @@
+= search_form_for @message_threads_q, url: mailbox_path do |f|
+  .form-group
+    = f.label "email body, subject or email address (both: sender & recipients)", class: 'col-form-label'
+    = f.search_field :search_messages_content_body_or_subject_or_messages_from_or_recipients_contains, value: params[:q][:search_messages_content_body_or_subject_or_messages_from_or_recipients_contains], class: 'form-control'
+    .text-center
+      = f.submit class: 'btn btn-primary my-2'
+      = link_to "Clear Search", request.path, class:"cancel-button"

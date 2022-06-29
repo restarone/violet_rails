@@ -133,7 +133,9 @@ Rails.application.routes.draw do
   post "/graphql", to: "graphql#execute"
 
   # catch web client route before it gets hijacked by the server
-  mount_ember_app :client, to: "/app"
+  if RUBY_VERSION != "3.0.0"
+    mount_ember_app :client, to: "/app"
+  end
 
   comfy_route :cms_admin, path: "/admin"
   comfy_route :blog, path: "blog"

@@ -3,6 +3,8 @@
   .h2
     = I18n.t('views.mailbox.index.header.title')
     = Subdomain.current.mailing_address
+= render partial: 'mailbox/mailbox/search_filters'
+= render partial: 'mailbox/mailbox/pagination', locals: { data: @message_threads }
 - @message_threads.each do |message_thread|
   = link_to mailbox_message_thread_path(id: message_thread.id), class: 'text-reset text-decoration-none' do
     .card.my-3
@@ -17,3 +19,4 @@
         - if message_thread.messages.any?
           .card-text.bg-light.p-2
             = message_thread.messages.first.content
+= render partial: 'mailbox/mailbox/pagination', locals: { data: @message_threads }
