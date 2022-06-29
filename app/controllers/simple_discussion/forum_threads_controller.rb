@@ -53,7 +53,7 @@ class SimpleDiscussion::ForumThreadsController < SimpleDiscussion::ApplicationCo
       ApiNamespace::Plugin::V1::SubdomainEventsService.new(@forum_thread).track_event
       redirect_to simple_discussion.forum_thread_path(@forum_thread)
     else
-      render action: :new
+      render action: :new, status: :unprocessable_entity
     end
   end
 
@@ -64,7 +64,7 @@ class SimpleDiscussion::ForumThreadsController < SimpleDiscussion::ApplicationCo
     if @forum_thread.update(forum_thread_params)
       redirect_to simple_discussion.forum_thread_path(@forum_thread), notice: I18n.t("your_changes_were_saved")
     else
-      render action: :edit
+      render action: :edit, status: :unprocessable_entity
     end
   end
 
