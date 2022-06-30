@@ -111,4 +111,17 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_template :index
   end
+
+  test '#create denies login with' do
+    payload = {
+      user: {
+        email: @user.email,
+        password: ''
+      }
+    }
+    post users_sign_in_url, params: payload
+    
+    assert_template :new
+    assert_match "Invalid Email or password.", flash[:alert]
+  end
 end

@@ -22,6 +22,8 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
       assert_difference "User.all.reload.size", +1 do
         post user_registration_url(subdomain: @public_subdomain.name), params: payload
         assert_response :redirect
+        assert_select "div#error_explanation", { count: 0 }
+        refute @controller.view_assigns['user'].errors.present?
       end
     end
 
@@ -29,6 +31,37 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
       assert_difference "User.all.reload.size", +1 do
         post user_registration_url(subdomain: @restarone_subdomain), params: payload
         assert_response :redirect
+        assert_select "div#error_explanation", { count: 0 }
+        refute @controller.view_assigns['user'].errors.present?
+      end
+    end
+  end
+
+  test "should deny create (within subdomain scope) by showing validation-erros" do
+    email = ''
+    password = ''
+    payload = {
+      user: {
+        email: email,
+        password: password,
+        password_confirmation: password
+      }
+    }
+    Apartment::Tenant.switch(@public_subdomain.name) do
+      assert_no_difference "User.count" do
+        post user_registration_url(subdomain: @public_subdomain.name), params: payload
+
+        assert_select "div#error_explanation"
+        assert @controller.view_assigns['user'].errors.present?
+      end
+    end
+
+    Apartment::Tenant.switch(@restarone_subdomain) do
+      assert_no_difference "User.count" do
+        post user_registration_url(subdomain: @restarone_subdomain), params: payload
+
+        assert_select "div#error_explanation"
+        assert @controller.view_assigns['user'].errors.present?
       end
     end
   end
@@ -158,7 +191,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test 'should allow #update if user provides current password' do
+  test 'should allow #update if user provides current password with no validation errors' do
     payload = {
       user: {
         name: 'foo',
@@ -169,9 +202,12 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
       sign_in(@user)
       patch user_registration_url, params: payload
     end
+
+    assert_select "div#error_explanation", { count: 0 }
+    refute @controller.view_assigns['user'].errors.present?
   end
 
-  test 'should deny #update if user does not provide current password' do
+  test 'should deny #update if user does not provide current password with validation-error' do
     payload = {
       user: {
         name: 'foo',
@@ -181,6 +217,27 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
       sign_in(@user)
       patch user_registration_url, params: payload
     end
+
+    assert_select "div#error_explanation"
+    assert @controller.view_assigns['user'].errors.present?
+  end
+
+  test 'should deny #update if user provides wrong current password and mismatched new-password  with validation-error' do
+    payload = {
+      user: {
+        name: 'foo',
+        current_password: 'sdkalfj',
+        password: 'dkslafj',
+        password_confirmation: 'sdafjlkj'
+      }
+    }
+    assert_no_changes "@user.reload.name" do
+      sign_in(@user)
+      patch user_registration_url, params: payload
+    end
+
+    assert_select "div#error_explanation"
+    assert @controller.view_assigns['user'].errors.present?
   end
 
   test 'deny #destroy' do
