@@ -18,7 +18,7 @@
               = map_form_field(fff, key, value, form_properties)
       - @api_namespace.non_primitive_properties.each_with_index do |property, index|
         = fields_for "data[non_primitive_properties_attributes][#{index}]", property do |ff|
-          .form-group{class: "vr-#{ff.object.label}"}
+          .form-group{class: "vr-#{ff.object.label} #{'disable-trix-file-attachment' unless ff.object.allow_attachments}"}
             = label_tag property.label
             = map_non_primitive_data_type(ff, property.field_type, form_properties)
             - if property.field_type == 'file'
@@ -64,7 +64,19 @@
         tags: $(this).attr('data-tags')
       })
       $(this).val(JSON.parse($(this).attr('default_value'))).change();
-    })
+    });
+  });
+
+  // Disabling file attachment functionality
+  addEventListener('trix-initialize', function(e) {
+    $('.disable-trix-file-attachment').each(function(e) {
+      // Remove file-attach icon
+      $(this).find('trix-toolbar .trix-button-group--file-tools').remove();
+      // Disables functionality to drag-and-drop files onto the trix-editor
+      $(this).find('trix-editor').on('trix-file-accept', function(e) {
+        e.preventDefault();
+      });
+    });
   });
 
 - execute_actions(@api_namespace, 'new_api_actions')
