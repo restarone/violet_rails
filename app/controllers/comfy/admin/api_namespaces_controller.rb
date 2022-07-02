@@ -1,6 +1,6 @@
 class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
   before_action :ensure_authority_to_manage_api
-  before_action :set_api_namespace, only: %i[ show edit update destroy discard_failed_api_actions rerun_failed_api_actions export duplicate_with_associations duplicate_without_associations ]
+  before_action :set_api_namespace, only: %i[ show edit update destroy discard_failed_api_actions rerun_failed_api_actions export duplicate_with_associations duplicate_without_associations export_without_associations_as_json export_with_associations_as_json ]
 
   # GET /api_namespaces or /api_namespaces.json
   def index
@@ -119,6 +119,32 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
         response.headers['Content-Disposition'] = "attachment; filename=#{filename}"
         render template: "comfy/admin/api_namespaces/export"
       end
+    end
+  end
+
+  def export_without_associations_as_json
+    json_str = @api_namespace.export_as_json(include_associations: false)
+
+    send_data json_str, :type => 'application/json; header=present', :disposition => "attachment; filename=#{@api_namespace.name}_without_associations.json"
+  end
+
+  def export_with_associations_as_json
+    json_str = @api_namespace.export_as_json(include_associations: true)
+
+    send_data json_str, :type => 'application/json; header=present', :disposition => "attachment; filename=#{@api_namespace.name}_with_associations.json"
+  end
+
+  def import_as_json
+    file_path = params[:file].tempfile.path
+    json_str = File.read(file_path)
+    response = ApiNamespace.import_as_json(json_str)
+
+    if response[:success]
+      imported_api_namespace = response[:data]
+
+      redirect_to api_namespace_path(id: imported_api_namespace.id), notice: "Api namespace was successfully imported."
+    else
+      redirect_back fallback_location: api_namespaces_path, alert: "Importing Api namespace failed due to: #{response[:message]}."
     end
   end
 
