@@ -88,12 +88,17 @@
       const inputFieldId = $(this).attr('input');
 
       if (!$(this).parent().find('input#' + inputFieldId).val()) {
-        $(this).parent().append('<div class="text-danger required-rich-text-error">This is a required field.</div>');
+        $(this).parent().append(richTextRequiredMessage());
         isRequiredFieldsFilled = false;
       }
     });
 
     return isRequiredFieldsFilled;
+  }
+
+  function richTextRequiredMessage() {
+    message = "This is a required field."
+    return (`<div class="text-danger required-rich-text-error">${message}</div>`)
   }
 
 - execute_actions(@api_namespace, 'new_api_actions')
