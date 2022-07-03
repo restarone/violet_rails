@@ -8,8 +8,10 @@
       = select_tag "api_namespace[#{type}_attributes][#{index}][action_type]", options_for_select(ApiAction.action_types.keys, resource.action_type), { class: "form-control form-control-sm", id: "action_type_field_#{type}_#{index}", onchange: "toggleApiActionFields('#{index}', '#{type}');"}
     .send_email.col-12{style: "#{'display:none' unless resource.action_type == 'send_email'}", id: "send_email_fields_#{type}_#{index}"}
       .form-group
+        -# this is how we allow the user to unselect the selected checkbox. Using jquery and this hidden field to set the value to false if unchecked
+        = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][include_api_resource_data]", false
         = label_tag 'Include Api Resource Data'
-        = check_box_tag "api_namespace[#{type}_attributes][#{index}][include_api_resource_data]", resource.include_api_resource_data , resource.include_api_resource_data
+        = check_box_tag "api_namespace[#{type}_attributes][#{index}][include_api_resource_data]", resource.include_api_resource_data , resource.include_api_resource_data, onClick: "$(this).attr('value', this.checked ? 1 : 0)"
       .form-group
         = label_tag 'Email Address'
         = text_field_tag "api_namespace[#{type}_attributes][#{index}][email]", resource.email, { class: "form-control form-control-sm" }
