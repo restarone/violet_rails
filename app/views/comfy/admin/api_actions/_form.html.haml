@@ -14,13 +14,26 @@
         = check_box_tag "api_namespace[#{type}_attributes][#{index}][include_api_resource_data]", resource.include_api_resource_data , resource.include_api_resource_data, onClick: "$(this).attr('value', this.checked ? 1 : 0)"
       .form-group
         = label_tag 'Email Address'
+
         = text_field_tag "api_namespace[#{type}_attributes][#{index}][email]", resource.email, { class: "form-control form-control-sm" }
+        %small
+          Dynamic:
+          %code
+            \\#{api_resource.properties['your_custom_attribute_here']} 
       .form-group
         = label_tag 'Subject'
         =  text_field_tag "api_namespace[#{type}_attributes][#{index}][email_subject]", resource.email_subject, { class: "form-control form-control-sm" }
+        %small
+          Dynamic:
+          %code
+            \\#{api_resource.properties['your_custom_attribute_here']} 
       .form-group
         = label_tag 'Custom Message'
         = rich_text_area_tag "api_namespace[#{type}_attributes][#{index}][custom_message]", resource.custom_message, { class: "form-control form-control-sm" }
+        %small
+          Dynamic:
+          %code
+            \\#{api_resource.properties['your_custom_attribute_here']} 
 
     .redirect.col-12{style: "#{'display:none' unless resource.action_type == 'redirect'}", id: "redirect_fields_#{type}_#{index}"}
       .form-group
@@ -36,6 +49,10 @@
       .form-group
         = label_tag 'Request Url'
         = text_field_tag "api_namespace[#{type}_attributes][#{index}][request_url]", resource.request_url, { class: "form-control form-control-sm" }
+        %small
+          Dynamic:
+          %code
+            \\#{api_resource.properties['your_custom_attribute_here']} 
       .form-group
         = label_tag 'HTTP method'
         = select_tag "api_namespace[#{type}_attributes][#{index}][http_method]", options_for_select(ApiAction::HTTP_METHODS, resource.http_method), { class: "form-control form-control-sm"}
@@ -43,10 +60,18 @@
         = label_tag 'Request body'
         .js-jsoneditor{id: "payload_mapping_#{type}_#{index}-editor", 'data-field-id': "api_namespace_#{type}_attributes_#{index}_payload_mapping"}
         = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][payload_mapping]", resource.payload_mapping ? resource.payload_mapping.to_json : nil
+        %small
+          Dynamic:
+          %code
+            \\#{api_resource.properties['your_custom_attribute_here']} 
       .form-group
         = label_tag 'Headers'
         .js-jsoneditor{id: "custom_headers_#{type}_#{index}-editor", 'data-field-id': "api_namespace_#{type}_attributes_#{index}_custom_headers"}
         = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][custom_headers]", resource.custom_headers ? resource.custom_headers.to_json : nil
+        %small
+          Dynamic:
+          %code
+            \\#{api_resource.properties['your_custom_attribute_here']} 
       .form-group
         = label_tag 'Bearer Token'
         = text_field_tag "api_namespace[#{type}_attributes][#{index}][bearer_token]", resource.bearer_token, { class: "form-control form-control-sm" }
