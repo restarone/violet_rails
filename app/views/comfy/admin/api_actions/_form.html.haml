@@ -33,26 +33,16 @@
         = check_box_tag "api_namespace[#{type}_attributes][#{index}][include_api_resource_data]", resource.include_api_resource_data , resource.include_api_resource_data, onClick: "$(this).attr('value', this.checked ? 1 : 0)"
       .form-group
         = label_tag 'Email Address'
-
         = text_field_tag "api_namespace[#{type}_attributes][#{index}][email]", resource.email, { class: "form-control form-control-sm" }
-        %small
-          Dynamic:
-          %code
-            \\#{api_resource.properties['your_custom_attribute_here']} 
+
       .form-group
         = label_tag 'Subject'
         =  text_field_tag "api_namespace[#{type}_attributes][#{index}][email_subject]", resource.email_subject, { class: "form-control form-control-sm" }
-        %small
-          Dynamic:
-          %code
-            \\#{api_resource.properties['your_custom_attribute_here']} 
+
       .form-group
         = label_tag 'Custom Message'
         = rich_text_area_tag "api_namespace[#{type}_attributes][#{index}][custom_message]", resource.custom_message, { class: "form-control form-control-sm" }
-        %small
-          Dynamic:
-          %code
-            \\#{api_resource.properties['your_custom_attribute_here']} 
+
 
     .redirect.col-12{style: "#{'display:none' unless resource.action_type == 'redirect'}", id: "redirect_fields_#{type}_#{index}"}
       .form-group
