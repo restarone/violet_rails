@@ -6,6 +6,25 @@
     .form-group.col-12
       = label_tag "Action"
       = select_tag "api_namespace[#{type}_attributes][#{index}][action_type]", options_for_select(ApiAction.action_types.keys, resource.action_type), { class: "form-control form-control-sm", id: "action_type_field_#{type}_#{index}", onchange: "toggleApiActionFields('#{index}', '#{type}');"}
+      - if resource.action_type == 'send_email' || resource.action_type == 'send_web_request'
+        .form-group.my-2
+          .d-block
+            %strong Top-Level Model Attributes: 
+            .d-block
+              = @api_namespace.properties.keys
+        - last_instance = @api_namespace.api_resources.last
+        - if last_instance
+          .form-group
+            .d-block
+              %strong Last API Resource Instance Attributes: 
+              .d-block
+                = last_instance.properties.keys
+          .d-block
+            %small
+              Dynamic:
+              %code
+                \\#{api_resource.properties['your_custom_attribute_here']} 
+
     .send_email.col-12{style: "#{'display:none' unless resource.action_type == 'send_email'}", id: "send_email_fields_#{type}_#{index}"}
       .form-group
         -# this is how we allow the user to unselect the selected checkbox. Using jquery and this hidden field to set the value to false if unchecked
@@ -16,24 +35,12 @@
         = label_tag 'Email Address'
 
         = text_field_tag "api_namespace[#{type}_attributes][#{index}][email]", resource.email, { class: "form-control form-control-sm" }
-        %small
-          Dynamic:
-          %code
-            \\#{api_resource.properties['your_custom_attribute_here']} 
       .form-group
         = label_tag 'Subject'
         =  text_field_tag "api_namespace[#{type}_attributes][#{index}][email_subject]", resource.email_subject, { class: "form-control form-control-sm" }
-        %small
-          Dynamic:
-          %code
-            \\#{api_resource.properties['your_custom_attribute_here']} 
       .form-group
         = label_tag 'Custom Message'
         = rich_text_area_tag "api_namespace[#{type}_attributes][#{index}][custom_message]", resource.custom_message, { class: "form-control form-control-sm" }
-        %small
-          Dynamic:
-          %code
-            \\#{api_resource.properties['your_custom_attribute_here']} 
 
     .redirect.col-12{style: "#{'display:none' unless resource.action_type == 'redirect'}", id: "redirect_fields_#{type}_#{index}"}
       .form-group
@@ -49,10 +56,7 @@
       .form-group
         = label_tag 'Request Url'
         = text_field_tag "api_namespace[#{type}_attributes][#{index}][request_url]", resource.request_url, { class: "form-control form-control-sm" }
-        %small
-          Dynamic:
-          %code
-            \\#{api_resource.properties['your_custom_attribute_here']} 
+
       .form-group
         = label_tag 'HTTP method'
         = select_tag "api_namespace[#{type}_attributes][#{index}][http_method]", options_for_select(ApiAction::HTTP_METHODS, resource.http_method), { class: "form-control form-control-sm"}
@@ -60,18 +64,12 @@
         = label_tag 'Request body'
         .js-jsoneditor{id: "payload_mapping_#{type}_#{index}-editor", 'data-field-id': "api_namespace_#{type}_attributes_#{index}_payload_mapping"}
         = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][payload_mapping]", resource.payload_mapping ? resource.payload_mapping.to_json : nil
-        %small
-          Dynamic:
-          %code
-            \\#{api_resource.properties['your_custom_attribute_here']} 
+
       .form-group
         = label_tag 'Headers'
         .js-jsoneditor{id: "custom_headers_#{type}_#{index}-editor", 'data-field-id': "api_namespace_#{type}_attributes_#{index}_custom_headers"}
         = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][custom_headers]", resource.custom_headers ? resource.custom_headers.to_json : nil
-        %small
-          Dynamic:
-          %code
-            \\#{api_resource.properties['your_custom_attribute_here']} 
+
       .form-group
         = label_tag 'Bearer Token'
         = text_field_tag "api_namespace[#{type}_attributes][#{index}][bearer_token]", resource.bearer_token, { class: "form-control form-control-sm" }
