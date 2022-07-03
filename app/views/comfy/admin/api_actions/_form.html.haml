@@ -35,12 +35,24 @@
         = label_tag 'Email Address'
 
         = text_field_tag "api_namespace[#{type}_attributes][#{index}][email]", resource.email, { class: "form-control form-control-sm" }
+        %small
+          Dynamic:
+          %code
+            \\#{api_resource.properties['your_custom_attribute_here']} 
       .form-group
         = label_tag 'Subject'
         =  text_field_tag "api_namespace[#{type}_attributes][#{index}][email_subject]", resource.email_subject, { class: "form-control form-control-sm" }
+        %small
+          Dynamic:
+          %code
+            \\#{api_resource.properties['your_custom_attribute_here']} 
       .form-group
         = label_tag 'Custom Message'
         = rich_text_area_tag "api_namespace[#{type}_attributes][#{index}][custom_message]", resource.custom_message, { class: "form-control form-control-sm" }
+        %small
+          Dynamic:
+          %code
+            \\#{api_resource.properties['your_custom_attribute_here']} 
 
     .redirect.col-12{style: "#{'display:none' unless resource.action_type == 'redirect'}", id: "redirect_fields_#{type}_#{index}"}
       .form-group
@@ -60,6 +72,7 @@
       .form-group
         = label_tag 'HTTP method'
         = select_tag "api_namespace[#{type}_attributes][#{index}][http_method]", options_for_select(ApiAction::HTTP_METHODS, resource.http_method), { class: "form-control form-control-sm"}
+        
       .form-group
         = label_tag 'Request body'
         .js-jsoneditor{id: "payload_mapping_#{type}_#{index}-editor", 'data-field-id': "api_namespace_#{type}_attributes_#{index}_payload_mapping"}
