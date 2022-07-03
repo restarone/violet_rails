@@ -11,8 +11,8 @@
           .d-block
             %strong Top-Level Model Attributes: 
             .d-block
-              = @api_namespace.properties.keys
-        - last_instance = @api_namespace.api_resources.last
+              = @api_namespace&.properties&.keys
+        - last_instance = @api_namespace&.api_resources&.last
         - if last_instance
           .form-group
             .d-block
