@@ -59,9 +59,8 @@ Rails.application.configure do
   config.assets.debug = true
 
 
-  config.hosts << "*.lvh.me"
-  config.hosts << "lvh.me"
-  config.hosts << "violet.ngrok.io"
+  config.hosts = nil
+  
   
   config.action_mailer.default_url_options = { host: ENV['APP_HOST'] }
   config.action_mailer.perform_deliveries = true 
