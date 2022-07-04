@@ -36,7 +36,7 @@
   #interface.tab-pane.fade.show.active{"aria-labelledby" => "interface-tab", :role => "tabpanel"} 
     .card.p-3
       .card-title
-        = link_to 'Api Actions', api_namespace_api_actions_path(api_namespace_id: @api_namespace.id), class: 'btn btn-primary'
+        = link_to 'API Actions', api_namespace_api_actions_path(api_namespace_id: @api_namespace.id), class: 'btn btn-primary'
       %p
         %b Requires authentication:
         = @api_namespace.requires_authentication
