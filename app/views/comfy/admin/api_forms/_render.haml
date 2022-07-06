@@ -55,6 +55,8 @@
   %h3.text-danger{ style: "font-size: small;" }
     * No recaptcha keys are defined. Please set the required keys or unselect recaptcha option for this form.
 
+= render 'comfy/admin/api_namespaces/richtext_form_validations'
+
 :javascript
   $(document).ready( function() {
     $('.array_select').each(function() {
@@ -67,39 +69,5 @@
       $(this).val(JSON.parse($(this).attr('default_value'))).change();
     });
   });
-
-  // Disabling file attachment functionality
-  addEventListener('trix-initialize', function(e) {
-    $('.disable-trix-file-attachment').each(function(e) {
-      // Remove file-attach icon
-      $(this).find('trix-toolbar .trix-button-group--file-tools').remove();
-      // Disables functionality to drag-and-drop files onto the trix-editor
-      $(this).find('trix-editor').on('trix-file-accept', function(e) {
-        e.preventDefault();
-      });
-    });
-  });
-
-  function checkRequiredRichTextFields(e) {
-    let isRequiredFieldsFilled = true;
-
-    $('#api_form .required-rich-text-error').remove();
-
-    $('trix-editor[required]').each(function() {
-      const inputFieldId = $(this).attr('input');
-
-      if (!$(this).parent().find('input#' + inputFieldId).val()) {
-        $(this).parent().append(richTextRequiredMessage());
-        isRequiredFieldsFilled = false;
-      }
-    });
-
-    return isRequiredFieldsFilled;
-  }
-
-  function richTextRequiredMessage() {
-    message = "This is a required field."
-    return (`<div class="text-danger required-rich-text-error">${message}</div>`)
-  }
 
 - execute_actions(@api_namespace, 'new_api_actions')
