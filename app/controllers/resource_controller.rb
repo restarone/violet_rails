@@ -46,6 +46,6 @@ class ResourceController < ApplicationController
   end
   
   def resource_params
-    params.require(:data).permit(properties: {}, non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :_destroy])
+    params.require(:data).permit(properties: {}, non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :allow_attachments, :_destroy])
   end
 end

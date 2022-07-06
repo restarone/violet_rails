@@ -27,6 +27,7 @@
                 %img{id: "#{property.label.parameterize.underscore}_preview_img", controls: true,  style: "max-height: 150px; display: none"}
           = ff.hidden_field :field_type
           = ff.hidden_field :label
+          = ff.hidden_field :allow_attachments
       
     - if @api_form.show_recaptcha
       = recaptcha_tags callback: 'ctaSuccessHandler'
