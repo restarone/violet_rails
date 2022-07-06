@@ -6,15 +6,16 @@
 - unless read_only
   - non_primitive_properties.each_with_index do |property, index|
     = fields_for "api_resource[non_primitive_properties_attributes][#{index}]", property do |ff|
-      .form-group
+      .form-group{class: "#{'disable-trix-file-attachment' unless ff.object.allow_attachments}"}
         = label_tag property.label
         .my-2
           - if property.file?
             = show_file(property.attachment)
-        = map_non_primitive_data_type(ff, property.field_type, form_properties, true)
+        = map_non_primitive_data_type(ff, property.field_type, form_properties, is_edit)
       = ff.hidden_field :field_type
       = ff.hidden_field :label
-      = ff.hidden_field :id ,{ value: property.id } if property.id
+      = ff.hidden_field :allow_attachments
+      = ff.hidden_field :id ,{ value: property.id } if property.id && is_edit
 - else
   .my-3
     %b.mb-2.d-block Non-primitive Properties
