@@ -8,7 +8,7 @@
 - recaptcha_keys_set = @api_form.show_recaptcha_v3 && ENV['RECAPTCHA_SITE_KEY_V3'].present? && ENV['RECAPTCHA_SECRET_KEY_V3'].present? unless recaptcha_keys_set
 
 - if (@api_form.show_recaptcha.blank? && @api_form.show_recaptcha_v3.blank?) || recaptcha_keys_set
-  = form_for :data, url: api_namespace_resource_index_path(api_namespace_id: @api_namespace.id), method: :post, html: {class: 'violet-cta-form', 'data-type': 'json', multipart: true, id: 'api_form'} do |f|
+  = form_for :data, url: api_namespace_resource_index_path(api_namespace_id: @api_namespace.id), method: :post, html: {class: 'violet-cta-form', 'data-type': 'json', multipart: true, id: 'api_form', onsubmit: 'return checkRequiredRichTextFields()'} do |f|
     .form-group
       - properties.each do |key, value|
         = f.fields_for :properties do |fff|
@@ -18,7 +18,7 @@
               = map_form_field(fff, key, value, form_properties)
       - @api_namespace.non_primitive_properties.each_with_index do |property, index|
         = fields_for "data[non_primitive_properties_attributes][#{index}]", property do |ff|
-          .form-group{class: "vr-#{ff.object.label}"}
+          .form-group{class: "vr-#{ff.object.label} #{'disable-trix-file-attachment' unless ff.object.allow_attachments}"}
             = label_tag property.label
             = map_non_primitive_data_type(ff, property.field_type, form_properties)
             - if property.field_type == 'file'
@@ -27,6 +27,7 @@
                 %img{id: "#{property.label.parameterize.underscore}_preview_img", controls: true,  style: "max-height: 150px; display: none"}
           = ff.hidden_field :field_type
           = ff.hidden_field :label
+          = ff.hidden_field :allow_attachments
       
     - if @api_form.show_recaptcha
       = recaptcha_tags callback: 'ctaSuccessHandler'
@@ -48,11 +49,13 @@
 
       = recaptcha_v3(callback: 'ctaSuccessHandlerRecaptchaV3', action: sanitize_recaptcha_action_name(@api_namespace.name), site_key: ENV['RECAPTCHA_SITE_KEY_V3'])
       
-    = f.submit @api_form.submit_button_label, disabled: @api_form.show_recaptcha || @api_form.show_recaptcha_v3, class: 'my-2 btn btn-primary'
+    = f.submit @api_form.submit_button_label, disabled: @api_form.show_recaptcha || @api_form.show_recaptcha_v3, class: 'my-2 btn btn-primary', data: {disable_with: false}
 
 - else 
   %h3.text-danger{ style: "font-size: small;" }
     * No recaptcha keys are defined. Please set the required keys or unselect recaptcha option for this form.
+
+= render 'comfy/admin/api_namespaces/richtext_form_validations'
 
 :javascript
   $(document).ready( function() {
@@ -64,7 +67,7 @@
         tags: $(this).attr('data-tags')
       })
       $(this).val(JSON.parse($(this).attr('default_value'))).change();
-    })
+    });
   });
 
 - execute_actions(@api_namespace, 'new_api_actions')

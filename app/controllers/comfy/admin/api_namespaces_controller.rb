@@ -156,14 +156,14 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
 
     # Only allow a list of trusted parameters through.
     def api_namespace_params
-      api_actions_attributes =  [:id, :trigger, :action_type, :properties, :include_api_resource_data, :email,:custom_message, :payload_mapping, :request_url, :redirect_url, :bearer_token, :file_snippet, :position, :custom_headers, :http_method, :_destroy]
+      api_actions_attributes =  [:id, :trigger, :action_type, :properties, :include_api_resource_data, :email, :email_subject, :custom_message, :payload_mapping, :request_url, :redirect_url, :bearer_token, :file_snippet, :position, :custom_headers, :http_method, :_destroy]
       params.require(:api_namespace).permit(:name,
                                             :version,
                                             :properties,
                                             :requires_authentication,
                                             :namespace_type,
                                             :has_form,
-                                            non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :_destroy],
+                                            non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :allow_attachments, :_destroy],
                                             new_api_actions_attributes: api_actions_attributes,
                                             create_api_actions_attributes: api_actions_attributes,
                                             show_api_actions_attributes: api_actions_attributes,
