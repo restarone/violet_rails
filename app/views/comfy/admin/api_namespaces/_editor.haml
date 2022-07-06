@@ -15,7 +15,7 @@
       = ff.hidden_field :field_type
       = ff.hidden_field :label
       = ff.hidden_field :allow_attachments
-      = ff.hidden_field :id ,{ value: property.id } if property.id
+      = ff.hidden_field :id ,{ value: property.id } if property.id && is_edit
 - else
   .my-3
     %b.mb-2.d-block Non-primitive Properties
