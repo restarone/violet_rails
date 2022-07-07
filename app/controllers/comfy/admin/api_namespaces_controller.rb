@@ -1,6 +1,6 @@
 class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
   before_action :ensure_authority_to_manage_api
-  before_action :set_api_namespace, only: %i[ show edit update destroy discard_failed_api_actions rerun_failed_api_actions export duplicate_with_associations duplicate_without_associations ]
+  before_action :set_api_namespace, only: %i[ show edit update destroy discard_failed_api_actions rerun_failed_api_actions export duplicate_with_associations duplicate_without_associations export_without_associations_as_json export_with_associations_as_json ]
 
   # GET /api_namespaces or /api_namespaces.json
   def index
@@ -122,6 +122,32 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
     end
   end
 
+  def export_without_associations_as_json
+    json_str = @api_namespace.export_as_json(include_associations: false)
+
+    send_data json_str, :type => 'application/json; header=present', :disposition => "attachment; filename=#{@api_namespace.name}_without_associations.json"
+  end
+
+  def export_with_associations_as_json
+    json_str = @api_namespace.export_as_json(include_associations: true)
+
+    send_data json_str, :type => 'application/json; header=present', :disposition => "attachment; filename=#{@api_namespace.name}_with_associations.json"
+  end
+
+  def import_as_json
+    file_path = params[:file].tempfile.path
+    json_str = File.read(file_path)
+    response = ApiNamespace.import_as_json(json_str)
+
+    if response[:success]
+      imported_api_namespace = response[:data]
+
+      redirect_to api_namespace_path(id: imported_api_namespace.id), notice: "Api namespace was successfully imported."
+    else
+      redirect_back fallback_location: api_namespaces_path, alert: "Importing Api namespace failed due to: #{response[:message]}."
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_api_namespace
@@ -130,14 +156,14 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
 
     # Only allow a list of trusted parameters through.
     def api_namespace_params
-      api_actions_attributes =  [:id, :trigger, :action_type, :properties, :include_api_resource_data, :email,:custom_message, :payload_mapping, :request_url, :redirect_url, :bearer_token, :file_snippet, :position, :custom_headers, :http_method, :_destroy]
+      api_actions_attributes =  [:id, :trigger, :action_type, :properties, :include_api_resource_data, :email, :email_subject, :custom_message, :payload_mapping, :request_url, :redirect_url, :bearer_token, :file_snippet, :position, :custom_headers, :http_method, :_destroy]
       params.require(:api_namespace).permit(:name,
                                             :version,
                                             :properties,
                                             :requires_authentication,
                                             :namespace_type,
                                             :has_form,
-                                            non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :_destroy],
+                                            non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :allow_attachments, :_destroy],
                                             new_api_actions_attributes: api_actions_attributes,
                                             create_api_actions_attributes: api_actions_attributes,
                                             show_api_actions_attributes: api_actions_attributes,

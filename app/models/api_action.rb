@@ -1,7 +1,12 @@
 class ApiAction < ApplicationRecord
   include Encryptable
   include JsonbFieldsParsable
+  include DynamicAttribute
+
   attr_encrypted :bearer_token
+  attr_dynamic :email, :email_subject, :custom_message, :payload_mapping, :request_url, :custom_headers
+
+  after_update :update_executed_actions_payload, if: Proc.new { api_namespace.present? && saved_change_to_payload_mapping? }
 
   belongs_to :api_namespace, optional: true
   belongs_to :api_resource, optional: true
@@ -34,6 +39,10 @@ class ApiAction < ApplicationRecord
 
   private
 
+  def update_executed_actions_payload
+    ApiAction.where(api_resource_id: api_namespace.api_resources.pluck(:id), payload_mapping: payload_mapping_previously_was, type: type, action_type: action_type).update_all(payload_mapping: payload_mapping)
+  end
+
   def send_email
     begin
       ApiActionMailer.send_email(self).deliver_now
@@ -46,13 +55,8 @@ class ApiAction < ApplicationRecord
 
   def send_web_request
     begin
-      # Fetch current_user & current_visit
-      current_user = Current.user
-      current_visit = Current.visit
-
-      response = HTTParty.send(http_method.to_s, request_url, 
-                    { body: evaluate_payload(current_user, current_visit), headers: evaluate_request_headers(current_user, current_visit) })
-
+      response = HTTParty.send(http_method.to_s, request_url_evaluated, 
+                    { body: payload_mapping_evaluated, headers: request_headers })
       if response.success?
         self.update(lifecycle_stage: 'complete', lifecycle_message: response.to_s)
       else
@@ -69,14 +73,8 @@ class ApiAction < ApplicationRecord
 
   def serve_file;end
 
-  def evaluate_payload(current_user, current_visit)
-    payload = payload_mapping.to_json.gsub('self.', 'self.api_resource.properties_object.')
-    eval(payload).to_json
-  end
-
-  def evaluate_request_headers(current_user, current_visit)
-    headers = custom_headers.to_json.gsub('SECRET_BEARER_TOKEN', bearer_token)
-    headers = eval(headers).to_json
+  def request_headers
+    headers = custom_headers_evaluated.gsub('SECRET_BEARER_TOKEN', bearer_token)
     { 'Content-Type' => 'application/json' }.merge(JSON.parse(headers))
   end
 

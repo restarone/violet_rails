@@ -1,29 +1,29 @@
-%h1 Listing External API Connections
-
-%table
-  %thead
-    %tr
-      %th Label
-      %th Slug
-      %th Active
-      %th Drive Strategy
-      %th Max Requests / Minute
-      %th
-      %th
-      %th
-
-  %tbody
-    - @external_api_clients.each do |external_api_client|
+.container-fluid.mt-5
+  .d-flex.justify-content-between.py-2.page-header
+    %h2
+      =  @api_namespace.name.pluralize
+      > External API Connections
+  
+  %table{class: 'table my-5 table-responsive'}
+    %thead
       %tr
-        %td= external_api_client.label
-        %td= external_api_client.slug
-        %td= external_api_client.enabled
-        %td= external_api_client.drive_strategy
-        %td= external_api_client.max_requests_per_minute
-        %td= link_to 'Show', api_namespace_external_api_client_path(api_namespace_id: external_api_client.api_namespace.id, id: external_api_client.id)
-        %td= link_to 'Edit', edit_api_namespace_external_api_client_path(api_namespace_id: external_api_client.api_namespace.id, id: external_api_client.id)
-        %td= link_to 'Destroy', api_namespace_external_api_client_path(api_namespace_id: external_api_client.api_namespace.id, id: external_api_client.id), method: :delete, data: { confirm: 'Are you sure?' }
+        %th.px-3 Label
+        %th.px-3 Slug
+        %th.px-3 Active
+        %th.px-3 Drive Strategy
+        %th.px-3
+        %th.px-3
 
-%br
+    %tbody
+      - @external_api_clients.each do |external_api_client|
+        %tr
+          %td.px-3= link_to external_api_client.label, api_namespace_external_api_client_path(api_namespace_id: external_api_client.api_namespace.id, id: external_api_client.id)
+          %td.px-3= external_api_client.slug
+          %td.px-3= external_api_client.enabled
+          %td.px-3= external_api_client.drive_strategy
+          %td.px-3= link_to 'Edit', edit_api_namespace_external_api_client_path(api_namespace_id: external_api_client.api_namespace.id, id: external_api_client.id)
+          %td.px-3= link_to 'Destroy', api_namespace_external_api_client_path(api_namespace_id: external_api_client.api_namespace.id, id: external_api_client.id), method: :delete, data: { confirm: 'Are you sure?' }
 
-= link_to 'New Api client', new_api_namespace_external_api_client_path
+  %br
+
+  = link_to 'New External API Connection', new_api_namespace_external_api_client_path

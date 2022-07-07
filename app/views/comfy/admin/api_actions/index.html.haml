@@ -1,8 +1,7 @@
 .d-flex.justify-content-between.page-header.pb-3.mb-4
   %h2
-    Listing
     =  @api_namespace.name.pluralize
-    > Api Actions
+    > API Actions
   %div
     = link_to 'Action Workflow', action_workflow_api_namespace_api_actions_path(api_namespace_id: @api_namespace.id), class: 'btn btn-primary'
 = render partial: 'comfy/admin/api_actions/search_filters', locals: { objects: @api_actions_q, path: api_namespace_api_actions_path(api_namespace_id: @api_namespace.id) }
