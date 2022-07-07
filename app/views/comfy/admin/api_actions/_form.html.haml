@@ -46,8 +46,18 @@
 
     .redirect.col-12{style: "#{'display:none' unless resource.action_type == 'redirect'}", id: "redirect_fields_#{type}_#{index}"}
       .form-group
+        = label_tag 'Redirect Type', nil, class: 'd-block'
+        = label_tag "api_namespace[#{type}_attributes][#{index}][redirect_type]", 'cms_page'
+        = radio_button_tag "api_namespace[#{type}_attributes][#{index}][redirect_type]", 'cms_page', resource.cms_page?
+        = label_tag "api_namespace[#{type}_attributes][#{index}][redirect_type]", 'dynamic_url'
+        = radio_button_tag "api_namespace[#{type}_attributes][#{index}][redirect_type]", 'dynamic_url', resource.dynamic_url?
+
+      .form-group
         = label_tag 'Redirect Url'
-        = select_tag "api_namespace[#{type}_attributes][#{index}][redirect_url]", options_for_select((system_paths << resource.redirect_url).uniq), {class: "form-control form-control-sm path_select", default_value: resource.redirect_url}
+        -# Parent: <span> is used beacause select2 adds other adjacent elements as well.
+        %span.select-field{style: "#{'display:none' if resource.cms_page?}"}
+          = select_tag "api_namespace[#{type}_attributes][#{index}][redirect_url]", options_for_select((system_paths << resource.redirect_url).uniq), {class: "form-control form-control-sm path_select", default_value: resource.redirect_url}
+        = text_field_tag "api_namespace[#{type}_attributes][#{index}][redirect_url]", resource.redirect_url, { class: "form-control form-control-sm", style: "#{'display:none' if resource.dynamic_url?}" }
 
     .serve_file.col-12{style: "#{'display:none' unless resource.action_type == 'serve_file'}", id: "serve_file_fields_#{type}_#{index}"}
       .form-group
@@ -96,7 +106,26 @@
     $('.path_select').each(function() {
       $(this).val($(this).attr('default_value')).change();
     })
+
+    $("input[type='radio'][name='api_namespace[#{type}_attributes][#{index}][redirect_type]']").on('click', function () {
+      toggleRedirectInputField(this);
+    })
+
+    $("input[type='radio'][name='api_namespace[#{type}_attributes][#{index}][redirect_type]']").each(function () {
+      toggleRedirectInputField(this);
+    })
   });
+
+  function toggleRedirectInputField(element) {
+    const targetFormGroup = $(element).parent().next();
+    if ($(element).val() == 'cms_page' && $(element).is(':checked')) {
+      targetFormGroup.find('span.select-field').show();
+      targetFormGroup.find('input[type="text"]').hide();
+    } else if ($(element).val() == 'dynamic_url' && $(element).is(':checked')) {
+      targetFormGroup.find('span.select-field').hide();
+      targetFormGroup.find('input[type="text"]').show();
+    }
+  }
 
   function #{type}_#{index}_initializeJsonEditor(containerId, fieldId) {
     const container = document.getElementById(containerId)
