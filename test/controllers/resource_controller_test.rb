@@ -191,4 +191,49 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
     end
   end
+
+  test 'should allow #create and redirect to evaluated redirect_url if redirect_type is dynamic_url' do
+    payload = {
+      data: {
+          properties: {
+            flag: false
+          }
+      }
+    }
+
+    redirect_action = @api_namespace.create_api_actions.find_by(action_type: 'redirect')
+    redirect_action.update!(redirect_type: 'dynamic_url', redirect_url: "\#{ api_resource.properties['flag'] == 'true' ? dashboard_path : api_namespaces_path }")
+
+    assert_difference "@api_namespace.api_resources.count", +1 do
+      actions_count = @api_namespace.create_api_actions.size
+      assert_difference "@api_namespace.executed_api_actions.count", actions_count do
+        post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id, params: payload)
+        assert_response :redirect
+        assert_redirected_to api_namespaces_path
+      end
+    end
+  end
+
+  test 'should allow #create and should not redirect by evaluating redirect_url if redirect_type is not dynamic_url' do
+    payload = {
+      data: {
+          properties: {
+            flag: false
+          }
+      }
+    }
+
+    redirect_action = @api_namespace.create_api_actions.find_by(action_type: 'redirect')
+    url = "\#{ api_resource.properties['flag'] == 'true' ? dashboard_path : api_namespaces_path }"
+    redirect_action.update!(redirect_type: 'cms_page', redirect_url: url)
+
+    assert_difference "@api_namespace.api_resources.count", +1 do
+      actions_count = @api_namespace.create_api_actions.size
+      assert_difference "@api_namespace.executed_api_actions.count", actions_count do
+        post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id, params: payload)
+        assert_response :redirect
+        assert_redirected_to url
+      end
+    end
+  end
 end
