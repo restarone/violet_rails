@@ -29,7 +29,8 @@ module ApiActionable
   end
 
   def handle_redirection
-    flash[:notice] = @api_namespace.api_form.success_message
+    flash[:notice] = @api_namespace.api_form.success_message || 'Api resource was successfully updated.'
+
     if @redirect_action.present?
       if @redirect_action.update!(lifecycle_stage: 'complete', lifecycle_message: @redirect_action.redirect_url.to_s)
         redirect_to @redirect_action.redirect_url and return
@@ -39,7 +40,7 @@ module ApiActionable
       end
     end
 
-    redirect_back(fallback_location: root_path, notice: "Api resource was successfully updated.")
+    redirect_back(fallback_location: root_path)
   end
 
   def execute_api_actions
