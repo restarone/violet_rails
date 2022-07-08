@@ -121,9 +121,12 @@
     if ($(element).val() == 'cms_page' && $(element).is(':checked')) {
       targetFormGroup.find('span.select-field').show();
       targetFormGroup.find('input[type="text"]').hide();
+      // Disabling text field otherwise it's value will override the select field's value
+      targetFormGroup.find('input[type="text"]').attr('disabled', true);
     } else if ($(element).val() == 'dynamic_url' && $(element).is(':checked')) {
       targetFormGroup.find('span.select-field').hide();
       targetFormGroup.find('input[type="text"]').show();
+      targetFormGroup.find('input[type="text"]').attr('disabled', false);
     }
   }
 
