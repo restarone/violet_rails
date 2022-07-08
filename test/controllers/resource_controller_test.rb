@@ -227,4 +227,81 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     # Provided current_user & current_visit variable are available through send_web_request api-action
     assert_requested stub_post
   end
+
+  test 'should allow #create and show the custom success message' do
+    api_namespace = api_namespaces(:one)
+    api_namespace.api_form.update(success_message: 'test success message')
+    payload = {
+      data: {
+          properties: {
+            name: 123,
+          }
+      }
+    }
+    assert_difference "api_namespace.api_resources.count", +1 do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+
+    assert_equal 'test success message', flash[:notice]
+    refute flash[:error]
+  end
+
+  test 'should allow #create and show the custom success message even if no redirect action is defined' do
+    api_namespace = api_namespaces(:one)
+    api_namespace.api_form.update(success_message: 'test success message')
+    api_namespace.api_actions.where(type: 'CreateApiAction', action_type: 'redirect').destroy_all
+
+    payload = {
+      data: {
+          properties: {
+            name: 123,
+          }
+      }
+    }
+
+    assert_difference "api_namespace.api_resources.count", +1 do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+
+    assert_equal 'test success message', flash[:notice]
+    refute flash[:error]
+  end
+
+  test 'should deny #create and show the custom failure message' do
+    api_namespace = api_namespaces(:one)
+    api_namespace.api_form.update(failure_message: 'test failure message', properties: { 'name': {'label': 'name', 'placeholder': 'Name', 'field_type': 'input', 'required': '1' } })
+    payload = {
+      data: {
+          properties: {
+            name: '',
+          }
+      }
+    }
+    assert_no_difference "api_namespace.api_resources.count" do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+
+    assert_equal 'test failure message', flash[:error]
+    refute flash[:notice]
+  end
+
+  test 'should deny #create and show the custom failure message even if no redirect action is defined' do
+    api_namespace = api_namespaces(:one)
+    api_namespace.api_form.update(failure_message: 'test failure message', properties: { 'name': {'label': 'name', 'placeholder': 'Name', 'field_type': 'input', 'required': '1' } })
+    api_namespace.api_actions.where(type: 'CreateApiAction', action_type: 'redirect').destroy_all
+
+    payload = {
+      data: {
+          properties: {
+            name: '',
+          }
+      }
+    }
+    assert_no_difference "api_namespace.api_resources.count" do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+
+    assert_equal 'test failure message', flash[:error]
+    refute flash[:notice]
+  end
 end
