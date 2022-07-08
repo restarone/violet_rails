@@ -10,11 +10,19 @@ module ApiActionable
 
 
   def check_for_redirect_action
-    @redirect_action = @api_namespace.send(api_action_name).where(action_type: 'redirect').last
+    @redirect_action = if @api_resource.present?
+                        @api_resource.send(api_action_name).where(action_type: 'redirect', lifecycle_stage: 'initialized').last
+                      else
+                        @api_namespace.send(api_action_name).where(action_type: 'redirect').last
+                      end
   end
 
   def check_for_serve_file_action
-    serve_file_action = @api_namespace.send(api_action_name).where(action_type: 'serve_file').last
+    serve_file_action = if @api_resource.present?
+                        @api_resource.send(api_action_name).where(action_type: 'serve_file', lifecycle_stage: 'initialized').last
+                      else
+                        @api_namespace.send(api_action_name).where(action_type: 'serve_file').last
+                      end
     return if serve_file_action.nil?
 
     serve_file_action.update(lifecycle_stage: 'executing')
@@ -33,7 +41,8 @@ module ApiActionable
 
     if @redirect_action.present?
       if @redirect_action.update!(lifecycle_stage: 'complete', lifecycle_message: @redirect_action.redirect_url.to_s)
-        redirect_to @redirect_action.redirect_url and return
+        redirect_url = @redirect_action.dynamic_url? ? @redirect_action.redirect_url_evaluated : @redirect_action.redirect_url
+        redirect_to redirect_url and return
       else
         @redirect_action.update!(lifecycle_stage: 'failed', lifecycle_message: @redirect_action.redirect_url.to_s)
         execute_error_actions
@@ -84,5 +93,10 @@ module ApiActionable
     @api_namespace.send(action_name).each do |action|
       @api_resource.send(action_name).create(action.attributes.merge(custom_message: action.custom_message.to_s).except("id", "created_at", "updated_at", "api_namespace_id"))
     end
+  end
+
+  def load_api_actions_from_api_resource
+    @redirect_action = @api_resource.send(api_action_name).where(action_type: 'redirect').reorder(:created_at).last if @redirect_action.present?
+    @serve_file_action = @api_resource.send(api_action_name).where(action_type: 'serve_file').reorder(:created_at).last if @serve_file_action.present?
   end
 end
