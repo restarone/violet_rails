@@ -6,6 +6,7 @@
 
 module DynamicAttribute
     extend ActiveSupport::Concern
+    include Rails.application.routes.url_helpers
 
     included do
       def parse_dynamic_attribute(value)

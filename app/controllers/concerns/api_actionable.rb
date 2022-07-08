@@ -41,7 +41,8 @@ module ApiActionable
     flash[:notice] = @api_namespace.api_form.success_message
     if @redirect_action.present?
       if @redirect_action.update!(lifecycle_stage: 'complete', lifecycle_message: @redirect_action.redirect_url.to_s)
-        redirect_to evaluate_redirect_url and return
+        redirect_url = @redirect_action.dynamic_url? ? @redirect_action.redirect_url_evaluated : @redirect_action.redirect_url
+        redirect_to redirect_url and return
       else
         @redirect_action.update!(lifecycle_stage: 'failed', lifecycle_message: @redirect_action.redirect_url.to_s)
         execute_error_actions
@@ -97,22 +98,5 @@ module ApiActionable
   def load_api_actions_from_api_resource
     @redirect_action = @api_resource.send(api_action_name).where(action_type: 'redirect').reorder(:created_at).last if @redirect_action.present?
     @serve_file_action = @api_resource.send(api_action_name).where(action_type: 'serve_file').reorder(:created_at).last if @serve_file_action.present?
-  end
-
-  def evaluate_redirect_url
-    if @redirect_action.dynamic_url?
-      redirect_url = @redirect_action.redirect_url.gsub('api_resource', '@redirect_action.api_resource')
-      dynamic_url = redirect_url
-
-      # couldn't gsub directly because of escape characters added by ruby
-      # eval failed on "\#{api_resource.properties[\"String\"]}"
-      redirect_url.scan(/\#\{(.*?)\}/).each do |code|
-        dynamic_url = dynamic_url.sub!("\#{#{code[0]}}", eval(code[0]).to_s)
-      end
-
-      dynamic_url.html_safe
-    else
-      @redirect_action.redirect_url
-    end
   end
 end
