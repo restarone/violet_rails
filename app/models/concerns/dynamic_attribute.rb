@@ -27,6 +27,7 @@ module DynamicAttribute
         value.is_a?(Enumerable) ? value.to_json : value.to_s
       end
 
+      # Fetching session specific data should be defined here.
       def current_user
         Current.user
       end
