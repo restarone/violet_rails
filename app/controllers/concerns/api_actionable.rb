@@ -18,7 +18,6 @@ module ApiActionable
   end
 
   def check_for_serve_file_action
-    serve_file_action = @api_namespace.send(api_action_name).where(action_type: 'serve_file').last
     serve_file_action = if @api_resource.present?
                         @api_resource.send(api_action_name).where(action_type: 'serve_file', lifecycle_stage: 'initialized').last
                       else
