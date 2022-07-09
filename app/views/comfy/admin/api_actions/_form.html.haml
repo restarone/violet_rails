@@ -41,7 +41,7 @@
 
       .form-group
         = label_tag 'Custom Message'
-        = rich_text_area_tag "api_namespace[#{type}_attributes][#{index}][custom_message]", resource.custom_message, { class: "form-control form-control-sm" }
+        = rich_text_area_tag "api_namespace[#{type}_attributes][#{index}][custom_message]", resource.custom_message, { class: "form-control form-control-sm", style: "height: auto;" }
 
 
     .redirect.col-12{style: "#{'display:none' unless resource.action_type == 'redirect'}", id: "redirect_fields_#{type}_#{index}"}
