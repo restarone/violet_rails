@@ -5,6 +5,7 @@ class EMailbox < ApplicationMailbox
     recipients = mail.to.map{|email| Mail::Address.new(email)}
     recipients.each do |address|
       schema_domain = address.local == Subdomain::ROOT_DOMAIN_EMAIL_NAME ? 'public' : address.local
+      next if !Subdomain.find_by(name: schema_domain)
       Apartment::Tenant.switch schema_domain do
         mailbox = Mailbox.first_or_create
         if mailbox
@@ -20,8 +21,6 @@ class EMailbox < ApplicationMailbox
             attachments: (attachments + multipart_attached).map{ |a| a[:blob] }
           )
           ApiNamespace::Plugin::V1::SubdomainEventsService.new(message).track_event
-        else
-          # this is a bounce (came up to the correct subdomain, but nonexistant local name)
         end
       end
     end
