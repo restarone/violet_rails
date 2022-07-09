@@ -41,7 +41,9 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
       :api_plugin_events_enabled,
       :after_sign_in_path,
       :after_sign_up_path,
-      :allow_external_analytics_query
+      :allow_external_analytics_query,
+      :email_name,
+      :email_signature
     )
   end
 end
