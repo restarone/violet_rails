@@ -13,6 +13,7 @@ class Subdomain < ApplicationRecord
   has_one_attached :logo
   has_one_attached :favicon
   has_one_attached :og_image
+  has_rich_text :email_signature
 
 
   # max 1GB by default storage allowance
