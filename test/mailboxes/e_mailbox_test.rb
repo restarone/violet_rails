@@ -116,6 +116,16 @@ class EMailboxTest < ActionMailbox::TestCase
     end
   end
 
+  test "when sent to multiple recipients" do
+    Apartment::Tenant.switch @restarone_subdomain do      
+      assert_difference "Message.all.reload.size", +1 do
+        email = create_inbound_email_from_fixture('email_with_multiple_recipients.eml')
+        email.tap(&:route)
+        assert Message.last.content
+      end
+    end
+  end
+
   test 'message threads' do
     Apartment::Tenant.switch @restarone_subdomain do      
       perform_enqueued_jobs do

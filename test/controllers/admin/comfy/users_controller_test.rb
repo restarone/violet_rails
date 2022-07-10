@@ -38,7 +38,7 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
       "Can manage users",
       "Can manage blog",
       "Can manage api",
-      "Can manage subdomain settings",
+      "Can manage app settings",
       "Can view restricted pages",
       "Can manage forum",
       "Current sign in at",
