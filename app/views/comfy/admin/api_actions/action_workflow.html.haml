@@ -33,12 +33,19 @@
     hideAllFields(index, type)
     if (fieldType === 'send_email') {
       $("#send_email_fields_" + type + '_' + index).show();
+      $("#send_email_fields_" + type + '_' + index).parents('.card').find('.extra-details').show();
     } else if (fieldType === 'redirect') {
       $("#redirect_fields_" + type + '_' + index).show();
+      if ($('#api_namespace_' + type + '_attributes_' + index + '_redirect_type_dynamic_url').is(':checked')) {
+        $("#redirect_fields_" + type + '_' + index).parents('.card').find('.extra-details').show();
+        $("#redirect_fields_" + type + '_' + index).parents('.card').find('.extra-details').find('.non-redirect-fields-guide').hide();
+        $("#redirect_fields_" + type + '_' + index).parents('.card').find('.extra-details').find('.redirect-field-guide').show();
+      }
     } else if (fieldType === 'serve_file') {
       $("#serve_file_fields_" + type + '_' + index).show();
     } else if (fieldType === 'send_web_request') {
       $("#serve_web_request_fields_" + type + '_' + index).show();
+      $("#serve_web_request_fields_" + type + '_' + index).parents('.card').find('.extra-details').show();
     }
   }
 
@@ -47,6 +54,12 @@
     $("#redirect_fields_" + type + '_'  + index).hide();
     $("#serve_file_fields_" + type + '_' + index).hide();
     $("#serve_web_request_fields_" + type + '_' + index).hide();
+
+    // Hiding the extra-details section and resetting the inline-documentation part.
+    // The parent of all fields (send-email/redirect/send-web-request/serve-file) is same.
+    $("#serve_web_request_fields_" + type + '_' + index).parents('.card').find('.extra-details').hide();
+    $("#serve_web_request_fields_" + type + '_' + index).parents('.card').find('.extra-details').find('.non-redirect-fields-guide').show();
+    $("#serve_web_request_fields_" + type + '_' + index).parents('.card').find('.extra-details').find('.redirect-field-guide').hide();
   }
 
   function removeForm(form_id, destroy_field_id) {

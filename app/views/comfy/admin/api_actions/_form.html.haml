@@ -6,7 +6,7 @@
     .form-group.col-12
       = label_tag "Action"
       = select_tag "api_namespace[#{type}_attributes][#{index}][action_type]", options_for_select(ApiAction.action_types.keys, resource.action_type), { class: "form-control form-control-sm", id: "action_type_field_#{type}_#{index}", onchange: "toggleApiActionFields('#{index}', '#{type}');"}
-      - if resource.action_type == 'send_email' || resource.action_type == 'send_web_request'
+      .extra-details{ style: "#{'display: none' unless (resource.send_email? || resource.send_web_request? || (resource.redirect? && resource.dynamic_url?))}"}
         .form-group.my-2
           .d-block
             %strong Top-Level Model Attributes: 
@@ -19,11 +19,20 @@
               %strong Last API Resource Instance Attributes: 
               .d-block
                 = last_instance.properties.keys
-          .d-block
-            %small
-              Dynamic:
-              %code
-                \\#{api_resource.properties['your_custom_attribute_here']} 
+        .mt-2.non-redirect-fields-guide{ style: "#{'display: none' if (resource.redirect? && resource.dynamic_url?)}"}
+          %small
+            Dynamic:
+            %code
+              \\#{api_resource.properties['your_custom_attribute_here']}
+        .mt-2.redirect-field-guide{ style: "#{'display: none' unless (resource.redirect? && resource.dynamic_url?)}"}
+          %small.d-block
+            %strong
+              Available Variables:
+            api_resource, rails-route-helpers (example: root_path)
+          %small.d-block
+            Dynamic:
+            %code
+              \\#{ api_resource.properties['your_custom_attribute_here'] == 'true' ? rooth_path : some_other_path } 
 
     .send_email.col-12{style: "#{'display:none' unless resource.action_type == 'send_email'}", id: "send_email_fields_#{type}_#{index}"}
       .form-group
@@ -109,6 +118,7 @@
 
     $("input[type='radio'][name='api_namespace[#{type}_attributes][#{index}][redirect_type]']").on('click', function () {
       toggleRedirectInputField(this);
+      toggleDynamicRedirectUrlGuide(this);
     })
 
     $("input[type='radio'][name='api_namespace[#{type}_attributes][#{index}][redirect_type]']").each(function () {
@@ -127,6 +137,19 @@
       targetFormGroup.find('span.select-field').hide();
       targetFormGroup.find('input[type="text"]').show();
       targetFormGroup.find('input[type="text"]').attr('disabled', false);
+    }
+  }
+
+  function toggleDynamicRedirectUrlGuide(element) {
+    const extraDetailsContainer = $(element).parents('.card').find('.extra-details');
+    if ($(element).val() == 'cms_page' && $(element).is(':checked')) {
+      extraDetailsContainer.hide();
+      extraDetailsContainer.find('.non-redirect-fields-guide').show();
+      extraDetailsContainer.find('.redirect-field-guide').hide();
+    } else if ($(element).val() == 'dynamic_url' && $(element).is(':checked')) {
+      extraDetailsContainer.show();
+      extraDetailsContainer.find('.non-redirect-fields-guide').hide();
+      extraDetailsContainer.find('.redirect-field-guide').show();
     }
   }
 
