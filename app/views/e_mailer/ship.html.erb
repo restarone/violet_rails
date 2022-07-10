@@ -4,5 +4,10 @@
   </head>
   <body>
     <%= @message.content %>
+    <% if @subdomain.email_signature.present? %>
+      <div style="margin-top: 20px">
+        <%= @subdomain.email_signature %>
+      </div>
+    <% end %>
   </body>
 </html>
