@@ -616,7 +616,9 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
 
     sign_in(@user)
     perform_enqueued_jobs do
+      # ideally, should be +1
       assert_changes 'ApiResource.count' do
+        # ideally, should be +1
         assert_changes "ApiActionMailer.deliveries.size" do          
           get start_api_namespace_external_api_client_path(api_namespace_id: api_namespace.id, id: bishop_plugin.id)
           Sidekiq::Worker.drain_all
