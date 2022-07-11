@@ -1,6 +1,7 @@
 class Comfy::Admin::ApiActionsController < Comfy::Admin::Cms::BaseController
   before_action :ensure_authority_to_manage_api
   before_action :set_api_action, except: :new
+  before_action :set_current_user_and_visit
 
   def new
     @index = params[:index]
@@ -30,5 +31,10 @@ class Comfy::Admin::ApiActionsController < Comfy::Admin::Cms::BaseController
   def set_api_action
     @api_namespace = ApiNamespace.find_by(id: params[:api_namespace_id])
     @api_action = @api_namespace.executed_api_actions.find_by(id: params[:id])
+  end
+
+  def set_current_user_and_visit
+    Current.user = current_user
+    Current.visit = current_visit
   end
 end

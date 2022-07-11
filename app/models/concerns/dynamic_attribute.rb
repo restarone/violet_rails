@@ -26,6 +26,15 @@ module DynamicAttribute
         value = public_send(attribute.to_sym)
         value.is_a?(Enumerable) ? value.to_json : value.to_s
       end
+
+      # Fetching session specific data should be defined here.
+      def current_user
+        Current.user
+      end
+
+      def current_visit
+        Current.visit
+      end
     end
   
     class_methods do
