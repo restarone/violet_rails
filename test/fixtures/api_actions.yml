@@ -106,8 +106,8 @@ create_api_action_plugin_bishop_monitoring_web_request:
   payload_mapping: {
                       "content": "#{self.representation.body}"
                     }
-  request_url: "http://www.example.com/success"
-  api_namespace: monitoring_targets
+  request_url: "http://www.discord.com"
+  api_namespace: monitoring_target_incident
   http_method: post
 
 create_api_action_plugin_bishop_monitoring_email:
@@ -115,4 +115,4 @@ create_api_action_plugin_bishop_monitoring_email:
   action_type: send_email
   include_api_resource_data: true
   email: test@restarone.com
-  api_namespace: monitoring_targets
+  api_namespace: monitoring_target_incident
