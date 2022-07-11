@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_07_09_172402) do
+ActiveRecord::Schema.define(version: 2022_06_09_092515) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -474,7 +474,6 @@ ActiveRecord::Schema.define(version: 2022_07_09_172402) do
     t.string "after_sign_up_path"
     t.string "after_sign_in_path"
     t.boolean "allow_external_analytics_query", default: false
-    t.text "email_from"
     t.text "email_signature"
     t.string "email_name"
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
