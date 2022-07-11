@@ -36,7 +36,7 @@
   #interface.tab-pane.fade.show.active{"aria-labelledby" => "interface-tab", :role => "tabpanel"} 
     .card.p-3
       .card-title
-        = link_to 'Api Actions', api_namespace_api_actions_path(api_namespace_id: @api_namespace.id), class: 'btn btn-primary'
+        = link_to 'API Actions', api_namespace_api_actions_path(api_namespace_id: @api_namespace.id), class: 'btn btn-primary'
       %p
         %b Requires authentication:
         = @api_namespace.requires_authentication
@@ -130,6 +130,10 @@
       = link_to 'Duplicate with associations', duplicate_with_associations_api_namespace_path(id: @api_namespace.id), method: :post, target: '_blank', class: 'btn btn-primary'
     .my-3
       = link_to 'Duplicate without associations', duplicate_without_associations_api_namespace_path(id: @api_namespace.id), method: :post, target: '_blank', class: 'btn btn-primary'
+    .my-3
+      = link_to 'Export JSON with associations', export_with_associations_as_json_api_namespace_path(id: @api_namespace.id), method: :get, class: 'btn btn-info'
+    .my-3
+      = link_to 'Export JSON without associations', export_without_associations_as_json_api_namespace_path(id: @api_namespace.id), method: :get, class: 'btn btn-info'
 
 .container-fluid.mt-5
   .d-flex.justify-content-between.py-2.page-header

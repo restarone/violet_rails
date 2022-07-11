@@ -4,7 +4,7 @@
 // that code so it'll be compiled.
 
 import Rails from "@rails/ujs"
-import "@hotwired/turbo-rails";
+import { Turbo } from "@hotwired/turbo-rails";
 
 import "channels"
 import "bootstrap"
@@ -13,6 +13,7 @@ import "chartkick/chart.js"
 import ahoy from "ahoy.js";
 import ctaSuccessHandler, {ctaSuccessHandlerRecaptchaV3} from "./website/call_to_actions"
 window.ahoy = ahoy;
+window.Turbo = Turbo
 window.ctaSuccessHandler = ctaSuccessHandler
 window.ctaSuccessHandlerRecaptchaV3 = ctaSuccessHandlerRecaptchaV3
 

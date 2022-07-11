@@ -1,6 +1,8 @@
 .page-header.mb-5
   .h2
-    Api Actions > Action Workflow
+    = @api_namespace.name.pluralize
+    > API Actions
+    > Workflow
 
 = form_for @api_namespace, html: {multipart: true} do |f|
   = hidden_field_tag 'source', 'action_workflow'

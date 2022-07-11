@@ -14,7 +14,10 @@ on:
     branches: [ master ]
 jobs:
   build:
+    name: Violet Rails Build (Ruby - ${{ matrix.ruby_version }}, Node.js - ${{ matrix.node_version }})
     runs-on: ubuntu-latest
+    env:
+      RUBY_BUILD: ${{ matrix.ruby_version }}
     services:
       db:
         image: postgres:12.3-alpine
@@ -31,6 +34,7 @@ jobs:
     strategy:
       matrix:
         node_version: [14.x, 10.x]
+        ruby_version: [2.6.6, 3.0.0]
     steps:
     - name: Configure sysctl limits
       run: |
@@ -48,7 +52,7 @@ jobs:
     - name: Setup Ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.6.6 # Not needed with a .ruby-version file but it's good to be clear here
+        ruby-version: ${{ matrix.ruby_version }} # Not needed with a .ruby-version file (2.6.6) but it's good to be clear here
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - uses: actions/setup-node@v2
       with:
@@ -79,6 +83,10 @@ jobs:
       run: |
         cd client
         npm install -g ember-cli
-
     - name: Run Tests
       run: bin/rails test -f
+    - name: Save code coverage report
+      uses: actions/upload-artifact@v3
+      with:
+        name: code-coverage-report(Ruby - ${{ matrix.ruby_version }}, Node.js - ${{ matrix.node_version }})
+        path: coverage/

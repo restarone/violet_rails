@@ -248,4 +248,223 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
   end
+
+  test "should deny export api_namespace without associations as JSON if user is not authorized" do
+    @user.update(can_manage_api: false)
+    sign_in(@user)
+    get export_without_associations_as_json_api_namespace_url(@api_namespace)
+    assert_response :redirect
+  end
+
+  test "should export api_namespace without associations as JSON" do
+    sign_in(@user)
+    get export_without_associations_as_json_api_namespace_url(@api_namespace)
+    expected_output = @api_namespace.to_json(root: 'api_namespace')
+    assert_response :success
+    assert_equal response.body, expected_output
+  end
+
+  test "should deny export api_namespace with associations as JSON if user is not authorized" do
+    @user.update(can_manage_api: false)
+    sign_in(@user)
+    get export_with_associations_as_json_api_namespace_url(@api_namespace)
+    assert_response :redirect
+  end
+
+  test "should export api_namespace with associations as JSON" do
+    sign_in(@user)
+    get export_with_associations_as_json_api_namespace_url(@api_namespace)
+    expected_output = @api_namespace.to_json(
+      root: 'api_namespace',
+      include: [
+        :api_form,
+        :api_clients,
+        :external_api_clients,
+        :non_primitive_properties,
+        {
+          api_actions: {
+            except: [:salt, :encrypted_bearer_token],
+            methods: [:bearer_token, :type]
+          }
+        },
+        {
+          api_resources: {
+            include: [
+              {
+                api_actions: {
+                  except: [:salt, :encrypted_bearer_token],
+                  methods: [:bearer_token, :type]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    )
+    assert_response :success
+    assert_equal response.body, expected_output
+  end
+
+  test "should deny import api_namespace provided as json if user is not authorized" do
+    json_file = Tempfile.new(['api_namespace.json', '.json'])
+    json_file.write(@api_namespace.export_as_json(include_associations: false))
+    json_file.rewind
+
+    payload = {
+      file: fixture_file_upload(json_file.path, 'application/json')
+    }
+
+    @user.update(can_manage_api: false)
+    sign_in(@user)
+    assert_no_difference('ApiNamespace.count') do
+      assert_no_difference('ApiResource.count') do
+        assert_no_difference('ApiAction.count') do
+          assert_no_difference('ApiClient.count') do
+            assert_no_difference('ExternalApiClient.count') do
+              assert_no_difference('NonPrimitiveProperty.count') do
+                post import_as_json_api_namespaces_url, params: payload
+                assert_response :redirect
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+
+  test "should not import api_namespace provided as json if file content is not proper json" do
+    json_file = Tempfile.new(['api_namespace.json', '.json'])
+    json_file.write('testing non json content.')
+    json_file.rewind
+
+    payload = {
+      file: fixture_file_upload(json_file.path, 'application/json')
+    }
+
+    sign_in(@user)
+    assert_no_difference('ApiNamespace.count') do
+      assert_no_difference('ApiResource.count') do
+        assert_no_difference('ApiAction.count') do
+          assert_no_difference('ApiClient.count') do
+            assert_no_difference('ExternalApiClient.count') do
+              assert_no_difference('NonPrimitiveProperty.count') do
+                post import_as_json_api_namespaces_url, params: payload
+                assert_response :redirect
+              end
+            end
+          end
+        end
+      end
+    end
+
+    expected_message = "Importing Api namespace failed due to"
+    assert_match expected_message, flash[:alert]
+  end
+
+  test "should allow import api_namespace provided as json without asscociations and the newly created api_namespace should be followed by secure-random if api_namespace with such name exists" do
+    json_file = Tempfile.new(['api_namespace.json', '.json'])
+    json_file.write(@api_namespace.export_as_json(include_associations: false))
+    json_file.rewind
+
+    payload = {
+      file: fixture_file_upload(json_file.path, 'application/json')
+    }
+
+    sign_in(@user)
+    assert_difference('ApiNamespace.count', +1) do
+      assert_no_difference('ApiResource.count') do
+        assert_no_difference('ApiAction.count') do
+          assert_no_difference('ApiClient.count') do
+            assert_no_difference('ExternalApiClient.count') do
+              assert_no_difference('NonPrimitiveProperty.count') do
+                post import_as_json_api_namespaces_url, params: payload
+                assert_response :redirect
+              end
+            end
+          end
+        end
+      end
+    end
+
+    success_message = "Api namespace was successfully imported."
+    assert_match success_message, request.flash[:notice]
+    assert_not_equal @api_namespace.name, ApiNamespace.last.name
+    assert_match @api_namespace.name, ApiNamespace.last.name
+  end
+
+  test "should allow import api_namespace provided as json with its asscociations and the newly created api_namespace should be followed by secure-random if api_namespace with such name exists" do
+    api_resources_count = @api_namespace.api_resources.count
+    api_actions_count = @api_namespace.api_actions.count + @api_namespace.api_resources.map(&:api_actions).flatten.count
+    api_clients_count = @api_namespace.api_clients.count
+    external_api_clients_count = @api_namespace.external_api_clients.count
+    non_primitive_properties_count = @api_namespace.non_primitive_properties.count
+
+    json_file = Tempfile.new(['api_namespace.json', '.json'])
+    json_file.write(@api_namespace.export_as_json(include_associations: true))
+    json_file.rewind
+
+    payload = {
+      file: fixture_file_upload(json_file.path, 'application/json')
+    }
+
+    sign_in(@user)
+    assert_difference('ApiNamespace.count', +1) do
+      assert_difference('ApiResource.count', +api_resources_count) do
+        assert_difference('ApiAction.count', +api_actions_count) do
+          assert_difference('ApiClient.count', +api_clients_count) do
+            assert_difference('ExternalApiClient.count', +external_api_clients_count) do
+              assert_difference('NonPrimitiveProperty.count', +non_primitive_properties_count) do
+                post import_as_json_api_namespaces_url, params: payload
+                assert_response :redirect
+              end
+            end
+          end
+        end
+      end
+    end
+
+    success_message = "Api namespace was successfully imported."
+    assert_match success_message, request.flash[:notice]
+    assert_not_equal @api_namespace.name, ApiNamespace.last.name
+    assert_match @api_namespace.name, ApiNamespace.last.name
+  end
+
+  test "should allow import api_namespace provided as json with its asscociations and the newly created api_namespace's name should be as provided if api_namespace with such name does not exist" do
+    api_resources_count = @api_namespace.api_resources.count
+    api_actions_count = @api_namespace.api_actions.count + @api_namespace.api_resources.map(&:api_actions).flatten.count
+    api_clients_count = @api_namespace.api_clients.count
+    external_api_clients_count = @api_namespace.external_api_clients.count
+    non_primitive_properties_count = @api_namespace.non_primitive_properties.count
+
+    json_file = Tempfile.new(['api_namespace.json', '.json'])
+    api_namespace_hash = JSON.parse(@api_namespace.export_as_json(include_associations: true))
+    api_namespace_hash['api_namespace']['name'] = 'testing-import-api-namespace'
+    api_namespace_hash['api_namespace']['slug'] = 'testing-import-api-namespace'
+    json_file.write(api_namespace_hash.to_json)
+    json_file.rewind
+
+    payload = {
+      file: fixture_file_upload(json_file.path, 'application/json')
+    }
+
+    sign_in(@user)
+    assert_difference('ApiNamespace.count', +1) do
+      assert_difference('ApiResource.count', +api_resources_count) do
+        assert_difference('ApiAction.count', +api_actions_count) do
+          assert_difference('ApiClient.count', +api_clients_count) do
+            assert_difference('ExternalApiClient.count', +external_api_clients_count) do
+              assert_difference('NonPrimitiveProperty.count', +non_primitive_properties_count) do
+                post import_as_json_api_namespaces_url, params: payload
+                assert_response :redirect
+              end
+            end
+          end
+        end
+      end
+    end
+
+    success_message = "Api namespace was successfully imported."
+    assert_match success_message, request.flash[:notice]
+    assert_equal api_namespace_hash['api_namespace']['name'], ApiNamespace.last.name
+  end
 end

@@ -20,8 +20,8 @@
   <%= render partial: 'shared/navbars/web_admin' %>
 
   <body>
-    <%= cms_snippet_render('navbar').html_safe %>
+    <%= cms_snippet_render('navbar').html_safe unless mobile?  %>
     <%= yield %>
-    <%= cms_snippet_render('footer').html_safe %>
+    <%= cms_snippet_render('footer').html_safe unless mobile? %>
   </body>
 </html>

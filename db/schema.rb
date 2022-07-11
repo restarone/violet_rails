@@ -425,6 +425,7 @@ ActiveRecord::Schema.define(version: 2022_06_09_092515) do
     t.bigint "api_namespace_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "allow_attachments", default: false
     t.index ["api_namespace_id"], name: "index_non_primitive_properties_on_api_namespace_id"
     t.index ["api_resource_id"], name: "index_non_primitive_properties_on_api_resource_id"
   end
@@ -473,6 +474,8 @@ ActiveRecord::Schema.define(version: 2022_06_09_092515) do
     t.string "after_sign_up_path"
     t.string "after_sign_in_path"
     t.boolean "allow_external_analytics_query", default: false
+    t.string "email_name"
+    t.text "email_signature"
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
     t.index ["name"], name: "index_subdomains_on_name"
   end

@@ -37,6 +37,9 @@ class SimpleDiscussion::ForumPostsControllerTest < ActionDispatch::IntegrationTe
     end
     assert_response :redirect
     assert_redirected_to simple_discussion.forum_thread_url(subdomain: @restarone_subdomain.name, id: @forum_thread.slug)
+    # Validation errors are not present in the response-body
+    assert_select 'div#error_explanation', { count: 0 }
+    refute @controller.view_assigns['forum_post'].errors.present?
   end
 
 	test 'does not track forum-post update (if tracking is disabled)' do
@@ -59,5 +62,21 @@ class SimpleDiscussion::ForumPostsControllerTest < ActionDispatch::IntegrationTe
     assert_redirected_to simple_discussion.forum_thread_url(subdomain: @restarone_subdomain.name, id: @forum_thread.slug)
   end
 
+  test 'denies forum-post update with validation errors in the response' do
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      sign_in(@restarone_user)
+      payload = {
+        forum_post: {
+          body: ''
+        }
+      }
 
+      patch simple_discussion.forum_thread_forum_post_url(subdomain: @restarone_subdomain.name, forum_thread_id: @forum_thread.id, id: @forum_post.id), params: payload
+
+      assert_response :unprocessable_entity
+      # Validation errors are present in the response-body
+      assert_select 'div#error_explanation'
+      assert @controller.view_assigns['forum_post'].errors.present?
+    end
+  end
 end

@@ -1,138 +1,172 @@
-.my-5
-  %strong
-    SEO / Metadata
-.form-group
-  %label
-    HTML title:
-  = f.text_field :html_title, class: 'form-control'
-.form-group
-  %label
-    Blog title: 
-  = f.text_field :blog_title, class: 'form-control'
-.form-group
-  %label
-    Blog HTML title: 
-  = f.text_field :blog_html_title, class: 'form-control'
-.form-group
-  %label
-    Forum title: 
-  = f.text_field :forum_title, class: 'form-control'
-.form-group
-  %label
-    Forum HTML title: 
-  = f.text_field :forum_html_title, class: 'form-control'
-.form-group
-  %span SEO description
-  = f.text_area :description, class: 'form-control'
-.form-group
-  %span SEO keywords (comma separated):
-  = f.text_area :keywords, class: 'form-control'
-
-.my-5
-  %strong
-    Core Extensions
-.form-group
-  %label
-    Blog:
-  = f.check_box :blog_enabled
-
-.form-group
-  %label
-    Forum:
-  = f.check_box :forum_enabled
-.form-group
-  %label
-    Tracking:
-  = f.check_box :tracking_enabled
-
-.form-group
-  %label
-    Ember.js (experimental):
-  = f.check_box :ember_enabled
-.form-group
-  %label
-    Graphql (experimental):
-  = f.check_box :graphql_enabled
-
-.form-group
-  %label
-    Allow external analytics querying (experimental):
-  = f.check_box :allow_external_analytics_query
-
-.form-group
-  %label
-    Web console (experimental):
-  = f.check_box :web_console_enabled
-
-.my-5
-  %strong
-    API Extensions
-.form-group
-  %label
-    Subdomain Events (subdomain/event v1):
-  = f.check_box :api_plugin_events_enabled
-
-
-.my-5
-  %strong
-    Security
-.form-group
-  %label
-    Allow user self sign up (if disabled, users can join via invite only)
-  = f.check_box :allow_user_self_signup
-.form-group
-  %label
-    Private forum (if enabled, users must sign up first or be invited to be able to access the forum)
-  = f.check_box :forum_is_private
-
-.my-5
-  %strong
-    Redirections
-.form-group
-  %label
-    After sign in, redirect users to (relative path, eg: /foo )
-  = f.text_field :after_sign_in_path
-.form-group
-  %label
-    After sign up, redirect users to (relative path)
-  = f.text_field :after_sign_up_path
-
-.my-5
-  %strong
-    Maintenance
-.form-group
-  %label
-    Purge visitor analytics:
-  = f.select :purge_visits_every, options_for_select(Subdomain::TRACKING_PURGE_MAPPING, Subdomain.current.purge_visits_every)
-
-.my-5
-  %strong
-    Reports
-.form-group
-  %label
-    Analytics report frequency:
-  = f.select :analytics_report_frequency, options_for_select(Subdomain::REPORT_FREQUENCY_MAPPING, Subdomain.current.analytics_report_frequency)
-
-.my-5
-  %strong
-    Graphics
-  .my-3
-    .form-group.card.p-2
+.card
+  .card-header
+    %strong
+      Web application metadata
+  .card-body
+    .form-group
       %label
-        Company logo: 
-      .m-2
-        = render_logo(Subdomain.current)
-      = f.file_field :logo, required: false, class: 'form-control-file'
-    .form-group.card.p-2
+        HTML title:
+      = f.text_field :html_title, class: 'form-control'
+    .form-group
       %label
-        Favicon: 
-      .m-2
-        = render_favicon(Subdomain.current)
-      = f.file_field :favicon, required: false, class: 'form-control-file'
-    .form-group.card.p-2
+        Blog title: 
+      = f.text_field :blog_title, class: 'form-control'
+    .form-group
       %label
-        open-graph image: 
-      .m-2
-        = render_og_image(Subdomain.current)
-      = f.file_field :og_image, required: false, class: 'form-control-file'
+        Blog HTML title: 
+      = f.text_field :blog_html_title, class: 'form-control'
+    .form-group
+      %label
+        Forum title: 
+      = f.text_field :forum_title, class: 'form-control'
+    .form-group
+      %label
+        Forum HTML title: 
+      = f.text_field :forum_html_title, class: 'form-control'
+    .form-group
+      %span SEO description
+      = f.text_area :description, class: 'form-control'
+    .form-group
+      %span SEO keywords (comma separated):
+      = f.text_area :keywords, class: 'form-control'
+    .card
+      .card-header
+        %strong
+          Graphics
+      .card-body
+        .form-group.card.p-2
+          %label
+            Company logo: 
+          .m-2
+            = render_logo(Subdomain.current)
+          = f.file_field :logo, required: false, class: 'form-control-file'
+        .form-group.card.p-2
+          %label
+            Favicon: 
+          .m-2
+            = render_favicon(Subdomain.current)
+          = f.file_field :favicon, required: false, class: 'form-control-file'
+        .form-group.card.p-2
+          %label
+            open-graph image: 
+          .m-2
+            = render_og_image(Subdomain.current)
+          = f.file_field :og_image, required: false, class: 'form-control-file'
+
+.card.mt-5
+  .card-header
+    %strong
+      Email metadata
+  .card-body
+    .form-group
+      %label
+        Name:
+      = f.text_field :email_name, class: 'form-control'
+    .form-group
+      %label
+        Signature: 
+      = f.rich_text_area :email_signature, class: 'form-control h-auto'
+
+
+.card.mt-5
+  .card-header
+    %strong
+      Core Extensions
+  .card-body
+    .form-group
+      = f.check_box :blog_enabled
+      %label
+        Blog
+
+    .form-group
+      = f.check_box :forum_enabled
+      %label
+        Forum
+    .form-group
+      = f.check_box :tracking_enabled
+      %label
+        Tracking
+
+    .form-group
+      = f.check_box :ember_enabled
+      %label
+        Ember.js (experimental)
+    .form-group
+      = f.check_box :graphql_enabled
+      %label
+        Graphql (experimental)
+
+    .form-group
+      = f.check_box :allow_external_analytics_query
+      %label
+        Allow external analytics querying (experimental)
+
+    .form-group
+      = f.check_box :web_console_enabled
+      %label
+        Web console (experimental)
+    .card
+      .card-header
+        %strong
+          API Extensions
+        .card-body
+          .card
+            .card-header
+              .d-inline
+                = f.check_box :api_plugin_events_enabled
+              %label
+                %strong
+                  Subdomain Events (subdomain/event v1):
+
+
+.card.mt-5
+  .card-header
+    %strong
+      Security
+  .card-body
+    .form-group
+      = f.check_box :allow_user_self_signup
+      %label
+        Allow user self sign up (unchecked: users can join via invite only)
+    .form-group
+      = f.check_box :forum_is_private
+      %label
+        Private forum (unchecked: Public forum)
+
+.card.mt-5
+  .card-header
+    %strong
+      Redirections
+  .card-body
+    .form-group
+      %label
+        After sign in, redirect users to (relative path, eg: /foo )
+      .d-block
+        = f.text_field :after_sign_in_path
+    .form-group
+      %label
+        After sign up, redirect users to (relative path)
+      .d-block
+        = f.text_field :after_sign_up_path
+
+.card.mt-5
+  .card-header
+    %strong
+      Maintenance
+  .card-body
+    .form-group
+      %label
+        Purge visitor analytics:
+      = f.select :purge_visits_every, options_for_select(Subdomain::TRACKING_PURGE_MAPPING, Subdomain.current.purge_visits_every)
+.card.my-5
+  .card-header
+    %strong
+      Reports
+  .card-body
+    .form-group
+      %label
+        Analytics report frequency:
+      = f.select :analytics_report_frequency, options_for_select(Subdomain::REPORT_FREQUENCY_MAPPING, Subdomain.current.analytics_report_frequency)
+
+
 = f.submit "Save", class: 'btn btn-primary'

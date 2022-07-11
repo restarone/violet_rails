@@ -55,13 +55,14 @@ class ApiActionTest < ActiveSupport::TestCase
       email_subject: "API Resource Accessed \#{api_resource.id}",
       custom_message: "API Namespace Accessed \#{api_resource.api_namespace.id}",
       request_url: "API Resource Property Accessed  \#{api_resource.properties['can_edit']}",
+      email: "test\#{api_resource.id}@test.com",
       payload_mapping: {
         test_key: "\#{User.destroy_all}"
       }
     )
     refute api_action.valid?
 
-    [:email_subject, :custom_message, :request_url, :payload_mapping].each do |dynamic_attr|
+    [:email, :email_subject, :custom_message, :request_url, :payload_mapping].each do |dynamic_attr|
       assert_raises ActiveRecord::RecordInvalid do
         api_action.send("#{dynamic_attr}_evaluated".to_sym)
       end
