@@ -28,7 +28,6 @@ class ApiAction < ApplicationRecord
   validates :http_method, inclusion: { in: ApiAction::HTTP_METHODS}, allow_blank: true
   
   validates :payload_mapping, safe_executable: true
-  validates :redirect_url, safe_executable: true, if: Proc.new { self.redirect? && self.dynamic_url? }
 
   def self.children
     ['new_api_actions', 'create_api_actions', 'show_api_actions', 'update_api_actions', 'destroy_api_actions', 'error_api_actions']
