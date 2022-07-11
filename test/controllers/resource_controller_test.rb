@@ -237,6 +237,31 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test 'should allow #create and should redirect to the provided cms-page if redirect_type is cms_page' do
+    payload = {
+      data: {
+          properties: {
+            flag: false
+          }
+      }
+    }
+    site = Comfy::Cms::Site.first
+    layout = site.layouts.create!(label: 'default', identifier: 'default')
+    cms_page = site.pages.first.children.create!(label: 'thank-you', slug: 'thank-you', full_path: '/thank-you', site_id: site.id, layout_id: layout.id)
+
+    redirect_action = @api_namespace.create_api_actions.find_by(action_type: 'redirect')
+    redirect_action.update!(redirect_type: 'cms_page', redirect_url: cms_page.full_path)
+
+    assert_difference "@api_namespace.api_resources.count", +1 do
+      actions_count = @api_namespace.create_api_actions.size
+      assert_difference "@api_namespace.executed_api_actions.count", actions_count do
+        post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id, params: payload)
+        assert_response :redirect
+        assert_redirected_to cms_page.full_path
+      end
+    end
+  end
+
   test 'should allow #create and show the custom success message' do
     api_namespace = api_namespaces(:one)
     api_namespace.api_form.update(success_message: 'test success message')

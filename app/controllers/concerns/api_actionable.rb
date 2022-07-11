@@ -11,7 +11,7 @@ module ApiActionable
 
   def check_for_redirect_action
     @redirect_action = if @api_resource.present?
-                        @api_resource.send(api_action_name).where(action_type: 'redirect', lifecycle_stage: 'initialized').last
+                        @api_resource.send(api_action_name).where(action_type: 'redirect').reorder(:created_at).last
                       else
                         @api_namespace.send(api_action_name).where(action_type: 'redirect').last
                       end
@@ -19,7 +19,7 @@ module ApiActionable
 
   def check_for_serve_file_action
     serve_file_action = if @api_resource.present?
-                        @api_resource.send(api_action_name).where(action_type: 'serve_file', lifecycle_stage: 'initialized').last
+                        @api_resource.send(api_action_name).where(action_type: 'serve_file').reorder(:created_at).last
                       else
                         @api_namespace.send(api_action_name).where(action_type: 'serve_file').last
                       end

@@ -28,11 +28,11 @@
           %small.d-block
             %strong
               Available Variables:
-            api_resource, rails-route-helpers (example: root_path)
+            api_resource, rails-route-helpers (example: comfy_admin_cms_path)
           %small.d-block
             Dynamic:
             %code
-              \\#{ api_resource.properties['your_custom_attribute_here'] == 'true' ? rooth_path : some_other_path } 
+              \\#{ api_resource.properties['your_custom_attribute_here'] == 'true' ? comfy_admin_cms_path : some_other_path } 
 
     .send_email.col-12{style: "#{'display:none' unless resource.action_type == 'send_email'}", id: "send_email_fields_#{type}_#{index}"}
       .form-group
