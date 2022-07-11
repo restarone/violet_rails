@@ -33,3 +33,16 @@ plugin_subdomain_message_event:
                     "body": "<h1>Hello</h1>"
                   }
                 }
+monitoring_target:
+  api_namespace: monitoring_targets
+  properties: {
+                "url": "https://restarone.com",
+                "slug": "restarone.com",
+                "label": "Restarone Solutions Inc Website",
+                "healthy": true,
+                "latency": 42,
+                "alarm_raised": false,
+                "error_message": null,
+                "last_checked_at": "2022-04-23T23:02:34.592+00:00",
+                "log_incidents_to": "monitoring-target-incident"
+              }

@@ -51,155 +51,150 @@ open_json_server:
     end
     # at the end of the file we have to implicitly return the class 
     OpenJsonServer
-modmed:
-  api_namespace: one
-  slug: test-api
-  label: Test API
+bishop_monitoring:
+  api_namespace: monitoring_targets
+  slug: bishop-monitoring
+  label: Bishop Monitoring in a box
   enabled: true
-  metadata: {
-              "api_key": "x-api-key-foo",
-              "bearer_token": "foo"
-            }
+  metadata: {}
   model_definition: |
-    # ex; 
-    # modmed = ExternalApiClient.find_by(slug: ExternalApiClient::CLIENTS[:modmed][:name])
-    # supervisor = modmed.run 
-    # returns => External::ApiClients::Modmed instance so you can for eg:
-    # supervisor.authenticate
-    # supervisor.get_patients
-    class External::ApiClients::Modmed
-      def initialize(parameters)
+    class BishopMonitoring
+      def initialize(parameters)  
         @external_api_client = parameters[:external_api_client]
-        @metadata = @external_api_client.get_metadata
-        @clinic_id = @metadata[:clinic_id]
-        @auth_root = @metadata[:auth_base_url]
-        @base_url = @metadata[:base_url_generic]
-
-        @headers =  {
-          'Content-Type': 'application/json',
-          'x-api-key': @metadata[:api_key],
-          'Authorization': "Bearer #{@metadata[:bearer_token]}"
-        }
+        @log_incidents_to_namespace = @external_api_client.api_namespace.properties["log_incidents_to"]
+        @targets = @external_api_client.api_namespace.api_resources
+        @timeout_in_seconds = 30
       end
-
       def start
-        authentication_event = self.authenticate
-        get_patients_event = self.get_patients
-        random_patient_id = get_patients_event[:entry].sample[:resource][:id]
-        get_patient_event = self.get_patient(random_patient_id)
-        get_patient_documents_event = self.get_patient_documents(random_patient_id)
-        get_patient_allergy_tolerance_event = self.get_patient_allergy_tolerance(random_patient_id)
-        get_patient_medication_statement_event = self.get_patient_medication_statement(random_patient_id)
-        # get_patient_service_request_event = self.get_clinic_patient_service_request(random_patient_id)
+        logger_namespace = ApiNamespace.find_by!(slug: @log_incidents_to_namespace)
+        @targets.each do |target|
+          url = target.properties["url"]
+          start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+          latency = 0
+          begin
+            response = HTTParty.get(url, follow_redirects: true, timeout: @timeout_in_seconds)
+            case response.code 
+              when 500..600
+                raise StandardError.new "server returned #{response.code}"
+            end
 
-        doc = {
-          get_patients: get_patients_event,
-          random_patient_id: random_patient_id,
-          get_patient_event: get_patient_event,
-          get_patient_documents_event: get_patient_documents_event,
-          get_patient_allergy_tolerance_event: get_patient_allergy_tolerance_event, 
-          get_patient_medication_statement_event: get_patient_medication_statement_event
-        }
 
-        if authentication_event && get_patients_event
-          self.reset_retries_after_success
+            finish = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+            latency = ((finish - start) * 1000).round
+          rescue StandardError => e
+            logger_namespace.api_resources.create!(
+              properties: {
+                slug: url,
+                error: e.message,
+                notification_sent: false,
+                latency: latency
+              }
+            )
+            updated_target_properties = {
+              "healthy": false,
+              "alarm_raised": false,
+              "last_checked_at": Time.now,
+              "latency": 0,
+              "error_message": e.message
+            }
+            target.update!(
+              properties: target.properties.merge(updated_target_properties)
+            )
+            #after handling the error case, we need to bubble it up to the job
+            raise
+          else
+            updated_target_properties = {
+              "healthy": true,
+              "alarm_raised": false,
+              "last_checked_at": Time.now,
+              "latency": latency,
+              "error_message": nil
+            }
+            target.update!(
+              properties: target.properties.merge(updated_target_properties)
+            )
+          end
         end
-        ApiResource.create(api_namespace_id: @external_api_client.api_namespace.id,properties: doc)
-        return true
       end
 
       def log
         return true
       end
-
-      def get_patients
-        endpoint = "#{@base_url}/#{@clinic_id}/ema/fhir/v2/Patient"
-        response = HTTParty.get(endpoint, headers: @headers).body
-        return JSON.parse(response).deep_symbolize_keys
+    end
+    # at the end of the file we have to implicitly return the class 
+    BishopMonitoring
+bishop_tls_monitoring:
+  api_namespace: monitoring_targets
+  slug: bishop-tls-monitoring
+  label: TLS monitoring in a box
+  enabled: true
+  metadata: {}
+  model_definition: |
+    class BishopTlsMonitoring
+      def initialize(parameters)  
+        @external_api_client = parameters[:external_api_client]
+        @log_incidents_to_namespace = @external_api_client.api_namespace.properties["log_incidents_to"]
+        @targets = @external_api_client.api_namespace.api_resources
+        @timeout_in_seconds = 30
       end
-
-      def get_patient(patient_id)
-        endpoint = "#{@base_url}/#{@clinic_id}/ema/fhir/v2/Patient/#{patient_id}"
-        response = HTTParty.get(endpoint, headers: @headers).body
-        return JSON.parse(response).deep_symbolize_keys
-      end
-
-      def get_patient_documents(patient_id)
-        # search documents in postman looks the same as this #call but with an additional query parameter (_count)
-        endpoint = "#{@base_url}/#{@clinic_id}/ema/fhir/v2/DocumentReference?patient=#{patient_id}"
-        response = HTTParty.get(endpoint, headers: @headers).body
-        return JSON.parse(response).deep_symbolize_keys
-      end
-
-      def get_patient_allergy_tolerance(patient_id)
-        endpoint = "#{@base_url}/#{@clinic_id}/ema/fhir/v2/AllergyIntolerance?patient=#{patient_id}"
-        response = HTTParty.get(endpoint, headers: @headers).body
-        return JSON.parse(response).deep_symbolize_keys
-      end
-
-      def get_patient_medication_statement(patient_id)
-        endpoint = "#{@base_url}/#{@clinic_id}/ema/fhir/v2/MedicationStatement?patient=#{patient_id}"
-        response = HTTParty.get(endpoint, headers: @headers).body
-        return JSON.parse(response).deep_symbolize_keys
-      end
-
-      def get_clinic_patient_service_request(patient_id)
-        endpoint = "#{@base_url}/ema/fhir/v2/ServiceRequest?patient=#{patient_id}"
-        response = HTTParty.get(endpoint, headers: @headers).body
-        return JSON.parse(response).deep_symbolize_keys
-      end
-
-      def get_clinic_encounters
-        endpoint = "#{@base_url}/#{@clinic_id}/ema/fhir/v2/Encounter"
-        response = HTTParty.get(endpoint, headers: @headers).body
-        return JSON.parse(response).deep_symbolize_keys
-      end
-
-      def get_clinic_encounter_diagnostic_report(encounter_id)
-        endpoint = "#{@base_url}/ema/fhir/v2/DiagnosticReport?encounter=#{encounter_id}"
-        response = HTTParty.get(endpoint, headers: @headers).body
-        return JSON.parse(response).deep_symbolize_keys
-      end
-
-      def get_clinic_encounter_service_request(encounter_id)
-        endpoint = "#{@base_url}/ema/fhir/v2/ServiceRequest?encounter=#{encounter_id}"
-        response = HTTParty.get(endpoint, headers: @headers).body
-        return JSON.parse(response).deep_symbolize_keys
-      end
-
-      def authenticate
-        # returns
-        # "{\"scope\":\"dermpmsandbox277\",\"token_type\":\"Bearer\",\"access_token\":\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmaGlyX2lSSEdZIiwicG9sICAgICAgICAiOiJjaGFuZ2VtZSIsInVybFByZWZpeCI6ImRlcm1wbXNhbmRib3gyNzciLCJ2ZW5kb3IiOiJmaGlyX2lSSEdZQGRlcm1wbXNhbmRib3gyNzciLCJpc3MiOiJtb2RtZWQiLCJ0b2tlblR5cGUiOiJhY2Nlc3MiLCJqdGkiOiIyNTVmNTA3Y2JiMzE0MTNmODA3NmU0NTY1MmU1MjE2ZSJ9.edemcIlcVZBCijO92pTodHoLtTbcfkXiUbMmSOQ57_8\",\"refresh_token\":\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmaGlyX2lSSEdZIiwidXJsUHJlZml4IjoiZGVybXBtc2FuZGJveDI3NyIsImlzcyI6Im1vZG1lZCIsInRva2VuVHlwZSI6InJlZnJlc2giLCJqdGkiOiI5OWFhNjQyOWM2ZjY0MTRhOGI4MzA4YzNhYmVkOGM5NSJ9.nPUaFhAs82rQWeV_mJP3_qOHn6VMmqPoGWCG1SwfXaI\"}"
-        endpoint = "#{@auth_root}/ema-dev/firm/#{@clinic_id}/ema/ws/oauth2/grant"
-        payload = {    
-          "grant_type": @metadata[:grant_type],
-          "username": @metadata[:username],
-          "password": @metadata[:password],
-        }
-        response = HTTParty.post(endpoint,
-          body: URI.encode_www_form(payload), 
-          headers: { 
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'x-api-key': @metadata[:api_key]
-          }
-        ).body
-        response_obj = JSON.parse(response).deep_symbolize_keys
-        external_api_client_meta = @external_api_client.get_metadata
-        if response_obj[:access_token]
-          external_api_client_meta[:bearer_token] = response_obj[:access_token]
-          @external_api_client.set_metadata(external_api_client_meta)
-          return true
-        else
-          raise StandardError.new "#authenticate: #{response_obj.to_s}"
+      def start
+        logger_namespace = ApiNamespace.find_by!(slug: @log_incidents_to_namespace)
+        @targets.each do |target|
+          url = target.properties["url"]
+          start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+          latency = 0
+          begin
+            uri = URI::HTTPS.build(host: URI(url).host)
+            response = Net::HTTP.start(uri.host, uri.port, :use_ssl => true)
+            cert = response.peer_cert
+            two_weeks = 14 * 86400 # 14 * One Day
+            if Time.now + two_weeks > cert.not_after
+              raise "TLS/SSL certificate for #{uri} is expiring soon. Expiry at: #{cert.not_after}"
+            end
+            finish = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+            latency = ((finish - start) * 1000).round
+          rescue StandardError => e
+            logger_namespace.api_resources.create!(
+              properties: {
+                slug: url,
+                error: e.message,
+                notification_sent: false,
+                latency: latency
+              }
+            )
+            updated_target_properties = {
+              "healthy": false,
+              "alarm_raised": false,
+              "last_checked_at": Time.now,
+              "latency": 0,
+              "error_message": e.message
+            }
+            target.update!(
+              properties: target.properties.merge(updated_target_properties)
+            )
+            #after handling the error case, we need to bubble it up to the job
+            raise
+          else
+            updated_target_properties = {
+              "healthy": true,
+              "alarm_raised": false,
+              "last_checked_at": Time.now,
+              "latency": latency,
+              "error_message": nil
+            }
+            target.update!(
+              properties: target.properties.merge(updated_target_properties)
+            )
+          end
         end
       end
 
-      def reset_retries_after_success
-        @external_api_client.update(retries: 0)
+      def log
+        return true
       end
     end
     # at the end of the file we have to implicitly return the class 
-    External::ApiClients::Modmed
+    BishopTlsMonitoring
 vacuum_job:
   api_namespace: one
   slug: vacuum-job

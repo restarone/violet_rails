@@ -590,4 +590,43 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
     assert_match expected_message, vacuum_job_plugin.reload.error_message
     assert_response :redirect
   end
+
+  test "#BishopMonitoring: does not log incident, send HTTP request and email if HTTP endpoint error does not occur" do
+    bishop_plugin = external_api_clients(:bishop_monitoring)
+    api_namespace = api_namespaces(:monitoring_targets)
+    mailchimp_request = stub_request(:get, api_namespace.api_resources.first.properties['url'])
+      .to_return(status: 200, body: "OK")
+
+    sign_in(@user)
+    perform_enqueued_jobs do
+      assert_no_difference 'ApiResource.count' do
+        assert_no_difference "ApiActionMailer.deliveries.size" do          
+          get start_api_namespace_external_api_client_path(api_namespace_id: api_namespace.id, id: bishop_plugin.id)
+          Sidekiq::Worker.drain_all
+        end
+      end
+    end
+  end
+
+  test "#BishopMonitoring: does log incident, send HTTP request and email if HTTP endpoint error occurs" do
+    bishop_plugin = external_api_clients(:bishop_monitoring)
+    api_namespace = api_namespaces(:monitoring_targets)
+    mailchimp_request = stub_request(:get, api_namespace.api_resources.first.properties['url'])
+      .to_return(status: 500, body: "Gateway unavailable")
+
+    sign_in(@user)
+    perform_enqueued_jobs do
+      assert_changes 'ApiResource.count' do
+        assert_difference "ApiActionMailer.deliveries.size", +1 do          
+          get start_api_namespace_external_api_client_path(api_namespace_id: api_namespace.id, id: bishop_plugin.id)
+          Sidekiq::Worker.drain_all
+        end
+      end
+    end
+  end
+
+  test "#BishopTlsMonitoring: sends HTTP request and email when HTTPS endpoint has near expiry TLS certificate" do
+    bishop_plugin = external_api_clients(:bishop_tls_monitoring)
+    api_resource = api_resources(:monitoring_targets)
+  end
 end
