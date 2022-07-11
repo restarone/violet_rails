@@ -6,7 +6,7 @@
     .form-group.col-12
       = label_tag "Action"
       = select_tag "api_namespace[#{type}_attributes][#{index}][action_type]", options_for_select(ApiAction.action_types.keys, resource.action_type), { class: "form-control form-control-sm", id: "action_type_field_#{type}_#{index}", onchange: "toggleApiActionFields('#{index}', '#{type}');"}
-      - if resource.action_type == 'send_email' || resource.action_type == 'send_web_request'
+      .extra-details{ style: "#{ 'display: none' unless (resource.send_email? || resource.send_web_request?) }"}
         .form-group.my-2
           .d-block
             %strong Top-Level Model Attributes: 
@@ -19,11 +19,52 @@
               %strong Last API Resource Instance Attributes: 
               .d-block
                 = last_instance.properties.keys
+
+        .mt-2.send-email-guide{ style: "#{ 'display: none' unless resource.send_email? }"}
           .d-block
-            %small
+            %strong
+              Dynamic Fields:
+            Email address, Subject, Custom Message
+          .d-block
+            %strong
+              Available Variables:
+            api_resource
+          .d-block
+            %strong
               Dynamic:
+            %li
+              Email address:
               %code
-                \\#{api_resource.properties['your_custom_attribute_here']} 
+                \\#{api_resource.properties['your_custom_attribute_here']}
+            %li
+              Subject:
+              %code
+                \\#{api_resource.properties['your_custom_attribute_here']} welcome! 
+            %li
+              Custom Message:
+              %code
+                \We can help you with \#{api_resource.properties['your_custom_attribute_here']} ! 
+
+        .mt-2.send-web-request-guide{ style: "#{ 'display: none' unless resource.send_web_request? }"}
+          .d-block
+            %strong
+              Dynamic Fields:
+            Request Url, Request Body, Headers
+          .d-block
+            %strong
+              Available Variables:
+            api_resource, current_user, current_visit
+          .d-block
+            %strong
+              Dynamic:
+            %li
+              Request Url:
+              %code
+                \www.example.com/\#{api_resource.api_namespace.metadata["my_custom_attribute"]}
+            %li
+              Request Body and Headers:
+              %code
+                \\#{current_user.email}, \#{current_visit.browser} 
 
     .send_email.col-12{style: "#{'display:none' unless resource.action_type == 'send_email'}", id: "send_email_fields_#{type}_#{index}"}
       .form-group

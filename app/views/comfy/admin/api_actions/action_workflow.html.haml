@@ -28,17 +28,21 @@
     = f.submit 'Save'
 
 :javascript
+  const guideClassNames = ['.send-email-guide', '.send-web-request-guide'];
+
   function toggleApiActionFields(index, type) {
     var fieldType = $("#action_type_field_" + type + '_' + index).val();
     hideAllFields(index, type)
     if (fieldType === 'send_email') {
       $("#send_email_fields_" + type + '_' + index).show();
+      showRelatedExtraDetails($("#send_email_fields_" + type + '_' + index), '.send-email-guide');
     } else if (fieldType === 'redirect') {
       $("#redirect_fields_" + type + '_' + index).show();
     } else if (fieldType === 'serve_file') {
       $("#serve_file_fields_" + type + '_' + index).show();
     } else if (fieldType === 'send_web_request') {
       $("#serve_web_request_fields_" + type + '_' + index).show();
+      showRelatedExtraDetails($("#serve_web_request_fields_" + type + '_' + index), '.send-web-request-guide');
     }
   }
 
@@ -47,6 +51,10 @@
     $("#redirect_fields_" + type + '_'  + index).hide();
     $("#serve_file_fields_" + type + '_' + index).hide();
     $("#serve_web_request_fields_" + type + '_' + index).hide();
+
+    // Hiding the extra-details section.
+    // The parent of all fields (send-email/redirect/send-web-request/serve-file) is same.
+    $("#serve_web_request_fields_" + type + '_' + index).parents('.card').find('.extra-details').hide();
   }
 
   function removeForm(form_id, destroy_field_id) {
@@ -63,6 +71,19 @@
       dataType: 'script',
       contentType: "application/html",
       success: function(response) {}
+    });
+  }
+
+  function showRelatedExtraDetails(element, actionType) {
+    $(element).parents('.card').find('.extra-details').show();
+
+    // Showing the required guide according to actionType
+    guideClassNames.forEach(function(className) {
+      if (actionType == className) {
+        $(element).parents('.card').find('.extra-details').find(className).show();
+      } else {
+        $(element).parents('.card').find('.extra-details').find(className).hide();
+      }
     });
   }
   
