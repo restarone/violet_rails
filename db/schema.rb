@@ -474,8 +474,8 @@ ActiveRecord::Schema.define(version: 2022_06_09_092515) do
     t.string "after_sign_up_path"
     t.string "after_sign_in_path"
     t.boolean "allow_external_analytics_query", default: false
-    t.text "email_signature"
     t.string "email_name"
+    t.text "email_signature"
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
     t.index ["name"], name: "index_subdomains_on_name"
   end
