@@ -208,10 +208,13 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       actions_count = @api_namespace.create_api_actions.size
       assert_difference "@api_namespace.executed_api_actions.count", actions_count do
         post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id, params: payload)
-        assert_response :redirect
-        assert_redirected_to api_namespaces_path
       end
     end
+
+    assert_response :redirect
+    assert_redirected_to api_namespaces_path
+    # The evaluated value is saved as lifecycle_message
+    assert_equal api_namespaces_path, @controller.view_assigns['redirect_action'].lifecycle_message
   end
 
   test 'should allow #create and should not redirect by evaluating redirect_url if redirect_type is not dynamic_url' do
@@ -231,10 +234,13 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       actions_count = @api_namespace.create_api_actions.size
       assert_difference "@api_namespace.executed_api_actions.count", actions_count do
         post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id, params: payload)
-        assert_response :redirect
-        assert_redirected_to url
       end
     end
+
+    assert_response :redirect
+    assert_redirected_to url
+    # The evaluated value is not saved as lifecycle_message
+    assert_equal url, @controller.view_assigns['redirect_action'].lifecycle_message
   end
 
   test 'should allow #create and should redirect to the provided cms-page if redirect_type is cms_page' do
@@ -256,10 +262,12 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       actions_count = @api_namespace.create_api_actions.size
       assert_difference "@api_namespace.executed_api_actions.count", actions_count do
         post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id, params: payload)
-        assert_response :redirect
-        assert_redirected_to cms_page.full_path
       end
     end
+
+    assert_response :redirect
+    assert_redirected_to cms_page.full_path
+    assert_equal cms_page.full_path, @controller.view_assigns['redirect_action'].lifecycle_message
   end
 
   test 'should allow #create and show the custom success message' do
