@@ -20,16 +20,20 @@
               .d-block
                 = last_instance.properties.keys
         .mt-2.non-redirect-fields-guide{ style: "#{'display: none' if (resource.redirect? && resource.dynamic_url?)}"}
-          %small
+          .d-block
             Dynamic:
             %code
               \\#{api_resource.properties['your_custom_attribute_here']}
         .mt-2.redirect-field-guide{ style: "#{'display: none' unless (resource.redirect? && resource.dynamic_url?)}"}
-          %small.d-block
+          .d-block
+            %strong
+              Dynamic Fields:
+            Request Url, Request Body, Headers
+          .d-block
             %strong
               Available Variables:
-            api_resource, rails-route-helpers (example: comfy_admin_cms_path)
-          %small.d-block
+            api_resource, current_user, current_visit, rails-route-helpers (example: comfy_admin_cms_path)
+          .d-block
             Dynamic:
             %code
               \\#{ api_resource.properties['your_custom_attribute_here'] == 'true' ? comfy_admin_cms_path : some_other_path } 

@@ -28,24 +28,25 @@
     = f.submit 'Save'
 
 :javascript
+  const guideClassNames = ['.non-redirect-fields-guide', '.redirect-field-guide'];
+
   function toggleApiActionFields(index, type) {
     var fieldType = $("#action_type_field_" + type + '_' + index).val();
     hideAllFields(index, type)
     if (fieldType === 'send_email') {
       $("#send_email_fields_" + type + '_' + index).show();
-      $("#send_email_fields_" + type + '_' + index).parents('.card').find('.extra-details').show();
+      showRelatedExtraDetails($("#send_email_fields_" + type + '_' + index), '.non-redirect-fields-guide');
     } else if (fieldType === 'redirect') {
       $("#redirect_fields_" + type + '_' + index).show();
       if ($('#api_namespace_' + type + '_attributes_' + index + '_redirect_type_dynamic_url').is(':checked')) {
-        $("#redirect_fields_" + type + '_' + index).parents('.card').find('.extra-details').show();
-        $("#redirect_fields_" + type + '_' + index).parents('.card').find('.extra-details').find('.non-redirect-fields-guide').hide();
-        $("#redirect_fields_" + type + '_' + index).parents('.card').find('.extra-details').find('.redirect-field-guide').show();
+        showRelatedExtraDetails($("#redirect_fields_" + type + '_' + index), '.redirect-field-guide');
       }
     } else if (fieldType === 'serve_file') {
       $("#serve_file_fields_" + type + '_' + index).show();
     } else if (fieldType === 'send_web_request') {
       $("#serve_web_request_fields_" + type + '_' + index).show();
       $("#serve_web_request_fields_" + type + '_' + index).parents('.card').find('.extra-details').show();
+      showRelatedExtraDetails($("#serve_web_request_fields_" + type + '_' + index), '.non-redirect-fields-guide');
     }
   }
 
@@ -58,8 +59,6 @@
     // Hiding the extra-details section and resetting the inline-documentation part.
     // The parent of all fields (send-email/redirect/send-web-request/serve-file) is same.
     $("#serve_web_request_fields_" + type + '_' + index).parents('.card').find('.extra-details').hide();
-    $("#serve_web_request_fields_" + type + '_' + index).parents('.card').find('.extra-details').find('.non-redirect-fields-guide').show();
-    $("#serve_web_request_fields_" + type + '_' + index).parents('.card').find('.extra-details').find('.redirect-field-guide').hide();
   }
 
   function removeForm(form_id, destroy_field_id) {
@@ -76,6 +75,19 @@
       dataType: 'script',
       contentType: "application/html",
       success: function(response) {}
+    });
+  }
+
+  function showRelatedExtraDetails(element, actionType) {
+    $(element).parents('.card').find('.extra-details').show();
+
+    // Showing the required guide according to actionType
+    guideClassNames.forEach(function(className) {
+      if (actionType == className) {
+        $(element).parents('.card').find('.extra-details').find(className).show();
+      } else {
+        $(element).parents('.card').find('.extra-details').find(className).hide();
+      }
     });
   }
   
