@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - name: Choose Environment
         id: branch_check
@@ -21,6 +21,22 @@ jobs:
             echo "::set-output name=github_envs::{\"value\":['staging']}"
             echo "::set-output name=deploy_env::staging"
           fi 
+    outputs:
+      github_envs: ${{ steps.branch_check.outputs.github_envs }}
+      deploy_env: ${{ steps.branch_check.outputs.deploy_env }}
+
+  deploy:
+    needs: build 
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix: ${{fromJSON(needs.build.outputs.github_envs)}}
+      fail-fast: false
+    environment:
+      name: ${{ matrix.value }}
+    env:
+      SERVER_IP: ${{ secrets.SERVER_IP }}
+      BRANCH: ${{ secrets.BRANCH }}
+    steps:
       - uses: actions/checkout@v2
       - name: Install Rbenv
         run: |
@@ -41,22 +57,6 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 14.x
-    outputs:
-      github_envs: ${{ steps.branch_check.outputs.github_envs }}
-      deploy_env: ${{ steps.branch_check.outputs.deploy_env }}
-
-  deploy:
-    needs: build 
-    runs-on: ubuntu-18.04
-    strategy:
-      matrix: ${{fromJSON(needs.build.outputs.github_envs)}}
-      fail-fast: false
-    environment:
-      name: ${{ matrix.value }}
-    env:
-      SERVER_IP: ${{ secrets.SERVER_IP }}
-      BRANCH: ${{ secrets.BRANCH }}
-    steps:
       - name: Add public IP to AWS security group
         uses: sohelamin/aws-security-group-add-ip-action@master
         with:
