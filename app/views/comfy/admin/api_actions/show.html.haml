@@ -19,6 +19,10 @@
         .mr-3
           Redirect Url:
         = @api_action.redirect_url
+      .col-12.d-flex.mb-3
+        .mr-3
+          Redirect Type:
+        = @api_action.redirect_type
     - if @api_action.action_type == 'send_email'
       .col-12.d-flex.mb-3
         .mr-3

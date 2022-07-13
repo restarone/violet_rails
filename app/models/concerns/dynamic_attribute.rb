@@ -6,6 +6,7 @@
 
 module DynamicAttribute
     extend ActiveSupport::Concern
+    include Rails.application.routes.url_helpers
 
     included do
       def parse_dynamic_attribute(value)
@@ -24,7 +25,8 @@ module DynamicAttribute
 
       def attribute_value_string(attribute)
         value = public_send(attribute.to_sym)
-        value.is_a?(Enumerable) ? value.to_json : value.to_s
+        # Deep copy of non-enumerable column like string-type would get passed and the evaluated value would get reflected as change.
+        value.is_a?(Enumerable) ? value.to_json : value.to_s.dup
       end
     end
   
