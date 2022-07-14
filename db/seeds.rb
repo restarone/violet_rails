@@ -44,6 +44,17 @@ site.layouts.find_by(identifier: 'default').update(
   css: VioletSeeds::SITE_CSS
   )
 
+# Assets
+# ------
+
+VioletSeeds::ASSETS.each do |asset|
+  blob = ActiveStorage::Blob::create_and_upload!(
+    io: File.open("#{Rails.root}/db/violet_seeds/assets/#{asset[:filename]}"),
+    filename: asset[:filename]
+  )
+  file = site.files.create!(id: asset[:id], label: asset[:filename], file: blob)
+end
+
 # Pages
 # -----
 page = site.pages.first

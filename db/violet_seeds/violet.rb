@@ -1,4 +1,36 @@
 module VioletSeeds
+  # keep static IDs in case we want to add/remove later
+  ASSETS = [
+    { id: 1, filename: 'a-toi-website-illustration-desktop.png' },
+    { id: 2, filename: 'a-toi-website-illustration-mobile.png' },
+    { id: 3, filename: 'atoi_wordmark_logo.png' },
+    { id: 4, filename: 'coc-image@2x.png' },
+    { id: 5, filename: 'coc-image-mobile@2x.png' },
+    { id: 6, filename: 'coc_logo.png' },
+    { id: 7, filename: 'code-first-icon@2x.png' },
+    { id: 8, filename: 'collab-icon@2x.png' },
+    { id: 9, filename: 'cta-bg-mobile.png' },
+    { id: 10, filename: 'cta-bg.png' },
+    { id: 11, filename: 'fixed-cost-icon@2x.png' },
+    { id: 12, filename: 'github-logo.png' },
+    { id: 13, filename: 'header-bg-mobile.png' },
+    { id: 14, filename: 'header-bg.png' },
+    { id: 15, filename: 'marked-image@2x.png' },
+    { id: 16, filename: 'marked-image-mobile@2x.png' },
+    { id: 17, filename: 'marked-logo.png' },
+    { id: 18, filename: 'nikean-image@2x.png' },
+    { id: 19, filename: 'nikean-image-mobile@2x.png' },
+    { id: 20, filename: 'Nikean-Logo-White.png' },
+    { id: 21, filename: 'oss-icon@2x.png' },
+    { id: 22, filename: 'restarone-footer-logo.png' },
+    { id: 23, filename: 'sanjay-desktop-1.png' },
+    { id: 24, filename: 'sanjay-mobile.png' },
+    { id: 25, filename: 'storage-icon@2x.png' },
+    { id: 26, filename: 'unlimited-email-icon@2x.png' },
+    { id: 27, filename: 'violet-rails-vertical-logo.png' },
+    { id: 28, filename: 'your-idea-illustration.png' }
+  ]
+
   SITE_CSS = <<-CSS
 @import url('https://fonts.googleapis.com/css2?family=Karla:wght@400;500;800&display=swap');
 
