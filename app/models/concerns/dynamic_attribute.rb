@@ -28,6 +28,15 @@ module DynamicAttribute
         # Deep copy of non-enumerable column like string-type would get passed and the evaluated value would get reflected as change.
         value.is_a?(Enumerable) ? value.to_json : value.to_s.dup
       end
+
+      # Fetching session specific data should be defined here.
+      def current_user
+        Current.user
+      end
+
+      def current_visit
+        Current.visit
+      end
     end
   
     class_methods do
