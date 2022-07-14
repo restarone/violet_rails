@@ -1,6 +1,7 @@
 module ApiActionable
   extend ActiveSupport::Concern
   included do
+    before_action :set_current_user_and_visit
     before_action :initialize_api_actions, only: [:update, :show, :destroy]
     before_action :check_for_redirect_action, only: [:create, :update, :show, :destroy]
     after_action :execute_api_actions, only: [:show, :create, :update, :destroy]
@@ -93,6 +94,11 @@ module ApiActionable
     @api_namespace.send(action_name).each do |action|
       @api_resource.send(action_name).create(action.attributes.merge(custom_message: action.custom_message.to_s).except("id", "created_at", "updated_at", "api_namespace_id"))
     end
+  end
+
+  def set_current_user_and_visit
+    Current.user = current_user
+    Current.visit = current_visit
   end
 
   def load_api_actions_from_api_resource
