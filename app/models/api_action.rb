@@ -4,7 +4,7 @@ class ApiAction < ApplicationRecord
   include DynamicAttribute
 
   attr_encrypted :bearer_token
-  attr_dynamic :email, :email_subject, :custom_message, :payload_mapping, :request_url, :custom_headers
+  attr_dynamic :email, :email_subject, :custom_message, :payload_mapping, :custom_headers, :request_url, :redirect_url
 
   after_update :update_executed_actions_payload, if: Proc.new { api_namespace.present? && saved_change_to_payload_mapping? }
 
@@ -14,6 +14,8 @@ class ApiAction < ApplicationRecord
   enum action_type: { send_email: 0, send_web_request: 1, redirect: 2, serve_file: 3 }
 
   enum lifecycle_stage: {initialized: 0, executing: 1, complete: 2, failed: 3, discarded: 4}
+  
+  enum redirect_type: { cms_page: 0, dynamic_url: 1 }
 
   HTTP_METHODS = ['get', 'post', 'patch', 'put', 'delete']
   
