@@ -1,4 +1,16 @@
 ENV['RAILS_ENV'] ||= 'test'
+require 'simplecov'
+SimpleCov.start 'rails' do
+  # these arent customized. so these dont need to be integration tested
+  add_filter "app/controllers/users/confirmations_controller.rb"
+  add_filter "app/controllers/users/omniauth_callbacks_controller.rb"
+  add_filter "app/controllers/users/passwords_controller.rb"
+  add_filter "app/controllers/users/unlocks_controller.rb"
+  add_filter "app/mailers/devise_mailer.rb"
+  add_filter "app/channels/application_cable/channel.rb"
+  add_filter "app/channels/application_cable/connection.rb"
+  add_filter "app/jobs/application_job.rb"
+end
 require_relative "../config/environment"
 require "rails/test_help"
 require 'mocha/minitest'
