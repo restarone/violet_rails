@@ -7,6 +7,7 @@ class ResourceController < ApplicationController
     @api_resource = @api_namespace.api_resources.new(resource_params)
     if @api_namespace&.api_form&.show_recaptcha
       if verify_recaptcha(model: @api_resource) && @api_resource.save
+        load_api_actions_from_api_resource
         handle_redirection
       else
         execute_error_actions
@@ -15,6 +16,7 @@ class ResourceController < ApplicationController
       end
     elsif @api_namespace&.api_form&.show_recaptcha_v3
       if verify_recaptcha(model: @api_resource, action: helpers.sanitize_recaptcha_action_name(@api_namespace.name), minimum_score: ApiForm::RECAPTCHA_V3_MINIMUM_SCORE, secret_key: ENV['RECAPTCHA_SECRET_KEY_V3']) && @api_resource.save
+        load_api_actions_from_api_resource
         handle_redirection
       else
         execute_error_actions
@@ -22,6 +24,7 @@ class ResourceController < ApplicationController
         redirect_back(fallback_location: root_path)
       end
     elsif @api_resource.save
+      load_api_actions_from_api_resource
       handle_redirection
     else
       execute_error_actions

@@ -1,6 +1,7 @@
 module ApiActionable
   extend ActiveSupport::Concern
   included do
+    before_action :set_current_user_and_visit
     before_action :initialize_api_actions, only: [:update, :show, :destroy]
     before_action :check_for_redirect_action, only: [:create, :update, :show, :destroy]
     after_action :execute_api_actions, only: [:show, :create, :update, :destroy]
@@ -10,11 +11,19 @@ module ApiActionable
 
 
   def check_for_redirect_action
-    @redirect_action = @api_namespace.send(api_action_name).where(action_type: 'redirect').last
+    @redirect_action = if @api_resource.present?
+                        @api_resource.send(api_action_name).where(action_type: 'redirect').reorder(:created_at).last
+                      else
+                        @api_namespace.send(api_action_name).where(action_type: 'redirect').last
+                      end
   end
 
   def check_for_serve_file_action
-    serve_file_action = @api_namespace.send(api_action_name).where(action_type: 'serve_file').last
+    serve_file_action = if @api_resource.present?
+                        @api_resource.send(api_action_name).where(action_type: 'serve_file').reorder(:created_at).last
+                      else
+                        @api_namespace.send(api_action_name).where(action_type: 'serve_file').last
+                      end
     return if serve_file_action.nil?
 
     serve_file_action.update(lifecycle_stage: 'executing')
@@ -34,10 +43,11 @@ module ApiActionable
     flash[notice_type] = @api_resource.api_namespace.api_form&.success_message_evaluated || 'Api resource was successfully updated.'
 
     if @redirect_action.present?
-      if @redirect_action.update!(lifecycle_stage: 'complete', lifecycle_message: @redirect_action.redirect_url.to_s)
-        redirect_to @redirect_action.redirect_url and return
+      redirect_url = @redirect_action.dynamic_url? ? @redirect_action.redirect_url_evaluated : @redirect_action.redirect_url
+      if @redirect_action.update!(lifecycle_stage: 'complete', lifecycle_message: redirect_url)
+        redirect_to redirect_url and return
       else
-        @redirect_action.update!(lifecycle_stage: 'failed', lifecycle_message: @redirect_action.redirect_url.to_s)
+        @redirect_action.update!(lifecycle_stage: 'failed', lifecycle_message: redirect_url)
         execute_error_actions
       end
     end
@@ -86,5 +96,15 @@ module ApiActionable
     @api_namespace.send(action_name).each do |action|
       @api_resource.send(action_name).create(action.attributes.merge(custom_message: action.custom_message.to_s).except("id", "created_at", "updated_at", "api_namespace_id"))
     end
+  end
+
+  def set_current_user_and_visit
+    Current.user = current_user
+    Current.visit = current_visit
+  end
+
+  def load_api_actions_from_api_resource
+    @redirect_action = @api_resource.send(api_action_name).where(action_type: 'redirect').reorder(:created_at).last if @redirect_action.present?
+    @serve_file_action = @api_resource.send(api_action_name).where(action_type: 'serve_file').reorder(:created_at).last if @serve_file_action.present?
   end
 end
