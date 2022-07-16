@@ -641,13 +641,13 @@ header > .container {
 				<div class="d-flex align-items-center my-5">
 					<a href="/forum" class="btn btn-lg btn-primary btn-shadow">Forum</a>
 					<a href="https://github.com/restarone/violet_rails" class="d-flex align-items-center btn btn-lg font-weight-bold bg-transparent">
-					<img src="{{ cms:file_link 31 }}" class="img mr-2">
+					<img src="{{ cms:file_link 12 }}" class="img mr-2">
 					GitHub
 					</a>
 				</div>
 			</div>
 			<div class="col-xl-6 d-flex align-items-center">
-				{{ cms:file_link 44, as: image, class: "img-fluid" }}
+				{{ cms:file_link 28, as: image, class: "img-fluid" }}
 			</div>
 		</div>
 		<p class="m-0 p-0 d-inline fw-500">
@@ -658,8 +658,8 @@ header > .container {
 	</div>
 </div>
 <div class="bg-image">
-	<img src="{{ cms:file_link 46}}" class="w-100 h-100 d-none d-md-block" alt="">
-	<img src="{{ cms:file_link 58}}" class="w-100 h-100 d-md-none" alt="">
+	<img src="{{ cms:file_link 14}}" class="w-100 h-100 d-none d-md-block" alt="">
+	<img src="{{ cms:file_link 13}}" class="w-100 h-100 d-md-none" alt="">
 </div></main><main class="bg-grey">
 <div class="container">
 	<div class="jumbotron m-0 px-0 bg-transparent">
@@ -751,7 +751,7 @@ header > .container {
 			<div class="col-md-4 p-0 first-col">
 				<div class="card">
 					<div class="card-header bg-transparent border-0">
-						{{ cms:file_link 37, as: image, class: 'img-fluid' }}
+						{{ cms:file_link 26, as: image, class: 'img-fluid' }}
 					</div>
 					<div class="card-body">
 						<h5 class="card-title font-weight-bold mb-2">Unlimited email addresses</h5>
@@ -763,7 +763,7 @@ header > .container {
 				</div>
 				<div class="card">
 					<div class="card-header bg-transparent border-0">
-						{{ cms:file_link 35, as: image, class: 'img-fluid' }}
+						{{ cms:file_link 21 , as: image, class: 'img-fluid' }}
 					</div>
 					<div class="card-body">
 						<h5 class="card-title font-weight-bold">Built with top-shelf open source software</h5>
@@ -777,7 +777,7 @@ header > .container {
 			<div class="col-md-4 p-0 second-col">
 				<div class="card">
 					<div class="card-header bg-transparent border-0">
-						{{ cms:file_link 38, as: image, class: 'img-fluid' }}
+						{{ cms:file_link 11, as: image, class: 'img-fluid' }}
 					</div>
 					<div class="card-body">
 						<h5 class="card-title font-weight-bold mb-2">Fixed cost and no vendor lock-in<br></h5>
@@ -789,7 +789,7 @@ header > .container {
 				</div>
 				<div class="card">
 					<div class="card-header bg-transparent border-0">
-						{{ cms:file_link 34, as: image, class: 'img-fluid' }}
+						{{ cms:file_link 8, as: image, class: 'img-fluid' }}
 					</div>
 					<div class="card-body">
 						<h5 class="card-title font-weight-bold mb-2">Collaborative, isolated, and secure<br></h5>
@@ -804,7 +804,7 @@ header > .container {
 			<div class="col-md-4 p-0 third-col">
 				<div class="card">
 					<div class="card-header bg-transparent border-0">
-						{{ cms:file_link 36, as: image, class: 'img-fluid' }}
+						{{ cms:file_link 7, as: image, class: 'img-fluid' }}
 					</div>
 					<div class="card-body">
 						<h5 class="card-title font-weight-bold mb-2">A code first platform</h5>
@@ -817,7 +817,7 @@ header > .container {
 				</div>
 				<div class="card">
 					<div class="card-header bg-transparent border-0">
-						{{ cms:file_link 33, as: image, class: 'img-fluid' }}
+						{{ cms:file_link 25, as: image, class: 'img-fluid' }}
 					</div>
 					<div class="card-body">
 						<h5 class="card-title font-weight-bold mb-2">Safe and scalable storage</h5>
@@ -833,8 +833,8 @@ header > .container {
 	</div>
 </div>
 <div class="bg-image">
-	<img src="{{ cms:file_link 47 }}" class="w-100 h-100 d-none d-md-block" alt="">
-	<img src="{{ cms:file_link 59 }}" class="w-100 h-100 d-md-none" alt="">
+	<img src="{{ cms:file_link 10 }}" class="w-100 h-100 d-none d-md-block" alt="">
+	<img src="{{ cms:file_link 9 }}" class="w-100 h-100 d-md-none" alt="">
 </div></main><main class="products-section" id="products-section">
 <div class="container text-md-center">
 	<div class="mb-2">
@@ -848,7 +848,7 @@ header > .container {
 			<div class="col-md-4 d-flex align-items-center">
 				<div class="product-detail text-left">
 					<div class="product-logo mb-3">
-						<img src="{{ cms:file_link 60 }}" alt="" width="121">
+						<img src="{{ cms:file_link 6 }}" alt="" width="121">
 					</div>
 					<h3 class="mb-2">Coffee Oysters Champagne</h3>
 					<p class="lead mb-4">A chic website for a glamorous oyster bar in Toronto, featuring a custom-design, online event booking and CRM integration.
@@ -858,8 +858,8 @@ header > .container {
 			</div>
 			<div class="col-md-8 img-div">
 				<a href="https://www.sipshucksip.com/" class="product-img" target="_blank">
-				<img src="{{ cms:file_link 50 }}" class="d-none d-sm-block" alt="" width="742" height="639">
-				<img src="{{ cms:file_link 49 }}" alt="" class="d-sm-none">
+				<img src="{{ cms:file_link 4 }}" class="d-none d-sm-block" alt="" width="742" height="639">
+				<img src="{{ cms:file_link 5 }}" alt="" class="d-sm-none">
 				</a>
 			</div>
 		</div>
@@ -867,7 +867,7 @@ header > .container {
 			<div class="col-lg-4 d-flex align-items-center">
 				<div class="product-detail text-left">
 					<div class="product-logo mb-3">
-						<img src="{{ cms:file_link 57 }}" alt="" width="170">
+						<img src="{{ cms:file_link 17 }}" alt="" width="170">
 					</div>
 					<h3 class="mb-2">Marked Restaurant</h3>
 					<p class="lead mb-4">A bold website for a premier grill-house in Toronto, featuring a custom-design, online event booking and CRM integration.
@@ -877,8 +877,8 @@ header > .container {
 			</div>
 			<div class="col-lg-8 img-div">
 				<a href="https://www.markedrestaurant.com/" target="_blank" class="product-img">
-				<img src="{{ cms:file_link 48 }}" alt="" class="d-none d-sm-block" width="742" height="639">
-				<img src="{{ cms:file_link 51 }}" alt="" class="d-sm-none">
+				<img src="{{ cms:file_link 15 }}" alt="" class="d-none d-sm-block" width="742" height="639">
+				<img src="{{ cms:file_link 16 }}" alt="" class="d-sm-none">
 				</a>
 			</div>
 		</div>
@@ -886,7 +886,7 @@ header > .container {
 			<div class="col-md-4 d-flex align-items-center">
 				<div class="product-detail text-left">
 					<div class="product-logo mb-3">
-						<img src="{{ cms:file_link 65 }}" alt="" width="100">
+						<img src="{{ cms:file_link 3 }}" alt="" width="100">
 					</div>
 					<h3 class="mb-2">a toi<br></h3>
 					<p class="lead mb-4">A creative and unique website for Toronto's best worst-kept secret<br>
@@ -896,8 +896,8 @@ header > .container {
 			</div>
 			<div class="col-md-8 img-div">
 				<a href="https://a-toi.ca/" class="product-img" target="_blank">
-				<img src="{{ cms:file_link 64 }}" class="d-none d-sm-block" alt="" width="742" height="639">
-				<img src="{{ cms:file_link 63 }}" alt="" class="d-sm-none">
+				<img src="{{ cms:file_link 1 }}" class="d-none d-sm-block" alt="" width="742" height="639">
+				<img src="{{ cms:file_link 2 }}" alt="" class="d-sm-none">
 				</a>
 			</div>
 		</div>
@@ -912,8 +912,8 @@ header > .container {
 			</div>
 			<div class="col-lg-8 img-div">
 				<a href="https://www.sanjaysinghal.com/" target="_blank" class="product-img">
-				<img src="{{ cms:file_link 55 }}" alt="" class="d-none d-sm-block">
-				<img src="{{ cms:file_link 54 }}" alt="" class="d-sm-none w-100">
+				<img src="{{ cms:file_link 23 }}" alt="" class="d-none d-sm-block">
+				<img src="{{ cms:file_link 24 }}" alt="" class="d-sm-none w-100">
 				</a>
 			</div>
 		</div>
@@ -921,7 +921,7 @@ header > .container {
 			<div class="col-lg-4 d-flex align-items-center">
 				<div class="product-detail text-left">
 					<div class="product-logo mb-3">
-						<img src="{{ cms:file_link 56 }}" alt="" width="219">
+						<img src="{{ cms:file_link 20 }}" alt="" width="219">
 					</div>
 					<h3 class="mb-2">Nikean Foundation</h3>
 					<p class="lead mb-4">An eclectic website for a foundation dedicated to advancing psychedelic science.
@@ -931,8 +931,8 @@ header > .container {
 			</div>
 			<div class="col-lg-8 img-div">
 				<a href="https://nikean.org/" target="_blank" class="product-img">
-				<img src="{{ cms:file_link 53 }}" class="d-none d-sm-block" alt="" width="742" height="639">
-				<img src="{{ cms:file_link 52 }}" alt="" class="d-sm-none">
+				<img src="{{ cms:file_link 18 }}" class="d-none d-sm-block" alt="" width="742" height="639">
+				<img src="{{ cms:file_link 19 }}" alt="" class="d-sm-none">
 				</a>
 			</div>
 		</div>
