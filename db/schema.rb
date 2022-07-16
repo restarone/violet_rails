@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_24_080242) do
+ActiveRecord::Schema.define(version: 2022_07_09_172402) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -125,6 +125,8 @@ ActiveRecord::Schema.define(version: 2022_05_24_080242) do
     t.jsonb "custom_headers"
     t.string "http_method"
     t.text "method_definition", default: "# You have access to variables: api_action, api_namespace, api_resource, current_visit, current_user\n# Write your custom code here\nraise 'not implemented error'"
+    t.text "email_subject"
+    t.integer "redirect_type", default: 0
     t.index ["api_namespace_id"], name: "index_api_actions_on_api_namespace_id"
     t.index ["api_resource_id"], name: "index_api_actions_on_api_resource_id"
   end
@@ -151,6 +153,7 @@ ActiveRecord::Schema.define(version: 2022_05_24_080242) do
     t.boolean "show_recaptcha", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "show_recaptcha_v3", default: false
     t.index ["api_namespace_id"], name: "index_api_forms_on_api_namespace_id"
   end
 
@@ -424,6 +427,7 @@ ActiveRecord::Schema.define(version: 2022_05_24_080242) do
     t.bigint "api_namespace_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "allow_attachments", default: false
     t.index ["api_namespace_id"], name: "index_non_primitive_properties_on_api_namespace_id"
     t.index ["api_resource_id"], name: "index_non_primitive_properties_on_api_resource_id"
   end
@@ -472,8 +476,8 @@ ActiveRecord::Schema.define(version: 2022_05_24_080242) do
     t.string "after_sign_up_path"
     t.string "after_sign_in_path"
     t.boolean "allow_external_analytics_query", default: false
-    t.boolean "api_plugin_events_enabled", default: false
-    t.boolean "tracking_enabled", default: false
+    t.string "email_name"
+    t.text "email_signature"
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
     t.index ["name"], name: "index_subdomains_on_name"
   end
@@ -521,6 +525,7 @@ ActiveRecord::Schema.define(version: 2022_05_24_080242) do
     t.boolean "can_access_admin", default: false
     t.boolean "deliver_error_notifications", default: false
     t.boolean "can_manage_analytics", default: false
+    t.boolean "can_manage_files", default: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true

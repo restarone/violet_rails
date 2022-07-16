@@ -3,11 +3,6 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
   before_action :set_api_resource
 
   include ApiActionable
-  # GET /api_resources or /api_resources.json
-  def index
-    @api_resources = ApiResource.all
-  end
-
   # GET /api_resources/1 or /api_resources/1.json
   def show
     execute_api_actions
@@ -68,7 +63,7 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
     @api_resource.destroy
 
     respond_to do |format|
-      format.html { redirect_to api_namespace_resources_url(api_namespace_id: @api_namespace.id), notice: "Api resource was successfully destroyed." }
+      format.html { redirect_to api_namespace_path(id: @api_namespace.id), notice: "Api resource was successfully destroyed." }
       format.json { head :no_content }
     end
   end
@@ -82,6 +77,6 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
 
     # Only allow a list of trusted parameters through.
     def api_resource_params
-      params.require(:api_resource).permit(:properties, non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :_destroy]).merge({ api_namespace_id: params[:api_namespace_id] })
+      params.require(:api_resource).permit(:properties, non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :allow_attachments, :_destroy]).merge({ api_namespace_id: params[:api_namespace_id] })
     end
 end

@@ -41,6 +41,7 @@ class User < ApplicationRecord
     can_access_admin: true,
     can_manage_web: true,
     can_manage_analytics: true,
+    can_manage_files: true,
     can_manage_email: true,
     can_manage_users: true,
     can_manage_blog: true,
@@ -110,15 +111,17 @@ class User < ApplicationRecord
     timeout = User::SESSION_TIMEOUT.detect{|n| n[:slug] == self.session_timeoutable_in }[:exec]
     eval(timeout)
    end
+
+  def is_last_admin?
+    User.all.size == 1 || (self.can_manage_users && User.where(can_manage_users: true).size == 1)
+  end
   
   private
 
 
   def ensure_final_user
-    if Rails.env != 'test'
-      if User.all.size - 1 == 0
-        throw :abort
-      end 
-    end
+    if self.is_last_admin?
+      throw :abort
+    end 
   end
 end

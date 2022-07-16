@@ -10,11 +10,11 @@
 = render 'comfy/admin/api_namespaces/init_editor', {read_only: true}
 
 .my-3
-  = link_to 'Api Actions', api_namespace_api_actions_path(api_namespace_id: @api_resource.api_namespace_id, 'q[api_resource_id_eq]': @api_resource.id)
+  = link_to 'API Actions', api_namespace_api_actions_path(api_namespace_id: @api_resource.api_namespace_id, 'q[api_resource_id_eq]': @api_resource.id)
 
 .my-5
   = link_to 'Destroy', api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id, id: @api_resource.id), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'
 
 = link_to 'Edit', edit_api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id, id: @api_resource.id)
 \|
-= link_to 'Back', api_namespace_resources_path
+<button class="btn btn-link p-0" onclick="window.history.back()">Back</button>

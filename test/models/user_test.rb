@@ -18,14 +18,43 @@ class UserTest < ActiveSupport::TestCase
     ).valid?
   end
 
-  test "can be destroyed" do
+  test "can be destroyed if not last user or admin" do
     user = User.new(
       email: 'foo@bar.com',
       password: '123456',
       password_confirmation: '123456',
     )
-    assert user.save
-    user.destroy
+    user.save
+    assert user.destroy
+  end
+
+  test "cannot be destroyed if last user" do
+    User.delete_all
+    user = User.new(
+      email: 'foo@bar.com',
+      password: '123456',
+      password_confirmation: '123456',
+    )
+    user.save
+    assert_not user.destroy
+  end
+
+  test "cannot be destroyed if last admin" do
+    User.delete_all
+    user = User.new(
+      email: 'foo@bar.com',
+      password: '123456',
+      password_confirmation: '123456',
+    )
+    admin = User.new(
+      email: 'admin@email.com',
+      password: '123456',
+      password_confirmation: '123456',
+      can_manage_users: true
+    )
+    user.save
+    admin.save
+    assert_not admin.destroy
   end
 
   test "can infer session timeout time (default)" do

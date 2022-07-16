@@ -31,7 +31,7 @@ Rails.application.configure do
   # config.assets.css_compressor = :sass
 
   # Do not fallback to assets pipeline if a precompiled asset is missed.
-  config.assets.compile = true
+  config.assets.compile = false
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = 'http://assets.example.com'
@@ -137,7 +137,13 @@ end
 
 # exception notifier
 Rails.application.config.middleware.use ExceptionNotification::Rack,
-  ignore_exceptions: ['ActionController::ParameterMissing', 'ActionController::RoutingError'],
+  ignore_exceptions: [
+    'ActionController::ParameterMissing', 
+    'ActionController::RoutingError',
+    'ActionController::InvalidAuthenticityToken',
+    'ActionDispatch::Http::MimeNegotiation::InvalidType',
+    'ActiveRecord::RecordNotFound',
+  ],
   violet_rails_error: {
     app: {
       host: ENV["APP_HOST"]

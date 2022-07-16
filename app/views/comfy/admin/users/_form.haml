@@ -22,11 +22,15 @@
               .form-group
                 = f.check_box :can_manage_web
                 %label 
-                  Can manage website (Layouts, Pages, Files, Snippets)
+                  Can manage website (Layouts, Pages, Snippets)
               .form-group
                 = f.check_box :can_manage_analytics
                 %label
                   Can manage analytics
+              .form-group
+                = f.check_box :can_manage_files
+                %label
+                  Can manage files
               .form-group
                 = f.check_box :can_manage_email
                 %label 
@@ -79,4 +83,5 @@
                 %label 
                   Can manage forum
   = f.submit "Update", class: 'btn btn-success'
-  = link_to "Remove", admin_user_path(id: @user.id), method: :delete, class: 'btn btn-sm btn-danger', data: { confirm: 'Are you sure you want to remove this user? This cannot be undone' }
+  - unless @user.is_last_admin?
+    = link_to "Remove", admin_user_path(id: @user.id), method: :delete, class: 'btn btn-sm btn-danger', data: { confirm: 'Are you sure you want to remove this user? This cannot be undone' }   

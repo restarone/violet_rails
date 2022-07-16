@@ -4,22 +4,31 @@
 // that code so it'll be compiled.
 
 import Rails from "@rails/ujs"
-import Turbolinks from "turbolinks"
+import { Turbo } from "@hotwired/turbo-rails";
 
 import "channels"
 import "bootstrap"
 import "chartkick/chart.js"
 
 import ahoy from "ahoy.js";
-import ctaSuccessHandler from "./website/call_to_actions"
+import ctaSuccessHandler, {ctaSuccessHandlerRecaptchaV3} from "./website/call_to_actions"
 window.ahoy = ahoy;
+window.Turbo = Turbo
 window.ctaSuccessHandler = ctaSuccessHandler
+window.ctaSuccessHandlerRecaptchaV3 = ctaSuccessHandlerRecaptchaV3
 
 Rails.start()
-Turbolinks.start()
+
 
 
 require("jquery")
 require("./trix")
 require("./select2")
 require("./common")
+
+$(document).on("turbolinks:load", () => {
+  console.log("Violet Rails uses turbolinks!");
+});
+$(document).on("turbo:load", () => {
+  console.log("Violet Rails uses turbo!");
+});

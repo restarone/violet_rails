@@ -32,9 +32,9 @@
     = f.label :max_retries
     = f.number_field :max_retries
 
-  .field
+  .field.mb-3
     = f.label :model_definition
-    = f.text_area :model_definition
+    = f.text_area :model_definition, data: {'cms-cm-mode' => 'javascript'}
 
   #jsoneditor
   = hidden_field_tag "external_api_client[metadata]", @external_api_client.metadata&.to_json 

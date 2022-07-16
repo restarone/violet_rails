@@ -1,7 +1,8 @@
 import Sortable from 'sortablejs';
-import ctaSuccessHandler from "../../website/call_to_actions"
+import ctaSuccessHandler, { ctaSuccessHandlerRecaptchaV3 } from "../../website/call_to_actions"
 
 window.ctaSuccessHandler = ctaSuccessHandler
+window.ctaSuccessHandlerRecaptchaV3 = ctaSuccessHandlerRecaptchaV3
 window.addEventListener('DOMContentLoaded', (event) => {
 
     $('.js-sortable').each(function() {

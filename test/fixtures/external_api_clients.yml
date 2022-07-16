@@ -125,7 +125,7 @@ modmed:
       end
 
       def get_patient_documents(patient_id)
-        # search documents in postman looks the same as this call but with an additional query parameter (_count)
+        # search documents in postman looks the same as this #call but with an additional query parameter (_count)
         endpoint = "#{@base_url}/#{@clinic_id}/ema/fhir/v2/DocumentReference?patient=#{patient_id}"
         response = HTTParty.get(endpoint, headers: @headers).body
         return JSON.parse(response).deep_symbolize_keys
@@ -200,3 +200,118 @@ modmed:
     end
     # at the end of the file we have to implicitly return the class 
     External::ApiClients::Modmed
+vacuum_job:
+  api_namespace: one
+  slug: vacuum-job
+  label: VacuumJob
+  enabled: true
+  metadata: {
+            'ORDER': 'descending',
+            'DIMENSION': 'created_at',
+            'BATCH_SIZE': '5',
+            'API_NAMESPACE_ID': '1',
+            'OLDER_THAN': '2880' # 2 days (in minutes)
+          }
+  model_definition: |
+    class VacuumJob
+      def initialize(parameters)  
+        @external_api_client = parameters[:external_api_client]
+      end
+
+      def start
+        # Fetching provided inputs (namespaceid, batch_size, dimension, order, time_before)
+        api_namespace_id = @external_api_client.metadata["API_NAMESPACE_ID"]
+        batch_size = @external_api_client.metadata["BATCH_SIZE"]
+        dimension = @external_api_client.metadata["DIMENSION"]
+        order = @external_api_client.metadata["ORDER"].upcase.starts_with?('ASC') ? 'ASC' : 'DESC'
+        older_than = @external_api_client.metadata["OLDER_THAN"].to_f # in minutes
+
+        raise 'ApiResource of another ApiNamespace cannot be deleted.'if api_namespace_id.to_s != @external_api_client.api_namespace_id.to_s
+
+        api_resources_to_be_deleted = ApiResource.where(api_namespace_id: api_namespace_id).where("(EXTRACT (EPOCH FROM  now() - #{dimension} )::int/60) > ?", older_than).order("#{dimension} #{order}").limit(batch_size)
+
+        ActiveRecord::Base.transaction do
+          api_resources_to_be_deleted.each do |api_resource|
+            api_resource.destroy!
+          end
+        end
+      end
+    end
+    # at the end of the file we have to implicitly return the class 
+    VacuumJob
+
+mailchimp_plugin:
+  api_namespace: mailchimp
+  slug: mailchimp-plugin
+  label: MailChimp
+  enabled: true
+  metadata: {
+            'API_KEY': 'testkey',
+            'SERVER_PREFIX': 'us9',
+            'LIST_ID': 'valid_list_id',
+          }
+  model_definition: |
+    class SyncToMailchimp
+      def initialize(parameters)
+        @external_api_client     = parameters[:external_api_client]
+        @api_key                 = @external_api_client.metadata["API_KEY"]
+        @unsynced_api_resources  = @external_api_client.api_namespace.api_resources.where("properties @> ?", {synced_to_mailchimp: false}.to_json)
+        @mailchimp_uri           = "https://#{@external_api_client.metadata['SERVER_PREFIX']}.api.mailchimp.com/3.0/lists/#{@external_api_client.metadata['LIST_ID']}/members?skip_merge_validation=true"
+        @custom_merge_fields_map = @external_api_client.metadata['CUSTOM_MERGE_FIELDS_MAP'] || {}
+        @attr_to_exclude         = (@external_api_client.metadata['ATTR_TO_EXCLUDE'] || []) + @custom_merge_fields_map.keys + ['synced_to_mailchimp']
+        @logger_namespace        = ApiNamespace.find_by(slug: @external_api_client.metadata["LOGGER_NAMESPACE"]) if @external_api_client.metadata["LOGGER_NAMESPACE"]
+      end
+      
+      def start
+        @unsynced_api_resources.each do |api_resource|
+          begin
+            merge_fields = api_resource.properties.except(*@attr_to_exclude).transform_keys(&:upcase).transform_values(&:to_s)
+
+            @custom_merge_fields_map.each do |key, value|
+              merge_fields[value.upcase] = api_resource.properties[key].to_s if value
+            end
+
+            response = HTTParty.post(@mailchimp_uri, 
+              body: { 
+                  email_address: api_resource.properties["email"],
+                  status: "subscribed",
+                  merge_fields: merge_fields,
+                  tags: @external_api_client.metadata['TAGS'] || []
+                }.to_json,
+
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': "Basic #{@api_key}" 
+                } 
+              )
+
+            if response.success?
+              api_resource.properties["synced_to_mailchimp"] = true
+              api_resource.save
+            end
+
+            @logger_namespace.api_resources.create!(
+              properties: {
+                api_resource: api_resource.id,
+                status: response.success? ? "success" : "error",
+                response: JSON.parse(response.body),
+                timestamp: Time.zone.now
+              }
+            ) if @logger_namespace
+
+          rescue StandardError => e
+            @logger_namespace.api_resources.create!(
+              properties: {
+                api_resource: api_resource.id,
+                status: "error",
+                response: { detail: e.message},
+                timestamp: Time.zone.now
+              }
+            ) if @logger_namespace
+          end
+        end
+      end
+    end
+
+    # at the end of the file we have to implicitly return the class 
+    SyncToMailchimp

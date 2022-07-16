@@ -1,6 +1,7 @@
 module ApiActionable
   extend ActiveSupport::Concern
   included do
+    before_action :set_current_user_and_visit
     before_action :initialize_api_actions, only: [:update, :show, :destroy]
     before_action :check_for_custom_actions, only: [:create, :update, :show, :destroy]
     before_action :check_for_redirect_action, only: [:create, :update, :show, :destroy]
@@ -18,7 +19,7 @@ module ApiActionable
 
   def check_for_redirect_action
     @redirect_action = if @api_resource.present?
-                          @api_resource.send(api_action_name).where(action_type: 'redirect', lifecycle_stage: 'initialized').last
+                          @api_resource.send(api_action_name).where(action_type: 'redirect').reorder(:created_at).last
                         else
                           @api_namespace.send(api_action_name).where(action_type: 'redirect').last
                         end
@@ -26,7 +27,7 @@ module ApiActionable
 
   def check_for_serve_file_action
     @serve_file_action = if @api_resource.present?
-                            @api_resource.send(api_action_name).where(action_type: 'serve_file', lifecycle_stage: 'initialized').last
+                            @api_resource.send(api_action_name).where(action_type: 'serve_file').reorder(:created_at).last
                           else
                             @api_namespace.send(api_action_name).where(action_type: 'serve_file').last
                           end
@@ -71,17 +72,19 @@ module ApiActionable
   end
 
   def handle_redirection
-    flash[:notice] = @api_namespace.api_form.success_message
+    flash[:notice] = @api_namespace.api_form.success_message || 'Api resource was successfully updated.'
+
     if @redirect_action.present?
-      if @redirect_action.update!(lifecycle_stage: 'complete', lifecycle_message: @redirect_action.redirect_url.to_s)
-        redirect_to @redirect_action.redirect_url and return
+      redirect_url = @redirect_action.dynamic_url? ? @redirect_action.redirect_url_evaluated : @redirect_action.redirect_url
+      if @redirect_action.update!(lifecycle_stage: 'complete', lifecycle_message: redirect_url)
+        redirect_to redirect_url and return
       else
-        @redirect_action.update!(lifecycle_stage: 'failed', lifecycle_message: @redirect_action.redirect_url.to_s)
+        @redirect_action.update!(lifecycle_stage: 'failed', lifecycle_message: redirect_url)
         execute_error_actions
       end
     end
 
-    redirect_back(fallback_location: root_path, notice: "Api resource was successfully updated.")
+    redirect_back(fallback_location: root_path)
   end
 
   def execute_api_actions
@@ -91,7 +94,7 @@ module ApiActionable
       if ApiAction.action_types[action_type] == ApiAction.action_types[:serve_file]
         handle_serve_file_action if @serve_file_action.present?
       elsif ApiAction.action_types[action_type] == ApiAction.action_types[:redirect]
-        handle_redirection if @redirect_action.present?
+        handle_redirection
       elsif ApiAction.action_types[action_type] == ApiAction.action_types[:custom_action]
         handle_custom_actions if @custom_actions.present?
       elsif [ApiAction.action_types[:send_email], ApiAction.action_types[:send_web_request]].include?(ApiAction.action_types[action_type])
@@ -141,9 +144,14 @@ module ApiActionable
     end
   end
 
+  def set_current_user_and_visit
+    Current.user = current_user
+    Current.visit = current_visit
+  end
+
   def load_api_actions_from_api_resource
     @custom_actions = @api_resource.send(api_action_name).where(action_type: 'custom_action', lifecycle_stage: 'initialized') if @custom_actions.present?
-    @redirect_action = @api_resource.send(api_action_name).where(action_type: 'redirect', lifecycle_stage: 'initialized').last if @redirect_action.present?
-    @serve_file_action = @api_resource.send(api_action_name).where(action_type: 'serve_file', lifecycle_stage: 'initialized').last if @serve_file_action.present?
+    @redirect_action = @api_resource.send(api_action_name).where(action_type: 'redirect').reorder(:created_at).last if @redirect_action.present?
+    @serve_file_action = @api_resource.send(api_action_name).where(action_type: 'serve_file').reorder(:created_at).last if @serve_file_action.present?
   end
 end

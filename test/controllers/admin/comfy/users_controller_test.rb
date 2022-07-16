@@ -4,8 +4,9 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
   setup do
     @restarone_subdomain = Subdomain.find_by(name: 'restarone')
     @user = users(:public)
+    @public_subdomain = subdomains(:public)
     @domain = @user.subdomain
-    @user.update(can_manage_users: true)
+    @user.update(can_manage_users: true, can_manage_email: true)
 
     @restarone_subdomain = Subdomain.find_by(name: 'restarone')
 
@@ -24,6 +25,31 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     assert_template :index
     assert response.body.include? I18n.t('views.comfy.users.index.header.title')
     assert response.body.include? I18n.t('views.comfy.users.index.header.action')
+  end
+
+  test "#index: users table with all necessary columns is rendered" do
+    column_headings = [
+      "Email",
+      "Name",
+      "Can manage web",
+      "Can manage analytics",
+      "Can manage files",
+      "Can manage email",
+      "Can manage users",
+      "Can manage blog",
+      "Can manage api",
+      "Can manage app settings",
+      "Can view restricted pages",
+      "Can manage forum",
+      "Current sign in at",
+      "Last sign in at"
+    ]
+    sign_in(@user)
+    get admin_users_url(subdomain: @domain)
+    assert_select "table", 1, "This page must contain a users table"
+    column_headings.each do |heading|
+      assert_select "thead th", {count: 1, text: heading}, "Users table must contain '#{heading}' column"
+    end
   end
 
   test "deny #index" do
@@ -49,6 +75,34 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     sign_in(@user)
     get edit_admin_user_url(subdomain: @domain, id: @user.id)
     assert_response :success
+  end
+
+  test "#edit: show forum button if selected " do
+    sign_in(@user)
+    @public_subdomain.update(forum_enabled: true)
+    get mailbox_path
+    assert_select 'a', {count: 1, text: 'Forum'}
+  end
+
+  test "#edit: show blog button if selected " do
+    sign_in(@user)
+    @public_subdomain.update(blog_enabled: true)
+    get mailbox_path
+    assert_select 'a', {count: 1, text: 'Blog'}
+  end
+  
+  test "#edit: hide forum button if unselected " do
+    sign_in(@user)
+    @public_subdomain.update(forum_enabled: false)
+    get mailbox_path
+    assert_select 'a', {count: 0, text:'Forum'}
+  end
+  
+  test "#edit: hide blog button if unselected " do
+    sign_in(@user)
+    @public_subdomain.update(blog_enabled: false)
+    get mailbox_path
+    assert_select 'a', {count: 0, text:'Blog'}
   end
 
   test "denies #edit if not permissioned" do
@@ -177,7 +231,7 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
   test "#destroy" do
     assert_difference "User.all.size", -1 do
       sign_in(@user)
-      delete admin_user_url(subdomain: @domain, id: @user.id)
+      delete admin_user_url(subdomain: @domain, id: users(:one).id)
       assert flash.notice
       refute flash.alert
       assert_redirected_to admin_users_url(subdomain: @domain)

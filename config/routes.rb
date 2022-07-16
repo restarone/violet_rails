@@ -13,6 +13,10 @@ Rails.application.routes.draw do
   get 'dashboard/sessions/:ahoy_visit_id', to: 'comfy/admin/dashboard#visit', as: :dashboard_visits
   get 'dashboard/events/:ahoy_event_type', to: 'comfy/admin/dashboard#events_detail', as: :dashboard_events
   get 'dashboard/events_list', to: 'comfy/admin/dashboard#events_list', as: :dashboard_events_list
+  delete 'dashboard/events/:ahoy_event_type/destroy_event', to: 'comfy/admin/dashboard#destroy_event', as: :dashboard_destroy_event
+  delete 'dashboard/events/:ahoy_event_type/destroy_visits', to: 'comfy/admin/dashboard#destroy_visits', as: :dashboard_destroy_visits
+
+  post 'import_api_namespace', to: 'comfy/admin/api_namespaces#import_as_json', as: :import_as_json_api_namespaces
 
   resources :signup_wizard
   resources :signin_wizard
@@ -53,9 +57,11 @@ Rails.application.routes.draw do
     member do
       post 'duplicate_with_associations'
       post 'duplicate_without_associations'
+      get 'export_with_associations_as_json'
+      get 'export_without_associations_as_json'
     end
 
-    resources :resources, controller: 'comfy/admin/api_resources'
+    resources :resources, except: [:index], controller: 'comfy/admin/api_resources'
     resources :api_clients, controller: 'comfy/admin/api_clients'
     resources :external_api_clients, controller: 'comfy/admin/external_api_clients' do
       member do
@@ -131,7 +137,9 @@ Rails.application.routes.draw do
   post "/graphql", to: "graphql#execute"
 
   # catch web client route before it gets hijacked by the server
-  mount_ember_app :client, to: "/app"
+  if RUBY_VERSION != "3.0.0"
+    mount_ember_app :client, to: "/app"
+  end
 
   comfy_route :cms_admin, path: "/admin"
   comfy_route :blog, path: "blog"

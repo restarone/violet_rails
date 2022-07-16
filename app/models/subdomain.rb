@@ -13,6 +13,7 @@ class Subdomain < ApplicationRecord
   has_one_attached :logo
   has_one_attached :favicon
   has_one_attached :og_image
+  has_rich_text :email_signature
 
 
   # max 1GB by default storage allowance
@@ -216,5 +217,10 @@ class Subdomain < ApplicationRecord
 
   def create_tenant
     Apartment::Tenant.create(self.name)
+  end
+
+  def self.all_with_public_schema
+    subdomain = Subdomain.new(name: 'public')
+    Subdomain.all.to_a.push(subdomain)
   end
 end

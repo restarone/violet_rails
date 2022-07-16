@@ -5,7 +5,7 @@ class Comfy::Admin::ApiClientsController < Comfy::Admin::Cms::BaseController
 
   # GET /api_clients or /api_clients.json
   def index
-    @api_clients = ApiClient.all
+    @api_clients = @api_namespace.api_clients
   end
 
   # GET /api_clients/1 or /api_clients/1.json

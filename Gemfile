@@ -1,7 +1,11 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '2.6.6'
+if ENV['RUBY_BUILD'] == '3.0.0'
+  ruby '3.0.0'
+else
+  ruby '2.6.6'
+end
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails', branch: 'main'
 gem 'rails', '~> 6.1.5'
@@ -13,8 +17,6 @@ gem 'puma', '~> 5.6'
 gem 'sass-rails', '>= 6'
 # Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
 gem 'webpacker', '~> 5.0'
-# Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
-gem 'turbolinks', '~> 5'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.7'
 # Use Redis adapter to run Action Cable in production
@@ -102,6 +104,8 @@ gem "ember-cli-rails", "0.10.0"
 # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
 gem 'web-console', '>= 4.1.0'
 gem "exception_notification", "~> 4.5"
-gem 'rails_12factor', group: [:staging, :production]
+
 
 gem "turnout", "~> 2.5"
+
+gem "turbo-rails", "~> 1.1"

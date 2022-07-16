@@ -51,6 +51,38 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     assert_response :success
   end
 
+  test '#index: shows the latest post.body in the thread preview' do
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      forum_category = ForumCategory.create!(name: 'test', slug: 'test')
+    
+      forum_thread_1 = @restarone_user.forum_threads.create!(title: 'Test Thread 1', forum_category_id: forum_category.id)
+      ForumPost.create!(forum_thread_id: forum_thread_1.id, user_id: @restarone_user.id, body: 'test body 1')
+      ForumPost.create!(forum_thread_id: forum_thread_1.id, user_id: @restarone_user.id, body: 'test body 2')
+      ForumPost.create!(forum_thread_id: forum_thread_1.id, user_id: @restarone_user.id, body: 'test body 3')
+    
+      forum_thread_2 = @restarone_user.forum_threads.create!(title: 'Test Thread 2', forum_category_id: forum_category.id)
+      ForumPost.create!(forum_thread_id: forum_thread_2.id, user_id: @restarone_user.id, body: 'test body 4')
+      forum_post = ForumPost.create!(forum_thread_id: forum_thread_2.id, user_id: @restarone_user.id, body: 'test body 5')
+      ForumPost.create!(forum_thread_id: forum_thread_2.id, user_id: @restarone_user.id, body: 'test body 6')
+      forum_post.update!(body: 'test body 5 updated')
+
+      sign_in(@restarone_user)
+      get simple_discussion.root_url(subdomain: @restarone_subdomain.name)
+      
+      assert_response :success
+
+      # Middle forum-post was updated in the end for forum_thread_2 which should be shown in the thread preview.
+      assert_select '.card-body .forum-thread .row .col', html: /Test Thread 2/ do
+        assert_select 'p.text-muted', text: /test body 5 updated/
+      end
+
+      # If no middle forum-post was updated in the end, then the last created/updated forum-post should be shown in the thread preview for forum_thread_1.
+      assert_select '.card-body .forum-thread .row .col', html: /Test Thread 1/ do
+        assert_select 'p.text-muted', text: /test body 3/
+      end
+    end
+  end
+
   test 'denies new thread creation if not logged in' do
     payload = {
       forum_thread: {
@@ -153,6 +185,35 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
       post simple_discussion.forum_threads_url, params: payload
       Sidekiq::Worker.drain_all
     end
+
+    # Validation errors are not present in the response-body
+    assert_select 'div#error_explanation', { count: 0 }
+    refute @controller.view_assigns['forum_thread'].errors.present?
+  end
+
+  test 'denies new thread creation with validation errors in response if invalid payload is provided' do
+    subdomains(:public).update(api_plugin_events_enabled: true)
+    sign_in(@user)
+    payload = {
+      forum_thread: {
+        forum_category_id: '',
+        title: '',
+        forum_posts_attributes: {
+          "0": {
+            body: ''
+          }
+        }
+      }
+    }
+    assert_no_difference "ApiResource.count" do
+      post simple_discussion.forum_threads_url, params: payload
+      Sidekiq::Worker.drain_all
+    end
+
+    assert_response :unprocessable_entity
+    # Validation errors are present in the response-body
+    assert_select 'div#error_explanation'
+    assert @controller.view_assigns['forum_thread'].errors.present?
   end
 
   test 'tracks new thread/reply creation if plugin: subdomain/subdomain_events is enabled' do
@@ -178,6 +239,33 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
       }
       Sidekiq::Worker.drain_all
     end
+  end
+
+  test 'denies new thread/reply creation with validation-errors in response' do
+    sign_in(@user)
+    payload = {
+      forum_thread: {
+        forum_category_id: @forum_category.id,
+        title: 'foo',
+        forum_posts_attributes: {
+          "0": {
+            body: 'bar'
+          }
+        }
+      }
+    }
+    post simple_discussion.forum_threads_url, params: payload
+    post simple_discussion.forum_thread_forum_posts_path(ForumThread.last), params: {
+      forum_post: {
+        body: ""
+      }
+    }
+    Sidekiq::Worker.drain_all
+
+    assert_response :unprocessable_entity
+    # Validation errors are present in the response-body
+    assert_select 'div#error_explanation'
+    assert @controller.view_assigns['forum_post'].errors.present?
   end
 
   test 'tracks forum-thread view (if tracking is enabled)' do
@@ -218,5 +306,55 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
 
     end
     assert_response :success
+  end
+
+  test 'denies forum-thread update with validation errors in response if invalid payload is provided' do
+    forum_thread = @user.forum_threads.create!(title: 'Test Thread 1', forum_category_id: @forum_category.id)
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @user.id, body: 'test body 1')
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @user.id, body: 'test body 2')
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @user.id, body: 'test body 3')
+  
+    sign_in(@user)
+    payload = {
+      forum_thread: {
+        forum_category_id: '',
+        title: '',
+        forum_posts_attributes: {
+          "0": {
+            body: ''
+          }
+        }
+      }
+    }
+
+    patch simple_discussion.forum_thread_url(id: forum_thread.id), params: payload
+    Sidekiq::Worker.drain_all
+
+    assert_response :unprocessable_entity
+    # Validation errors are present in the response-body
+    assert_select 'div#error_explanation'
+    assert @controller.view_assigns['forum_thread'].errors.present?
+  end
+
+  test 'allows forum-thread update without validation errors in response' do
+    forum_thread = @user.forum_threads.create!(title: 'Test Thread 1', forum_category_id: @forum_category.id)
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @user.id, body: 'test body 1')
+  
+    sign_in(@user)
+    payload = {
+      forum_thread: {
+        title: 'Title Changed'
+      }
+    }
+
+    patch simple_discussion.forum_thread_url(id: forum_thread.id), params: payload
+    Sidekiq::Worker.drain_all
+
+    assert_response :redirect
+    # Validation errors are not present in the response-body
+    assert_select 'div#error_explanation', { count: 0 }
+    refute @controller.view_assigns['forum_thread'].errors.present?
+
+    assert_equal payload[:forum_thread][:title], forum_thread.reload.title
   end
 end

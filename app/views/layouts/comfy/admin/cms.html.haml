@@ -1,6 +1,6 @@
 !!!
 %html{lang: I18n.locale}
-  = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
+  = stylesheet_link_tag 'application', media: 'all', 'data-turbo-track': 'reload'
   = javascript_pack_tag 'trix'
   = javascript_pack_tag 'select2'
   = javascript_pack_tag 'comfy/admin/cms'
@@ -8,7 +8,9 @@
   %script{:crossorigin => "anonymous", :integrity => "sha512-xEv8uIENS4DGY7Ml/Cv6+sbcPXiRAguIgU8Sv0FCUUdrNC7aRhWbOglm7lnzhnA3spqCr8DnTMTMNFW4jhM8gA==", :referrerpolicy => "no-referrer", :src => "https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.0.0/jsoneditor.js"}
   -# this is a hack until I figure out how to get chartkick working without importing the whole application js pack
   - if controller_name == 'dashboard'
-    = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
+    = javascript_pack_tag 'application', 'data-turbo-track': 'reload'
+
+
 
   = render 'layouts/comfy/admin/cms/head'
   = render 'layouts/comfy/admin/cms/body'
