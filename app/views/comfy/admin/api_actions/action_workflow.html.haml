@@ -28,7 +28,7 @@
     = f.submit 'Save'
 
 :javascript
-  const guideClassNames = ['.send-email-guide', '.send-web-request-guide', '.redirect-field-guide'];
+  const guideClassNames = ['.send-email-guide', '.send-web-request-guide', '.redirect-field-guide', '.custom-action-field-guide'];
 
   function toggleApiActionFields(index, type) {
     var fieldType = $("#action_type_field_" + type + '_' + index).val();
@@ -48,6 +48,7 @@
       manageRelatedExtraDetails($("#serve_web_request_fields_" + type + '_' + index), '.send-web-request-guide');
     } else if (fieldType === 'custom_action') {
       $("#custom_action_fields_" + type + '_' + index).show();
+      manageRelatedExtraDetails($("#custom_action_fields_" + type + '_' + index), '.custom-action-field-guide');
     }
   }
 
