@@ -124,9 +124,9 @@ ActiveRecord::Schema.define(version: 2022_07_09_172402) do
     t.datetime "updated_at", precision: 6, null: false
     t.jsonb "custom_headers"
     t.string "http_method"
-    t.text "method_definition", default: "# You have access to variables: api_action, api_namespace, api_resource, current_visit, current_user\n# Write your custom code here\nraise 'not implemented error'"
     t.text "email_subject"
     t.integer "redirect_type", default: 0
+    t.text "method_definition"
     t.index ["api_namespace_id"], name: "index_api_actions_on_api_namespace_id"
     t.index ["api_resource_id"], name: "index_api_actions_on_api_resource_id"
   end
@@ -146,8 +146,8 @@ ActiveRecord::Schema.define(version: 2022_07_09_172402) do
   create_table "api_forms", force: :cascade do |t|
     t.jsonb "properties"
     t.bigint "api_namespace_id", null: false
-    t.string "success_message"
-    t.string "failure_message"
+    t.text "success_message"
+    t.text "failure_message"
     t.string "submit_button_label", default: "Submit"
     t.string "title"
     t.boolean "show_recaptcha", default: false
