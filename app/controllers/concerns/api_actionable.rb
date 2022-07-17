@@ -72,7 +72,7 @@ module ApiActionable
   end
 
   def handle_redirection
-    flash[:notice] = @api_namespace.api_form.success_message || 'Api resource was successfully updated.'
+    flash[:notice] = 'Api resource was successfully updated.' unless @api_namespace.api_form.success_message.present?
 
     if @redirect_action.present?
       redirect_url = @redirect_action.dynamic_url? ? @redirect_action.redirect_url_evaluated : @redirect_action.redirect_url
@@ -94,7 +94,7 @@ module ApiActionable
       if ApiAction.action_types[action_type] == ApiAction.action_types[:serve_file]
         handle_serve_file_action if @serve_file_action.present?
       elsif ApiAction.action_types[action_type] == ApiAction.action_types[:redirect]
-        handle_redirection
+        handle_redirection if @redirect_action.present?
       elsif ApiAction.action_types[action_type] == ApiAction.action_types[:custom_action]
         handle_custom_actions if @custom_actions.present?
       elsif [ApiAction.action_types[:send_email], ApiAction.action_types[:send_web_request]].include?(ApiAction.action_types[action_type])
@@ -103,6 +103,8 @@ module ApiActionable
         end
       end
     end if api_actions.present?
+
+    flash[:notice] = @api_namespace.api_form.success_message if @api_namespace.api_form.success_message.present?
   end
 
   def handle_error(e)

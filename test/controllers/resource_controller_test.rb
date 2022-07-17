@@ -408,7 +408,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     api_namespace = api_namespaces(:three)
     api_namespace.api_form.update(properties: { 'name': {'label': 'name', 'placeholder': 'Test', 'type_validation': 'tel'}})
     api_action = api_actions(:create_custom_api_action_three)
-    api_action.update!(method_definition: "User.create!(email: 'contact1@restarone.com', password: '123456', password_confirmation: '123456', confirmed_at: Time.now)")
+    api_action.update!(method_definition: "User.create!(email: 'contact1@restarone.com', password: '123456', password_confirmation: '123456')")
 
     payload = {
       data: {
@@ -429,11 +429,11 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     api_namespace = api_namespaces(:three)
     api_namespace.api_form.update(properties: { 'name': {'label': 'name', 'placeholder': 'Test', 'type_validation': 'tel'}})
     api_action = api_actions(:create_custom_api_action_three)
-    api_action.update!(position: 0, method_definition: "User.create!(email: 'custom_action_0@restarone.com', password: '123456', password_confirmation: '123456', confirmed_at: Time.now)")
+    api_action.update!(position: 0, method_definition: "User.create!(email: 'custom_action_0@restarone.com', password: '123456', password_confirmation: '123456')")
 
     2.times.each do |n|
       new_custom_action = api_actions(:create_custom_api_action_three).dup
-      new_custom_action.method_definition = "User.create!(email: 'custom_action_#{ n + 1 }@restarone.com', password: '123456', password_confirmation: '123456', confirmed_at: Time.now)"
+      new_custom_action.method_definition = "User.create!(email: 'custom_action_#{ n + 1 }@restarone.com', password: '123456', password_confirmation: '123456')"
       new_custom_action.position = n + 1
       new_custom_action.save!
     end
