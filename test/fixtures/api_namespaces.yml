@@ -110,5 +110,29 @@ monitoring_target_incident:
                 "latency": 0,
                 "notification_sent": false
               }
+mailchimp:
+  name: mailchimp_namespace
+  slug: mailchimp_namespace
+  version: 1
+  properties: {
+    'first_name': 'Violet',
+    'last_name': 'Rails',
+    'email': 'violet@rails.com',
+    'contact': '',
+    'synced_to_mailchimp': false
+  }
+  requires_authentication: false
+  namespace_type: create-read-update-delete
+
+mailchimp_logger:
+  name: mailchimp/logger
+  slug: mailchimp_logger
+  version: 1
+  properties: {
+    'status': '',
+    'response': {},
+    'timstamp': '',
+    'api_resource': ''
+  }
   requires_authentication: false
   namespace_type: create-read-update-delete
