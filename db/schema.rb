@@ -146,8 +146,8 @@ ActiveRecord::Schema.define(version: 2022_07_09_172402) do
   create_table "api_forms", force: :cascade do |t|
     t.jsonb "properties"
     t.bigint "api_namespace_id", null: false
-    t.text "success_message"
-    t.text "failure_message"
+    t.string "success_message"
+    t.string "failure_message"
     t.string "submit_button_label", default: "Submit"
     t.string "title"
     t.boolean "show_recaptcha", default: false
