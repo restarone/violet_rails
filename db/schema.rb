@@ -124,7 +124,7 @@ ActiveRecord::Schema.define(version: 2022_07_09_172402) do
     t.datetime "updated_at", precision: 6, null: false
     t.jsonb "custom_headers"
     t.string "http_method"
-    t.text "method_definition"
+    t.text "method_definition", default: "raise StandardError"
     t.text "email_subject"
     t.integer "redirect_type", default: 0
     t.index ["api_namespace_id"], name: "index_api_actions_on_api_namespace_id"
@@ -146,8 +146,8 @@ ActiveRecord::Schema.define(version: 2022_07_09_172402) do
   create_table "api_forms", force: :cascade do |t|
     t.jsonb "properties"
     t.bigint "api_namespace_id", null: false
-    t.string "success_message"
-    t.string "failure_message"
+    t.text "success_message"
+    t.text "failure_message"
     t.string "submit_button_label", default: "Submit"
     t.string "title"
     t.boolean "show_recaptcha", default: false
