@@ -75,6 +75,16 @@ site.snippets.create(
   identifier: 'footer',
   content: VioletSeeds::FOOTER_CONTENT
 )
+site.snippets.create(
+  label: 'navbar-logo', 
+  identifier: 'navbar-logo',
+  content: File.read("#{Rails.root}/db/violet_seeds/assets/navbar-logo.svg"),
+)
+site.snippets.create(
+  label: 'logo-small', 
+  identifier: 'logo-small',
+  content: File.read("#{Rails.root}/db/violet_seeds/assets/logo-small.svg"),
+)
   
 # Blog posts
 # ----------
