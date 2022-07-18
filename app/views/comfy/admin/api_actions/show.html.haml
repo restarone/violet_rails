@@ -13,12 +13,18 @@
         .mr-3
           Payload: 
         = @api_action.payload_mapping_evaluated
+      -# payload_mapping_evaluated & custom_headers_evaluated will show current_user & current_visit according to the logged-in user.
+      -# TO DO: show the data that was evaluated while making the web-request instead of reevaluating on every request.
     
     - if @api_action.action_type == 'redirect'
       .col-12.d-flex.mb-3
         .mr-3
           Redirect Url:
         = @api_action.redirect_url
+      .col-12.d-flex.mb-3
+        .mr-3
+          Redirect Type:
+        = @api_action.redirect_type
     - if @api_action.action_type == 'send_email'
       .col-12.d-flex.mb-3
         .mr-3

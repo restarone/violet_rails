@@ -33,3 +33,12 @@ plugin_subdomain_message_event:
                     "body": "<h1>Hello</h1>"
                   }
                 }
+mailchimp:
+  api_namespace: mailchimp                
+  properties: {
+    'first_name': 'Violet',
+    'last_name': 'Rails',
+    'email': 'violet@rails.com',
+    'contact': '555-777',
+    'synced_to_mailchimp': false
+  }
