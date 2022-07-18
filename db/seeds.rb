@@ -110,12 +110,14 @@ end
 ForumCategory.create!(name: Faker::Educator.subject, slug: "cat1", color: "#0000CC")
 ForumCategory.create!(name: Faker::Educator.subject, slug: "cat2", color: "#00CCCC")
 
-5.times do
-  thread = users.first.forum_threads.create!(title: Faker::Educator.course_name, forum_category: ForumCategory.first)
-  post = users.first.forum_posts.create!(forum_thread: thread, body: Faker::GreekPhilosophers.quote)
-  post = users.second.forum_posts.create!(forum_thread: thread, body: Faker::GreekPhilosophers.quote)
-  post = users.first.forum_posts.create!(forum_thread: thread, body: Faker::GreekPhilosophers.quote)
-  post = users.third.forum_posts.create!(forum_thread: thread, body: Faker::GreekPhilosophers.quote)
+ForumCategory.all.each do |category|
+  5.times do
+    thread = users.first.forum_threads.create!(title: Faker::Educator.course_name, forum_category: category)
+    post = users.first.forum_posts.create!(forum_thread: thread, body: Faker::GreekPhilosophers.quote)
+    post = users.second.forum_posts.create!(forum_thread: thread, body: Faker::GreekPhilosophers.quote)
+    post = users.first.forum_posts.create!(forum_thread: thread, body: Faker::GreekPhilosophers.quote)
+    post = users.third.forum_posts.create!(forum_thread: thread, body: Faker::GreekPhilosophers.quote)
+  end
 end
 
 # Emails
