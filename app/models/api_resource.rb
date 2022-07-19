@@ -5,9 +5,7 @@ class ApiResource < ApplicationRecord
 
   belongs_to :api_namespace
 
-  before_create :inject_inherited_properties
-
-  after_create :initialize_api_actions, :perform_model_layer_api_actions
+  before_create :initialize_api_actions, :inject_inherited_properties
 
   validate :presence_of_required_properties
 
@@ -32,6 +30,12 @@ class ApiResource < ApplicationRecord
     Arel.sql("api_resources.properties::text") 
   end
 
+  def initialize_api_actions
+    api_namespace.create_api_actions.each do |action|
+      create_api_actions.build(action.attributes.merge(custom_message: action.custom_message.to_s).except("id", "created_at", "updated_at", "api_namespace_id"))
+    end
+  end
+
   def properties_object
     JSON.parse(properties.to_json, object_class: OpenStruct)
   end
@@ -47,16 +51,6 @@ class ApiResource < ApplicationRecord
   end
 
   private
-
-  def perform_model_layer_api_actions
-    self.create_api_actions.where(action_type: ["send_web_request", "send_email"]).each{|action| action.execute_action}
-  end
-
-  def initialize_api_actions
-    api_namespace.create_api_actions.each do |action|
-      self.create_api_actions.build(action.attributes.merge(custom_message: action.custom_message.to_s).except("id", "created_at", "updated_at", "api_namespace_id")).save
-    end
-  end
 
   def inherit_properties_from_parent
     return unless self.properties.nil?
