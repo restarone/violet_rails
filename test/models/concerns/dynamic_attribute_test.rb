@@ -101,4 +101,9 @@ class DynamicAttributeTest < ActiveSupport::TestCase
     safe_instance = @dummy_class.new(test_column: "<%= 1 + 1 %> and \#{2 + 2}")
     assert_equal safe_instance.test_column_evaluated, "2 and 4"
   end
+
+  test 'should support both string interpolation and erb syntax on json attribute' do
+    safe_instance = @dummy_class.new(test_column: { test_key: "<%= 1 + 1 %> and \#{2 + 2}" })
+    assert_equal safe_instance.test_column_evaluated, { test_key: "2 and 4" }.to_json
+  end
 end
