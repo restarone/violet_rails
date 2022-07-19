@@ -9,7 +9,7 @@ module ApiActionable
     after_action :track_create_event, only: :create
     rescue_from StandardError, with: :handle_error
   end
-  
+
 
   def check_for_redirect_action
     @redirect_action = if @api_resource.present?
@@ -110,7 +110,7 @@ module ApiActionable
   def track_create_event
     ahoy.track(
       "api-resource-create",
-      { visit_id: current_visit.id, api_resource_id: @api_resource.id, user_id: current_user&.id }
+      { visit_id: current_visit.id, api_resource_id: @api_resource.id, api_namespace_id: @api_namespace.id, user_id: current_user&.id }
     ) if Subdomain.current.tracking_enabled && current_visit
   end
 end

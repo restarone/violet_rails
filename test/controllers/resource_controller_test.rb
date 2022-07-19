@@ -434,6 +434,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
     end
     assert_equal Ahoy::Event.last.properties['api_resource_id'], ApiResource.last.id
+    assert_equal Ahoy::Event.last.properties['api_namespace_id'], api_namespace.id
     assert_equal Ahoy::Event.last.name, 'api-resource-create'
     # When user is not signed in
     refute Ahoy::Event.last.properties['user_id']
@@ -443,6 +444,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
     end
     assert_equal Ahoy::Event.last.properties['api_resource_id'], ApiResource.last.id 
+    assert_equal Ahoy::Event.last.properties['api_namespace_id'], api_namespace.id
     assert_equal Ahoy::Event.last.name, 'api-resource-create'
     # When user is signed in
     assert_equal Ahoy::Event.last.properties['user_id'], user.id 
