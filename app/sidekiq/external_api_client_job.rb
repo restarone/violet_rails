@@ -6,16 +6,16 @@ class ExternalApiClientJob
     external_api_client.update(last_run_at: Time.now)
     external_api_interface = external_api_client.evaluated_model_definition
     external_api_client_runner = external_api_interface.new(external_api_client: external_api_client)
-    retries = nil
+    retries = 0
     begin
       external_api_client.reload
-      retries = external_api_client.retries
+      retries = external_api_client.retries + 1
       external_api_client.update!(status: ExternalApiClient::STATUSES[:running])
       external_api_client_runner.start
     rescue StandardError => e
       external_api_client.reload
-      external_api_client.update!(error_message: e.message) 
-      if retries <= external_api_client.max_retries
+      external_api_client.update!(error_message: e.message)
+      if retries < external_api_client.max_retries
         external_api_client.update!(retries: retries + 1)
         max_sleep_seconds = Float(2 ** retries)
         sleep_for_seconds = rand(0..max_sleep_seconds)

@@ -30,14 +30,12 @@ class BishopMonitoringPluginTest < ActionDispatch::IntegrationTest
       .to_return(status: 500, body: "Gateway unavailable")
 
     sign_in(@user)
-    # ideally, should be +1
-    assert_changes 'ApiResource.count' do
-      # ideally, should be +1
-      assert_changes "ApiActionMailer.deliveries.size" do          
+    assert_difference 'ApiResource.count', +1 do
+      assert_difference "ApiActionMailer.deliveries.size", +1 do          
         get start_api_namespace_external_api_client_path(api_namespace_id: api_namespace.id, id: bishop_plugin.id)
         Sidekiq::Worker.drain_all
       end
     end
   end
-  
+
 end
