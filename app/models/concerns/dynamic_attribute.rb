@@ -20,7 +20,11 @@ module DynamicAttribute
         value.scan(/\#\{(.*?)\}/).each do |code|
           parsed_text = parsed_text.sub!("\#{#{code[0]}}", eval(code[0]).to_s)
         end
-        parsed_text.html_safe
+
+        # parse erb
+        parser = ERB.new(CGI.unescapeHTML(parsed_text))
+        result = parser.result(binding)
+        result.html_safe
       end
 
       def attribute_value_string(attribute)
