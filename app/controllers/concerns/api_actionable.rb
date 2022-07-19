@@ -38,7 +38,9 @@ module ApiActionable
   end
 
   def handle_redirection
-    flash[:notice] = @api_namespace.api_form.success_message || 'Api resource was successfully updated.'
+    # show custom snippet only if success_message contains valid html tags
+    notice_type = @api_namespace.api_form&.success_message_has_html? ? :custom_notice : :notice
+    flash[notice_type] = @api_resource.api_namespace.api_form&.success_message_evaluated || 'Api resource was successfully updated.'
 
     if @redirect_action.present?
       redirect_url = @redirect_action.dynamic_url? ? @redirect_action.redirect_url_evaluated : @redirect_action.redirect_url

@@ -18,10 +18,10 @@
       Messages
     .form-group
       = f.label :success_message
-      = f.text_field :success_message, class: 'form-control'
+      = f.text_area :success_message, data: {'cms-cm-mode' => 'text/html'}
     .form-group
       = f.label :failure_message
-      = f.text_field :failure_message, class: 'form-control'
+      = f.text_area :failure_message, data: {'cms-cm-mode' => 'text/html'}
 
   %h3 Fields
   .row
