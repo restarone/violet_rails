@@ -16,7 +16,8 @@ module ApplicationHelper
   def execute_actions(resource, class_name)
     api_actions = resource.send(class_name)
     api_actions.each do |api_action|
-      api_action.execute_action unless api_action.serve_file? || api_action.redirect?
+      # TODO: consider removing this? not sure if this is serving any purpose
+      api_action.execute_action unless api_action.serve_file? || api_action.redirect? || api_action.send_web_request? || api_action.send_email?
     end
   end
 
