@@ -78,4 +78,22 @@ class DynamicAttributeTest < ActiveSupport::TestCase
     safe_instance = @dummy_class.new(test_column: erb_syntax)
     assert_equal safe_instance.test_column_evaluated, "#{Current.user.id} and #{Current.visit.id}"
   end
+
+  test 'should raise standard error if undefined methods are referenced' do
+    safe_instance = @dummy_class.new(test_column: "<%= undefined_method() %>")
+    assert_raises NoMethodError do
+      safe_instance.test_column_evaluated
+    end
+  end
+
+  test 'should raise syntax error if erb syntax is wrong' do
+    # notice the missing closing end for if
+    erb_syntax = '<% if true %>'\
+                    '<div>Violet Rails</div>'
+
+    safe_instance = @dummy_class.new(test_column: erb_syntax)
+    assert_raises SyntaxError do
+      safe_instance.test_column_evaluated
+    end
+  end
 end
