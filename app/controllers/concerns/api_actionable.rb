@@ -6,9 +6,10 @@ module ApiActionable
     before_action :check_for_redirect_action, only: [:create, :update, :show, :destroy]
     after_action :execute_api_actions, only: [:show, :create, :update, :destroy]
     before_action :check_for_serve_file_action, only: [:show, :create, :update, :destroy]
+    after_action :track_create_event, only: :create
     rescue_from StandardError, with: :handle_error
   end
-
+  
 
   def check_for_redirect_action
     @redirect_action = if @api_resource.present?
@@ -104,5 +105,12 @@ module ApiActionable
   def load_api_actions_from_api_resource
     @redirect_action = @api_resource.send(api_action_name).where(action_type: 'redirect').reorder(:created_at).last if @redirect_action.present?
     @serve_file_action = @api_resource.send(api_action_name).where(action_type: 'serve_file').reorder(:created_at).last if @serve_file_action.present?
+  end
+
+  def track_create_event
+    ahoy.track(
+      "api-resource-create",
+      { visit_id: current_visit.id, api_resource_id: @api_resource.id, user_id: current_user&.id }
+    ) if Subdomain.current.tracking_enabled && current_visit
   end
 end

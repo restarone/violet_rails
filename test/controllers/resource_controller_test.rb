@@ -403,4 +403,48 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     assert_equal @controller.view_assigns['api_resource'].id, @controller.view_assigns['redirect_action'].api_resource_id
     refute @controller.view_assigns['redirect_action'].api_namespace_id
   end
+
+  test 'tracking diabled: should not track current vist and current user after create' do
+    Subdomain.current.update(tracking_enabled: false)
+    api_namespace = api_namespaces(:one)
+    payload = {
+      data: {
+          properties: {
+            name: 123,
+          }
+      }
+    }
+    assert_no_difference "Ahoy::Event.count" do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+  end
+
+  test 'tracking enabled: should track current vist and current user after create' do
+    user = users(:public)
+    Subdomain.current.update(tracking_enabled: true)
+    api_namespace = api_namespaces(:one)
+    payload = {
+      data: {
+          properties: {
+            name: 123,
+          }
+      }
+    }
+    assert_difference "Ahoy::Event.count", +1 do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+    assert_equal Ahoy::Event.last.properties['api_resource_id'], ApiResource.last.id
+    assert_equal Ahoy::Event.last.name, 'api-resource-create'
+    # When user is not signed in
+    refute Ahoy::Event.last.properties['user_id']
+
+    sign_in(user)
+    assert_difference "Ahoy::Event.count", +1 do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+    assert_equal Ahoy::Event.last.properties['api_resource_id'], ApiResource.last.id 
+    assert_equal Ahoy::Event.last.name, 'api-resource-create'
+    # When user is signed in
+    assert_equal Ahoy::Event.last.properties['user_id'], user.id 
+  end
 end
