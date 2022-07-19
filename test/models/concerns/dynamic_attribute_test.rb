@@ -79,7 +79,7 @@ class DynamicAttributeTest < ActiveSupport::TestCase
     assert_equal safe_instance.test_column_evaluated, "#{Current.user.id} and #{Current.visit.id}"
   end
 
-  test 'should raise standard error if undefined methods are referenced' do
+  test 'should raise no method error if undefined methods are referenced' do
     safe_instance = @dummy_class.new(test_column: "<%= undefined_method() %>")
     assert_raises NoMethodError do
       safe_instance.test_column_evaluated
