@@ -20,13 +20,17 @@ module DynamicAttribute
         value.scan(/\#\{(.*?)\}/).each do |code|
           parsed_text = parsed_text.sub!("\#{#{code[0]}}", eval(code[0]).to_s)
         end
-        parsed_text.html_safe
+
+        # parse erb
+        parser = ERB.new(CGI.unescapeHTML(parsed_text))
+        result = parser.result(binding)
+        result.html_safe
       end
 
       def attribute_value_string(attribute)
         value = public_send(attribute.to_sym)
         # Deep copy of non-enumerable column like string-type would get passed and the evaluated value would get reflected as change.
-        value.is_a?(Enumerable) ? value.to_json : value.to_s.dup
+        value.is_a?(Enumerable) ? JSON.generate(value) : value.to_s.dup
       end
 
       # Fetching session specific data should be defined here.
