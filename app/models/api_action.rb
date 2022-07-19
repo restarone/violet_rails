@@ -61,9 +61,9 @@ class ApiAction < ApplicationRecord
       response = HTTParty.send(http_method.to_s, request_url_evaluated, 
                     { body: payload_mapping_evaluated, headers: request_headers })
       if response.success?
-        self.update(lifecycle_stage: 'complete', lifecycle_message: response.to_s)
+        self.update(lifecycle_stage: 'complete', lifecycle_message: response.inspect)
       else
-        self.update(lifecycle_stage: 'failed', lifecycle_message: response.to_s)
+        self.update(lifecycle_stage: 'failed', lifecycle_message: response.inspect)
         execute_error_actions
       end
     rescue => e

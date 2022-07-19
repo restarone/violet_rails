@@ -51,22 +51,25 @@ module ApiActionable
   def handle_custom_actions
     flash[:notice] = @api_namespace.api_form.success_message
     if @custom_actions.present?
-      @custom_actions.each do |custom_action|
-        begin
-          custom_api_action = CustomApiAction.new
-          eval("def custom_api_action.run_custom_action(api_action: , api_namespace: , api_resource: , current_visit: , current_user: nil); #{custom_action.method_definition}; end")
-
-          custom_action.update(lifecycle_stage: 'executing')
-
-          response = custom_api_action.run_custom_action(api_action: custom_action, api_namespace: @api_namespace, api_resource: @api_resource, current_visit: current_visit, current_user: current_user)
-
-          custom_action.update(lifecycle_stage: 'complete', lifecycle_message: response.to_json)
-        rescue => e
-          custom_action.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
-          execute_error_actions
-
-          raise
+      begin
+        @custom_actions.each do |custom_action|
+          begin
+            custom_api_action = CustomApiAction.new
+            eval("def custom_api_action.run_custom_action(api_action: , api_namespace: , api_resource: , current_visit: , current_user: nil); #{custom_action.method_definition}; end")
+  
+            custom_action.update(lifecycle_stage: 'executing')
+  
+            response = custom_api_action.run_custom_action(api_action: custom_action, api_namespace: @api_namespace, api_resource: @api_resource, current_visit: current_visit, current_user: current_user)
+  
+            custom_action.update(lifecycle_stage: 'complete', lifecycle_message: response.to_json)
+          rescue => e
+            custom_action.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
+  
+            raise
+          end
         end
+      rescue
+        execute_error_actions
       end
     end
   end
