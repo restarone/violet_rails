@@ -60,13 +60,12 @@ class ApiAction < ApplicationRecord
     begin
       response = HTTParty.send(http_method.to_s, request_url_evaluated, 
                     { body: payload_mapping_evaluated, headers: request_headers })
-      response_message = response.parsed_response.is_a?(String) ? response.parsed_response : response.parsed_response.to_json
       if response.success?
-        self.update(lifecycle_stage: 'complete', lifecycle_message: response_message)
+        self.update(lifecycle_stage: 'complete', lifecycle_message: response.to_s)
       else
-        self.update(lifecycle_stage: 'failed', lifecycle_message: response_message)
+        self.update(lifecycle_stage: 'failed', lifecycle_message: response.to_s)
         execute_error_actions
-      end
+      end 
     rescue => e
       self.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
       execute_error_actions
