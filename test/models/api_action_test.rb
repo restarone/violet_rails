@@ -19,6 +19,18 @@ class ApiActionTest < ActiveSupport::TestCase
     assert_equal api_action.reload.lifecycle_message, 'error response'
   end
 
+  test "should store the parsed-response" do
+    json_response = {success: 'true', message: 'success'}
+    stub_request(:post, "www.example.com/success").to_return(body: JSON.generate(json_response), status: 200, headers: {'Content-Type': 'application/json'})
+
+    api_action = api_actions(:create_api_action_three)
+    api_action.update(bearer_token: 'test')
+    api_action.execute_action
+
+    assert_equal api_action.reload.lifecycle_stage, 'complete'
+    assert_equal api_action.reload.lifecycle_message, json_response.to_json
+  end
+
   test 'should respond to dynamically generated method' do
     api_resource = api_resources(:one)
 
