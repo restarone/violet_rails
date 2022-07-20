@@ -19,10 +19,10 @@ module ApiActionable
 
   def check_for_redirect_action
     @redirect_action = if @api_resource.present?
-                          @api_resource.send(api_action_name).where(action_type: 'redirect').reorder(:created_at).last
-                        else
-                          @api_namespace.send(api_action_name).where(action_type: 'redirect').last
-                        end
+                        @api_resource.send(api_action_name).where(action_type: 'redirect').reorder(:created_at).last
+                      else
+                        @api_namespace.send(api_action_name).where(action_type: 'redirect').last
+                      end
   end
 
   def check_for_serve_file_action
