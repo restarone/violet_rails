@@ -16,7 +16,7 @@
     - ApiAction.children.each do |subclass|
       .mb-5
         .h5.mb-3
-          Trigger Event: 
+          Trigger Event:
           = subclass.split('_api_actions').first
         .form-group{id: "#{subclass}_forms", class: "js-sortable"}
           = f.fields_for subclass, @api_namespace.send(subclass) do |ff|
@@ -28,7 +28,7 @@
     = f.submit 'Save'
 
 :javascript
-  const guideClassNames = ['.send-email-guide', '.send-web-request-guide', '.redirect-field-guide'];
+  const guideClassNames = ['.send-email-guide', '.send-web-request-guide', '.redirect-field-guide', '.custom-action-field-guide'];
 
   function toggleApiActionFields(index, type) {
     var fieldType = $("#action_type_field_" + type + '_' + index).val();
@@ -46,6 +46,9 @@
     } else if (fieldType === 'send_web_request') {
       $("#serve_web_request_fields_" + type + '_' + index).show();
       manageRelatedExtraDetails($("#serve_web_request_fields_" + type + '_' + index), '.send-web-request-guide');
+    } else if (fieldType === 'custom_action') {
+      $("#custom_action_fields_" + type + '_' + index).show();
+      manageRelatedExtraDetails($("#custom_action_fields_" + type + '_' + index), '.custom-action-field-guide');
     }
   }
 
@@ -54,6 +57,7 @@
     $("#redirect_fields_" + type + '_'  + index).hide();
     $("#serve_file_fields_" + type + '_' + index).hide();
     $("#serve_web_request_fields_" + type + '_' + index).hide();
+    $("#custom_action_fields_" + type + '_' + index).hide();
 
     // Hiding the extra-details section.
     // The parent of all fields (send-email/redirect/send-web-request/serve-file) is same.
@@ -67,7 +71,7 @@
 
   function appendApiActionForm(type) {
     var index = $("#" + `${type}_forms > .form-container`).length
-    var url = "#{new_api_action_path()}" + `?index=${index}&type=${type}` 
+    var url = "#{new_api_action_path()}" + `?index=${index}&type=${type}`
     $.ajax({
       url: url ,
       type: 'GET',
