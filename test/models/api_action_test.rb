@@ -7,7 +7,7 @@ class ApiActionTest < ActiveSupport::TestCase
     api_action.execute_action
 
     assert_equal api_action.reload.lifecycle_stage, 'complete'
-    assert_equal api_action.reload.lifecycle_message, '"success response"'
+    assert_equal api_action.reload.lifecycle_message, 'success response'
   end
 
   test "should store error response" do
@@ -16,7 +16,7 @@ class ApiActionTest < ActiveSupport::TestCase
     api_action.execute_action
 
     assert_equal api_action.reload.lifecycle_stage, 'failed'
-    assert_equal api_action.reload.lifecycle_message, '"error response"'
+    assert_equal api_action.reload.lifecycle_message, 'error response'
   end
 
   test "should store the parsed-response" do
