@@ -150,6 +150,9 @@
         %th.px-3= sort_link @api_resources_q, :id
         %th.px-3= sort_link @api_resources_q, :created_at
         %th.px-3= sort_link @api_resources_q, :updated_at
+        - dynamic_columns = @api_namespace.properties.keys
+        - dynamic_columns.each do |dynamic_column|
+          %th.px-3= dynamic_column  
         %th.px-3
         %th.px-3
     = render partial: 'pagination', locals: { objects: @api_resources }
@@ -159,6 +162,8 @@
           %td.px-3.py-2= link_to api_resource.id, api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id) 
           %td.px-3= api_resource.created_at.strftime('%F %T')
           %td.px-3= api_resource.updated_at.strftime('%F %T')
+          - dynamic_columns.each do |dynamic_column|
+            %td.px-3= api_resource.properties[dynamic_column]
           %td.px-3= link_to 'Edit', edit_api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id)
           %td.px-3= link_to 'Destroy', api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), method: :delete, data: { confirm: 'Are you sure?' }
 

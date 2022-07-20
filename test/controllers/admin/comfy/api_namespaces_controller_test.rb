@@ -467,4 +467,23 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_match success_message, request.flash[:notice]
     assert_equal api_namespace_hash['api_namespace']['name'], ApiNamespace.last.name
   end
+
+  test "should allow #show and the dynamic properties should be shown in the api-resources tables" do
+    sign_in(@user)
+    properties = {"attr_1"=>true, "attr_2"=>true, "attr_3"=>true, "attr_4"=>true}
+    @api_namespace.update(properties: properties)
+    @api_namespace.api_form.update(properties: {
+      'attr_1': {'label': 'attr_1', 'field_type': 'input'},
+      'attr_2': {'label': 'attr_2', 'field_type': 'input'},
+      'attr_3': {'label': 'attr_3', 'field_type': 'input'},
+      'attr_4': {'label': 'attr_4', 'field_type': 'input'}})
+
+    get api_namespace_url(@api_namespace)
+    assert_response :success
+
+    assert_select "table", 1, "This page must contain a api-resources table"
+    properties.keys.each do |heading|
+      assert_select "thead th", {count: 1, text: heading}, "Api-resources table must contain '#{heading}' column"
+    end
+  end
 end
