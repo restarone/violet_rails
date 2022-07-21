@@ -40,4 +40,70 @@ class DynamicAttributeTest < ActiveSupport::TestCase
       end
     end
   end
+
+  test 'should support erb syntax' do
+    api_resource_test = api_resources(:user)
+    erb_syntax = '<% food = "Ice cream" %>'\
+                 '<div>I like <%= food %></div>'\
+                 '<% if api_resource.properties["boolean"] %>'\
+                  '<div><%= api_resource.properties["first_name"] %></div>'\
+                 '<% end %>' 
+    
+    safe_instance = @dummy_class.new(test_column: erb_syntax)
+    safe_instance.api_resource = api_resource_test
+    assert safe_instance.valid?
+    assert_respond_to safe_instance, :test_column_evaluated
+    assert_equal safe_instance.test_column_evaluated, "<div>I like Ice cream</div>"
+
+    api_resource_test.update(properties: api_resource_test.properties.merge({"boolean": true}))
+    assert_equal safe_instance.test_column_evaluated, "<div>I like Ice cream</div><div>#{api_resource_test.properties['first_name']}</div>"
+  end
+
+  test 'should raise invalid record error if erb contains unsafe string' do
+    unsafe_instance = @dummy_class.new(test_column: "Test <% User.destroy_all %>")
+    refute unsafe_instance.valid?
+    assert_no_difference "User.all.size" do
+      assert_raises ActiveRecord::RecordInvalid do
+        unsafe_instance.test_column_evaluated
+      end
+    end
+  end
+
+  test 'should be able to access current_user and current_visit' do
+    erb_syntax = "<%= current_user.id %> and <%= current_visit.id %>"
+
+    Current.user = users(:one)
+    Current.visit = ahoy_visits(:public)
+
+    safe_instance = @dummy_class.new(test_column: erb_syntax)
+    assert_equal safe_instance.test_column_evaluated, "#{Current.user.id} and #{Current.visit.id}"
+  end
+
+  test 'should raise no method error if undefined methods are referenced' do
+    safe_instance = @dummy_class.new(test_column: "<%= undefined_method() %>")
+    assert_raises NoMethodError do
+      safe_instance.test_column_evaluated
+    end
+  end
+
+  test 'should raise syntax error if erb syntax is wrong' do
+    # notice the missing closing end for if
+    erb_syntax = '<% if true %>'\
+                    '<div>Violet Rails</div>'
+
+    safe_instance = @dummy_class.new(test_column: erb_syntax)
+    assert_raises SyntaxError do
+      safe_instance.test_column_evaluated
+    end
+  end
+
+  test 'should support both string interpolation and erb syntax on same attribute' do
+    safe_instance = @dummy_class.new(test_column: "<%= 1 + 1 %> and \#{2 + 2}")
+    assert_equal safe_instance.test_column_evaluated, "2 and 4"
+  end
+
+  test 'should support both string interpolation and erb syntax on json attribute' do
+    safe_instance = @dummy_class.new(test_column: { test_key: "<%= 1 + 1 %> and \#{2 + 2}" })
+    assert_equal safe_instance.test_column_evaluated, { test_key: "2 and 4" }.to_json
+  end
 end
