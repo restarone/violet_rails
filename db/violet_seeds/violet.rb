@@ -30,6 +30,8 @@ module VioletSeeds
     { id: 27, filename: 'violet-rails-vertical-logo.png' },
     { id: 28, filename: 'your-idea-illustration.png' }
   ]
+  
+  ASSET_IDS_FOR_RICH_TEXT = [7, 21, 22, 25, 27, 28, 28]
 
   SITE_CSS = <<-CSS
 @import url('https://fonts.googleapis.com/css2?family=Karla:wght@400;500;800&display=swap');
@@ -1201,7 +1203,7 @@ CONTENT
   FOOTER_CONTENT = <<-CONTENT
 <footer class="mt-5 pt-5 d-flex flex-column justify-content-center align-items-center">
     <div class="text-center">
-    <img src="{{ cms:file_link 41 }}" class="logo" alt="Violet Rails"/>
+    <img src="{{ cms:file_link 27 }}" class="logo" alt="Violet Rails"/>
     </div>
     <ul class="nav justify-content-center my-5">
         <li class="nav-item">
@@ -1222,7 +1224,7 @@ CONTENT
     </ul>
     <div class="d-flex w-100 py-3 footer-bottom flex-column justify-content-center align-items-center">
         <a href="https://restarone.com" class="d-flex justify-content-start align-items-center">
-         	<img src="{{ cms:file_link 42 }}" class="logo d-block" alt="Violet Rails"/>
+         	<img src="{{ cms:file_link 22 }}" class="logo d-block" alt="Violet Rails"/>
             <p class="lead m-2 text-dark">
                 Built and supported by Restarone Inc.
             </p>

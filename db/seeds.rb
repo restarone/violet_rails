@@ -1,6 +1,19 @@
 require 'faker'
 require_relative './violet_seeds/violet.rb'
 
+BLOBS = {} 
+
+# chance for an image embed, BLOBS must be initialized
+def maybe_image
+  if rand > 0.5 then
+    return nil
+  else
+    blob = BLOBS[VioletSeeds::ASSET_IDS_FOR_RICH_TEXT.sample]
+    image_url = Rails.application.routes.url_helpers.rails_blob_url(blob, only_path: true)
+    return "<img src='#{image_url}' />"
+  end
+end
+
 # set a deterministic seed
 Faker::Config.random = Random.new(123)
 
@@ -52,6 +65,7 @@ VioletSeeds::ASSETS.each do |asset|
     io: File.open("#{Rails.root}/db/violet_seeds/assets/#{asset[:filename]}"),
     filename: asset[:filename]
   )
+  BLOBS[asset[:id]] = blob
   file = site.files.create!(id: asset[:id], label: asset[:filename], file: blob)
 end
 
@@ -75,6 +89,16 @@ site.snippets.create(
   identifier: 'footer',
   content: VioletSeeds::FOOTER_CONTENT
 )
+site.snippets.create(
+  label: 'navbar-logo', 
+  identifier: 'navbar-logo',
+  content: File.read("#{Rails.root}/db/violet_seeds/assets/navbar-logo.svg"),
+)
+site.snippets.create(
+  label: 'logo-small', 
+  identifier: 'logo-small',
+  content: File.read("#{Rails.root}/db/violet_seeds/assets/logo-small.svg"),
+)
   
 # Blog posts
 # ----------
@@ -97,15 +121,18 @@ end
 
 # Forum
 # -----
-ForumCategory.create!(name: Faker::Educator.subject, slug: "cat1", color: "#0000CC")
-ForumCategory.create!(name: Faker::Educator.subject, slug: "cat2", color: "#00CCCC")
+3.times do |i|
+  ForumCategory.create!(name: Faker::Educator.subject, slug: "cat#{i}", color: Faker::Color.hex_color)
+end
 
-5.times do
-  thread = users.first.forum_threads.create!(title: Faker::Educator.course_name, forum_category: ForumCategory.first)
-  post = users.first.forum_posts.create!(forum_thread: thread, body: Faker::GreekPhilosophers.quote)
-  post = users.second.forum_posts.create!(forum_thread: thread, body: Faker::GreekPhilosophers.quote)
-  post = users.first.forum_posts.create!(forum_thread: thread, body: Faker::GreekPhilosophers.quote)
-  post = users.third.forum_posts.create!(forum_thread: thread, body: Faker::GreekPhilosophers.quote)
+ForumCategory.all.each do |category|
+  (2 + rand(4)).times do
+    thread = users.first.forum_threads.create!(title: Faker::Educator.course_name, forum_category: category)
+    users.first.forum_posts.create!(forum_thread: thread, body: "#{Faker::GreekPhilosophers.quote}<br/>#{maybe_image}")
+    (2 + rand(4)).times do
+      users.sample.forum_posts.create!(forum_thread: thread, body: "#{Faker::GreekPhilosophers.quote}<br/>#{maybe_image}")
+    end
+  end
 end
 
 # Emails
@@ -115,16 +142,20 @@ end
   email_thread = MessageThread.create!(recipients: recipients)
   3.times do
     email_thread.messages.create(content: "
-                                 <h5>#{Faker::Movie.quote}</h5>
-                                 <p>#{Faker::Movie.quote} <b>#{Faker::Movie.quote}</b></p>
-                                 ")
-    email_thread.messages.create(content: "<p>#{Faker::Movie.quote} <b>#{Faker::Movie.quote}</b> #{Faker::Movie.quote}</p>",
-                                 from: recipients.first)
+        <h5>#{Faker::Movie.quote}</h5>
+        <p>#{Faker::Movie.quote} <b>#{Faker::Movie.quote}</b></p>
+        #{maybe_image}
+     ")
+    email_thread.messages.create(content: "
+       <p>#{Faker::Movie.quote} <b>#{Faker::Movie.quote}</b> #{Faker::Movie.quote}</p>
+       #{maybe_image}
+     ",
+     from: recipients.first)
   end
 end
 
 email_thread = MessageThread.create!(recipients: ['violet@rails.com'] )
-email_thread.messages.create(content: "I really like your site!", from: 'violet@rails.com')
+email_thread.messages.create(content: "I really like your site!<br/>#{maybe_image}", from: 'violet@rails.com')
 
 # Analytics
 # ---------
