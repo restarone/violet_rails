@@ -144,6 +144,7 @@
       = link_to "Create new #{@api_namespace.name.singularize}", new_api_namespace_resource_path(api_namespace_id: @api_namespace.id), class: 'btn btn-primary'
 
   = render partial: 'comfy/admin/api_resources/search_filters', locals: { objects: @api_resources_q, path: api_namespace_path(@api_namespace) }
+  = render partial: 'pagination', locals: { objects: @api_resources }
   .table-responsive
     %table
       %thead
@@ -156,7 +157,6 @@
             %th.px-3= dynamic_column
           %th.px-3
           %th.px-3
-      = render partial: 'pagination', locals: { objects: @api_resources }
       %tbody
         - @api_resources.each do |api_resource|
           %tr
