@@ -471,12 +471,9 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should allow #show and the dynamic properties should be shown in the api-resources tables" do
     sign_in(@user)
     properties = {"attr_1"=>true, "attr_2"=>true, "attr_3"=>true, "attr_4"=>true}
+
+    @api_namespace.has_form = '1'
     @api_namespace.update(properties: properties)
-    @api_namespace.api_form.update(properties: {
-      'attr_1': {'label': 'attr_1', 'field_type': 'input'},
-      'attr_2': {'label': 'attr_2', 'field_type': 'input'},
-      'attr_3': {'label': 'attr_3', 'field_type': 'input'},
-      'attr_4': {'label': 'attr_4', 'field_type': 'input'}})
 
     get api_namespace_url(@api_namespace)
     assert_response :success
