@@ -30,6 +30,8 @@ module VioletSeeds
     { id: 27, filename: 'violet-rails-vertical-logo.png' },
     { id: 28, filename: 'your-idea-illustration.png' }
   ]
+  
+  ASSET_IDS_FOR_RICH_TEXT = [7, 21, 22, 25, 27, 28, 28]
 
   SITE_CSS = <<-CSS
 @import url('https://fonts.googleapis.com/css2?family=Karla:wght@400;500;800&display=swap');
