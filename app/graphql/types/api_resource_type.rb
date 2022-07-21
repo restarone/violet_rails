@@ -8,6 +8,20 @@ module Types
     field :properties, GraphQL::Types::JSON
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
+
+    # {
+    #   nonPrimitiveProperties {
+    #     id
+    #     label
+    #   }
+    # }
+    field :non_primitive_properties, [Types::NonPrimitivePropertyType], null: true do
+      description "Returns a list of NonPrimitiveProperties"
+
+      def resolve(parent, frozen_parameters, context)
+        parent.object.non_primitive_properties
+      end
+    end
   end
 end
 
