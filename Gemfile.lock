@@ -362,6 +362,8 @@ GEM
     recaptcha (5.8.0)
       json
     redis (4.6.0)
+    redis-namespace (1.8.2)
+      redis (>= 3.0.4)
     regexp_parser (2.1.1)
     responders (3.0.1)
       actionpack (>= 5.0)
@@ -528,6 +530,7 @@ DEPENDENCIES
   rails-controller-testing
   ransack
   recaptcha
+  redis-namespace (~> 1.8)
   ros-apartment
   ros-apartment-sidekiq
   sass-rails (>= 6)
