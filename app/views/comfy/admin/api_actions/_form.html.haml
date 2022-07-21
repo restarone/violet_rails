@@ -6,7 +6,7 @@
     .form-group.col-12
       = label_tag "Action"
       = select_tag "api_namespace[#{type}_attributes][#{index}][action_type]", options_for_select(ApiAction.action_types.keys, resource.action_type), { class: "form-control form-control-sm", id: "action_type_field_#{type}_#{index}", onchange: "toggleApiActionFields('#{index}', '#{type}');"}
-      .extra-details{ style: "#{'display: none' unless (resource.send_email? || resource.send_web_request? || (resource.redirect? && resource.dynamic_url?))}"}
+      .extra-details{ style: "#{'display: none' unless (resource.send_email? || resource.send_web_request? || (resource.redirect? && resource.dynamic_url?) || resource.custom_action?)}"}
         .form-group.my-2
           .d-block
             %strong Top-Level Model Attributes: 
@@ -80,6 +80,27 @@
             %code
               \\#{ api_resource.properties['your_custom_attribute_here'] == 'true' ? comfy_admin_cms_path : some_other_path }
 
+        .mt-2.custom-action-field-guide{ style: "#{ 'display: none' unless resource.custom_action? }"}
+          .d-block
+            %strong
+              Dynamic Fields:
+            Method definition
+          .d-block
+            %strong
+              Available Variables:
+            api_resource, api_action, api_namespace, current_user, current_visit
+          .d-block
+            Dynamic:
+            %li
+              %code
+                api_resource.to_json
+            %li
+              %code
+                return api_resource.properties['your_custom_attribute_here']
+            %li
+              %code
+                User.invite!(email: api_resource.properties['your_custom_attribute_here'])
+
     .send_email.col-12{style: "#{'display:none' unless resource.action_type == 'send_email'}", id: "send_email_fields_#{type}_#{index}"}
       .form-group
         -# this is how we allow the user to unselect the selected checkbox. Using jquery and this hidden field to set the value to false if unchecked
@@ -141,10 +162,14 @@
       .form-group
         = label_tag 'Bearer Token'
         = text_field_tag "api_namespace[#{type}_attributes][#{index}][bearer_token]", resource.bearer_token, { class: "form-control form-control-sm" }
+    .custom_action.col-12{style: "#{'display:none' unless resource.action_type == 'custom_action'}", id: "custom_action_fields_#{type}_#{index}"}
+      .form-group
+        = label_tag 'Method Definition'
+        = text_area_tag "api_namespace[#{type}_attributes][#{index}][method_definition]", resource.method_definition, { class: "form-control form-control-sm" }
 
 
   = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][_destroy]", false ,{id: "api_action_form_destroy_field_#{type}_#{index}"}
-  = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][position]", resource.position ,{class: "position_field"}
+  = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][position]", index ,{class: "position_field"}
 
 :javascript
 

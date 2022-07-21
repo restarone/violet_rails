@@ -124,6 +124,7 @@ ActiveRecord::Schema.define(version: 2022_07_09_172402) do
     t.datetime "updated_at", precision: 6, null: false
     t.jsonb "custom_headers"
     t.string "http_method"
+    t.text "method_definition", default: "raise StandardError"
     t.text "email_subject"
     t.integer "redirect_type", default: 0
     t.index ["api_namespace_id"], name: "index_api_actions_on_api_namespace_id"
