@@ -24,6 +24,7 @@ module Types
       argument :order_direction, String, required: false
       argument :order_dimension, String, required: false
       argument :offset, Integer, required: false
+      argument :properties, GraphQL::Types::JSON, required: false
 
       def resolve(parent, frozen_parameters, context)
         parameters = { **frozen_parameters }
@@ -31,7 +32,11 @@ module Types
         parameters[:order_direction] ||= 'desc'
         parameters[:limit] ||= 50
         parameters[:offset] ||= 0
-        parent.object.api_resources.order("#{parameters[:order_dimension].underscore} #{parameters[:order_direction]}").limit(parameters[:limit]).offset(parameters[:offset])
+
+        api_resources = parent.object.api_resources
+        api_resources = api_resources.jsonb_search(:properties, parameters[:properties]) if parameters[:properties]
+        
+        api_resources.order("#{parameters[:order_dimension].underscore} #{parameters[:order_direction]}").limit(parameters[:limit]).offset(parameters[:offset])
       end
     end
   end
