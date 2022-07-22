@@ -37,6 +37,10 @@ module AhoyEventsHelper
         forum_thread = ForumThread.find(event.properties['forum_thread_id'])
 
         simple_discussion.forum_thread_path(id: forum_thread.slug)
+      elsif Ahoy::Event::SYSTEM_EVENTS[event.name] == Ahoy::Event::SYSTEM_EVENTS['api-resource-create']
+        api_resource = ApiResource.find(event.properties['api_resource_id'])
+
+        api_namespace_resource_path(api_namespace_id: api_resource.api_namespace.id ,id: api_resource.id)
       end
     rescue => e
       e.message

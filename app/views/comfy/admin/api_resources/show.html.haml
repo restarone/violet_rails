@@ -9,6 +9,27 @@
 = render 'comfy/admin/api_namespaces/editor', {api_resource: @api_resource, form_properties: @api_resource.api_namespace&.api_form&.properties&.symbolize_keys, read_only: true}
 = render 'comfy/admin/api_namespaces/init_editor', {read_only: true}
 
+- user = @api_resource.tracked_user
+- if user
+  %p 
+    %b Submitted by User:
+    .ml-5
+      %p 
+        %b User Id:
+        = link_to user.id, edit_admin_user_path(id: user.id)
+      %p
+        %b Email:
+        = user.email
+      %p
+        %b Name:
+        = user.name
+
+
+%p
+  %b Current Visit:
+  - visit = @api_resource.tracked_event&.visit
+  = link_to visit.started_at.strftime('%I:%M %P - %b %d, %Y'), dashboard_visits_path(ahoy_visit_id: visit.id) if visit
+
 .my-3
   = link_to 'API Actions', api_namespace_api_actions_path(api_namespace_id: @api_resource.api_namespace_id, 'q[api_resource_id_eq]': @api_resource.id)
 
