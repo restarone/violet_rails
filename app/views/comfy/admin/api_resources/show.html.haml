@@ -26,9 +26,10 @@
 
 
 %p
-  %b Current Visit:
   - visit = @api_resource.tracked_event&.visit
-  = link_to visit.started_at.strftime('%I:%M %P - %b %d, %Y'), dashboard_visits_path(ahoy_visit_id: visit.id) if visit
+  - if visit
+    %b Visit:
+    = link_to visit.started_at.strftime('%I:%M %P - %b %d, %Y'), dashboard_visits_path(ahoy_visit_id: visit.id) if visit
 
 .my-3
   = link_to 'API Actions', api_namespace_api_actions_path(api_namespace_id: @api_resource.api_namespace_id, 'q[api_resource_id_eq]': @api_resource.id)
