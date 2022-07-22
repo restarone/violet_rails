@@ -11,6 +11,7 @@ module Types
       field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
       field :url, String
       field :content, String
+      field :mime_type, String
 
       def url
         object.file_url if object.file?
@@ -18,6 +19,10 @@ module Types
 
       def content
         object.content.body if object.richtext?
+      end
+
+      def mime_type
+        object.attachment.content_type if object.file?
       end
     end
   end
