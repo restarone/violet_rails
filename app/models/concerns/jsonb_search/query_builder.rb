@@ -23,7 +23,7 @@ module JsonbSearch
           elsif value.is_a?(Hash)
             # { foo: { bar: 'baz', wat: 'up' }}
             value.each do |k, v|
-              if v.is_a?(Hash) && value.key?(:value)
+              if v.is_a?(Hash) && v.key?(:value)
                 queries <<  { key: key, value: [{ option: v[:option] || QUERY_OPTION[:EXACT], key: k, value: v[:value] }] }
               else
                 queries << { key: key, value: [{ option: QUERY_OPTION[:EXACT], key: k, value: v }]}
@@ -90,7 +90,7 @@ module JsonbSearch
         if option == QUERY_OPTION[:PARTIAL]
           "#{query} -> '#{key}' @> '#{term.to_json}'"
         else
-          "#{query} -> '#{key}' @> '#{term.to_json}' AND  #{query} -> '#{key}' <@ '#{term.to_json}'"
+          "#{query} -> '#{key}' @> '#{term.to_json}' AND #{query} -> '#{key}' <@ '#{term.to_json}'"
         end
       end
     end
