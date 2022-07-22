@@ -151,6 +151,18 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
       # After signing-in, it should redirect back to the private cms page
       post user_session_url(subdomain: @restarone_subdomain.name), params: payload
       assert_redirected_to page.full_path
+
+      # It should redirect back to the root_url if the user cannot view restricted pages
+      @restarone_user.update!(can_view_restricted_pages: false)
+      sign_in(@restarone_user)
+      get comfy_cms_render_page_url(subdomain: @restarone_subdomain.name, cms_path: 'test-cms-page')
+      assert_redirected_to root_url(subdomain: @restarone_subdomain.name)
+
+      # It should render private cms-page successfully if the user can view restricted pages
+      @restarone_user.update!(can_view_restricted_pages: true)
+      sign_in(@restarone_user)
+      get comfy_cms_render_page_url(subdomain: @restarone_subdomain.name, cms_path: 'test-cms-page')
+      assert :success
     end
   end
 
@@ -177,6 +189,46 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
       # After signing-in, it should redirect back to the private forum-thread page
       post user_session_url(subdomain: @restarone_subdomain.name), params: payload
       assert_redirected_to simple_discussion.forum_thread_url(subdomain: @restarone_subdomain.name, id: forum_thread.id)
+    end
+  end
+
+  test 'redirects to api-namespace page after sign-in successfully' do
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_user.update!(can_access_admin: true)
+
+      api_namespace = ApiNamespace.create!(name: 'clients',
+        slug: 'clients',
+        version: 1,
+        properties: {'name': 'test'},
+        requires_authentication: false,
+        namespace_type: 'create-read-update-delete')
+
+      # First, trying to visit api-namespace page which redirects to sign_in page
+      get api_namespace_url(subdomain: @restarone_subdomain.name, id: api_namespace.id)
+      assert_redirected_to new_user_session_url(subdomain: @restarone_subdomain.name)
+  
+      payload = {
+        user: {
+          email: @restarone_user.email,
+          password: '123456'
+        }
+      }
+
+      # After signing-in, it should redirect back to the api-namespace page
+      post user_session_url(subdomain: @restarone_subdomain.name), params: payload
+      assert_redirected_to api_namespace_url(subdomain: @restarone_subdomain.name, id: api_namespace.id)
+
+      # The response will be success if the user can manage api
+      @restarone_user.update!(can_manage_api: true)
+      sign_in(@restarone_user)
+      get api_namespace_url(subdomain: @restarone_subdomain.name, id: api_namespace.id)
+      assert :success
+
+      # The response will be redirected to root_url  if the user cannot manage api
+      @restarone_user.update!(can_manage_api: false)
+      sign_in(@restarone_user)
+      get api_namespace_url(subdomain: @restarone_subdomain.name, id: api_namespace.id)
+      assert_redirected_to root_url(subdomain: @restarone_subdomain.name)
     end
   end
 end
