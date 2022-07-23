@@ -4,8 +4,8 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
     @public_subdomain = @user.subdomain
-    @restarone_subdomain = Subdomain.find_by(name: 'restarone').name
-    Apartment::Tenant.switch @restarone_subdomain do
+    @restarone_subdomain = Subdomain.find_by(name: 'restarone')
+    Apartment::Tenant.switch @restarone_subdomain.name do
       @restarone_user = User.find_by(email: 'contact@restarone.com')
     end
   end
@@ -17,7 +17,7 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'renders login page for tenant users (tenant schema)' do
-    get new_user_session_url(subdomain: @restarone_subdomain)
+    get new_user_session_url(subdomain: @restarone_subdomain.name)
     assert_response :success
     assert_template :new
   end
@@ -29,11 +29,11 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
         password: '123456'
       }
     }
-    post user_session_url(subdomain: @restarone_subdomain), params: payload
+    post user_session_url(subdomain: @restarone_subdomain.name), params: payload
     assert_response :redirect
     refute flash.alert
     assert_equal flash.notice, 'Signed in successfully.'
-    assert_redirected_to root_url(subdomain: @restarone_subdomain)
+    assert_redirected_to root_url(subdomain: @restarone_subdomain.name)
   end
 
   test 'redirects to subdomain admin if the user is allowed to access admin area + can manage web' do
@@ -123,5 +123,112 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
     
     assert_template :new
     assert_match "Invalid Email or password.", flash[:alert]
+  end
+
+  test 'redirects to private cms-page after sign-in successfully' do
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_user.update!(can_access_admin: false)
+      site = Comfy::Cms::Site.first
+      layout = site.layouts.last
+      page = layout.pages.create(
+        site_id: site.id,
+        label: 'test-cms-page',
+        slug: 'test-cms-page',
+        is_restricted: true
+      )
+  
+      # First, trying to visit a private cms page which redirects to sign_in page
+      get comfy_cms_render_page_url(subdomain: @restarone_subdomain.name, cms_path: 'test-cms-page')
+      assert_redirected_to new_user_session_url(subdomain: @restarone_subdomain.name)
+  
+      payload = {
+        user: {
+          email: @restarone_user.email,
+          password: '123456'
+        }
+      }
+
+      # After signing-in, it should redirect back to the private cms page
+      post user_session_url(subdomain: @restarone_subdomain.name), params: payload
+      assert_redirected_to page.full_path
+
+      # It should redirect back to the root_url if the user cannot view restricted pages
+      @restarone_user.update!(can_view_restricted_pages: false)
+      sign_in(@restarone_user)
+      get comfy_cms_render_page_url(subdomain: @restarone_subdomain.name, cms_path: 'test-cms-page')
+      assert_redirected_to root_url(subdomain: @restarone_subdomain.name)
+
+      # It should render private cms-page successfully if the user can view restricted pages
+      @restarone_user.update!(can_view_restricted_pages: true)
+      sign_in(@restarone_user)
+      get comfy_cms_render_page_url(subdomain: @restarone_subdomain.name, cms_path: 'test-cms-page')
+      assert_response :success
+    end
+  end
+
+  test 'redirects to private forum-thread page after sign-in successfully' do
+    @restarone_subdomain.update!(forum_is_private: true)
+
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_user.update!(can_access_admin: true)
+
+      forum_category = ForumCategory.create!(name: 'test', slug: 'test')
+      forum_thread = @restarone_user.forum_threads.create!(title: 'Test Thread 1', forum_category_id: forum_category.id)
+  
+      # First, trying to visit a private forum-thread page which redirects to sign_in page
+      get simple_discussion.forum_thread_url(subdomain: @restarone_subdomain.name, id: forum_thread.id)
+      assert_redirected_to new_user_session_url(subdomain: @restarone_subdomain.name)
+  
+      payload = {
+        user: {
+          email: @restarone_user.email,
+          password: '123456'
+        }
+      }
+
+      # After signing-in, it should redirect back to the private forum-thread page
+      post user_session_url(subdomain: @restarone_subdomain.name), params: payload
+      assert_redirected_to simple_discussion.forum_thread_url(subdomain: @restarone_subdomain.name, id: forum_thread.id)
+    end
+  end
+
+  test 'redirects to api-namespace page after sign-in successfully' do
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_user.update!(can_access_admin: true)
+
+      api_namespace = ApiNamespace.create!(name: 'clients',
+        slug: 'clients',
+        version: 1,
+        properties: {'name': 'test'},
+        requires_authentication: false,
+        namespace_type: 'create-read-update-delete')
+
+      # First, trying to visit api-namespace page which redirects to sign_in page
+      get api_namespace_url(subdomain: @restarone_subdomain.name, id: api_namespace.id)
+      assert_redirected_to new_user_session_url(subdomain: @restarone_subdomain.name)
+  
+      payload = {
+        user: {
+          email: @restarone_user.email,
+          password: '123456'
+        }
+      }
+
+      # After signing-in, it should redirect back to the api-namespace page
+      post user_session_url(subdomain: @restarone_subdomain.name), params: payload
+      assert_redirected_to api_namespace_url(subdomain: @restarone_subdomain.name, id: api_namespace.id)
+
+      # The response will be success if the user can manage api
+      @restarone_user.update!(can_manage_api: true)
+      sign_in(@restarone_user)
+      get api_namespace_url(subdomain: @restarone_subdomain.name, id: api_namespace.id)
+      assert_response :success
+
+      # The response will be redirected to root_url  if the user cannot manage api
+      @restarone_user.update!(can_manage_api: false)
+      sign_in(@restarone_user)
+      get api_namespace_url(subdomain: @restarone_subdomain.name, id: api_namespace.id)
+      assert_redirected_to root_url(subdomain: @restarone_subdomain.name)
+    end
   end
 end

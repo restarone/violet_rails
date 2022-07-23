@@ -16,8 +16,8 @@ class ContentControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     cookie_keys = ["ahoy_visitor", "ahoy_visit"]
     signed_cookies = cookies.to_hash
-    assert_equal signed_cookies.keys.sort, cookie_keys.sort
     cookie_keys.each do |k|
+      assert_includes signed_cookies.keys, k
       assert signed_cookies[k]
     end
     visit = Ahoy::Visit.first
