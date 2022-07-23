@@ -279,4 +279,71 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     refute flash.alert
     assert_redirected_to admin_users_url(subdomain: @domain)
   end
+
+  test "allow #destroy when user has forum-subscriptions, forum-thread with posts in which other user has posted too" do
+    test_user = users(:one)
+    forum_category = ForumCategory.create!(name: 'test', slug: 'test')
+    
+    forum_thread = test_user.forum_threads.create!(title: 'Test Thread 1', forum_category_id: forum_category.id)
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: test_user.id, body: 'test body 1')
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @user.id, body: 'test body 2')
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @user.id, body: 'test body 3')
+    ForumSubscription.create!(forum_thread_id: forum_thread.id, user_id: test_user.id, subscription_type: 'optin')
+    ForumSubscription.create!(forum_thread_id: forum_thread.id, user_id: @user.id, subscription_type: 'optin')
+
+    threads_count = test_user.forum_threads.count
+    posts_count = forum_thread.forum_posts.count
+    subscriptions_count = forum_thread.forum_subscriptions.count
+
+    sign_in(@user)
+
+    assert_difference "User.count", -1 do
+      assert_difference "ForumThread.count", -threads_count do
+        # Deletes other user's posts of that forum-thread also
+        assert_difference "ForumPost.count", -posts_count do
+          assert_difference "ForumSubscription.count", -subscriptions_count do
+            delete admin_user_url(subdomain: @domain, id: test_user.id)
+          end
+        end
+      end
+    end
+
+    assert flash.notice
+    refute flash.alert
+    assert_redirected_to admin_users_url(subdomain: @domain)
+  end
+
+  test "allow #destroy when user has forum-subscriptions, forum-posts of other user's forum-thread" do
+    test_user = users(:one)
+    forum_category = ForumCategory.create!(name: 'test', slug: 'test')
+    
+    forum_thread = @user.forum_threads.create!(title: 'Test Thread 1', forum_category_id: forum_category.id)
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @user.id, body: 'test body 1')
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: test_user.id, body: 'test body 2')
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: test_user.id, body: 'test body 3')
+    ForumSubscription.create!(forum_thread_id: forum_thread.id, user_id: test_user.id, subscription_type: 'optin')
+    ForumSubscription.create!(forum_thread_id: forum_thread.id, user_id: @user.id, subscription_type: 'optin')
+
+    posts_count = test_user.forum_posts.count
+    subscriptions_count = test_user.forum_subscriptions.count
+
+    sign_in(@user)
+
+    assert_difference "User.count", -1 do
+      # Other user's forum-thread is not deleted
+      assert_no_difference "ForumThread.count" do
+        # Deletes only test-user's forum-posts
+        assert_difference "ForumPost.count", -posts_count do
+          # Deletes only tes-user's forum-subscriptions
+          assert_difference "ForumSubscription.count", -subscriptions_count do
+            delete admin_user_url(subdomain: @domain, id: test_user.id)
+          end
+        end
+      end
+    end
+
+    assert flash.notice
+    refute flash.alert
+    assert_redirected_to admin_users_url(subdomain: @domain)
+  end
 end
