@@ -286,4 +286,18 @@ class AhoyEventsHelperTest < ActionView::TestCase
 
     assert_match pattern, event_name_detail(event)
   end
+
+  test 'returns api_resource_path' do
+    api_resource = api_resources(:one)
+
+    expected_output = api_namespace_resource_path(api_namespace_id: api_resource.api_namespace.id ,id: api_resource.id)
+
+    event = Ahoy::Visit.last.events.create!(
+      name: 'api-resource-create',
+      time: Time.zone.now,
+      properties: { api_resource_id: api_resource.id }
+    )
+
+    assert_equal expected_output, event_name_detail(event)
+  end
 end
