@@ -162,7 +162,7 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
       @restarone_user.update!(can_view_restricted_pages: true)
       sign_in(@restarone_user)
       get comfy_cms_render_page_url(subdomain: @restarone_subdomain.name, cms_path: 'test-cms-page')
-      assert :success
+      assert_response :success
     end
   end
 
@@ -222,7 +222,7 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
       @restarone_user.update!(can_manage_api: true)
       sign_in(@restarone_user)
       get api_namespace_url(subdomain: @restarone_subdomain.name, id: api_namespace.id)
-      assert :success
+      assert_response :success
 
       # The response will be redirected to root_url  if the user cannot manage api
       @restarone_user.update!(can_manage_api: false)
