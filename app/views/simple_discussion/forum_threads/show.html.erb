@@ -17,7 +17,11 @@
 
 <p class="thread-details">
   <strong><%= category_link(@forum_thread.forum_category) %></strong>
-  • <%= t('asked_time_ago', time: time_ago_in_words(@forum_thread.created_at), author: @forum_thread.user.name) %>
+  <% if @forum_thread.user.present? %>
+    • <%= t('asked_time_ago', time: time_ago_in_words(@forum_thread.created_at), author: @forum_thread.user.name) %>
+  <% else %>
+    • <%= "Asked #{time_ago_in_words(@forum_thread.created_at)} ago <span class='text-danger font-weight-bold'>(author deleted)</span>".html_safe %>
+  <% end %>
 </p>
 
 <%= render partial: "simple_discussion/forum_posts/forum_post", collection: @forum_thread.forum_posts.includes(:user).sorted %>
