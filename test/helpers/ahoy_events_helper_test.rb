@@ -202,23 +202,6 @@ class AhoyEventsHelperTest < ActionView::TestCase
     assert_equal expected_output, event_name_detail(event)
   end
 
-  test 'returns "ForumPost deleted" as event_name_detail for events with name: subdomain-forum-post-update if the forum-post has been deleted' do
-    category = ForumCategory.create!(name: 'test', slug: 'test')
-    user = User.first
-    forum_thread = user.forum_threads.create!(title: 'Test Thread', forum_category_id: category.id)
-    forum_post = ForumPost.create!(forum_thread_id: forum_thread.id, user_id: user.id, body: 'test body')
-
-    event = Ahoy::Visit.last.events.create!(
-      name: 'subdomain-forum-post-update',
-      time: Time.zone.now,
-      properties: { forum_post_id: forum_post.id }
-    )
-
-    user.destroy
-    expected_output = 'ForumPost deleted'
-    assert_equal expected_output, event_name_detail(event)
-  end
-
   test 'returns forum_thread_path as event_name_detail for events with name: subdomain-forum-thread-visit' do
     category = ForumCategory.create!(name: 'test', slug: 'test')
     user = User.first
@@ -235,22 +218,6 @@ class AhoyEventsHelperTest < ActionView::TestCase
     assert_equal expected_output, event_name_detail(event)
   end
 
-  test 'returns "ForumThread deleted" as event_name_detail for events with name: subdomain-forum-thread-visit if the forum-thread has been deleted' do
-    category = ForumCategory.create!(name: 'test', slug: 'test')
-    user = User.first
-    forum_thread = user.forum_threads.create!(title: 'Test Thread', forum_category_id: category.id)
-
-    event = Ahoy::Visit.last.events.create!(
-      name: 'subdomain-forum-thread-visit',
-      time: Time.zone.now,
-      properties: { forum_thread_id: forum_thread.id }
-    )
-
-    user.destroy
-    expected_output = 'ForumThread deleted'
-    assert_equal expected_output, event_name_detail(event)
-  end
-
   test 'returns nil with event_name_detail for events with non-system defined event names' do
     event = Ahoy::Visit.last.events.create!(
       name: 'test-event',
@@ -261,27 +228,16 @@ class AhoyEventsHelperTest < ActionView::TestCase
   end
 
   test 'returns error_message as event_name_detail for events having irregular properties detail' do
-    site = Comfy::Cms::Site.first
-    layout = site.layouts.create!(
-      label: 'blog',
-      identifier: 'blog'
-    )
-
-    blog_post = site.blog_posts.create!(
-      layout: layout,
-      title: 'foo',
-      slug: 'foo',
-      year: Time.zone.now.year,
-      month: Time.zone.now.month,
-      published_at: Time.zone.now
-    )
+    category = ForumCategory.create!(name: 'test', slug: 'test')
+    user = User.first
+    forum_thread = user.forum_threads.create!(title: 'Test Thread', forum_category_id: category.id)
 
     pattern = /Couldn\'t find .* without an ID/
 
     event = Ahoy::Visit.last.events.create!(
-      name: 'comfy-blog-page-visit',
+      name: 'subdomain-forum-thread-visit',
       time: Time.zone.now,
-      properties: { test_id: blog_post.id } # not setting required property key: forum_thread_id
+      properties: { test_id: forum_thread.id } # not setting required property key: forum_thread_id
     )
 
     assert_match pattern, event_name_detail(event)
