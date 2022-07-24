@@ -84,4 +84,7 @@
                   Can manage forum
   = f.submit "Update", class: 'btn btn-success'
   - unless @user.is_last_admin?
-    = link_to "Remove", admin_user_path(id: @user.id), method: :delete, class: 'btn btn-sm btn-danger', data: { confirm: 'Are you sure you want to remove this user? This cannot be undone' }   
+    - confirm_message = "Are you sure you want to remove this user? This cannot be undone."
+    - if @user.forum_threads.present? || @user.forum_posts.present?
+      - confirm_message += "\n\n Note: Deleting this user will affect its associated #{@user.forum_threads.size} forum-threads, #{@user.forum_posts.size} forum-posts and #{@user.events.size} analytics events showing 'user deleted'."
+    = link_to "Remove", admin_user_path(id: @user.id), method: :delete, class: 'btn btn-sm btn-danger', data: { confirm: confirm_message.html_safe }   
