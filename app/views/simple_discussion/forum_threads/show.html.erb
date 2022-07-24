@@ -20,7 +20,7 @@
   <% if @forum_thread.user.present? %>
     • <%= t('asked_time_ago', time: time_ago_in_words(@forum_thread.created_at), author: @forum_thread.user.name) %>
   <% else %>
-    • <%= "Asked #{time_ago_in_words(@forum_thread.created_at)} ago <span class='text-danger font-weight-bold'>(author deleted)</span>".html_safe %>
+    • <%= html_escape "Asked #{time_ago_in_words(@forum_thread.created_at)} ago <span class='text-danger font-weight-bold'>(author deleted)</span>".html_safe %>
   <% end %>
 </p>
 
