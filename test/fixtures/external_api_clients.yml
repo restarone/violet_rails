@@ -331,9 +331,9 @@ sync_attribute_to_api_namespace_plugin:
 
       def start
         # Fetching provided inputs (attribute_name, default_value)
-        attribute_name = @external_api_client.metadata["attribute_name"]
-        placeholder_value = @external_api_client.metadata["placeholder_value"] || ''
-        default_value = @external_api_client.metadata["default_value"] || ''
+        attribute_name = @external_api_client.metadata["ATTRIBUTE_NAME"]
+        placeholder_value = @external_api_client.metadata["PLACEHOLDER_VALUE"] || ''
+        default_value = @external_api_client.metadata["DEFAULT_VALUE"] || ''
 
         raise 'The provided attribute is already defined in the ApiNamespace' if @api_namespace.properties.keys.include?(attribute_name)
 
