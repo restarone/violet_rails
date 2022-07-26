@@ -326,6 +326,7 @@ sync_attribute_to_api_namespace_plugin:
       def initialize(parameters)  
         @external_api_client = parameters[:external_api_client]
         @api_namespace = @external_api_client.api_namespace
+        @api_form = @api_namespace.api_form
       end
 
       def start
@@ -340,6 +341,11 @@ sync_attribute_to_api_namespace_plugin:
         new_properties = @api_namespace.properties.merge(attribute_name => placeholder_value)
         @api_namespace.has_form = @api_namespace.api_form.present? ? '1' : '0'
         @api_namespace.update!(properties: new_properties)
+
+        # Making the new-attribute non-renderable
+        form_properties = @api_form.properties
+        form_properties[attribute_name]['renderable'] = '0'
+        @api_form.update!(properties: form_properties)
 
         # Adding the new-attribute to its ApiResources
         @api_namespace.api_resources.find_in_batches(batch_size: 500).each do |resources_batch|

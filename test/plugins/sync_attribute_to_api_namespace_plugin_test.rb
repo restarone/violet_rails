@@ -4,6 +4,7 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
   setup do
     @sync_attribute_to_api_namespace_plugin = external_api_clients(:sync_attribute_to_api_namespace_plugin)
     @api_namespace = @sync_attribute_to_api_namespace_plugin.api_namespace
+    @api_form = @api_namespace.api_form
     Sidekiq::Testing.fake!
   end
 
@@ -41,6 +42,9 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
     @api_namespace.reload.api_resources.each do |resource|
       assert_equal metadata['default_value'], resource.properties['test_attribute']
     end
+
+    # The newly added attribute is non-renderable
+    assert_equal '0', @api_form.reload.properties['test_attribute']['renderable']
   end
 
   test "adds provided new attribute to api namespace and backfills with empty string to its api-resources if default_value was not provided" do
@@ -76,6 +80,9 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
     @api_namespace.api_resources.reload.each do |resource|
       assert_equal '', resource.properties['test_attribute']
     end
+
+    # The newly added attribute is non-renderable
+    assert_equal '0', @api_form.reload.properties['test_attribute']['renderable']
   end
 
   test "adds provided new attribute to api namespace and backfills the default value to its api-resources for array data" do
@@ -112,6 +119,9 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
     @api_namespace.api_resources.reload.each do |resource|
       assert_equal 'one', resource.properties['test_attribute']
     end
+
+    # The newly added attribute is non-renderable
+    assert_equal '0', @api_form.reload.properties['test_attribute']['renderable']
   end
 
   test "adds provided new attribute to api namespace and backfills the default value to its api-resources only if that api-resource does not have the provided new-attribute" do
@@ -158,6 +168,9 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
 
     # Does not mutate the api-resource that already has the provided new-attribute
     assert_equal 'dummy_value', new_attribute_existing_resource.reload.properties[metadata['attribute_name']]
+
+    # The newly added attribute is non-renderable
+    assert_equal '0', @api_form.reload.properties['test_attribute']['renderable']
   end
 
   test "returns error if the api_namespace already has the provided attribute" do
