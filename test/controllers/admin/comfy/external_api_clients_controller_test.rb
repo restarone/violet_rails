@@ -590,4 +590,186 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
     assert_match expected_message, vacuum_job_plugin.reload.error_message
     assert_response :redirect
   end
+
+  # SyncAttributeToApiNamespace Plugin
+  test "#sync_attribute_to_api_namespace_plugin: adds provided new attribute to api namespace and backfills the default value to its api-resources successfully" do
+    metadata = {
+      'attribute_name' => 'test_attribute',
+      'default_value' => 'test_value',
+      'placeholder_value' => 'Enter you new_attribute value here.',
+    }
+    sync_attribute_to_api_namespace_plugin = external_api_clients(:sync_attribute_to_api_namespace_plugin)
+    sync_attribute_to_api_namespace_plugin.update(metadata: metadata)
+
+    api_resource = api_resources(:one)
+
+    (1..5).each do
+      new_api_resource = api_resource.dup
+      new_api_resource.save!
+    end
+
+    sign_in(@user)
+    perform_enqueued_jobs do
+      assert_no_difference 'ApiNamespace.count' do
+        assert_no_difference 'ApiResource.count' do
+          get start_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id, id: sync_attribute_to_api_namespace_plugin.id)
+          Sidekiq::Worker.drain_all
+        end
+      end
+    end
+
+    assert_response :redirect
+
+    assert_equal metadata['placeholder_value'], @api_namespace.reload.properties[metadata['attribute_name']]
+    # All api-resources are backfilled
+    @api_namespace.reload.api_resources.each do |resource|
+      assert_equal metadata['default_value'], resource.properties[metadata['attribute_name']]
+    end
+  end
+
+  test "#sync_attribute_to_api_namespace_plugin: adds provided new attribute to api namespace and backfills with empty string to its api-resources if default_value not provided successfully" do
+    metadata = {
+      'attribute_name' => 'test_attribute',
+      'placeholder_value' => 'Enter you new_attribute value here.',
+    }
+    sync_attribute_to_api_namespace_plugin = external_api_clients(:sync_attribute_to_api_namespace_plugin)
+    sync_attribute_to_api_namespace_plugin.update(metadata: metadata)
+
+    api_resource = api_resources(:one)
+
+    (1..5).each do
+      new_api_resource = api_resource.dup
+      new_api_resource.save!
+    end
+
+    sign_in(@user)
+    perform_enqueued_jobs do
+      assert_no_difference 'ApiNamespace.count' do
+        assert_no_difference 'ApiResource.count' do
+          get start_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id, id: sync_attribute_to_api_namespace_plugin.id)
+          Sidekiq::Worker.drain_all
+        end
+      end
+    end
+
+    assert_response :redirect
+
+    assert_equal metadata['placeholder_value'], @api_namespace.reload.properties[metadata['attribute_name']]
+    # All api-resources are backfilled
+    @api_namespace.reload.api_resources.each do |resource|
+      assert_equal '', resource.properties[metadata['attribute_name']]
+    end
+  end
+
+  test "#sync_attribute_to_api_namespace_plugin: adds provided new attribute to api namespace and backfills the default value to its api-resources successfully for array data" do
+    metadata = {
+      'attribute_name' => 'test_attribute',
+      'default_value' => 'one',
+      'placeholder_value' => ['one', 'two'],
+    }
+    sync_attribute_to_api_namespace_plugin = external_api_clients(:sync_attribute_to_api_namespace_plugin)
+    sync_attribute_to_api_namespace_plugin.update(metadata: metadata)
+
+    api_resource = api_resources(:one)
+
+    (1..5).each do
+      new_api_resource = api_resource.dup
+      new_api_resource.save!
+    end
+
+    sign_in(@user)
+    perform_enqueued_jobs do
+      assert_no_difference 'ApiNamespace.count' do
+        assert_no_difference 'ApiResource.count' do
+          get start_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id, id: sync_attribute_to_api_namespace_plugin.id)
+          Sidekiq::Worker.drain_all
+        end
+      end
+    end
+
+    assert_response :redirect
+
+    assert_equal metadata['placeholder_value'], @api_namespace.reload.properties[metadata['attribute_name']]
+    # All api-resources are backfilled
+    @api_namespace.reload.api_resources.each do |resource|
+      assert_equal metadata['default_value'], resource.properties[metadata['attribute_name']]
+    end
+  end
+
+  test "#sync_attribute_to_api_namespace_plugin: adds provided new attribute to api namespace and backfills the default value to its api-resources only if that api-resource does not have the provided new-attribute" do
+    metadata = {
+      'attribute_name' => 'test_attribute',
+      'default_value'=> 'test_value',
+      'placeholder_value' => 'Enter you new_attribute value here.',
+    }
+    sync_attribute_to_api_namespace_plugin = external_api_clients(:sync_attribute_to_api_namespace_plugin)
+    sync_attribute_to_api_namespace_plugin.update(metadata: metadata)
+
+    api_resource = api_resources(:one)
+
+    (1..5).each do
+      new_api_resource = api_resource.dup
+      new_api_resource.save!
+    end
+
+    new_attribute_existing_resource = @api_namespace.api_resources.last
+    properties = new_attribute_existing_resource.properties.merge('test_attribute' => 'dummy_value')
+    new_attribute_existing_resource.update!(properties: properties)
+
+    sign_in(@user)
+    perform_enqueued_jobs do
+      assert_no_difference 'ApiNamespace.count' do
+        assert_no_difference 'ApiResource.count' do
+          get start_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id, id: sync_attribute_to_api_namespace_plugin.id)
+          Sidekiq::Worker.drain_all
+        end
+      end
+    end
+
+    assert_response :redirect
+
+    assert_equal metadata['placeholder_value'], @api_namespace.reload.properties[metadata['attribute_name']]
+    # All api-resources that do not have the new-attribute are backfilled
+    @api_namespace.reload.api_resources.where.not(id: new_attribute_existing_resource.id).each do |resource|
+      assert_equal metadata['default_value'], resource.properties[metadata['attribute_name']]
+    end
+
+    # Does not mutate the api-resource that already has the provided new-attribute
+    assert_equal 'dummy_value', new_attribute_existing_resource.reload.properties[metadata['attribute_name']]
+  end
+
+  test "#sync_attribute_to_api_namespace_plugin: returns error if the api_namespace has the attribute already defined" do
+    metadata = {
+      'attribute_name' => 'test_attribute',
+      'default_value' => 'test_value',
+      'placeholder_value' => 'Enter you new_attribute value here.',
+    }.with_indifferent_access
+    sync_attribute_to_api_namespace_plugin = external_api_clients(:sync_attribute_to_api_namespace_plugin)
+    sync_attribute_to_api_namespace_plugin.update(metadata: metadata)
+
+    api_resource = api_resources(:one)
+
+    (1..5).each do
+      new_api_resource = api_resource.dup
+      new_api_resource.save!
+    end
+
+    new_properties = @api_namespace.properties.merge('test_attribute' => 'test 1')
+    @api_namespace.update!(properties: new_properties)
+
+    sign_in(@user)
+    perform_enqueued_jobs do
+      assert_no_difference 'ApiNamespace.count' do
+        assert_no_difference 'ApiResource.count' do
+          get start_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id, id: sync_attribute_to_api_namespace_plugin.id)
+          Sidekiq::Worker.drain_all
+        end
+      end
+    end
+
+    expected_message = 'The provided attribute is already defined in the ApiNamespace'
+
+    assert_match expected_message, sync_attribute_to_api_namespace_plugin.reload.error_message
+    assert_response :redirect
+  end
 end
