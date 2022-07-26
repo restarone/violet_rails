@@ -20,8 +20,8 @@
   .my-3
     %b.mb-2.d-block Non-primitive Properties
     - api_resource.non_primitive_properties.each do |prop|
-      .d-flex.mb-3
-        .mr-4
+      .mb-3
+        %div
           = "#{prop.label}:"
         %div
           - if prop.file?
