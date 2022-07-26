@@ -1,4 +1,4 @@
-class NonPrimitiveProperty < ApplicationRecord 
+class NonPrimitiveProperty < ApplicationRecord
   belongs_to :api_resource, optional: true
   belongs_to :api_namespace, optional: true
 
