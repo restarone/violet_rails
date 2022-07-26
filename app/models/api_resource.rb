@@ -4,7 +4,7 @@ class ApiResource < ApplicationRecord
   after_initialize :inherit_properties_from_parent
   
   after_initialize do
-    api_namespace.api_form.api_resource = self unless api_namespace.api_form.nil?
+    api_namespace.api_form.api_resource = self unless api_namespace&.api_form.nil?
   end
 
   belongs_to :api_namespace
