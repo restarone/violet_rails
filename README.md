@@ -4,8 +4,28 @@
 [![Brakeman Scan](https://github.com/restarone/violet_rails/actions/workflows/brakeman-analysis.yml/badge.svg)](https://github.com/restarone/violet_rails/actions/workflows/brakeman-analysis.yml)
 [![Heroku Deployments](https://github.com/restarone/violet_rails/actions/workflows/heroku-deploy.yml/badge.svg)](https://github.com/restarone/violet_rails/actions/workflows/heroku-deploy.yml)
 [![AWS EC2 Deployments](https://github.com/restarone/violet_rails/actions/workflows/deploy.yml/badge.svg)](https://github.com/restarone/violet_rails/actions/workflows/deploy.yml)
-## What is Violet Rails?
-The ultimate open-source, self-hosted web and automation platform. Violet is a Ruby on Rails based complete web engine for business that includes professional email, blog, forum, analytics, automation and collaboration tools packaged into your web domain.
+## The Ultimate Rails-based, Web and Automation Platform 🌐 
+
+Built for your digital needs, trusted by startups and founders 🚀
+
+Violet enables subdomain based:
+
+- 📧 Email
+- ✍️ Blog
+- ℹ️ Forum 
+- 📊 Analytics 
+- 🦾 Automation 
+- 🤝 Collaboration  
+
+So you can have your marketing site hosted on `www.mywebsite.com`, while recieving support requests under `support@mywebsite.com` and building the Next Big Thing®️™️ at `app.mywebsite.com`-- all powered by Violet Rails.
+
+Feel the power & productivity of the Majestic Monolith! 🐘
+
+## Architecture overview
+
+![Document systems-2](https://user-images.githubusercontent.com/35935196/179869983-2ab95b29-ce67-4835-b649-7ac33a0eef39.png)
+
+
 
 ## Features ✨
 ### ✨ **A powerful website builder** 🌍

@@ -20,6 +20,16 @@ two:
   requires_authentication: false
   namespace_type: create-read-update-delete
 
+three:
+  name: testApi
+  slug: testApi
+  version: 1
+  properties: {
+                "name": "testApi"
+              }
+  requires_authentication: false
+  namespace_type: create-read-update-delete
+
 users:
   name: internal_users
   slug: internal_users
@@ -80,5 +90,59 @@ namespace_with_all_types:
                 "boolean": true,
                 "null": null
               }
+  requires_authentication: false
+  namespace_type: create-read-update-delete
+
+monitoring_targets:
+  name: monitoring/targets
+  slug: monitoring-targets
+  version: 1
+  properties: {
+                "url": "https://restarone.com",
+                "slug": "restarone.com",
+                "label": "Restarone Solutions Inc Website",
+                "healthy": true,
+                "latency": 42,
+                "alarm_raised": false,
+                "error_message": null,
+                "last_checked_at": "2022-04-23T23:02:34.592+00:00",
+                "log_incidents_to": "monitoring-target-incident"
+              }
+  requires_authentication: false
+  namespace_type: create-read-update-delete
+monitoring_target_incident:
+  name: monitoring/target/incident
+  slug: monitoring-target-incident
+  version: 1
+  properties: {
+                "slug": "restarone.com",
+                "error": null,
+                "latency": 0,
+                "notification_sent": false
+              }
+mailchimp:
+  name: mailchimp_namespace
+  slug: mailchimp_namespace
+  version: 1
+  properties: {
+    'first_name': 'Violet',
+    'last_name': 'Rails',
+    'email': 'violet@rails.com',
+    'contact': '',
+    'synced_to_mailchimp': false
+  }
+  requires_authentication: false
+  namespace_type: create-read-update-delete
+
+mailchimp_logger:
+  name: mailchimp/logger
+  slug: mailchimp_logger
+  version: 1
+  properties: {
+    'status': '',
+    'response': {},
+    'timstamp': '',
+    'api_resource': ''
+  }
   requires_authentication: false
   namespace_type: create-read-update-delete

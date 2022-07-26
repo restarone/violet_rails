@@ -54,6 +54,14 @@ class ApiResource < ApplicationRecord
     end
   end
 
+  def tracked_event
+    Ahoy::Event.where(name: 'api-resource-create').where("properties @> ?", { api_resource_id: self.id }.to_json).last
+  end
+
+  def tracked_user
+    User.find_by(id: tracked_event.properties.dig('user_id')) if tracked_event
+  end
+
   private
 
   def inherit_properties_from_parent

@@ -1,13 +1,14 @@
 class ResourceController < ApplicationController
   before_action :load_api_namespace
-  
+
   include ApiActionable
 
   def create
     @api_resource = @api_namespace.api_resources.new(resource_params)
     if @api_namespace&.api_form&.show_recaptcha
       if verify_recaptcha(model: @api_resource) && @api_resource.save
-        handle_redirection
+        load_api_actions_from_api_resource
+        execute_api_actions
       else
         execute_error_actions
         flash[:error] = @api_resource.errors.full_messages.to_sentence
@@ -15,14 +16,16 @@ class ResourceController < ApplicationController
       end
     elsif @api_namespace&.api_form&.show_recaptcha_v3
       if verify_recaptcha(model: @api_resource, action: helpers.sanitize_recaptcha_action_name(@api_namespace.name), minimum_score: ApiForm::RECAPTCHA_V3_MINIMUM_SCORE, secret_key: ENV['RECAPTCHA_SECRET_KEY_V3']) && @api_resource.save
-        handle_redirection
+        load_api_actions_from_api_resource
+        execute_api_actions
       else
         execute_error_actions
         flash[:error] = @api_resource.errors.full_messages.to_sentence
         redirect_back(fallback_location: root_path)
       end
     elsif @api_resource.save
-      handle_redirection
+      load_api_actions_from_api_resource
+      execute_api_actions
     else
       execute_error_actions
       # show custom snippet only if failure_message contains valid html tags
@@ -31,7 +34,7 @@ class ResourceController < ApplicationController
       redirect_back(fallback_location: root_path)
     end
   end
-  
+
   private
 
   def load_api_namespace
@@ -46,7 +49,7 @@ class ResourceController < ApplicationController
       end
     end
   end
-  
+
   def resource_params
     params.require(:data).permit(properties: {}, non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :allow_attachments, :_destroy])
   end

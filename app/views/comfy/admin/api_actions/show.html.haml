@@ -13,12 +13,18 @@
         .mr-3
           Payload: 
         = @api_action.payload_mapping_evaluated
+      -# payload_mapping_evaluated & custom_headers_evaluated will show current_user & current_visit according to the logged-in user.
+      -# TO DO: show the data that was evaluated while making the web-request instead of reevaluating on every request.
     
     - if @api_action.action_type == 'redirect'
       .col-12.d-flex.mb-3
         .mr-3
           Redirect Url:
         = @api_action.redirect_url
+      .col-12.d-flex.mb-3
+        .mr-3
+          Redirect Type:
+        = @api_action.redirect_type
     - if @api_action.action_type == 'send_email'
       .col-12.d-flex.mb-3
         .mr-3
@@ -48,6 +54,12 @@
         - url = rails_blob_url(Comfy::Cms::File.find(file_id_from_snippet(@api_action.file_snippet)).attachment)
         = link_to url, url
 
+    - if @api_action.action_type == 'custom_action'
+      .col-12.d-flex.mb-3
+        .mr-3
+          Custom Action:
+        = @api_action.method_definition
+
     - if @api_action.api_resource.present?
       .col-12.d-flex.mb-3
         .mr-3
@@ -58,4 +70,3 @@
         .mr-3
           Lifecycle Message:
         = @api_action.lifecycle_message
-    

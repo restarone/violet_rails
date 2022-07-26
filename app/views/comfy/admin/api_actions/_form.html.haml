@@ -6,7 +6,7 @@
     .form-group.col-12
       = label_tag "Action"
       = select_tag "api_namespace[#{type}_attributes][#{index}][action_type]", options_for_select(ApiAction.action_types.keys, resource.action_type), { class: "form-control form-control-sm", id: "action_type_field_#{type}_#{index}", onchange: "toggleApiActionFields('#{index}', '#{type}');"}
-      - if resource.action_type == 'send_email' || resource.action_type == 'send_web_request'
+      .extra-details{ style: "#{'display: none' unless (resource.send_email? || resource.send_web_request? || (resource.redirect? && resource.dynamic_url?) || resource.custom_action?)}"}
         .form-group.my-2
           .d-block
             %strong Top-Level Model Attributes: 
@@ -19,11 +19,87 @@
               %strong Last API Resource Instance Attributes: 
               .d-block
                 = last_instance.properties.keys
+
+        .mt-2.send-email-guide{ style: "#{ 'display: none' unless resource.send_email? }"}
           .d-block
-            %small
+            %strong
+              Dynamic Fields:
+            Email address, Subject, Custom Message
+          .d-block
+            %strong
+              Available Variables:
+            api_resource, current_user, current_visit
+          .d-block
+            %strong
               Dynamic:
+            %li
+              Email address:
               %code
-                \\#{api_resource.properties['your_custom_attribute_here']} 
+                \\#{api_resource.properties['your_custom_attribute_here']}
+            %li
+              Subject:
+              %code
+                \\#{api_resource.properties['your_custom_attribute_here']} welcome! 
+            %li
+              Custom Message:
+              %code
+                \We can help you with \#{api_resource.properties['your_custom_attribute_here']} ! 
+
+        .mt-2.send-web-request-guide{ style: "#{ 'display: none' unless resource.send_web_request? }"}
+          .d-block
+            %strong
+              Dynamic Fields:
+            Request Url, Request Body, Headers
+          .d-block
+            %strong
+              Available Variables:
+            api_resource, current_user, current_visit
+          .d-block
+            %strong
+              Dynamic:
+            %li
+              Request Url:
+              %code
+                \www.example.com/\#{api_resource.api_namespace.metadata["my_custom_attribute"]}
+            %li
+              Request Body and Headers:
+              %code
+                \\#{current_user.email}, \#{current_visit.browser}
+
+        .mt-2.redirect-field-guide{ style: "#{'display: none' unless (resource.redirect? && resource.dynamic_url?)}"}
+          .d-block
+            %strong
+              Dynamic Fields:
+            Redirect url
+          .d-block
+            %strong
+              Available Variables:
+            api_resource, current_user, current_visit, rails-route-helpers (example: comfy_admin_cms_path)
+          .d-block
+            Dynamic:
+            %code
+              \\#{ api_resource.properties['your_custom_attribute_here'] == 'true' ? comfy_admin_cms_path : some_other_path }
+
+        .mt-2.custom-action-field-guide{ style: "#{ 'display: none' unless resource.custom_action? }"}
+          .d-block
+            %strong
+              Dynamic Fields:
+            Method definition
+          .d-block
+            %strong
+              Available Variables:
+            api_resource, api_action, api_namespace, current_user, current_visit
+          .d-block
+            Dynamic:
+            %li
+              %code
+                api_resource.to_json
+            %li
+              %code
+                return api_resource.properties['your_custom_attribute_here']
+            %li
+              %code
+                User.invite!(email: api_resource.properties['your_custom_attribute_here'])
 
     .send_email.col-12{style: "#{'display:none' unless resource.action_type == 'send_email'}", id: "send_email_fields_#{type}_#{index}"}
       .form-group
@@ -49,8 +125,18 @@
 
     .redirect.col-12{style: "#{'display:none' unless resource.action_type == 'redirect'}", id: "redirect_fields_#{type}_#{index}"}
       .form-group
+        = label_tag 'Redirect Type', nil, class: 'd-block'
+        = label_tag "api_namespace[#{type}_attributes][#{index}][redirect_type]", 'cms_page'
+        = radio_button_tag "api_namespace[#{type}_attributes][#{index}][redirect_type]", 'cms_page', resource.cms_page?
+        = label_tag "api_namespace[#{type}_attributes][#{index}][redirect_type]", 'dynamic_url'
+        = radio_button_tag "api_namespace[#{type}_attributes][#{index}][redirect_type]", 'dynamic_url', resource.dynamic_url?
+
+      .form-group
         = label_tag 'Redirect Url'
-        = select_tag "api_namespace[#{type}_attributes][#{index}][redirect_url]", options_for_select((system_paths << resource.redirect_url).uniq), {class: "form-control form-control-sm path_select", default_value: resource.redirect_url}
+        -# Parent: <span> is used beacause select2 adds other adjacent elements as well.
+        %span.select-field{style: "#{'display:none' if resource.cms_page?}"}
+          = select_tag "api_namespace[#{type}_attributes][#{index}][redirect_url]", options_for_select((system_paths << resource.redirect_url).uniq), {class: "form-control form-control-sm path_select", default_value: resource.redirect_url}
+        = text_field_tag "api_namespace[#{type}_attributes][#{index}][redirect_url]", resource.redirect_url, { class: "form-control form-control-sm", style: "#{'display:none' if resource.dynamic_url?}" }
 
     .serve_file.col-12{style: "#{'display:none' unless resource.action_type == 'serve_file'}", id: "serve_file_fields_#{type}_#{index}"}
       .form-group
@@ -79,10 +165,14 @@
       .form-group
         = label_tag 'Bearer Token'
         = text_field_tag "api_namespace[#{type}_attributes][#{index}][bearer_token]", resource.bearer_token, { class: "form-control form-control-sm" }
+    .custom_action.col-12{style: "#{'display:none' unless resource.action_type == 'custom_action'}", id: "custom_action_fields_#{type}_#{index}"}
+      .form-group
+        = label_tag 'Method Definition'
+        = text_area_tag "api_namespace[#{type}_attributes][#{index}][method_definition]", resource.method_definition, { class: "form-control form-control-sm" }
 
 
   = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][_destroy]", false ,{id: "api_action_form_destroy_field_#{type}_#{index}"}
-  = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][position]", resource.position ,{class: "position_field"}
+  = hidden_field_tag "api_namespace[#{type}_attributes][#{index}][position]", index ,{class: "position_field"}
 
 :javascript
 
@@ -99,7 +189,39 @@
     $('.path_select').each(function() {
       $(this).val($(this).attr('default_value')).change();
     })
+
+    $("input[type='radio'][name='api_namespace[#{type}_attributes][#{index}][redirect_type]']").on('click', function () {
+      toggleRedirectInputField(this);
+      toggleDynamicRedirectUrlGuide(this);
+    })
+
+    $("input[type='radio'][name='api_namespace[#{type}_attributes][#{index}][redirect_type]']").each(function () {
+      toggleRedirectInputField(this);
+    })
   });
+
+  function toggleRedirectInputField(element) {
+    const targetFormGroup = $(element).parent().next();
+    if ($(element).val() == 'cms_page' && $(element).is(':checked')) {
+      targetFormGroup.find('span.select-field').show();
+      targetFormGroup.find('input[type="text"]').hide();
+      // Disabling text field otherwise it's value will override the select field's value
+      targetFormGroup.find('input[type="text"]').attr('disabled', true);
+    } else if ($(element).val() == 'dynamic_url' && $(element).is(':checked')) {
+      targetFormGroup.find('span.select-field').hide();
+      targetFormGroup.find('input[type="text"]').show();
+      targetFormGroup.find('input[type="text"]').attr('disabled', false);
+    }
+  }
+
+  function toggleDynamicRedirectUrlGuide(element) {
+    const extraDetailsContainer = $(element).parents('.card').find('.extra-details');
+    if ($(element).val() == 'cms_page' && $(element).is(':checked')) {
+      manageRelatedExtraDetails(element, '.redirect-field-guide', false);
+    } else if ($(element).val() == 'dynamic_url' && $(element).is(':checked')) {
+      manageRelatedExtraDetails(element, '.redirect-field-guide');
+    }
+  }
 
   function #{type}_#{index}_initializeJsonEditor(containerId, fieldId) {
     const container = document.getElementById(containerId)
