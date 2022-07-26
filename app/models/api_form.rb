@@ -27,15 +27,7 @@ class ApiForm < ApplicationRecord
   def is_field_renderable?(field)
     properties.dig(field.to_s, 'renderable').nil? || properties.dig(field.to_s, 'renderable') == '1'
   end
-
-  def success_message_has_html?
-    success_message.present? && Nokogiri::XML(success_message).errors.empty?
-  end
-
-  def failure_message_has_html?
-    failure_message.present? && Nokogiri::XML(failure_message).errors.empty?
-  end
-
+  
   private
 
   def mutually_exclude_recaptcha_type

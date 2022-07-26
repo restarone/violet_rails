@@ -76,10 +76,6 @@ module ApiActionable
   end
 
   def handle_redirection
-    # show custom snippet only if success_message contains valid html tags
-    notice_type = @api_namespace.api_form&.success_message_has_html? ? :custom_notice : :notice
-    flash[notice_type] = @api_resource.api_namespace.api_form&.success_message_evaluated || 'Api resource was successfully updated.'
-
     if @redirect_action.present?
       redirect_url = @redirect_action.dynamic_url? ? @redirect_action.redirect_url_evaluated : @redirect_action.redirect_url
       if @redirect_action.update!(lifecycle_stage: 'complete', lifecycle_message: redirect_url)
@@ -110,7 +106,7 @@ module ApiActionable
       end
     end if api_actions.present?
 
-    flash[:notice] = @api_namespace.api_form.success_message if @api_namespace.api_form.success_message.present?
+    flash[:notice] = @api_resource.api_namespace.api_form.success_message_evaluated if @api_namespace.api_form&.success_message&.present?
   end
 
   def handle_error(e)
