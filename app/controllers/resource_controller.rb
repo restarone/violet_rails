@@ -12,7 +12,6 @@ class ResourceController < ApplicationController
       else
         execute_error_actions
         flash[:error] = @api_resource.errors.full_messages.to_sentence
-        redirect_back(fallback_location: root_path)
       end
     elsif @api_namespace&.api_form&.show_recaptcha_v3
       if verify_recaptcha(model: @api_resource, action: helpers.sanitize_recaptcha_action_name(@api_namespace.name), minimum_score: ApiForm::RECAPTCHA_V3_MINIMUM_SCORE, secret_key: ENV['RECAPTCHA_SECRET_KEY_V3']) && @api_resource.save
@@ -21,7 +20,6 @@ class ResourceController < ApplicationController
       else
         execute_error_actions
         flash[:error] = @api_resource.errors.full_messages.to_sentence
-        redirect_back(fallback_location: root_path)
       end
     elsif @api_resource.save
       load_api_actions_from_api_resource
@@ -29,8 +27,9 @@ class ResourceController < ApplicationController
     else
       execute_error_actions
       flash[:error] = @api_namespace.api_form.failure_message if @api_namespace.api_form.present?
-      redirect_back(fallback_location: root_path)
     end
+
+    redirect_back(fallback_location: root_path) if (@redirect_action.nil? || @error_api_actions_exectuted)
   end
 
   private

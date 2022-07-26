@@ -94,23 +94,19 @@ module ApiActionable
   def execute_api_actions
     api_actions = @api_resource.send(api_action_name)
 
-    if api_actions.present?
-      ApiAction::EXECUTION_ORDER.each do |action_type|
-        if ApiAction.action_types[action_type] == ApiAction.action_types[:serve_file]
-          handle_serve_file_action if @serve_file_action.present?
-        elsif ApiAction.action_types[action_type] == ApiAction.action_types[:redirect]
-          handle_redirection if @redirect_action.present?
-        elsif ApiAction.action_types[action_type] == ApiAction.action_types[:custom_action]
-          handle_custom_actions if @custom_actions.present?
-        elsif [ApiAction.action_types[:send_email], ApiAction.action_types[:send_web_request]].include?(ApiAction.action_types[action_type])
-          api_actions.where(action_type: ApiAction.action_types[action_type]).each do |api_action|
-            api_action.execute_action
-          end
+    ApiAction::EXECUTION_ORDER.each do |action_type|
+      if ApiAction.action_types[action_type] == ApiAction.action_types[:serve_file]
+        handle_serve_file_action if @serve_file_action.present?
+      elsif ApiAction.action_types[action_type] == ApiAction.action_types[:redirect]
+        handle_redirection if @redirect_action.present?
+      elsif ApiAction.action_types[action_type] == ApiAction.action_types[:custom_action]
+        handle_custom_actions if @custom_actions.present?
+      elsif [ApiAction.action_types[:send_email], ApiAction.action_types[:send_web_request]].include?(ApiAction.action_types[action_type])
+        api_actions.where(action_type: ApiAction.action_types[action_type]).each do |api_action|
+          api_action.execute_action
         end
-      end 
-    else
-      redirect_back(fallback_location: root_path)
-    end
+      end
+    end if api_actions.present?
 
     flash[:notice] = @api_namespace.api_form.success_message if @api_namespace.api_form&.success_message&.present?
   end
@@ -135,6 +131,8 @@ module ApiActionable
       redirect_action.update(lifecycle_stage: 'complete', lifecycle_message: redirect_action.redirect_url)
       redirect_to redirect_action.redirect_url and return
     end
+
+    @error_api_actions_exectuted = true
   end
 
   def initialize_api_actions
