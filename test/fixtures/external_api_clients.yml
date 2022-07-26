@@ -334,7 +334,7 @@ sync_attribute_to_api_namespace_plugin:
         placeholder_value = @external_api_client.metadata["placeholder_value"] || ''
         default_value = @external_api_client.metadata["default_value"] || ''
 
-        raise 'The provided attribute is already defined in the ApiNamespace'if @api_namespace.properties.keys.include?(attribute_name)
+        raise 'The provided attribute is already defined in the ApiNamespace' if @api_namespace.properties.keys.include?(attribute_name)
 
         ActiveRecord::Base.transaction do
           new_properties = @api_namespace.properties.merge(attribute_name => placeholder_value)
