@@ -10,7 +10,7 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
 
   test "adds provided new attribute to api namespace and backfills the default value to its api-resources successfully" do
     metadata = {
-      'ATTRIBUTE_NAME' => 'test_attribute',
+      'ATTRIBUTE_NAME' => 'new_attribute',
       'DEFAULT_VALUE' => 'test_value',
       'PLACEHOLDER_VALUE' => 'Enter you new_attribute value here.',
     }
@@ -22,10 +22,10 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
       new_api_resource.save!
     end
 
-    # Initially, the api_namespace and its api-resources does not have the new 'test_attribute'
-    refute_includes @api_namespace.properties.keys, 'test_attribute'
+    # Initially, the api_namespace and its api-resources does not have the new 'new_attribute'
+    refute_includes @api_namespace.properties.keys, 'new_attribute'
     @api_namespace.api_resources.each do |resource|
-      refute_includes resource.properties.keys, 'test_attribute'
+      refute_includes resource.properties.keys, 'new_attribute'
     end
 
     perform_enqueued_jobs do
@@ -37,19 +37,19 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
       end
     end
 
-    assert_equal metadata['PLACEHOLDER_VALUE'], @api_namespace.reload.properties['test_attribute']
+    assert_equal metadata['PLACEHOLDER_VALUE'], @api_namespace.reload.properties['new_attribute']
     # All api-resources are backfilled with provided 'DEFAULT_VALUE'
     @api_namespace.reload.api_resources.each do |resource|
-      assert_equal metadata['DEFAULT_VALUE'], resource.properties['test_attribute']
+      assert_equal metadata['DEFAULT_VALUE'], resource.properties['new_attribute']
     end
 
     # The newly added attribute is non-renderable
-    assert_equal '0', @api_form.reload.properties['test_attribute']['renderable']
+    assert_equal '0', @api_form.reload.properties['new_attribute']['renderable']
   end
 
   test "adds provided new attribute to api namespace and backfills with empty string to its api-resources if DEFAULT_VALUE was not provided" do
     metadata = {
-      'ATTRIBUTE_NAME' => 'test_attribute',
+      'ATTRIBUTE_NAME' => 'new_attribute',
       'PLACEHOLDER_VALUE' => 'Enter you new_attribute value here.',
     }
     @sync_attribute_to_api_namespace_plugin.update!(metadata: metadata)
@@ -60,10 +60,10 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
       new_api_resource.save!
     end
 
-    # Initially, the api_namespace and its api-resources does not have the new 'test_attribute'
-    refute_includes @api_namespace.properties.keys, 'test_attribute'
+    # Initially, the api_namespace and its api-resources does not have the new 'new_attribute'
+    refute_includes @api_namespace.properties.keys, 'new_attribute'
     @api_namespace.api_resources.each do |resource|
-      refute_includes resource.properties.keys, 'test_attribute'
+      refute_includes resource.properties.keys, 'new_attribute'
     end
 
     perform_enqueued_jobs do
@@ -75,19 +75,19 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
       end
     end
 
-    assert_equal metadata['PLACEHOLDER_VALUE'], @api_namespace.reload.properties['test_attribute']
+    assert_equal metadata['PLACEHOLDER_VALUE'], @api_namespace.reload.properties['new_attribute']
     # All api-resources are backfilled with provided empty-string: ''
     @api_namespace.api_resources.reload.each do |resource|
-      assert_equal '', resource.properties['test_attribute']
+      assert_equal '', resource.properties['new_attribute']
     end
 
     # The newly added attribute is non-renderable
-    assert_equal '0', @api_form.reload.properties['test_attribute']['renderable']
+    assert_equal '0', @api_form.reload.properties['new_attribute']['renderable']
   end
 
   test "adds provided new attribute to api namespace and backfills the default value to its api-resources for array data" do
     metadata = {
-      'ATTRIBUTE_NAME' => 'test_attribute',
+      'ATTRIBUTE_NAME' => 'new_attribute',
       'DEFAULT_VALUE' => 'one',
       'PLACEHOLDER_VALUE' => ['one', 'two'],
     }
@@ -99,10 +99,10 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
       new_api_resource.save!
     end
 
-    # Initially, the api_namespace and its api-resources does not have the new 'test_attribute'
-    refute_includes @api_namespace.properties.keys, 'test_attribute'
+    # Initially, the api_namespace and its api-resources does not have the new 'new_attribute'
+    refute_includes @api_namespace.properties.keys, 'new_attribute'
     @api_namespace.api_resources.each do |resource|
-      refute_includes resource.properties.keys, 'test_attribute'
+      refute_includes resource.properties.keys, 'new_attribute'
     end
 
     perform_enqueued_jobs do
@@ -114,19 +114,19 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
       end
     end
 
-    assert_equal metadata['PLACEHOLDER_VALUE'], @api_namespace.reload.properties['test_attribute']
+    assert_equal metadata['PLACEHOLDER_VALUE'], @api_namespace.reload.properties['new_attribute']
     # All api-resources are backfilled with provided empty-string: ''
     @api_namespace.api_resources.reload.each do |resource|
-      assert_equal 'one', resource.properties['test_attribute']
+      assert_equal 'one', resource.properties['new_attribute']
     end
 
     # The newly added attribute is non-renderable
-    assert_equal '0', @api_form.reload.properties['test_attribute']['renderable']
+    assert_equal '0', @api_form.reload.properties['new_attribute']['renderable']
   end
 
   test "adds provided new attribute to api namespace and backfills the default value to its api-resources only if that api-resource does not have the provided new-attribute" do
     metadata = {
-      'ATTRIBUTE_NAME' => 'test_attribute',
+      'ATTRIBUTE_NAME' => 'new_attribute',
       'DEFAULT_VALUE'=> 'test_value',
       'PLACEHOLDER_VALUE' => 'Enter you new_attribute value here.',
     }
@@ -140,19 +140,19 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
 
     # One of the api-resource already has the new-attribute
     new_attribute_existing_resource = @api_namespace.api_resources.last
-    properties = new_attribute_existing_resource.properties.merge('test_attribute' => 'dummy_value')
+    properties = new_attribute_existing_resource.properties.merge('new_attribute' => 'dummy_value')
     new_attribute_existing_resource.update!(properties: properties)
 
-    # Initially, the api_namespace and its api-resources does not have the new 'test_attribute'
-    refute_includes @api_namespace.properties.keys, 'test_attribute'
+    # Initially, the api_namespace and its api-resources does not have the new 'new_attribute'
+    refute_includes @api_namespace.properties.keys, 'new_attribute'
     @api_namespace.api_resources.where.not(id: new_attribute_existing_resource.id).each do |resource|
-      refute_includes resource.properties.keys, 'test_attribute'
+      refute_includes resource.properties.keys, 'new_attribute'
     end
 
     perform_enqueued_jobs do
       assert_no_difference 'ApiNamespace.count' do
         assert_no_difference 'ApiResource.count' do
-          assert_no_changes -> { new_attribute_existing_resource.reload.properties['test_attribute'] } do
+          assert_no_changes -> { new_attribute_existing_resource.reload.properties['new_attribute'] } do
             @sync_attribute_to_api_namespace_plugin.run
             Sidekiq::Worker.drain_all
           end
@@ -160,22 +160,22 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
       end
     end
 
-    assert_equal metadata['PLACEHOLDER_VALUE'], @api_namespace.reload.properties['test_attribute']
+    assert_equal metadata['PLACEHOLDER_VALUE'], @api_namespace.reload.properties['new_attribute']
     # All api-resources that do not have the new-attribute are backfilled
     @api_namespace.api_resources.reload.where.not(id: new_attribute_existing_resource.id).each do |resource|
-      assert_equal 'test_value', resource.properties['test_attribute']
+      assert_equal 'test_value', resource.properties['new_attribute']
     end
 
     # Does not mutate the api-resource that already has the provided new-attribute
-    assert_equal 'dummy_value', new_attribute_existing_resource.reload.properties['test_attribute']
+    assert_equal 'dummy_value', new_attribute_existing_resource.reload.properties['new_attribute']
 
     # The newly added attribute is non-renderable
-    assert_equal '0', @api_form.reload.properties['test_attribute']['renderable']
+    assert_equal '0', @api_form.reload.properties['new_attribute']['renderable']
   end
 
   test "returns error if the api_namespace already has the provided attribute" do
     metadata = {
-      'ATTRIBUTE_NAME' => 'test_attribute',
+      'ATTRIBUTE_NAME' => 'new_attribute',
       'DEFAULT_VALUE' => 'test_value',
       'PLACEHOLDER_VALUE' => 'Enter you new_attribute value here.',
     }
@@ -188,15 +188,15 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
     end
 
     # @api_namespace already has the provided new-attribute
-    new_properties = @api_namespace.properties.merge('test_attribute' => 'test 1')
+    new_properties = @api_namespace.properties.merge('new_attribute' => 'test 1')
     @api_namespace.update!(properties: new_properties)
 
-    assert_includes @api_namespace.properties.keys, 'test_attribute'
+    assert_includes @api_namespace.properties.keys, 'new_attribute'
 
     perform_enqueued_jobs do
       assert_no_difference 'ApiNamespace.count' do
         assert_no_difference 'ApiResource.count' do
-          assert_no_changes -> { @api_namespace.reload.properties['test_attribute'] } do
+          assert_no_changes -> { @api_namespace.reload.properties['new_attribute'] } do
             @sync_attribute_to_api_namespace_plugin.run
             Sidekiq::Worker.drain_all
           end
