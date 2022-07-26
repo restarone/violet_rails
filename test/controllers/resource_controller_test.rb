@@ -661,6 +661,26 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     custom_actions = api_resource.reload.create_api_actions.where(action_type: 'custom_action').reorder(nil)
     assert_equal custom_actions.order(updated_at: :asc).pluck(:id), custom_actions.order(position: :asc).pluck(:id)
   end
+
+  test 'should redirect back if no redirect action is defined' do
+    api_namespace = api_namespaces(:no_api_actions)
+    payload = {
+      data: {
+          properties: {
+            name: 123,
+          }
+      }
+    }
+
+    assert_difference "ApiResource.all.size", +1 do
+      assert_no_difference "ApiAction.all.size" do
+        post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+      end
+    end
+  
+    assert_response :redirect
+    assert_redirected_to '/'
+  end
   
   test 'tracking diabled: should not track current vist and current user after create' do
     Subdomain.current.update(tracking_enabled: false)
