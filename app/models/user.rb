@@ -84,8 +84,13 @@ class User < ApplicationRecord
   has_one_attached :avatar
 
   # to run User.find(123).visits
-  has_many :visits, class_name: "Ahoy::Visit"
+  has_many :visits, class_name: "Ahoy::Visit", dependent: :nullify
+  has_many :events, class_name: "Ahoy::Event", dependent: :nullify
 
+  # Overriding SimpleDiscussion::ForumUser default associations to do dependent destroy.
+  has_many :forum_subscriptions, dependent: :destroy
+  has_many :forum_posts, dependent: :nullify
+  has_many :forum_threads, dependent: :nullify
 
   def subdomain
     Apartment::Tenant.current

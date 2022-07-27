@@ -248,4 +248,97 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
       assert_response :redirect
     end
   end
+
+  test "allow #destroy when user has forum-thread, forum-posts and forum-subscription" do
+    test_user = users(:one)
+    forum_category = ForumCategory.create!(name: 'test', slug: 'test')
+    
+    forum_thread = test_user.forum_threads.create!(title: 'Test Thread 1', forum_category_id: forum_category.id)
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: test_user.id, body: 'test body 1')
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: test_user.id, body: 'test body 2')
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: test_user.id, body: 'test body 3')
+    ForumSubscription.create!(forum_thread_id: forum_thread.id, user_id: test_user.id, subscription_type: 'optin')
+
+    subscriptions_count = test_user.forum_subscriptions.count
+
+    sign_in(@user)
+
+    assert_difference "User.count", -1 do
+      assert_no_difference "ForumThread.count" do
+        assert_no_difference "ForumPost.count" do
+          # Only forum-subscriptions are deleted
+          assert_difference "ForumSubscription.count", -subscriptions_count do
+            delete admin_user_url(subdomain: @domain, id: test_user.id)
+          end
+        end
+      end
+    end
+
+    assert flash.notice
+    refute flash.alert
+    assert_redirected_to admin_users_url(subdomain: @domain)
+  end
+
+  test "allow #destroy when user has forum-subscriptions, forum-thread with posts in which other-user has posted too" do
+    test_user = users(:one)
+    forum_category = ForumCategory.create!(name: 'test', slug: 'test')
+    
+    forum_thread = test_user.forum_threads.create!(title: 'Test Thread 1', forum_category_id: forum_category.id)
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: test_user.id, body: 'test body 1')
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @user.id, body: 'test body 2')
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @user.id, body: 'test body 3')
+    ForumSubscription.create!(forum_thread_id: forum_thread.id, user_id: test_user.id, subscription_type: 'optin')
+    ForumSubscription.create!(forum_thread_id: forum_thread.id, user_id: @user.id, subscription_type: 'optin')
+
+    # Only subscriptions of the user that is to be deleted
+    subscriptions_count = test_user.forum_subscriptions.count
+
+    sign_in(@user)
+
+    assert_difference "User.count", -1 do
+      assert_no_difference "ForumThread.count" do
+        assert_no_difference "ForumPost.count" do
+          # Deleted user's subscriptions are only deleted
+          assert_difference "ForumSubscription.count", -subscriptions_count do
+            delete admin_user_url(subdomain: @domain, id: test_user.id)
+          end
+        end
+      end
+    end
+
+    assert flash.notice
+    refute flash.alert
+    assert_redirected_to admin_users_url(subdomain: @domain)
+  end
+
+  test "allow #destroy when user has forum-subscriptions, forum-posts of other user's forum-thread" do
+    test_user = users(:one)
+    forum_category = ForumCategory.create!(name: 'test', slug: 'test')
+    
+    forum_thread = @user.forum_threads.create!(title: 'Test Thread 1', forum_category_id: forum_category.id)
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @user.id, body: 'test body 1')
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: test_user.id, body: 'test body 2')
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: test_user.id, body: 'test body 3')
+    ForumSubscription.create!(forum_thread_id: forum_thread.id, user_id: test_user.id, subscription_type: 'optin')
+    ForumSubscription.create!(forum_thread_id: forum_thread.id, user_id: @user.id, subscription_type: 'optin')
+
+    subscriptions_count = test_user.forum_subscriptions.count
+
+    sign_in(@user)
+
+    assert_difference "User.count", -1 do
+      assert_no_difference "ForumThread.count" do
+        assert_no_difference "ForumPost.count" do
+          # Deletes only tes-user's forum-subscriptions
+          assert_difference "ForumSubscription.count", -subscriptions_count do
+            delete admin_user_url(subdomain: @domain, id: test_user.id)
+          end
+        end
+      end
+    end
+
+    assert flash.notice
+    refute flash.alert
+    assert_redirected_to admin_users_url(subdomain: @domain)
+  end
 end
