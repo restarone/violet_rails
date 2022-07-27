@@ -1,7 +1,10 @@
 module SimpleDiscussion::ForumPostsHelper
   # Override this to use avatars from other places than Gravatar
   def avatar_tag(user)
-    if user.avatar.attached?
+    if user.nil?
+      # Using the default url provided by gravatar
+      image_tag "http://www.gravatar.com/avatar?size=40", class: "rounded avatar", title: 'User deleted'
+    elsif user.avatar.attached?
       render_custom_avatar(user)
     else
       image_tag gravatar_url_for(user.email, size: 40), class: "rounded avatar"

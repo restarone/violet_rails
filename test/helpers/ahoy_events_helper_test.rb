@@ -157,6 +157,20 @@ class AhoyEventsHelperTest < ActionView::TestCase
     assert_equal expected_output, event_name_detail(event)
   end
 
+  test 'returns "User deleted" as event_name_detail for events with name: subdomain-user-update if the user has been deleted' do
+    user = User.first
+
+    event = Ahoy::Visit.last.events.create!(
+      name: 'subdomain-user-update',
+      time: Time.zone.now,
+      properties: { edited_user_id: user.id }
+    )
+
+    user.destroy
+    expected_output = 'User deleted'
+    assert_equal expected_output, event_name_detail(event)
+  end
+
   test 'returns email subject as event_name_detail for events with name: subdomain-email-visit' do
     email = message_threads(:public)
 
@@ -188,7 +202,7 @@ class AhoyEventsHelperTest < ActionView::TestCase
     assert_equal expected_output, event_name_detail(event)
   end
 
-  test 'returns forum_post_path with updated_forum_post id as event_name_detail for events with name: subdomain-forum-thread-visit' do
+  test 'returns forum_thread_path as event_name_detail for events with name: subdomain-forum-thread-visit' do
     category = ForumCategory.create!(name: 'test', slug: 'test')
     user = User.first
     forum_thread = user.forum_threads.create!(title: 'Test Thread', forum_category_id: category.id)
