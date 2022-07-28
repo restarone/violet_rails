@@ -6,6 +6,7 @@ volumes:
   db_data:
   gem_cache:
   shared_data:
+  nginx_data:
 services:
   solutions_redis:
     image: 'redis:4.0-alpine'
@@ -101,4 +102,15 @@ services:
       RAILS_ENV: test
     depends_on:
       - solutions_db
+      - solutions_app
+  nginx:
+    build:
+      context: .
+      dockerfile: ./nginx.Dockerfile
+    depends_on:
+      - solutions_app
+    ports:
+      - 80:80
+    networks:
+      - development
       
