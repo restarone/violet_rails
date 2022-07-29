@@ -177,8 +177,8 @@ module ApiActionable
     render 'shared/redirect.js.erb'
   end
 
-  def render_error
-    @flash = { error: @api_namespace.api_form&.failure_message }
+  def render_error(error_message)
+    @flash = { error: error_message }
     render 'shared/flash.js.erb'
   end
 end
