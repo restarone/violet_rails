@@ -30,7 +30,7 @@
           = ff.hidden_field :allow_attachments
       
     - if @api_form.show_recaptcha
-      = recaptcha_tags callback: "ctaSuccessHandler_#{@api_namespace.id}", id: "api_form-#{@api_namespace.id}"
+      = recaptcha_tags callback: "ctaSuccessHandler_#{@api_namespace.id}"
     - elsif @api_form.show_recaptcha_v3
       -# Hiding the recaptch v3 badge.
       -# reference: https://developers.google.com/recaptcha/docs/faq#id-like-to-hide-the-recaptcha-badge.-what-is-allowed
