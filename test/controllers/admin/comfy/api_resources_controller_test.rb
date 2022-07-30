@@ -27,7 +27,7 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
 
     assert ApiResource.last.properties
     assert_equal JSON.parse(payload_as_stringified_json).symbolize_keys.keys, ApiResource.last.properties.symbolize_keys.keys
-    assert_redirected_to redirect_action.redirect_url
+    assert_equal "window.location.replace('#{redirect_action.redirect_url}')", response.parsed_body
   end
 
   test "should show api_resource" do
