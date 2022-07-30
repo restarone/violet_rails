@@ -68,17 +68,21 @@
       })
       $(this).val(JSON.parse($(this).attr('default_value'))).change();
     });
+  });
 
+- if @api_form.show_recaptcha
+  :javascript
     window.ctaSuccessHandler_#{@api_namespace.id} = function () {
       enableForm("#api_form_#{@api_namespace.id}");
     }
 
+- if @api_form.show_recaptcha_v3
+  :javascript
     window.ctaSuccessHandlerRecaptchaV3_#{@api_namespace.id} = function(elemId, token) {
       enableForm("#api_form_#{@api_namespace.id}");
 
       const element = document.getElementById(elemId);
       element.value = token;
     }
-  });
 
 - execute_actions(@api_namespace, 'new_api_actions')
