@@ -8,7 +8,7 @@
 - recaptcha_keys_set = @api_form.show_recaptcha_v3 && ENV['RECAPTCHA_SITE_KEY_V3'].present? && ENV['RECAPTCHA_SECRET_KEY_V3'].present? unless recaptcha_keys_set
 
 - if (@api_form.show_recaptcha.blank? && @api_form.show_recaptcha_v3.blank?) || recaptcha_keys_set
-  = form_for :data, url: api_namespace_resource_index_path(api_namespace_id: @api_namespace.id), method: :post, html: {class: 'violet-cta-form', 'data-type': 'json', multipart: true, id: 'api_form', onsubmit: 'return checkRequiredRichTextFields()'}, data: { turbo: false, remote: true } do |f|
+  = form_for :data, url: api_namespace_resource_index_path(api_namespace_id: @api_namespace.id), method: :post, html: {class: 'violet-cta-form', 'data-type': 'json', multipart: true, id: "api_form_#{@api_namespace.id}", onsubmit: 'disableForm(this); return checkRequiredRichTextFields()'}, data: { turbo: false, remote: true } do |f|
     .form-group
       - properties.each do |key, value|
         = f.fields_for :properties do |fff|
@@ -49,7 +49,7 @@
 
       = recaptcha_v3(callback: 'ctaSuccessHandlerRecaptchaV3', action: sanitize_recaptcha_action_name(@api_namespace.name), site_key: ENV['RECAPTCHA_SITE_KEY_V3'])
       
-    = f.submit @api_form.submit_button_label, disabled: @api_form.show_recaptcha || @api_form.show_recaptcha_v3, class: 'my-2 btn btn-primary', data: {disable_with: false}
+    = f.submit @api_form.submit_button_label, disabled: @api_form.show_recaptcha || @api_form.show_recaptcha_v3, class: 'my-2 btn btn-primary', data: {disable_with: false}, name: "api_form_#{@api_namespace.id}"
 
 - else 
   %h3.text-danger{ style: "font-size: small;" }

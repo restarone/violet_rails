@@ -179,6 +179,6 @@ module ApiActionable
 
   def render_error(error_message)
     @flash = { error: error_message }
-    render 'shared/flash.js.erb'
+    render 'shared/error.js.erb'
   end
 end

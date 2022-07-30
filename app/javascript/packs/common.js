@@ -28,3 +28,11 @@ window.requireCheckbox = function(className) {
         }
     });
 }
+
+window.disableForm = function(form) {
+  $(form).find(":submit").attr('disabled', 'disabled')
+}
+
+window.enableForm = function(form) {
+  $(form).find(":submit").attr('disabled', false)
+}
