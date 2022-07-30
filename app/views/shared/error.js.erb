@@ -1,0 +1,2 @@
+enableForm("#api_form_<%= @api_namespace.id %>")
+$("#flash").html("<%= j render(partial: 'shared/flash_content', locals: { flash: @flash }) %>");
