@@ -8,7 +8,7 @@
 - recaptcha_keys_set = @api_form.show_recaptcha_v3 && ENV['RECAPTCHA_SITE_KEY_V3'].present? && ENV['RECAPTCHA_SECRET_KEY_V3'].present? unless recaptcha_keys_set
 
 - if (@api_form.show_recaptcha.blank? && @api_form.show_recaptcha_v3.blank?) || recaptcha_keys_set
-  = form_for :data, url: api_namespace_resource_index_path(api_namespace_id: @api_namespace.id), method: :post, html: {class: 'violet-cta-form', 'data-type': 'json', multipart: true, id: 'api_form', onsubmit: 'return checkRequiredRichTextFields()'} do |f|
+  = form_for :data, url: api_namespace_resource_index_path(api_namespace_id: @api_namespace.id), method: :post, html: {class: 'violet-cta-form', 'data-type': 'json', multipart: true, id: "api_form_#{@api_namespace.id}", onsubmit: 'disableForm(this); return checkRequiredRichTextFields()'}, data: { turbo: false, remote: true } do |f|
     .form-group
       - properties.each do |key, value|
         = f.fields_for :properties do |fff|
@@ -30,7 +30,7 @@
           = ff.hidden_field :allow_attachments
       
     - if @api_form.show_recaptcha
-      = recaptcha_tags callback: 'ctaSuccessHandler'
+      = recaptcha_tags callback: "ctaSuccessHandler_#{@api_namespace.id}"
     - elsif @api_form.show_recaptcha_v3
       -# Hiding the recaptch v3 badge.
       -# reference: https://developers.google.com/recaptcha/docs/faq#id-like-to-hide-the-recaptcha-badge.-what-is-allowed
@@ -47,7 +47,7 @@
         and
         = link_to 'Terms of Service.', 'https://policies.google.com/terms', target: '_blank'
 
-      = recaptcha_v3(callback: 'ctaSuccessHandlerRecaptchaV3', action: sanitize_recaptcha_action_name(@api_namespace.name), site_key: ENV['RECAPTCHA_SITE_KEY_V3'])
+      = recaptcha_v3(callback: "ctaSuccessHandlerRecaptchaV3_#{@api_namespace.id}", action: sanitize_recaptcha_action_name(@api_namespace.name), site_key: ENV['RECAPTCHA_SITE_KEY_V3'])
       
     = f.submit @api_form.submit_button_label, disabled: @api_form.show_recaptcha || @api_form.show_recaptcha_v3, class: 'my-2 btn btn-primary', data: {disable_with: false}
 
@@ -69,5 +69,20 @@
       $(this).val(JSON.parse($(this).attr('default_value'))).change();
     });
   });
+
+- if @api_form.show_recaptcha
+  :javascript
+    window.ctaSuccessHandler_#{@api_namespace.id} = function () {
+      enableForm("#api_form_#{@api_namespace.id}");
+    }
+
+- if @api_form.show_recaptcha_v3
+  :javascript
+    window.ctaSuccessHandlerRecaptchaV3_#{@api_namespace.id} = function(elemId, token) {
+      enableForm("#api_form_#{@api_namespace.id}");
+
+      const element = document.getElementById(elemId);
+      element.value = token;
+    }
 
 - execute_actions(@api_namespace, 'new_api_actions')
