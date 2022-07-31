@@ -285,6 +285,7 @@ GEM
     mini_mime (1.1.2)
     mini_portile2 (2.8.0)
     minitest (5.15.0)
+    minitest-stub_any_instance (1.0.3)
     mocha (1.12.0)
     msgpack (1.4.2)
     multi_xml (0.6.0)
@@ -518,6 +519,7 @@ DEPENDENCIES
   local_time
   mailgun-ruby
   meta-tags
+  minitest-stub_any_instance
   mocha
   net-ssh (>= 6.0.2)
   pg (~> 1.1)
@@ -549,7 +551,7 @@ DEPENDENCIES
   will_paginate
 
 RUBY VERSION
-   ruby 3.0.0p0
+   ruby 2.6.6p146
 
 BUNDLED WITH
    2.1.4
