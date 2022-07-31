@@ -64,6 +64,13 @@ class GraphqlControllerTest < ActionDispatch::IntegrationTest
     assert_equal ["data"], json_response.keys
   end
 
+  test "[if enabled] query public API Namespaces with nested apiResources with non-primitive properties" do
+    query_string = "{ apiNamespaces { id apiResources { id  nonPrimitiveProperties { url mimeType content }} } }"
+    post '/graphql', params: { query: query_string }
+    json_response = JSON.parse(@response.body)
+    assert_equal ["data"], json_response.keys
+  end
+
   test "[if enabled] && [if subdomain allows analytics query via API] allows ahoy visit query" do
     @subdomain.update(allow_external_analytics_query: true)
     get root_url

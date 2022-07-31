@@ -35,7 +35,7 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
     get api_url(version: @users_namespace.version, api_namespace: @users_namespace.slug), as: :json
     sample_user = response.parsed_body['data'][0]['attributes'].symbolize_keys!
     assert_equal(
-      [:id, :created_at, :properties, :updated_at].sort,
+      [:id, :created_at, :non_primitive_properties, :properties, :updated_at].sort,
       sample_user.keys.sort
     )
     assert_equal sample_user[:properties].symbolize_keys!.keys.sort, api_resources(:user).properties.symbolize_keys!.keys.sort
@@ -49,7 +49,7 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
     post api_query_url(version: @users_namespace.version, api_namespace: @users_namespace.slug, params: payload)
     sample_user = response.parsed_body["data"][0]["attributes"].symbolize_keys!
     assert_equal(
-      [:id, :created_at, :properties, :updated_at].sort,
+      [:id, :created_at, :non_primitive_properties, :properties, :updated_at].sort,
       sample_user.keys.sort
     )
     assert_equal sample_user[:properties].symbolize_keys!.keys.sort, api_resources(:user).properties.symbolize_keys!.keys.sort
@@ -57,7 +57,7 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
 
   test '#show users resource' do
     get api_show_resource_url(version: @users_namespace.version, api_namespace: @users_namespace.slug, api_resource_id: @users_namespace.api_resources.first.id)
-    assert_equal response.parsed_body["data"]["attributes"].symbolize_keys.keys.sort, [:id, :created_at, :updated_at, :properties].sort
+    assert_equal response.parsed_body["data"]["attributes"].symbolize_keys.keys.sort, [:id, :created_at, :updated_at, :non_primitive_properties, :properties].sort
     assert_response :success
   end
 
