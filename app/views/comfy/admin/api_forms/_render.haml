@@ -28,9 +28,9 @@
           = ff.hidden_field :field_type
           = ff.hidden_field :label
           = ff.hidden_field :allow_attachments
-      
-    - if @api_form.show_recaptcha
-      = recaptcha_tags callback: 'ctaSuccessHandler'
+
+    - if @api_form.show_recaptcha || session[:recaptcha_v2_fallback]
+      = recaptcha_tags callback: 'ctaSuccessHandler', noscript: !session[:recaptcha_v2_fallback].present?
     - elsif @api_form.show_recaptcha_v3
       -# Hiding the recaptch v3 badge.
       -# reference: https://developers.google.com/recaptcha/docs/faq#id-like-to-hide-the-recaptcha-badge.-what-is-allowed
