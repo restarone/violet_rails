@@ -15,13 +15,13 @@ class ResourceController < ApplicationController
         render_error(@api_resource.errors.full_messages.to_sentence)
       end
     elsif @api_namespace&.api_form&.show_recaptcha_v3
-      if verify_recaptcha(model: @api_resource, action: helpers.sanitize_recaptcha_action_name(@api_namespace.name), minimum_score: ApiForm::RECAPTCHA_V3_MINIMUM_SCORE, secret_key: ENV['RECAPTCHA_SECRET_KEY_V3'], response: 'bogus') && @api_resource.save
+      if verify_recaptcha(model: @api_resource, action: helpers.sanitize_recaptcha_action_name(@api_namespace.name), minimum_score: ApiForm::RECAPTCHA_V3_MINIMUM_SCORE, secret_key: ENV['RECAPTCHA_SECRET_KEY_V3']) && @api_resource.save
         load_api_actions_from_api_resource
         execute_api_actions
       else
         session[:recaptcha_v2_fallback] = true if recaptcha_reply['score'].to_f < ApiForm::RECAPTCHA_V3_MINIMUM_SCORE
         execute_error_actions
-        render_error(@api_resource.errors.full_messages.to_sentence)
+        render_fallback_to_recaptcha_v2_with_error_message(@api_resource.errors.full_messages.to_sentence)
       end
     elsif @api_resource.save
       load_api_actions_from_api_resource

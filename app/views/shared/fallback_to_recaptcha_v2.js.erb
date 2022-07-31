@@ -1,0 +1,8 @@
+window["ctaSuccessHandler_<%= @api_namespace.id %>"] = function () {
+  enableForm("#api_form_<%= @api_namespace.id %>");
+}
+
+$("#recaptcha_section_<%= @api_namespace.id %>").html('<%= recaptcha_tags(callback: "ctaSuccessHandler_#{@api_namespace.id}").gsub(/\n/, '').html_safe %>');
+$('.grecaptcha-badge').css('visibility', 'hidden');
+
+$("#flash").html("<%= j render(partial: 'shared/flash_content', locals: { flash: @flash }) %>");

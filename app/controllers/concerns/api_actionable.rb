@@ -181,4 +181,9 @@ module ApiActionable
     @flash = { error: error_message }
     render 'shared/error.js.erb'
   end
+
+  def render_fallback_to_recaptcha_v2_with_error_message(error_message)
+    @flash = { error: error_message }
+    render 'shared/fallback_to_recaptcha_v2.js.erb'
+  end
 end
