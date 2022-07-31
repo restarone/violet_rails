@@ -71,7 +71,7 @@
     });
   });
 
-- if @api_form.show_recaptcha
+- if @api_form.show_recaptcha || session[:recaptcha_v2_fallback]
   :javascript
     window.ctaSuccessHandler_#{@api_namespace.id} = function () {
       enableForm("#api_form_#{@api_namespace.id}");
