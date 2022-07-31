@@ -19,7 +19,7 @@ class ResourceController < ApplicationController
         load_api_actions_from_api_resource
         execute_api_actions
       else
-        session[:recaptcha_v2_fallback] = true if recaptcha_reply['score'].to_f < ApiForm::RECAPTCHA_V3_MINIMUM_SCORE
+        session[:recaptcha_v2_fallback] = true if recaptcha_reply && recaptcha_reply['score'].to_f < ApiForm::RECAPTCHA_V3_MINIMUM_SCORE
         execute_error_actions
         render_fallback_to_recaptcha_v2_with_error_message(@api_resource.errors.full_messages.to_sentence)
       end
