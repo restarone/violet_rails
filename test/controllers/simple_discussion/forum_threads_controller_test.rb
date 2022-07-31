@@ -38,6 +38,37 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     assert_response :success
   end
 
+  test "#index: indicates the thread's author has been deleted if the user was deleted"do
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      test_user = User.create!(email: 'test@restarone.com', password: '123456', password_confirmation: '123456', confirmed_at: Time.now)
+      forum_category = ForumCategory.create!(name: 'test', slug: 'test')
+    
+      forum_thread_1 = test_user.forum_threads.create!(title: 'Test Thread 1', forum_category_id: forum_category.id)
+      ForumPost.create!(forum_thread_id: forum_thread_1.id, user_id: test_user.id, body: 'test body 1')
+    
+      forum_thread_2 = @restarone_user.forum_threads.create!(title: 'Test Thread 2', forum_category_id: forum_category.id)
+      ForumPost.create!(forum_thread_id: forum_thread_2.id, user_id: @restarone_user.id, body: 'test body 4')
+
+      # Deleting the test_user
+      test_user.destroy!
+
+      sign_in(@restarone_user)
+      get simple_discussion.root_url(subdomain: @restarone_subdomain.name)
+      
+      assert_response :success
+
+      # Shows 'author deleted' for forum-thread whose author has been deleted
+      assert_select '.card-body .forum-thread .row .col', html: /Test Thread 1/ do
+        assert_select '.thread-details', html: /(author deleted)/
+      end
+
+      # Does not show 'author deleted' for forum-thread whose author has not been deleted
+      assert_select '.card-body .forum-thread .row .col', html: /Test Thread 2/ do
+        assert_select '.thread-details', { count: 0, html: /(author deleted)/ }
+      end
+    end
+  end
+
   test 'disallows forum_threads#new if not logged in' do
     get simple_discussion.new_forum_thread_url(subdomain: @restarone_subdomain.name)
     assert_response :redirect
@@ -306,6 +337,62 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
 
     end
     assert_response :success
+  end
+
+  test "#show: indicates the thread's author and the respective forum-posts has been deleted if the user was deleted"do
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      test_user = User.create!(email: 'test@restarone.com', password: '123456', password_confirmation: '123456', confirmed_at: Time.now)
+      forum_category = ForumCategory.create!(name: 'test', slug: 'test')
+    
+      forum_thread_1 = test_user.forum_threads.create!(title: 'Test Thread 1', forum_category_id: forum_category.id)
+      forum_post_1 = ForumPost.create!(forum_thread_id: forum_thread_1.id, user_id: test_user.id, body: 'test body 1')
+      forum_post_2 = ForumPost.create!(forum_thread_id: forum_thread_1.id, user_id: @restarone_user.id, body: 'test body 2')
+    
+      # Deleting the test_user
+      test_user.destroy!
+
+      sign_in(@restarone_user)
+      get simple_discussion.forum_thread_url(subdomain: @restarone_subdomain.name, id: forum_thread_1.slug)
+      
+      assert_response :success
+
+      # Shows 'author deleted' for forum-thread whose author has been deleted
+      assert_select '.card-body .row', html: /Test Thread 1/
+      assert_select '.card-body .thread-details', html: /(author deleted)/
+      
+      # Shows 'User deleted' for forum-post whose user has been deleted
+      assert_select "#forum_post_#{forum_post_1.id}", html: /User deleted/
+      # Does not show 'User deleted' for forum-post whose user has not been deleted
+      assert_select "#forum_post_#{forum_post_2.id}", { count: 0, html: /User deleted/ }
+    end
+  end
+
+  test "#show: indicates only the respective forum-posts has been deleted if the user was deleted but not the forum-thread(created by another user)" do
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      test_user = User.create!(email: 'test@restarone.com', password: '123456', password_confirmation: '123456', confirmed_at: Time.now)
+      forum_category = ForumCategory.create!(name: 'test', slug: 'test')
+    
+      forum_thread_1 = @restarone_user.forum_threads.create!(title: 'Test Thread 1', forum_category_id: forum_category.id)
+      forum_post_1 = ForumPost.create!(forum_thread_id: forum_thread_1.id, user_id: @restarone_user.id, body: 'test body 4')
+      forum_post_2 = ForumPost.create!(forum_thread_id: forum_thread_1.id, user_id: test_user.id, body: 'test body 5')
+
+      # Deleting the test_user
+      test_user.destroy!
+
+      sign_in(@restarone_user)
+      get simple_discussion.forum_thread_url(subdomain: @restarone_subdomain.name, id: forum_thread_1.slug)
+      
+      assert_response :success
+
+      # Does not show 'author deleted' for forum-thread whose author has not been deleted
+      assert_select '.card-body .row', html: /Test Thread 1/
+      assert_select '.card-body .thread-details', { count: 0, html: /(author deleted)/ }
+      
+      # Does not show 'User deleted' for forum-post whose user has not been deleted
+      assert_select "#forum_post_#{forum_post_1.id}", { count: 0, html: /User deleted/ }
+      # Shows 'User deleted' for forum-post whose user has been deleted
+      assert_select "#forum_post_#{forum_post_2.id}", html: /User deleted/
+    end
   end
 
   test 'denies forum-thread update with validation errors in response if invalid payload is provided' do

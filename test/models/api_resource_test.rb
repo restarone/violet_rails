@@ -18,4 +18,30 @@ class ApiResourceTest < ActiveSupport::TestCase
 
     assert_includes api_resource.errors.messages[:properties], 'name is required'
   end
+
+  test 'tracked_event' do
+    api_resource = api_resources(:one)
+    current_visit = ahoy_visits(:public)
+
+    event = Ahoy::Event.create(
+      name: "api-resource-create",
+      visit_id: current_visit.id,
+      properties: { api_resource_id: api_resource.id }
+    )
+    assert_equal api_resource.tracked_event, event
+  end
+
+  test 'tracked_user' do
+    api_resource = api_resources(:one)
+    user = users(:public)
+    current_visit = ahoy_visits(:public)
+
+    event = Ahoy::Event.create(
+      name: "api-resource-create",
+      visit_id: current_visit.id,
+      properties: { api_resource_id: api_resource.id, user_id: user.id }
+    )
+
+    assert_equal api_resource.tracked_user, user
+  end
 end

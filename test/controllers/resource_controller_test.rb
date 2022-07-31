@@ -21,7 +21,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
         assert_difference "ApiActionMailer.deliveries.size", +1 do
           perform_enqueued_jobs do
             post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id, params: payload)
-            assert_response :redirect
+            assert_response :success
           end
         end
       end
@@ -55,7 +55,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       assert_difference "NonPrimitiveProperty.count", +2 do
         assert_difference "ActiveStorage::Attachment.count", +1 do
           post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
-          assert_response :redirect
+          assert_response :success
         end
       end
     end
@@ -73,7 +73,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     }
     assert_difference "@api_namespace.api_resources.count", +1 do
       post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
-      assert_response :redirect
+      assert_response :success
     end
   end
 
@@ -91,7 +91,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     Recaptcha.configuration.skip_verify_env.delete("test")
     assert_difference "@api_namespace.api_resources.count", +0 do
       post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
-      assert_response :redirect
+      assert_response :success
     end
 
     Recaptcha.configuration.skip_verify_env.push("test")
@@ -109,7 +109,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     }
     assert_difference "@api_namespace.api_resources.count", +1 do
       post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
-      assert_response :redirect
+      assert_response :success
     end
   end
 
@@ -127,8 +127,9 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     Recaptcha.configuration.skip_verify_env.delete("test")
     assert_difference "@api_namespace.api_resources.count", +0 do
       post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
-      assert_response :redirect
-      assert_match "reCAPTCHA verification failed, please try again.", flash[:error]
+      assert_response :success
+
+      assert_match "reCAPTCHA verification failed, please try again.", response.parsed_body
     end
 
     Recaptcha.configuration.skip_verify_env.push("test")
@@ -247,8 +248,8 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert_response :redirect
-    assert_redirected_to api_namespaces_path
+    assert_response :success
+    assert_equal "window.location.replace('#{api_namespaces_path}')", response.parsed_body
     # The evaluated value is saved as lifecycle_message
     assert_equal api_namespaces_path, @controller.view_assigns['redirect_action'].lifecycle_message
   end
@@ -273,8 +274,8 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert_response :redirect
-    assert_redirected_to url
+    assert_response :success
+    assert_equal "window.location.replace('#{url}')", response.parsed_body
     # The evaluated value is not saved as lifecycle_message
     assert_equal url, @controller.view_assigns['redirect_action'].lifecycle_message
   end
@@ -301,8 +302,8 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert_response :redirect
-    assert_redirected_to cms_page.full_path
+    assert_response :success
+    assert_equal "window.location.replace('#{cms_page.full_path}')", response.parsed_body 
     assert_equal cms_page.full_path, @controller.view_assigns['redirect_action'].lifecycle_message
   end
 
@@ -359,8 +360,12 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
     end
 
-    assert_equal 'test failure message', flash[:error]
-    refute flash[:notice]
+    assert_match 'test failure message', response.parsed_body
+    refute_equal 301, response.status
+    assert_response :success
+
+
+    refute_match 'window.location.replace', response.parsed_body
   end
 
   test 'should deny #create and show the custom failure message even if no redirect action is defined' do
@@ -379,7 +384,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
     end
 
-    assert_equal 'test failure message', flash[:error]
+    assert_match 'test failure message', response.parsed_body
     refute flash[:notice]
   end
 
@@ -396,7 +401,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     assert_difference "@api_namespace.api_resources.count", +1 do
       assert_difference "@api_namespace.executed_api_actions.count", actions_count do
         post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id, params: payload)
-        assert_response :redirect
+        assert_response :success
       end
     end
 
@@ -576,7 +581,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert_redirected_to redirect_action.redirect_url
+    assert_equal "window.location.replace('#{redirect_action.redirect_url}')", response.parsed_body
 
     api_resource = @controller.view_assigns['api_resource']
     # The different triggered actions should be completed
@@ -650,7 +655,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert_redirected_to redirect_action.redirect_url
+    assert_equal "window.location.replace('#{redirect_action.redirect_url}')", response.parsed_body
 
     api_resource = @controller.view_assigns['api_resource']
 
@@ -660,5 +665,51 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     # Custom Api Action are executed according to their position
     custom_actions = api_resource.reload.create_api_actions.where(action_type: 'custom_action').reorder(nil)
     assert_equal custom_actions.order(updated_at: :asc).pluck(:id), custom_actions.order(position: :asc).pluck(:id)
+  end
+  
+  test 'tracking diabled: should not track current vist and current user after create' do
+    Subdomain.current.update(tracking_enabled: false)
+    api_namespace = api_namespaces(:one)
+    payload = {
+      data: {
+          properties: {
+            name: 123,
+          }
+      }
+    }
+    assert_no_difference "Ahoy::Event.count" do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+  end
+
+  test 'tracking enabled: should track current vist and current user after create' do
+    user = users(:public)
+    Subdomain.current.update(tracking_enabled: true)
+    api_namespace = api_namespaces(:one)
+    payload = {
+      data: {
+          properties: {
+            name: 123,
+          }
+      }
+    }
+    assert_difference "Ahoy::Event.count", +1 do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+    assert_equal Ahoy::Event.last.properties['api_resource_id'], ApiResource.last.id
+    assert_equal Ahoy::Event.last.properties['api_namespace_id'], api_namespace.id
+    assert_equal Ahoy::Event.last.name, 'api-resource-create'
+    # When user is not signed in
+    refute Ahoy::Event.last.properties['user_id']
+
+    sign_in(user)
+    assert_difference "Ahoy::Event.count", +1 do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+    assert_equal Ahoy::Event.last.properties['api_resource_id'], ApiResource.last.id 
+    assert_equal Ahoy::Event.last.properties['api_namespace_id'], api_namespace.id
+    assert_equal Ahoy::Event.last.name, 'api-resource-create'
+    # When user is signed in
+    assert_equal Ahoy::Event.last.properties['user_id'], user.id 
   end
 end

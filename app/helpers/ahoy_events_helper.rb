@@ -20,7 +20,9 @@ module AhoyEventsHelper
 
         file.label
       elsif Ahoy::Event::SYSTEM_EVENTS[event.name] == Ahoy::Event::SYSTEM_EVENTS['subdomain-user-update']
-        user = User.find(event.properties['edited_user_id'])
+        user = User.find_by(id: event.properties['edited_user_id'])
+        return 'User deleted' if user.nil?
+
         user_info = user.name.present? ? "#{user.name}: #{user.email}" : user.email
 
         user_info
@@ -30,6 +32,7 @@ module AhoyEventsHelper
         message_thread.subject
       elsif Ahoy::Event::SYSTEM_EVENTS[event.name] == Ahoy::Event::SYSTEM_EVENTS['subdomain-forum-post-update']
         forum_post = ForumPost.find(event.properties['forum_post_id'])
+
         forum_post_info = "#{simple_discussion.forum_thread_path(id: forum_post.forum_thread.slug)}#forum_post_#{forum_post.id}"
 
         forum_post_info
@@ -37,6 +40,10 @@ module AhoyEventsHelper
         forum_thread = ForumThread.find(event.properties['forum_thread_id'])
 
         simple_discussion.forum_thread_path(id: forum_thread.slug)
+      elsif Ahoy::Event::SYSTEM_EVENTS[event.name] == Ahoy::Event::SYSTEM_EVENTS['api-resource-create']
+        api_resource = ApiResource.find(event.properties['api_resource_id'])
+
+        api_namespace_resource_path(api_namespace_id: api_resource.api_namespace.id ,id: api_resource.id)
       end
     rescue => e
       e.message
