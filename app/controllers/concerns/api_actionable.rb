@@ -143,7 +143,7 @@ module ApiActionable
 
   # create api_actions for api_resource using api_namespace's api_actions as template
   def clone_actions(action_name)
-    return if @api_resource.nil?
+    return if @api_resource.nil? || @api_resource.new_record?
 
     @api_namespace.send(action_name).each do |action|
       @api_resource.send(action_name).create(action.attributes.merge(custom_message: action.custom_message.to_s).except("id", "created_at", "updated_at", "api_namespace_id"))
