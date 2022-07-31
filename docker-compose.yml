@@ -6,7 +6,6 @@ volumes:
   db_data:
   gem_cache:
   shared_data:
-  nginx_data:
 services:
   solutions_redis:
     image: 'redis:4.0-alpine'
