@@ -114,6 +114,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should not allow #create when recaptcha-v3 is enabled and recaptcha verification failed' do
+    ResourceController.any_instance.stubs(:recaptcha_reply).returns({success: 'false', score: 0.1})
     @api_namespace.api_form.update(show_recaptcha_v3: true)
     payload = {
       data: {
