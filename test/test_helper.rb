@@ -16,7 +16,6 @@ require "rails/test_help"
 require 'mocha/minitest'
 require 'webmock/minitest'
 require 'sidekiq/testing'
-require 'minitest/stub_any_instance'
 
 class ActiveSupport::TestCase
   include ActiveJob::TestHelper

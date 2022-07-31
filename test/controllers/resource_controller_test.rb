@@ -114,6 +114,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should not allow #create when recaptcha-v3 is enabled and recaptcha verification failed' do
+    ResourceController.any_instance.stubs(:recaptcha_reply).returns({success: 'false', score: 0.1})
     @api_namespace.api_form.update(show_recaptcha_v3: true)
     payload = {
       data: {
@@ -125,13 +126,11 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     }
     # Recaptcha is disabled for test env by deafult
     Recaptcha.configuration.skip_verify_env.delete("test")
-    ResourceController.stub_any_instance(:recaptcha_reply, {success: 'false', score: 0.1}) do
-      assert_no_difference "@api_namespace.api_resources.count" do
-        post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
-        assert_response :success
+    assert_difference "@api_namespace.api_resources.count", +0 do
+      post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
+      assert_response :success
 
-        assert_match "reCAPTCHA verification failed, please try again.", response.parsed_body
-      end
+      assert_match "reCAPTCHA verification failed, please try again.", response.parsed_body
     end
 
     Recaptcha.configuration.skip_verify_env.push("test")

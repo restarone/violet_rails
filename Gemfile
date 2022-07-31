@@ -94,7 +94,6 @@ group :test do
   gem 'rails-controller-testing'
   gem 'mocha'
   gem 'webmock'
-  gem "minitest-stub_any_instance"
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
