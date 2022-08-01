@@ -1,8 +1,14 @@
 class ApiForm < ApplicationRecord
   include JsonbFieldsParsable
+  include DynamicAttribute
+
+  attr_dynamic :success_message, :failure_message
+
   belongs_to :api_namespace
 
   before_save :mutually_exclude_recaptcha_type, if: -> { self.show_recaptcha && self.show_recaptcha_v3 }
+
+  attr_accessor :api_resource
 
   INPUT_TYPE_MAPPING = {
     free_text: 'text',
@@ -21,7 +27,7 @@ class ApiForm < ApplicationRecord
   def is_field_renderable?(field)
     properties.dig(field.to_s, 'renderable').nil? || properties.dig(field.to_s, 'renderable') == '1'
   end
-
+  
   private
 
   def mutually_exclude_recaptcha_type
