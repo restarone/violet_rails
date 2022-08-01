@@ -1,0 +1,24 @@
+- if flash.present?
+  %div{class: "container position-relative"}
+    %div{class: "flash-container p-3", "aria-label": "polite", "aria-atomic": "true"}
+      - flash.each do |key, value|
+        - if value
+          - show_custom_snippet = strip_tags(value) != value
+          - unless key == 'file_url'
+            - alert_class = key == 'notice' ? 'alert-success' : 'alert-danger'
+            %div{class: "toast alert #{!show_custom_snippet ? alert_class : ''} p-0", role: "alert", "aria-live": "assertive", "aria-atomic": "true"}
+              %div{class: "d-flex justify-content-between"}
+                %div{class: "toast-body"}
+                  - if show_custom_snippet
+                    %div
+                      = value.html_safe
+                  - else
+                    %strong
+                      = value
+                %button{class: "btn-close btn-close-danger toast-close-btn mr-2 bg-transparent border-0", type: "button", "data-dismiss": "toast", "aria-label": "Close"}
+                  %span{"aria-hidden" => "true"}
+                    %i.fa.fa-times
+  %script
+    $('.flash-container .alert').toast({ autohide: false});
+    $(".flash-container .alert").toast('show');
+    $('.flash-container .alert .btn-close').on('click', function() { $(this).closest('.toast').toast('hide') });

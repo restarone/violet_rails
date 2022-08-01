@@ -23,9 +23,13 @@
     <div>
       <%= avatar_tag(forum_post.user) %>
 
-      <strong class="forum-post-user">
-        <%= forum_post.user.name %> <%= forum_user_badge(forum_post.user) %>
-      </strong>
+      <% if forum_post.user.present? %>
+        <strong class="forum-post-user">
+            <%= forum_post.user.name %> <%= forum_user_badge(forum_post.user) %>
+        </strong>
+      <% else %>
+        <small class="text-danger font-weight-bold">User deleted</small>
+      <% end %>
       <small>
         <%= t('commented_on') %>
         <%= link_to forum_post.created_at.strftime("%b %d, %Y"), simple_discussion.forum_thread_path(@forum_thread, anchor: "forum_post_#{forum_post.id}") %>:

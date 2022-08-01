@@ -1,5 +1,6 @@
 class ApiResource < ApplicationRecord
   include JsonbFieldsParsable
+  include JsonbSearch::Searchable
 
   after_initialize :inherit_properties_from_parent
   
