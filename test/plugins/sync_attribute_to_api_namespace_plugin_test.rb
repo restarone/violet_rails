@@ -12,7 +12,6 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
     metadata = {
       'ATTRIBUTE_NAME' => 'new_attribute',
       'DEFAULT_VALUE' => 'test_value',
-      'PLACEHOLDER_VALUE' => 'Enter you new_attribute value here.',
     }
     @sync_attribute_to_api_namespace_plugin.update!(metadata: metadata)
     api_resource = api_resources(:one)
@@ -37,8 +36,8 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
       end
     end
 
-    assert_equal metadata['PLACEHOLDER_VALUE'], @api_namespace.reload.properties['new_attribute']
-    # All api-resources are backfilled with provided 'DEFAULT_VALUE'
+    # The api-namespace and all api-resources are backfilled with provided 'DEFAULT_VALUE'
+    assert_equal metadata['DEFAULT_VALUE'], @api_namespace.reload.properties['new_attribute']
     @api_namespace.reload.api_resources.each do |resource|
       assert_equal metadata['DEFAULT_VALUE'], resource.properties['new_attribute']
     end
@@ -50,7 +49,6 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
   test "adds provided new attribute to api namespace and backfills with empty string to its api-resources if DEFAULT_VALUE was not provided" do
     metadata = {
       'ATTRIBUTE_NAME' => 'new_attribute',
-      'PLACEHOLDER_VALUE' => 'Enter you new_attribute value here.',
     }
     @sync_attribute_to_api_namespace_plugin.update!(metadata: metadata)
     api_resource = api_resources(:one)
@@ -75,49 +73,10 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
       end
     end
 
-    assert_equal metadata['PLACEHOLDER_VALUE'], @api_namespace.reload.properties['new_attribute']
-    # All api-resources are backfilled with provided empty-string: ''
+    # The api-namespace and all api-resources are backfilled with provided empty-string: ''
+    assert_equal '', @api_namespace.reload.properties['new_attribute']
     @api_namespace.api_resources.reload.each do |resource|
       assert_equal '', resource.properties['new_attribute']
-    end
-
-    # The newly added attribute is non-renderable
-    assert_equal '0', @api_form.reload.properties['new_attribute']['renderable']
-  end
-
-  test "adds provided new attribute to api namespace and backfills the default value to its api-resources for array data" do
-    metadata = {
-      'ATTRIBUTE_NAME' => 'new_attribute',
-      'DEFAULT_VALUE' => 'one',
-      'PLACEHOLDER_VALUE' => ['one', 'two'],
-    }
-    @sync_attribute_to_api_namespace_plugin.update!(metadata: metadata)
-    api_resource = api_resources(:one)
-
-    (1..5).each do
-      new_api_resource = api_resource.dup
-      new_api_resource.save!
-    end
-
-    # Initially, the api_namespace and its api-resources does not have the new 'new_attribute'
-    refute_includes @api_namespace.properties.keys, 'new_attribute'
-    @api_namespace.api_resources.each do |resource|
-      refute_includes resource.properties.keys, 'new_attribute'
-    end
-
-    perform_enqueued_jobs do
-      assert_no_difference 'ApiNamespace.count' do
-        assert_no_difference 'ApiResource.count' do
-          @sync_attribute_to_api_namespace_plugin.run
-          Sidekiq::Worker.drain_all
-        end
-      end
-    end
-
-    assert_equal metadata['PLACEHOLDER_VALUE'], @api_namespace.reload.properties['new_attribute']
-    # All api-resources are backfilled with provided empty-string: ''
-    @api_namespace.api_resources.reload.each do |resource|
-      assert_equal 'one', resource.properties['new_attribute']
     end
 
     # The newly added attribute is non-renderable
@@ -128,7 +87,6 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
     metadata = {
       'ATTRIBUTE_NAME' => 'new_attribute',
       'DEFAULT_VALUE'=> 'test_value',
-      'PLACEHOLDER_VALUE' => 'Enter you new_attribute value here.',
     }
     @sync_attribute_to_api_namespace_plugin.update!(metadata: metadata)
     api_resource = api_resources(:one)
@@ -160,8 +118,8 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
       end
     end
 
-    assert_equal metadata['PLACEHOLDER_VALUE'], @api_namespace.reload.properties['new_attribute']
-    # All api-resources that do not have the new-attribute are backfilled
+    # The api-namespace and all api-resources that do not have the new-attribute are backfilled
+    assert_equal 'test_value', @api_namespace.reload.properties['new_attribute']
     @api_namespace.api_resources.reload.where.not(id: new_attribute_existing_resource.id).each do |resource|
       assert_equal 'test_value', resource.properties['new_attribute']
     end
@@ -177,7 +135,6 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
     metadata = {
       'ATTRIBUTE_NAME' => 'new_attribute',
       'DEFAULT_VALUE' => 'test_value',
-      'PLACEHOLDER_VALUE' => 'Enter you new_attribute value here.',
     }
     @sync_attribute_to_api_namespace_plugin.update!(metadata: metadata)
     api_resource = api_resources(:one)
@@ -211,7 +168,6 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
   test "returns error if the ATTRIBUTE_NAME is not provided" do
     metadata = {
       'DEFAULT_VALUE' => 'test_value',
-      'PLACEHOLDER_VALUE' => 'Enter you new_attribute value here.',
     }
     @sync_attribute_to_api_namespace_plugin.update!(metadata: metadata)
     api_resource = api_resources(:one)
@@ -246,7 +202,6 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
     metadata = {
       'ATTRIBUTE_NAME' => 'new_attribute',
       'DEFAULT_VALUE' => false,
-      'PLACEHOLDER_VALUE' => 'Enter you new_attribute value here.',
     }
     @sync_attribute_to_api_namespace_plugin.update!(metadata: metadata)
     api_resource = api_resources(:one)
@@ -271,8 +226,8 @@ class SyncAttributeToApiNamespacePluginTest < ActiveSupport::TestCase
       end
     end
 
-    assert_equal metadata['PLACEHOLDER_VALUE'], @api_namespace.reload.properties['new_attribute']
-    # All api-resources are backfilled with provided 'DEFAULT_VALUE'
+    # The api-namespace and all api-resources are backfilled with provided 'DEFAULT_VALUE'
+    assert_equal metadata['DEFAULT_VALUE'], @api_namespace.reload.properties['new_attribute']
     @api_namespace.reload.api_resources.each do |resource|
       assert_equal metadata['DEFAULT_VALUE'], resource.properties['new_attribute']
     end
