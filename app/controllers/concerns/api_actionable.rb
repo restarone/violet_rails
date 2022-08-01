@@ -81,14 +81,14 @@ module ApiActionable
     if @redirect_action.present?
       redirect_url = @redirect_action.dynamic_url? ? @redirect_action.redirect_url_evaluated : @redirect_action.redirect_url
       if @redirect_action.update!(lifecycle_stage: 'complete', lifecycle_message: redirect_url)
-        redirect_to redirect_url and return
+        redirect_with_js(redirect_url) and return
       else
         @redirect_action.update!(lifecycle_stage: 'failed', lifecycle_message: redirect_url)
         execute_error_actions
       end
     end
 
-    redirect_back(fallback_location: root_path)
+    redirect_back_with_js
   end
 
   def execute_api_actions
@@ -129,7 +129,7 @@ module ApiActionable
 
     if redirect_action
       redirect_action.update(lifecycle_stage: 'complete', lifecycle_message: redirect_action.redirect_url)
-      redirect_to redirect_action.redirect_url and return
+      redirect_with_js(redirect_action.redirect_url) and return
     end
 
     @error_api_actions_exectuted = true
@@ -168,5 +168,19 @@ module ApiActionable
       "api-resource-create",
       { visit_id: current_visit.id, api_resource_id: @api_resource.id, api_namespace_id: @api_namespace.id, user_id: current_user&.id }
     ) if Subdomain.current.tracking_enabled && current_visit
+  end
+
+  def redirect_back_with_js
+    render js: 'location.reload()'
+  end
+
+  def redirect_with_js(url)
+    @redirect_url = url
+    render 'shared/redirect.js.erb'
+  end
+
+  def render_error(error_message)
+    @flash = { error: error_message }
+    render 'shared/error.js.erb'
   end
 end

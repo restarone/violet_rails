@@ -5,7 +5,7 @@
   .card-body
     %h5
       = I18n.t('views.signup_wizard.sign_up.body.title')
-    = form_for @subdomain_request, url: signup_wizard_path(subdomain_request_id: @subdomain_request.slug), method: :put do |f|
+    = form_for @subdomain_request, url: signup_wizard_path(subdomain_request_id: @subdomain_request.slug), method: :put, html: { id: 'signup_form'} do |f|
       .input-group.my-5
         = f.email_field :email, placeholder: 'john@appleseed.com', required: true
       = render partial: 'wizards/errors', locals: { f: f }
@@ -16,3 +16,8 @@
   .card-footer
     .float-left
       = link_to I18n.t('views.signup_wizard.subdomain_name.buttons.previous'), previous_wizard_path(subdomain_request_id: @subdomain_request.slug), class: 'btn btn-sm btn-info'
+
+:javascript
+  window.ctaSuccessHandler = function () {
+    enableForm("#signup_form");
+  }
