@@ -8,4 +8,8 @@ class NonPrimitiveProperty < ApplicationRecord
   has_one_attached :attachment
 
   validates_presence_of :label
+
+  def file_url
+    Rails.application.routes.url_helpers.rails_blob_url(self.attachment, subdomain:  Apartment::Tenant.current, host: ENV['APP_HOST']) if self.file? && self.attachment.attached?
+  end
 end

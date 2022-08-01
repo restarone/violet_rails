@@ -22,7 +22,7 @@ class Api::ResourceController < Api::BaseController
   end
 
   def describe
-    render json: @api_namespace
+    render json: ApiNamespaceSerializer.new(@api_namespace).serializable_hash
   end
 
   def show

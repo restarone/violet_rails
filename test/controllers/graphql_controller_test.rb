@@ -64,6 +64,13 @@ class GraphqlControllerTest < ActionDispatch::IntegrationTest
     assert_equal ["data"], json_response.keys
   end
 
+  test "[if enabled] query public API Namespaces with nested apiResources with non-primitive properties" do
+    query_string = "{ apiNamespaces { id apiResources { id  nonPrimitiveProperties { url mimeType content }} } }"
+    post '/graphql', params: { query: query_string }
+    json_response = JSON.parse(@response.body)
+    assert_equal ["data"], json_response.keys
+  end
+
   test "[if enabled] query public API Namespaces with nested apiResources with searching by properties" do
     query_string = "{ apiNamespaces { id apiResources(properties: { name: { value: \"violet\", option: \"PARTIAL\" } }) { id } } }"
     post '/graphql', params: { query: query_string }
