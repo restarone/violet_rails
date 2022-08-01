@@ -101,4 +101,15 @@ services:
       RAILS_ENV: test
     depends_on:
       - solutions_db
+      - solutions_app
+  nginx:
+    build:
+      context: .
+      dockerfile: ./nginx.Dockerfile
+    depends_on:
+      - solutions_app
+    ports:
+      - 80:80
+    networks:
+      - development
       
