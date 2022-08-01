@@ -89,11 +89,11 @@
           %p
             Payload (this)
           %pre
-            = "query: { apiNamespaces(slug: \"#{@api_namespace.slug.camelize(:lower)}\") { id } }"
+            = "query: { apiNamespaces(slug: \"#{@api_namespace.slug}\") { id } }"
           %p
             Payload (this + children)
           %pre
-            = "query: { apiNamespaces(slug: \"#{@api_namespace.slug.camelize(:lower)}\") { id apiResources { id } } }"
+            = "query: { apiNamespaces(slug: \"#{@api_namespace.slug}\") { id apiResources { id } } }"
           %p
             Payload (global)
           %pre

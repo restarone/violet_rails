@@ -18,7 +18,7 @@ class Api::ResourceController < Api::BaseController
   end
 
   def describe
-    render json: @api_namespace
+    render json: @api_namespace, include: :non_primitive_properties
   end
 
   def show
