@@ -683,8 +683,8 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       end
     end
   
-    assert_response :redirect
-    assert_redirected_to '/'
+    assert_response :success
+    assert_equal "location.reload()", response.parsed_body
   end
   
   test 'tracking diabled: should not track current vist and current user after create' do
