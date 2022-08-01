@@ -28,7 +28,7 @@ class ResourceController < ApplicationController
       execute_api_actions
     else
       execute_error_actions
-      render_error(@api_namespace.api_form&.failure_message)
+      render_error(@api_namespace.api_form&.failure_message_evaluated) if @api_namespace.api_form&.failure_message&.present?
     end
   end
 

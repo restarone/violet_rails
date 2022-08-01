@@ -76,8 +76,6 @@ module ApiActionable
   end
 
   def handle_redirection
-    flash[:notice] = 'Api resource was successfully updated.' unless @api_namespace.api_form.success_message.present?
-
     if @redirect_action.present?
       redirect_url = @redirect_action.dynamic_url? ? @redirect_action.redirect_url_evaluated : @redirect_action.redirect_url
       if @redirect_action.update!(lifecycle_stage: 'complete', lifecycle_message: redirect_url)
@@ -108,7 +106,7 @@ module ApiActionable
       end
     end if api_actions.present?
 
-    flash[:notice] = @api_namespace.api_form.success_message if @api_namespace.api_form.success_message.present?
+    flash[:notice] = @api_resource.api_namespace.api_form.success_message_evaluated if @api_namespace.api_form&.success_message&.present?
   end
 
   def handle_error(e)
