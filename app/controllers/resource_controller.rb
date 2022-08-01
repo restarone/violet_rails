@@ -5,7 +5,8 @@ class ResourceController < ApplicationController
 
   def create
     @api_resource = @api_namespace.api_resources.new(resource_params)
-    if @api_namespace&.api_form&.show_recaptcha
+    if @api_namespace&.api_form&.show_recaptcha || session[:recaptcha_v2_fallback]
+      session.delete(:recaptcha_v2_fallback) if session[:recaptcha_v2_fallback]
       if verify_recaptcha(model: @api_resource) && @api_resource.save
         load_api_actions_from_api_resource
         execute_api_actions
@@ -18,8 +19,9 @@ class ResourceController < ApplicationController
         load_api_actions_from_api_resource
         execute_api_actions
       else
+        session[:recaptcha_v2_fallback] = true if recaptcha_reply && recaptcha_reply['score'].to_f < ApiForm::RECAPTCHA_V3_MINIMUM_SCORE
         execute_error_actions
-        render_error(@api_resource.errors.full_messages.to_sentence)
+        render_fallback_to_recaptcha_v2_with_error_message(@api_resource.errors.full_messages.to_sentence)
       end
     elsif @api_resource.save
       load_api_actions_from_api_resource
