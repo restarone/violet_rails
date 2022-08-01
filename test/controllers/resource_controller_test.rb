@@ -21,7 +21,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
         assert_difference "ApiActionMailer.deliveries.size", +1 do
           perform_enqueued_jobs do
             post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id, params: payload)
-            assert_response :redirect
+            assert_response :success
           end
         end
       end
@@ -55,7 +55,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       assert_difference "NonPrimitiveProperty.count", +2 do
         assert_difference "ActiveStorage::Attachment.count", +1 do
           post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
-          assert_response :redirect
+          assert_response :success
         end
       end
     end
@@ -73,7 +73,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     }
     assert_difference "@api_namespace.api_resources.count", +1 do
       post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
-      assert_response :redirect
+      assert_response :success
     end
   end
 
@@ -91,7 +91,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     Recaptcha.configuration.skip_verify_env.delete("test")
     assert_difference "@api_namespace.api_resources.count", +0 do
       post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
-      assert_response :redirect
+      assert_response :success
     end
 
     Recaptcha.configuration.skip_verify_env.push("test")
@@ -109,7 +109,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     }
     assert_difference "@api_namespace.api_resources.count", +1 do
       post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
-      assert_response :redirect
+      assert_response :success
     end
   end
 
@@ -123,15 +123,17 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
           }
       }
     }
-    # Recaptcha is disabled for test env by deafult
-    Recaptcha.configuration.skip_verify_env.delete("test")
-    assert_difference "@api_namespace.api_resources.count", +0 do
-      post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
-      assert_response :redirect
-      assert_match "reCAPTCHA verification failed, please try again.", flash[:error]
-    end
 
-    Recaptcha.configuration.skip_verify_env.push("test")
+    ResourceController.any_instance.stubs(:verify_recaptcha).returns(false) do
+      ResourceController.any_instance.stubs(:recaptcha_reply).returns({success: 'false', score: 0.1}) do
+        assert_difference "@api_namespace.api_resources.count", +0 do
+          post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
+          assert_response :success
+    
+          assert_match "reCAPTCHA verification failed, please try again.", response.parsed_body
+        end
+      end
+    end
   end
 
   test 'should not allow #create if required properties is missing' do
@@ -247,8 +249,8 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert_response :redirect
-    assert_redirected_to api_namespaces_path
+    assert_response :success
+    assert_equal "window.location.replace('#{api_namespaces_path}')", response.parsed_body
     # The evaluated value is saved as lifecycle_message
     assert_equal api_namespaces_path, @controller.view_assigns['redirect_action'].lifecycle_message
   end
@@ -273,8 +275,8 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert_response :redirect
-    assert_redirected_to url
+    assert_response :success
+    assert_equal "window.location.replace('#{url}')", response.parsed_body
     # The evaluated value is not saved as lifecycle_message
     assert_equal url, @controller.view_assigns['redirect_action'].lifecycle_message
   end
@@ -301,8 +303,8 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert_response :redirect
-    assert_redirected_to cms_page.full_path
+    assert_response :success
+    assert_equal "window.location.replace('#{cms_page.full_path}')", response.parsed_body 
     assert_equal cms_page.full_path, @controller.view_assigns['redirect_action'].lifecycle_message
   end
 
@@ -345,6 +347,41 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     refute flash[:error]
   end
 
+  test 'success_message: should support erb syntax' do
+    api_namespace = api_namespaces(:one)
+    api_namespace.api_form.update(success_message: "<div class=\"custom-class\">test success message <%= api_namespace.id %></div>")
+
+    payload = {
+      data: {
+          properties: {
+            name: 123,
+          }
+      }
+    }
+    post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+
+    assert_response :success
+    assert_equal "<div class=\"custom-class\">test success message #{api_namespace.id}</div>", flash[:notice]
+  end
+
+  test 'success_message: should support string interpolation syntax' do
+    api_namespace = api_namespaces(:one)
+    api_namespace.api_form.update(success_message: "<div class=\"custom-class\">test success message \#{api_namespace.id}</div>")
+
+    payload = {
+      data: {
+          properties: {
+            name: 123,
+          }
+      }
+    }
+
+    post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+
+    assert_response :success
+    assert_equal "<div class=\"custom-class\">test success message #{api_namespace.id}</div>", flash[:notice]
+  end
+
   test 'should deny #create and show the custom failure message' do
     api_namespace = api_namespaces(:one)
     api_namespace.api_form.update(failure_message: 'test failure message', properties: { 'name': {'label': 'name', 'placeholder': 'Name', 'field_type': 'input', 'required': '1' } })
@@ -359,8 +396,12 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
     end
 
-    assert_equal 'test failure message', flash[:error]
-    refute flash[:notice]
+    assert_match 'test failure message', response.parsed_body
+    refute_equal 301, response.status
+    assert_response :success
+
+
+    refute_match 'window.location.replace', response.parsed_body
   end
 
   test 'should deny #create and show the custom failure message even if no redirect action is defined' do
@@ -379,8 +420,112 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
     end
 
-    assert_equal 'test failure message', flash[:error]
+    assert_match 'test failure message', response.parsed_body
     refute flash[:notice]
+  end
+
+  test 'should show default toast if failure message does not contain html tags' do
+    api_namespace = api_namespaces(:one)
+    api_namespace.api_form.update(failure_message: 'test failure message', properties: { 'name': {'label': 'name', 'placeholder': 'Name', 'field_type': 'input', 'required': '1' } })
+
+    payload = {
+      data: {
+          properties: {
+            name: '',
+          }
+      }
+    }
+    assert_no_difference "api_namespace.api_resources.count" do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+
+    assert_match 'test failure message', response.parsed_body
+
+    # only default toasts have these class names 
+    assert_match 'alert-danger', response.parsed_body
+  end
+
+  test 'should not contain default toast class name if failure message contains html tags' do
+    api_namespace = api_namespaces(:one)
+    api_namespace.api_form.update(failure_message: '<div class="custom-class">test failure message</div>', properties: { 'name': {'label': 'name', 'placeholder': 'Name', 'field_type': 'input', 'required': '1' } })
+
+    payload = {
+      data: {
+          properties: {
+            name: '',
+          }
+      }
+    }
+    assert_no_difference "api_namespace.api_resources.count" do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+
+    assert_response :success
+    assert_match 'custom-class', response.parsed_body
+    assert_match 'test failure message', response.parsed_body
+
+    # only default toasts have these class names 
+    refute_match 'alert-danger', response.parsed_body
+    refute_match 'alert-success', response.parsed_body
+  end
+
+  test 'should support erb syntax' do
+    api_namespace = api_namespaces(:one)
+    api_namespace.api_form.update(failure_message: "<div class=\"custom-class\">test failure message <%= api_namespace.id %></div>", properties: { 'name': {'label': 'name', 'placeholder': 'Name', 'field_type': 'input', 'required': '1' } })
+
+    payload = {
+      data: {
+          properties: {
+            name: '',
+          }
+      }
+    }
+    assert_no_difference "api_namespace.api_resources.count" do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+
+    assert_response :success
+    assert_match "<div class=\\\"custom-class\\\">test failure message #{api_namespace.id}<\\/div>", response.parsed_body
+  end
+
+  test 'should not assume erb syntax as html tag' do
+    api_namespace = api_namespaces(:one)
+    api_namespace.api_form.update(failure_message: "test failure message <%= api_namespace.id %>", properties: { 'name': {'label': 'name', 'placeholder': 'Name', 'field_type': 'input', 'required': '1' } })
+
+    payload = {
+      data: {
+          properties: {
+            name: '',
+          }
+      }
+    }
+    assert_no_difference "api_namespace.api_resources.count" do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+
+    assert_response :success
+    # only default toasts have these class names 
+    assert_match 'alert-danger', response.parsed_body
+    assert_match "test failure message #{api_namespace.id}", response.parsed_body
+  end
+
+  test 'should support string interpolation syntax' do
+    api_namespace = api_namespaces(:one)
+    api_namespace.api_form.update(failure_message: "<div class=\"custom-class\">test failure message \#{api_namespace.id}</div>", properties: { 'name': {'label': 'name', 'placeholder': 'Name', 'field_type': 'input', 'required': '1' } })
+
+    payload = {
+      data: {
+          properties: {
+            name: '',
+          }
+      }
+    }
+    assert_no_difference "api_namespace.api_resources.count" do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+
+    assert_response :success
+    assert_match "<div class=\\\"custom-class\\\">test failure message #{api_namespace.id}<\\/div>", response.parsed_body
   end
 
   test 'should allow #create and the api_actions should be fetched of the api_resource instead of api_namespace' do
@@ -396,7 +541,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     assert_difference "@api_namespace.api_resources.count", +1 do
       assert_difference "@api_namespace.executed_api_actions.count", actions_count do
         post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id, params: payload)
-        assert_response :redirect
+        assert_response :success
       end
     end
 
@@ -576,7 +721,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert_redirected_to redirect_action.redirect_url
+    assert_equal "window.location.replace('#{redirect_action.redirect_url}')", response.parsed_body
 
     api_resource = @controller.view_assigns['api_resource']
     # The different triggered actions should be completed
@@ -650,7 +795,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert_redirected_to redirect_action.redirect_url
+    assert_equal "window.location.replace('#{redirect_action.redirect_url}')", response.parsed_body
 
     api_resource = @controller.view_assigns['api_resource']
 

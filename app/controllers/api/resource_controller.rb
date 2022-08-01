@@ -5,7 +5,11 @@ class Api::ResourceController < Api::BaseController
   before_action :validate_payload, only: [:create, :update]
 
   def index
-    render json: ApiResourceSerializer.new(@api_namespace.api_resources.order(updated_at: :desc)).serializable_hash
+    response = @api_namespace.api_resources
+
+    response = response.jsonb_search(:properties, search_params.to_hash) if params[:properties]
+    
+    render json: ApiResourceSerializer.new(response.order(updated_at: :desc)).serializable_hash
   end
 
   def query
@@ -18,7 +22,7 @@ class Api::ResourceController < Api::BaseController
   end
 
   def describe
-    render json: @api_namespace
+    render json: ApiNamespaceSerializer.new(@api_namespace).serializable_hash
   end
 
   def show
@@ -82,5 +86,9 @@ class Api::ResourceController < Api::BaseController
 
   def resource_params
     params.permit(data: {})
+  end
+
+  def search_params
+    params.require(:properties).permit!
   end
 end

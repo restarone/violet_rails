@@ -4,7 +4,29 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
   setup do
     @api_namespace = api_namespaces(:one)
     @users_namespace = api_namespaces(:users)
+
+    @api_resource_1 = ApiResource.create(api_namespace_id: @api_namespace.id, properties: { 
+        name: 'John Doe',
+        age: 35,
+        interests: ['software', 'web', 'games'],
+        object: { foo: 'bar', baz: { a: 'b' } }
+      })
+
+    @api_resource_2 = ApiResource.create(api_namespace_id: @api_namespace.id, properties: { 
+        name: 'Jack D',
+        age: 90,
+        interests: ['movies'],
+        object: { x: 'y', z: 'a'}
+      })
+
+    @api_resource_3 = ApiResource.create(api_namespace_id: @api_namespace.id, properties: { 
+        name: 'John Cena',
+        age: 50,
+        interests: ['random', 'text'],
+        object: {}
+      })
   end
+
   test 'describe resource name and version: get #index as json' do
     get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), as: :json
     assert_response :success
@@ -28,14 +50,14 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
 
   test 'describes resource' do
     get api_describe_url(version: @users_namespace.version, api_namespace: @users_namespace.slug)
-    assert_equal response.parsed_body.symbolize_keys.keys.sort, [:created_at, :id, :name, :namespace_type, :properties, :requires_authentication, :slug, :updated_at, :version].sort 
+    assert_equal response.parsed_body['data']['attributes'].symbolize_keys.keys.sort, [:created_at, :id, :name, :namespace_type, :properties, :requires_authentication, :slug, :updated_at, :version, :non_primitive_properties].sort 
   end
 
   test 'index users resource' do
     get api_url(version: @users_namespace.version, api_namespace: @users_namespace.slug), as: :json
     sample_user = response.parsed_body['data'][0]['attributes'].symbolize_keys!
     assert_equal(
-      [:id, :created_at, :properties, :updated_at].sort,
+      [:id, :created_at, :non_primitive_properties, :properties, :updated_at].sort,
       sample_user.keys.sort
     )
     assert_equal sample_user[:properties].symbolize_keys!.keys.sort, api_resources(:user).properties.symbolize_keys!.keys.sort
@@ -49,7 +71,7 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
     post api_query_url(version: @users_namespace.version, api_namespace: @users_namespace.slug, params: payload)
     sample_user = response.parsed_body["data"][0]["attributes"].symbolize_keys!
     assert_equal(
-      [:id, :created_at, :properties, :updated_at].sort,
+      [:id, :created_at, :non_primitive_properties, :properties, :updated_at].sort,
       sample_user.keys.sort
     )
     assert_equal sample_user[:properties].symbolize_keys!.keys.sort, api_resources(:user).properties.symbolize_keys!.keys.sort
@@ -57,7 +79,7 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
 
   test '#show users resource' do
     get api_show_resource_url(version: @users_namespace.version, api_namespace: @users_namespace.slug, api_resource_id: @users_namespace.api_resources.first.id)
-    assert_equal response.parsed_body["data"]["attributes"].symbolize_keys.keys.sort, [:id, :created_at, :updated_at, :properties].sort
+    assert_equal response.parsed_body["data"]["attributes"].symbolize_keys.keys.sort, [:id, :created_at, :updated_at, :non_primitive_properties, :properties].sort
     assert_response :success
   end
 
@@ -172,5 +194,274 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
 
     delete api_destroy_resource_url(version: @users_namespace.version, api_namespace: @users_namespace.slug, api_resource_id: 42), headers: { 'Authorization': "Bearer #{api_client.bearer_token}" }
     assert_equal response.parsed_body["code"], 404
+  end
+
+  test '#index search jsonb field - string - simple query - exact' do
+    payload = { 
+      properties: { 
+        name: @api_resource_1.properties['name'] 
+      }
+    }
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+    assert_response :success
+
+    assert_equal response.parsed_body["data"].pluck("id"), [@api_resource_1.id.to_s]
+  end
+
+  test '#index search jsonb field - string - simple query - exact (unhappy)' do
+    payload = { 
+      properties: { 
+        name: @api_resource_1.properties['name'].split(' ')[0] 
+      }
+    }
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+    assert_response :success
+
+    assert_empty response.parsed_body["data"]
+  end
+
+  test '#index search jsonb field - string - extened query - exact' do
+    payload = { 
+      properties: { 
+        name: { 
+          value: @api_resource_1.properties['name'],
+          option: 'EXACT'
+        }
+      }
+    }
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+    assert_response :success
+
+    assert_equal response.parsed_body["data"].pluck("id"), [@api_resource_1.id.to_s]
+  end
+
+  test '#index search jsonb field - string - extened query - exact - case insensitive' do
+    payload = { 
+      properties: { 
+        name: { 
+          value: @api_resource_1.properties['name'].downcase,
+          option: 'EXACT'
+        }
+      }
+    }
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+    assert_response :success
+
+    assert_equal response.parsed_body["data"].pluck("id"), [@api_resource_1.id.to_s]
+  end
+
+  test '#index search jsonb field - string - partial' do
+    payload = { 
+      properties: { 
+        name: { 
+          value: 'john',
+          option: 'PARTIAL'
+        }
+      }
+    }
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+    assert_response :success
+
+    assert_equal response.parsed_body["data"].pluck("id").map(&:to_i).sort, [@api_resource_1.id, @api_resource_3.id].sort
+  end
+
+  test '#index search jsonb field - string - partial (unhappy)' do
+    payload = { 
+      properties: { 
+        name: { 
+          value: 'not a name',
+          option: 'PARTIAL'
+        }
+      }
+    }
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+    assert_response :success
+
+    assert_empty response.parsed_body["data"]
+  end
+
+  test '#index search jsonb field - nested string' do
+    payload = { 
+      properties: { 
+        object: { 
+          foo: 'bar'
+        }
+      }
+    }
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+    assert_response :success
+
+    assert_equal response.parsed_body["data"].pluck("id").map(&:to_i).sort, [@api_resource_1.id].sort
+
+    payload = { 
+      properties: { 
+        object: { 
+          x: 'y',
+          z: 'a'
+        }
+      }
+    }
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+    assert_response :success
+
+    assert_equal response.parsed_body["data"].pluck("id").map(&:to_i).sort, [@api_resource_2.id].sort
+  end
+
+  test '#index search jsonb field - nested string (two level) - partial' do
+    payload = { 
+        properties: { 
+          object: { 
+            baz: {
+              a: 'b'
+            }
+          }
+        }
+      }
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+    assert_response :success
+
+    assert_equal response.parsed_body["data"].pluck("id").map(&:to_i).sort, [@api_resource_1.id].sort
+  end
+
+  test '#index search jsonb field - integer' do
+    payload = { 
+        properties: { 
+          age: 35
+        }
+      }
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+    assert_response :success
+
+    assert_equal response.parsed_body["data"].pluck("id").map(&:to_i).sort, [@api_resource_1.id].sort
+  end
+
+  test '#index search jsonb field - integer (unhappy path)' do
+    payload = { 
+        properties: { 
+          age: 800
+        }
+      }
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+    assert_response :success
+
+    assert_empty response.parsed_body["data"]
+  end
+
+  test '#index search jsonb field - hash - exact match' do
+    payload = { 
+        properties: { 
+          object: {
+            value: { x: 'y', z: 'a'},
+            option: 'EXACT'
+          }
+        }
+      }
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+    assert_response :success
+
+    assert_equal response.parsed_body["data"].pluck("id").map(&:to_i).sort, [@api_resource_2.id].sort
+  end
+
+  test '#index search jsonb field - hash - exact match(unhappy path)' do
+    payload = { 
+        properties: { 
+          object: {
+            value: { x: 'y'},
+            option: 'EXACT'
+          }
+        }
+      }
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+
+    assert_response :success
+    assert_empty response.parsed_body["data"]
+  end
+
+  test '#index search jsonb field - hash - partial match' do
+    payload = { 
+        properties: { 
+          object: {
+            value: { x: 'y' },
+            option: 'PARTIAL'
+          }
+        }
+      }
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+    assert_response :success
+
+    assert_equal response.parsed_body["data"].pluck("id").map(&:to_i).sort, [@api_resource_2.id].sort
+  end
+
+  test '#index search jsonb field - array - exact match' do
+    payload = { 
+        properties: { 
+          interests: ['software', 'web', 'games']
+        }
+      }
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+
+    assert_equal response.parsed_body["data"].pluck("id").map(&:to_i).sort, [@api_resource_1.id].sort
+
+    # array match should be independent of order 
+    payload = { 
+        properties: { 
+          interests: [ 'web', 'software', 'games']
+        }
+      }
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+
+    assert_equal response.parsed_body["data"].pluck("id").map(&:to_i).sort, [@api_resource_1.id].sort
+
+    # extended query
+    payload = { 
+        properties: { 
+          interests: { 
+            value:[ 'web', 'software', 'games'],
+            option: 'EXACT'
+          }
+        }
+      }
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+  
+    assert_equal response.parsed_body["data"].pluck("id").map(&:to_i).sort, [@api_resource_1.id].sort
+  end
+
+  test '#index search jsonb field - array - exact match (unhappy)' do
+    payload = { 
+        properties: { 
+          interests: [ 'web', 'software']
+        }
+      }
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+
+    assert_empty response.parsed_body["data"]
+  end
+
+  test '#index search jsonb field - array - partial match' do
+    payload = { 
+        properties: { 
+          interests: {
+            value: [ 'web', 'software'],
+            option: 'PARTIAL'
+          }
+        }
+      }
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+
+    assert_equal response.parsed_body["data"].pluck("id").map(&:to_i).sort, [@api_resource_1.id].sort
+  end
+
+  test '#index search jsonb field - array - partial match (unhappy)' do
+    payload = { 
+        properties: { 
+          interests: {
+            value: [ 'web', 'not a member'],
+            option: 'PARTIAL'
+          }
+        }
+      }
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+
+    assert_empty response.parsed_body["data"]
   end
 end
