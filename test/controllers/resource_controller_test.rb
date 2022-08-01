@@ -346,6 +346,41 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     refute flash[:error]
   end
 
+  test 'success_message: should support erb syntax' do
+    api_namespace = api_namespaces(:one)
+    api_namespace.api_form.update(success_message: "<div class=\"custom-class\">test success message <%= api_namespace.id %></div>")
+
+    payload = {
+      data: {
+          properties: {
+            name: 123,
+          }
+      }
+    }
+    post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+
+    assert_response :success
+    assert_equal "<div class=\"custom-class\">test success message #{api_namespace.id}</div>", flash[:notice]
+  end
+
+  test 'success_message: should support string interpolation syntax' do
+    api_namespace = api_namespaces(:one)
+    api_namespace.api_form.update(success_message: "<div class=\"custom-class\">test success message \#{api_namespace.id}</div>")
+
+    payload = {
+      data: {
+          properties: {
+            name: 123,
+          }
+      }
+    }
+
+    post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+
+    assert_response :success
+    assert_equal "<div class=\"custom-class\">test success message #{api_namespace.id}</div>", flash[:notice]
+  end
+
   test 'should deny #create and show the custom failure message' do
     api_namespace = api_namespaces(:one)
     api_namespace.api_form.update(failure_message: 'test failure message', properties: { 'name': {'label': 'name', 'placeholder': 'Name', 'field_type': 'input', 'required': '1' } })
@@ -386,6 +421,110 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
 
     assert_match 'test failure message', response.parsed_body
     refute flash[:notice]
+  end
+
+  test 'should show default toast if failure message does not contain html tags' do
+    api_namespace = api_namespaces(:one)
+    api_namespace.api_form.update(failure_message: 'test failure message', properties: { 'name': {'label': 'name', 'placeholder': 'Name', 'field_type': 'input', 'required': '1' } })
+
+    payload = {
+      data: {
+          properties: {
+            name: '',
+          }
+      }
+    }
+    assert_no_difference "api_namespace.api_resources.count" do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+
+    assert_match 'test failure message', response.parsed_body
+
+    # only default toasts have these class names 
+    assert_match 'alert-danger', response.parsed_body
+  end
+
+  test 'should not contain default toast class name if failure message contains html tags' do
+    api_namespace = api_namespaces(:one)
+    api_namespace.api_form.update(failure_message: '<div class="custom-class">test failure message</div>', properties: { 'name': {'label': 'name', 'placeholder': 'Name', 'field_type': 'input', 'required': '1' } })
+
+    payload = {
+      data: {
+          properties: {
+            name: '',
+          }
+      }
+    }
+    assert_no_difference "api_namespace.api_resources.count" do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+
+    assert_response :success
+    assert_match 'custom-class', response.parsed_body
+    assert_match 'test failure message', response.parsed_body
+
+    # only default toasts have these class names 
+    refute_match 'alert-danger', response.parsed_body
+    refute_match 'alert-success', response.parsed_body
+  end
+
+  test 'should support erb syntax' do
+    api_namespace = api_namespaces(:one)
+    api_namespace.api_form.update(failure_message: "<div class=\"custom-class\">test failure message <%= api_namespace.id %></div>", properties: { 'name': {'label': 'name', 'placeholder': 'Name', 'field_type': 'input', 'required': '1' } })
+
+    payload = {
+      data: {
+          properties: {
+            name: '',
+          }
+      }
+    }
+    assert_no_difference "api_namespace.api_resources.count" do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+
+    assert_response :success
+    assert_match "<div class=\\\"custom-class\\\">test failure message #{api_namespace.id}<\\/div>", response.parsed_body
+  end
+
+  test 'should not assume erb syntax as html tag' do
+    api_namespace = api_namespaces(:one)
+    api_namespace.api_form.update(failure_message: "test failure message <%= api_namespace.id %>", properties: { 'name': {'label': 'name', 'placeholder': 'Name', 'field_type': 'input', 'required': '1' } })
+
+    payload = {
+      data: {
+          properties: {
+            name: '',
+          }
+      }
+    }
+    assert_no_difference "api_namespace.api_resources.count" do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+
+    assert_response :success
+    # only default toasts have these class names 
+    assert_match 'alert-danger', response.parsed_body
+    assert_match "test failure message #{api_namespace.id}", response.parsed_body
+  end
+
+  test 'should support string interpolation syntax' do
+    api_namespace = api_namespaces(:one)
+    api_namespace.api_form.update(failure_message: "<div class=\"custom-class\">test failure message \#{api_namespace.id}</div>", properties: { 'name': {'label': 'name', 'placeholder': 'Name', 'field_type': 'input', 'required': '1' } })
+
+    payload = {
+      data: {
+          properties: {
+            name: '',
+          }
+      }
+    }
+    assert_no_difference "api_namespace.api_resources.count" do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+
+    assert_response :success
+    assert_match "<div class=\\\"custom-class\\\">test failure message #{api_namespace.id}<\\/div>", response.parsed_body
   end
 
   test 'should allow #create and the api_actions should be fetched of the api_resource instead of api_namespace' do
