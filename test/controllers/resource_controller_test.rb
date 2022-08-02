@@ -109,8 +109,11 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     }
     # Recaptcha is disabled for test env by deafult
     Recaptcha.configuration.skip_verify_env.delete("test")
-    ENV['RECAPTCHA_SITE_KEY'] = '6Lc6BAAAAAAAAChqRbQZcn_yyyyyyyyyyyyyyyyy'
-    ENV['RECAPTCHA_SECRET_KEY'] = '6Lc6BAAAAAAAAKN3DRm6VA_xxxxxxxxxxxxxxxxx'
+    Recaptcha.configure do |config|
+      config.site_key   = 'test'
+      config.secret_key = 'test'
+    end
+  
     assert_difference "@api_namespace.api_resources.count", +0 do
       post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
       assert_response :success
