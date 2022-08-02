@@ -97,6 +97,29 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     Recaptcha.configuration.skip_verify_env.push("test")
   end
 
+  test 'should rerender recaptcha with flash message when recaptcha verification failed' do
+    @api_namespace.api_form.update(show_recaptcha: true)
+    payload = {
+      data: {
+          properties: {
+            first_name: 'Don',
+            last_name: 'Restarone'
+          }
+      }
+    }
+    # Recaptcha is disabled for test env by deafult
+    Recaptcha.configuration.skip_verify_env.delete("test")
+    assert_difference "@api_namespace.api_resources.count", +0 do
+      post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
+      assert_response :success
+    end
+
+    assert_match "<script src=\"https://www.recaptcha.net/recaptcha/api.js\" async defer ></script>", response.parsed_body
+    assert_match "reCAPTCHA verification failed, please try again.", response.parsed_body
+
+    Recaptcha.configuration.skip_verify_env.push("test")
+  end
+
   test 'should allow #create when recaptcha-v3 is enabled and recaptcha is verified' do
     @api_namespace.api_form.update(show_recaptcha_v3: true)
     payload = {

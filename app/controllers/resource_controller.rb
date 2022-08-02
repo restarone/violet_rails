@@ -12,7 +12,7 @@ class ResourceController < ApplicationController
         execute_api_actions
       else
         execute_error_actions
-        render_error(@api_resource.errors.full_messages.to_sentence)
+        render_recaptcha_with_error(@api_resource.errors.full_messages.to_sentence)
       end
     elsif @api_namespace&.api_form&.show_recaptcha_v3
       if verify_recaptcha(model: @api_resource, action: helpers.sanitize_recaptcha_action_name(@api_namespace.name), minimum_score: ApiForm::RECAPTCHA_V3_MINIMUM_SCORE, secret_key: ENV['RECAPTCHA_SECRET_KEY_V3']) && @api_resource.save
