@@ -94,9 +94,6 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       assert_response :success
     end
 
-    assert_match "<script src=\"https://www.recaptcha.net/recaptcha/api.js\" async defer ></script>", response.parsed_body
-    assert_match "reCAPTCHA verification failed, please try again.", response.parsed_body
-
     Recaptcha.configuration.skip_verify_env.push("test")
   end
 
