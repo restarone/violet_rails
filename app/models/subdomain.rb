@@ -87,7 +87,7 @@ class Subdomain < ApplicationRecord
   end
 
   def hostname
-    "#{self.name}.#{ENV['APP_HOST']}"
+    self.name == Subdomain::ROOT_DOMAIN_NAME ? ENV['APP_HOST'] : "#{self.name}.#{ENV['APP_HOST']}"
   end
 
   def db_configuration
