@@ -77,7 +77,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'should not allow #create when recaptcha is enabled and recaptcha verification failed' do
+  test 'should not allow #create when recaptcha is enabled and rerender recaptcha if recaptcha verification failed' do
     @api_namespace.api_form.update(show_recaptcha: true)
     payload = {
       data: {
@@ -89,31 +89,6 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     }
     # Recaptcha is disabled for test env by deafult
     Recaptcha.configuration.skip_verify_env.delete("test")
-    assert_difference "@api_namespace.api_resources.count", +0 do
-      post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
-      assert_response :success
-    end
-
-    Recaptcha.configuration.skip_verify_env.push("test")
-  end
-
-  test 'should rerender recaptcha with flash message when recaptcha verification failed' do
-    @api_namespace.api_form.update(show_recaptcha: true)
-    payload = {
-      data: {
-          properties: {
-            first_name: 'Don',
-            last_name: 'Restarone'
-          }
-      }
-    }
-    # Recaptcha is disabled for test env by deafult
-    Recaptcha.configuration.skip_verify_env.delete("test")
-    Recaptcha.configure do |config|
-      config.site_key   = 'test'
-      config.secret_key = 'test'
-    end
-  
     assert_difference "@api_namespace.api_resources.count", +0 do
       post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
       assert_response :success
