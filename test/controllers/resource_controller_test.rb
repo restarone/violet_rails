@@ -77,7 +77,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'should not allow #create when recaptcha is enabled and rerender recaptcha if recaptcha verification failed' do
+  test 'should not allow #create when recaptcha is enabled and reset recaptcha if recaptcha verification failed' do
     @api_namespace.api_form.update(show_recaptcha: true)
     payload = {
       data: {
@@ -93,8 +93,9 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
       assert_response :success
     end
+    byebug
 
-    assert_match "<script src=\"https://www.recaptcha.net/recaptcha/api.js\" async defer ></script>", response.parsed_body
+    assert_match "if (window.grecaptcha) grecaptcha.reset();", response.parsed_body
     assert_match "reCAPTCHA verification failed, please try again.", response.parsed_body
 
     Recaptcha.configuration.skip_verify_env.push("test")
