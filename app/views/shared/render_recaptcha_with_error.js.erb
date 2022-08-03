@@ -1,2 +1,0 @@
-$("#recaptcha_section_<%= @api_namespace.id %>").html('<%= recaptcha_tags(callback: "ctaSuccessHandler_#{@api_namespace.id}").gsub(/\n/, '').html_safe %>');
-$("#flash").html("<%= j render(partial: 'shared/flash_content', locals: { flash: @flash }) %>");
