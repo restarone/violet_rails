@@ -93,7 +93,6 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
       assert_response :success
     end
-    byebug
 
     assert_match "if (window.grecaptcha) grecaptcha.reset();", response.parsed_body
     assert_match "reCAPTCHA verification failed, please try again.", response.parsed_body
