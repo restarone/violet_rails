@@ -110,6 +110,27 @@
         color: var(--color-blue);
       }
 
+
+      /* Links */
+
+      .link--btn,
+      .link--btn:hover,
+      .link--btn:visited,
+      .link--btn:active {
+        color: #fff;
+        text-decoration: none;
+      }
+
+      .link--btn {
+        padding: 1.7rem 2.5rem;
+        margin-bottom: 3rem;
+        border-radius: 5px;
+        background-image: var(--violet-rails-gradient);
+        font-weight: bold;
+      }
+
+
+
       /* Utilities */
 
       .decoration-none {
@@ -131,8 +152,9 @@
           id="btn-retry"
           style="margin-bottom: 3rem"
         >
-          CLICK HERE TO RETRY
+          Retry
         </button>
+        <a class="link--btn" href="/">BACK TO SAFETY</a>
         <a
           href="mailto:contact@restarone.com"
           class="link--text decoration-none"
