@@ -1,67 +1,140 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>The page you were looking for doesn't exist (404)</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <style>
-  .rails-default-error-page {
-    background-color: #EFEFEF;
-    color: #2E2F30;
-    text-align: center;
-    font-family: arial, sans-serif;
-    margin: 0;
-  }
+  <head>
+    <title>The page you were looking for doesn't exist (404)</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@800&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Karla:wght@400;700;800&family=Orbitron:wght@800&display=swap");
 
-  .rails-default-error-page div.dialog {
-    width: 95%;
-    max-width: 33em;
-    margin: 4em auto 0;
-  }
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: inherit;
+      }
 
-  .rails-default-error-page div.dialog > div {
-    border: 1px solid #CCC;
-    border-right-color: #999;
-    border-left-color: #999;
-    border-bottom-color: #BBB;
-    border-top: #B00100 solid 4px;
-    border-top-left-radius: 9px;
-    border-top-right-radius: 9px;
-    background-color: white;
-    padding: 7px 12% 0;
-    box-shadow: 0 3px 8px rgba(50, 50, 50, 0.17);
-  }
+      :root {
+        --color-blue: #6f5afe;
+        --color-purple: #a75afe;
+        --color-grey: #696a70;
+        --violet-rails-gradient: linear-gradient(
+          66deg,
+          var(--color-blue) 0%,
+          var(--color-purple) 100%
+        );
+      }
 
-  .rails-default-error-page h1 {
-    font-size: 100%;
-    color: #730E15;
-    line-height: 1.5em;
-  }
+      html {
+        box-sizing: border-box;
+        font-size: 62.5%;
+      }
 
-  .rails-default-error-page div.dialog > p {
-    margin: 0 0 1em;
-    padding: 1em;
-    background-color: #F7F7F7;
-    border: 1px solid #CCC;
-    border-right-color: #999;
-    border-left-color: #999;
-    border-bottom-color: #999;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-    border-top-color: #DADADA;
-    color: #666;
-    box-shadow: 0 3px 8px rgba(50, 50, 50, 0.17);
-  }
-  </style>
-</head>
+      body {
+        font-size: 1.6rem;
+        font-family: "Karla", sans-serif;
+      }
 
-<body class="rails-default-error-page">
-  <!-- This file lives in public/404.html -->
-  <div class="dialog">
-    <div>
-      <h1>The page you were looking for doesn't exist.</h1>
-      <p>You may have mistyped the address or the page may have moved.</p>
-    </div>
-    <p>If you are the application owner check the logs for more information.</p>
-  </div>
-</body>
+      main {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0 2rem;
+      }
+
+      .content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .main-title {
+        font-family: "Orbitron", sans-serif;
+        font-size: 10rem;
+        background-image: var(--violet-rails-gradient);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      .subtitle {
+        margin-top: 1.5rem;
+        margin-bottom: 1.7rem;
+        font-size: 3.8rem;
+        font-weight: 800;
+      }
+
+      .message {
+        width: 100%;
+        max-width: 55ch;
+        margin-bottom: 4.8rem;
+        color: var(--color-grey);
+      }
+
+      /* Links */
+
+      .link--btn,
+      .link--btn:hover,
+      .link--btn:visited,
+      .link--btn:active {
+        color: #fff;
+        text-decoration: none;
+      }
+
+      .link--btn {
+        padding: 1.7rem 2.5rem;
+        margin-bottom: 3rem;
+        border-radius: 5px;
+        background-image: var(--violet-rails-gradient);
+        font-weight: bold;
+      }
+
+      .link--text,
+      .link--text:hover,
+      .link--text:visited,
+      .link--text:active {
+        color: var(--color-blue);
+      }
+
+      /* Utilities */
+
+      .decoration-none {
+        text-decoration: none !important;
+      }
+
+      .font-bold {
+        font-weight: bold;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- This file lives in public/404.html -->
+    <main>
+      <div class="content">
+        <h1 class="main-title">404</h1>
+        <h2 class="subtitle">Not found</h2>
+        <p class="message">
+          We can't seem to find the page you're looking for. If you think this
+          is a mistake, try
+          <a
+            class="link--text"
+            href="https://its.uiowa.edu/support/article/719"
+            target="_blank"
+          >
+            resetting your browser cookies and cache.
+          </a>
+        </p>
+        <a class="link--btn" href="/">GO BACK TO HOME</a>
+        <a
+          href="mailto:contact@restarone.com"
+          class="link--text decoration-none font-bold"
+          >CONTACT RESTARONE SUPPORT</a
+        >
+      </div>
+    </main>
+  </body>
 </html>
