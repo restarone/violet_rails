@@ -85,6 +85,7 @@ class ApiAction < ApplicationRecord
       self.update(lifecycle_stage: 'complete', lifecycle_message: response.to_json)
     rescue => e
       self.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
+      execute_error_actions
       raise
     end
   end

@@ -98,6 +98,7 @@ class ApiResource < ApplicationRecord
             custom_action.execute_action
           end
         rescue
+          # error-actions are executed already in api-action level.
           nil
         end
       elsif [ApiAction.action_types[:send_email], ApiAction.action_types[:send_web_request]].include?(ApiAction.action_types[action_type])
