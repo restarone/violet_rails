@@ -56,12 +56,12 @@ bishop_monitoring:
   slug: bishop-monitoring
   label: Bishop Monitoring in a box
   enabled: true
-  metadata: {}
+  metadata: { 'log_incidents_to': 'monitoring-target-incident' }
   model_definition: |
     class BishopMonitoring
       def initialize(parameters)  
         @external_api_client = parameters[:external_api_client]
-        @log_incidents_to_namespace = @external_api_client.api_namespace.properties["log_incidents_to"]
+        @log_incidents_to_namespace = @external_api_client.metadata["log_incidents_to"]
         @targets = @external_api_client.api_namespace.api_resources
         @timeout_in_seconds = 30
       end
@@ -128,12 +128,12 @@ bishop_tls_monitoring:
   slug: bishop-tls-monitoring
   label: TLS monitoring in a box
   enabled: true
-  metadata: {}
+  metadata: { 'log_incidents_to': 'monitoring-target-incident' }
   model_definition: |
     class BishopTlsMonitoring
       def initialize(parameters)  
         @external_api_client = parameters[:external_api_client]
-        @log_incidents_to_namespace = @external_api_client.api_namespace.properties["log_incidents_to"]
+        @log_incidents_to_namespace = @external_api_client.metadata["log_incidents_to"]
         @targets = @external_api_client.api_namespace.api_resources
         @timeout_in_seconds = 30
       end

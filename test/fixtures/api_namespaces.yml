@@ -105,8 +105,7 @@ monitoring_targets:
                 "latency": 42,
                 "alarm_raised": false,
                 "error_message": null,
-                "last_checked_at": "2022-04-23T23:02:34.592+00:00",
-                "log_incidents_to": "monitoring-target-incident"
+                "last_checked_at": "2022-04-23T23:02:34.592+00:00"
               }
   requires_authentication: false
   namespace_type: create-read-update-delete
