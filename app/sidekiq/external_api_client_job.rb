@@ -9,14 +9,14 @@ class ExternalApiClientJob
     retries = nil
     begin
       external_api_client.reload
-      retries = external_api_client.retries
+      retries = external_api_client.retries + 1
       external_api_client.update!(status: ExternalApiClient::STATUSES[:running])
       external_api_client_runner.start
     rescue StandardError => e
       external_api_client.reload
       external_api_client.update!(error_message: e.message) 
-      if retries <= external_api_client.max_retries
-        external_api_client.update!(retries: retries + 1)
+      if retries < external_api_client.max_retries
+        external_api_client.update!(retries: retries)
         max_sleep_seconds = Float(2 ** retries)
         sleep_for_seconds = rand(0..max_sleep_seconds)
         external_api_client.update!(retry_in_seconds: max_sleep_seconds)
