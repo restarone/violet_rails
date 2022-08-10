@@ -743,7 +743,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     api_namespace = api_namespaces(:three)
     api_namespace.api_form.update(properties: { 'name': {'label': 'name', 'placeholder': 'Test', 'type_validation': 'tel'}})
     custom_api_action_1 = api_actions(:create_custom_api_action_three)
-    custom_api_action_1.update!(position: 0, method_definition: "User.invite!({email: 'custom_action_0@restarone.com'}, current_user)")
+    custom_api_action_1.update!(position: 5, method_definition: "User.invite!({email: 'custom_action_0@restarone.com'}, current_user)")
 
     custom_custom_action_2 = api_actions(:create_custom_api_action_three).dup
     custom_custom_action_2.method_definition = "User.invite!({email: 'custom_action_1@restarone.com'}, current_user)"
@@ -800,7 +800,8 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     api_resource = @controller.view_assigns['api_resource']
 
     # Different type of ApiActions are executed in the defined order
-    assert_equal ApiAction::EXECUTION_ORDER, api_resource.create_api_actions.reorder(nil).order(updated_at: :asc).pluck(:action_type).uniq
+    # First, model level actions are executed and after that, the controller level actions
+    assert_equal ApiAction::EXECUTION_ORDER[:model_level] + ApiAction::EXECUTION_ORDER[:controller_level], api_resource.create_api_actions.reorder(nil).order(updated_at: :asc).pluck(:action_type).uniq
 
     # Custom Api Action are executed according to their position
     custom_actions = api_resource.reload.create_api_actions.where(action_type: 'custom_action').reorder(nil)
