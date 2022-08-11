@@ -129,6 +129,8 @@ module ApiActionable
       redirect_action.update(lifecycle_stage: 'complete', lifecycle_message: redirect_action.redirect_url)
       redirect_with_js(redirect_action.redirect_url) and return
     end
+
+    @error_api_actions_exectuted = true
   end
 
   def initialize_api_actions
