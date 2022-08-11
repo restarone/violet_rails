@@ -30,6 +30,8 @@ class ResourceController < ApplicationController
       execute_error_actions
       render_error(@api_namespace.api_form&.failure_message_evaluated) if @api_namespace.api_form&.failure_message&.present?
     end
+
+    redirect_back_with_js if (@redirect_action.nil? && !@error_api_actions_exectuted)
   end
 
   private
