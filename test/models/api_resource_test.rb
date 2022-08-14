@@ -1,6 +1,10 @@
 require "test_helper"
 
 class ApiResourceTest < ActiveSupport::TestCase
+  setup do
+    Sidekiq::Testing.fake!
+  end
+
   test "when initialized - inherits parent properties" do
     api_namespace = api_namespaces(:one)
     api_resource = ApiResource.new(api_namespace_id: api_namespace.id)
@@ -76,9 +80,12 @@ class ApiResourceTest < ActiveSupport::TestCase
     send_web_request_action.custom_headers = {"first_name": "test"}
     send_web_request_action.save!
 
-    assert_difference 'ApiResource.count', +1 do
-      assert_difference 'CreateApiAction.count', +api_namespace.reload.create_api_actions.count do
-        @api_resource = ApiResource.create!(api_namespace_id: api_namespace.id, properties: {'name': 'John Doe'})
+    perform_enqueued_jobs do
+      assert_difference 'ApiResource.count', +1 do
+        assert_difference 'CreateApiAction.count', +api_namespace.reload.create_api_actions.count do
+          @api_resource = ApiResource.create!(api_namespace_id: api_namespace.id, properties: {'name': 'John Doe'})
+          Sidekiq::Worker.drain_all
+        end
       end
     end
 
@@ -129,9 +136,12 @@ class ApiResourceTest < ActiveSupport::TestCase
     send_web_request_action.save!
 
     @api_resource = ApiResource.create!(api_namespace_id: api_namespace.id, properties: {'name': 'John Doe'})
-    assert_no_difference 'ApiResource.count' do
-      assert_difference 'UpdateApiAction.count', +api_namespace.reload.update_api_actions.count do
-        @api_resource.update!(properties: {'name': 'John Doe 2'})
+    perform_enqueued_jobs do
+      assert_no_difference 'ApiResource.count' do
+        assert_difference '@api_resource.reload.update_api_actions.count', +api_namespace.reload.update_api_actions.count do
+          @api_resource.update!(properties: {'name': 'John Doe 2'})
+          Sidekiq::Worker.drain_all
+        end
       end
     end
 
@@ -148,9 +158,12 @@ class ApiResourceTest < ActiveSupport::TestCase
     first_update_api_actions_batch = @api_resource.reload.update_api_actions.pluck(:id, :updated_at).to_h
 
     # Trigerring update-api-actions again
-    assert_no_difference 'ApiResource.count' do
-      assert_difference 'UpdateApiAction.count', +api_namespace.reload.update_api_actions.count do
-        @api_resource.update!(properties: {'name': 'John Doe 1'})
+    perform_enqueued_jobs do
+      assert_no_difference 'ApiResource.count' do
+        assert_difference '@api_resource.reload.update_api_actions.count', +api_namespace.reload.update_api_actions.count do
+          @api_resource.update!(properties: {'name': 'John Doe 1'})
+          Sidekiq::Worker.drain_all
+        end
       end
     end
 

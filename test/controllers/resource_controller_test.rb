@@ -3,6 +3,7 @@ require "test_helper"
 class ResourceControllerTest < ActionDispatch::IntegrationTest
   setup do
     @api_namespace = api_namespaces(:one)
+    Sidekiq::Testing.fake!
   end
 
   test 'should allow #create' do
@@ -22,6 +23,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
           perform_enqueued_jobs do
             post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id, params: payload)
             assert_response :success
+            Sidekiq::Worker.drain_all
           end
         end
       end
@@ -222,8 +224,11 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       }
     }
 
-    assert_difference "@api_namespace.api_resources.count", +1 do
-      post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
+    perform_enqueued_jobs do
+      assert_difference "@api_namespace.api_resources.count", +1 do
+        post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
+        Sidekiq::Worker.drain_all
+      end
     end
 
     # Provided current_user & current_visit variable are available through send_web_request api-action
@@ -562,10 +567,14 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
           }
       }
     }
-    assert_difference "api_namespace.api_resources.count", +1 do
-      # Custom Action creates a new user
-      assert_difference "User.count", +1 do
-        post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+
+    perform_enqueued_jobs do
+      assert_difference "api_namespace.api_resources.count", +1 do
+        # Custom Action creates a new user
+        assert_difference "User.count", +1 do
+          post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+          Sidekiq::Worker.drain_all
+        end
       end
     end
   end
@@ -590,10 +599,14 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
           }
       }
     }
-    assert_difference "api_namespace.api_resources.count", +1 do
-      # Total 3 Custom Action. Each creates a new user
-      assert_difference "User.count", +3 do
-        post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+
+    perform_enqueued_jobs do
+      assert_difference "api_namespace.api_resources.count", +1 do
+        # Total 3 Custom Action. Each creates a new user
+        assert_difference "User.count", +3 do
+          post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+          Sidekiq::Worker.drain_all
+        end
       end
     end
 
@@ -628,10 +641,14 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
           }
       }
     }
-    assert_difference "api_namespace.api_resources.count", +1 do
-      # Total 3 Custom Action. Each sends an email.
-      assert_difference "ActionMailer::Base.deliveries.count", +3 do
-        post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+
+    perform_enqueued_jobs do
+      assert_difference "api_namespace.api_resources.count", +1 do
+        # Total 3 Custom Action. Each sends an email.
+        assert_difference "ActionMailer::Base.deliveries.count", +3 do
+          post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+          Sidekiq::Worker.drain_all
+        end
       end
     end
 
@@ -666,8 +683,11 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
           }
       }
     }
-    assert_difference "api_namespace.api_resources.count", +1 do
-      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    perform_enqueued_jobs do
+      assert_difference "api_namespace.api_resources.count", +1 do
+        post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+        Sidekiq::Worker.drain_all
+      end
     end
 
     api_namespace = @controller.view_assigns['api_namespace']
@@ -714,10 +734,14 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
           }
       }
     }
-    assert_difference "api_namespace.api_resources.count", +1 do
-      # Total 3 Custom Action & 1 Send-Email Action. Each sends an email.
-      assert_difference "ActionMailer::Base.deliveries.count", +4 do
-        post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+
+    perform_enqueued_jobs do
+      assert_difference "api_namespace.api_resources.count", +1 do
+        # Total 3 Custom Action & 1 Send-Email Action. Each sends an email.
+        assert_difference "ActionMailer::Base.deliveries.count", +4 do
+          post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+          Sidekiq::Worker.drain_all
+        end
       end
     end
 
@@ -788,10 +812,14 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
           }
       }
     }
-    assert_difference "api_namespace.api_resources.count", +1 do
-      # Total 2 Custom Action & 1 Send-Email Action. Each sends an email.
-      assert_difference "ActionMailer::Base.deliveries.count", +3 do
-        post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+
+    perform_enqueued_jobs do
+      assert_difference "api_namespace.api_resources.count", +1 do
+        # Total 2 Custom Action & 1 Send-Email Action. Each sends an email.
+        assert_difference "ActionMailer::Base.deliveries.count", +3 do
+          post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+          Sidekiq::Worker.drain_all
+        end
       end
     end
 

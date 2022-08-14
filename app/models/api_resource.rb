@@ -67,7 +67,6 @@ class ApiResource < ApplicationRecord
   end
 
   def execute_model_context_api_actions(class_name)
-    clone_api_actions(class_name)
     api_actions = self.send(class_name).where(action_type: ApiAction::EXECUTION_ORDER[:model_level], lifecycle_stage: 'initialized')
 
     ApiAction::EXECUTION_ORDER[:model_level].each do |action_type|
@@ -110,10 +109,12 @@ class ApiResource < ApplicationRecord
   end
 
   def execute_create_api_actions
+    clone_api_actions('create_api_actions')
     FireApiActionsJob.perform_async(self.id, 'create_api_actions')
   end
 
   def execute_update_api_actions
+    clone_api_actions('update_api_actions')
     FireApiActionsJob.perform_async(self.id, 'update_api_actions')
   end
 end
