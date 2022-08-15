@@ -3,7 +3,7 @@ require "test_helper"
 class ExternalApiClientTest < ActiveSupport::TestCase
   setup do
     @external_api_client = external_api_clients(:test)
-    Sidekiq::Testing.fake!
+    Sidekiq::Testing.inline!
     @external_api_client.update!(status: ExternalApiClient::STATUSES[:sleeping])
   end
 
