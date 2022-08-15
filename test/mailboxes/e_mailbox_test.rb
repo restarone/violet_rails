@@ -9,7 +9,7 @@ class EMailboxTest < ActionMailbox::TestCase
       @user = User.first
       @user.update(can_manage_email: true)
     end
-    Sidekiq::Testing.fake!
+    Sidekiq::Testing.inline!
   end
 
   test "inbound mail routes to correct schema" do

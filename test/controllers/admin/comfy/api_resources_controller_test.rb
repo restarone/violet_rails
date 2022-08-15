@@ -7,7 +7,7 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
     @api_namespace = api_namespaces(:one)
     @api_resource = api_resources(:one)
 
-    Sidekiq::Testing.fake!
+    Sidekiq::Testing.inline!
   end
 
   test "should get new" do

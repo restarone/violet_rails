@@ -2,7 +2,7 @@ require "test_helper"
 
 class ApiResourceTest < ActiveSupport::TestCase
   setup do
-    Sidekiq::Testing.fake!
+    Sidekiq::Testing.inline!
   end
 
   test "when initialized - inherits parent properties" do
