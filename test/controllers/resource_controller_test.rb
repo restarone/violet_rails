@@ -3,7 +3,7 @@ require "test_helper"
 class ResourceControllerTest < ActionDispatch::IntegrationTest
   setup do
     @api_namespace = api_namespaces(:one)
-    Sidekiq::Testing.inline!
+    Sidekiq::Testing.fake!
   end
 
   test 'should allow #create' do

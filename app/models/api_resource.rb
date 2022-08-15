@@ -12,8 +12,8 @@ class ApiResource < ApplicationRecord
 
   before_create :inject_inherited_properties
 
-  after_commit :execute_create_api_actions, on: :create
-  after_commit :execute_update_api_actions, on: :update
+  after_create :execute_create_api_actions
+  after_update :execute_update_api_actions
 
   validate :presence_of_required_properties
 

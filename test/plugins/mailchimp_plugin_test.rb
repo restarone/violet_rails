@@ -8,7 +8,7 @@ class MailchimpPluginTest < ActiveSupport::TestCase
     @logger_namespace = api_namespaces(:mailchimp_logger)
     @mailchimp_api_uri = "https://#{@mailchimp_plugin.metadata['SERVER_PREFIX']}.api.mailchimp.com/3.0/lists/#{@mailchimp_plugin.metadata['LIST_ID']}/members?skip_merge_validation=true"
     @request_headers = { 'Authorization': "Basic #{@mailchimp_plugin.metadata['API_KEY']}", 'Content-Type': 'application/json' }
-    Sidekiq::Testing.inline!
+    Sidekiq::Testing.fake!
   end
 
   test "should send api request to mailchimp" do
