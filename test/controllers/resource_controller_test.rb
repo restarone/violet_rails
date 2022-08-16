@@ -828,8 +828,10 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     api_resource = @controller.view_assigns['api_resource']
 
     # Different type of ApiActions are executed in the defined order
-    # First, model level actions are executed and after that, the controller level actions
-    assert_equal ApiAction::EXECUTION_ORDER[:model_level] + ApiAction::EXECUTION_ORDER[:controller_level], api_resource.create_api_actions.reorder(nil).order(updated_at: :asc).pluck(:action_type).uniq
+    # model level actions are executed according to the defined order asynchronously: EXECUTION_ORDER[:model_level]
+    assert_equal ApiAction::EXECUTION_ORDER[:model_level], api_resource.create_api_actions.reorder(nil).order(updated_at: :asc).where(action_type: ApiAction::EXECUTION_ORDER[:model_level]).pluck(:action_type).uniq
+    # controller level actions are executed according to the defined order: EXECUTION_ORDER[:controller_level]
+    assert_equal ApiAction::EXECUTION_ORDER[:controller_level], api_resource.create_api_actions.reorder(nil).order(updated_at: :asc).where(action_type: ApiAction::EXECUTION_ORDER[:controller_level]).pluck(:action_type).uniq
 
     # Custom Api Action are executed according to their position
     custom_actions = api_resource.reload.create_api_actions.where(action_type: 'custom_action').reorder(nil)
