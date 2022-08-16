@@ -40,7 +40,7 @@ class ApiResource < ApplicationRecord
 
   def clone_api_actions(action_name)
     api_namespace.send(action_name).each do |action|
-      self.send(action_name).create(action.attributes.merge(custom_message: action.custom_message.to_s).except("id", "created_at", "updated_at", "api_namespace_id"))
+      self.send(action_name).create(action.attributes.merge('custom_message' => action.custom_message.to_s, 'lifecycle_stage' => 'initialized').except("id", "created_at", "updated_at", "api_namespace_id"))
     end
   end
 
