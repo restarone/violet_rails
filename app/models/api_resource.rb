@@ -110,11 +110,11 @@ class ApiResource < ApplicationRecord
 
   def execute_create_api_actions
     clone_api_actions('create_api_actions')
-    FireApiActionsJob.perform_async(self.id, 'create_api_actions')
+    FireApiActionsJob.perform_async(self.id, 'create_api_actions', Current.user&.id, Current.visit&.id)
   end
 
   def execute_update_api_actions
     clone_api_actions('update_api_actions')
-    FireApiActionsJob.perform_async(self.id, 'update_api_actions')
+    FireApiActionsJob.perform_async(self.id, 'update_api_actions', Current.user&.id, Current.visit&.id)
   end
 end
