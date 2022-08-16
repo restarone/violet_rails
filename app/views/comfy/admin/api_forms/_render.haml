@@ -31,7 +31,7 @@
 
     %div{id: "recaptcha_section_#{@api_namespace.id}"}
       - if @api_form.show_recaptcha || session[:recaptcha_v2_fallback]
-        = recaptcha_tags callback: "ctaSuccessHandler_#{@api_namespace.id}"
+        = recaptcha_tags callback: "ctaSuccessHandler_#{@api_namespace.id}", noscript: false
       - elsif @api_form.show_recaptcha_v3
         -# Hiding the recaptch v3 badge.
         -# reference: https://developers.google.com/recaptcha/docs/faq#id-like-to-hide-the-recaptcha-badge.-what-is-allowed
@@ -48,7 +48,7 @@
           and
           = link_to 'Terms of Service.', 'https://policies.google.com/terms', target: '_blank'
 
-        = recaptcha_v3(callback: "ctaSuccessHandlerRecaptchaV3_#{@api_namespace.id}", action: sanitize_recaptcha_action_name(@api_namespace.name), site_key: ENV['RECAPTCHA_SITE_KEY_V3'])
+        = recaptcha_v3(callback: "ctaSuccessHandlerRecaptchaV3_#{@api_namespace.id}", action: sanitize_recaptcha_action_name(@api_namespace.name), site_key: ENV['RECAPTCHA_SITE_KEY_V3'], turbolinks: true)
       
     = f.submit @api_form.submit_button_label, disabled: @api_form.show_recaptcha || @api_form.show_recaptcha_v3, class: 'my-2 btn btn-primary', data: {disable_with: false}
 
