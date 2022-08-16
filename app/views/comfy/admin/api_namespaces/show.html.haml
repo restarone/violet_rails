@@ -131,15 +131,15 @@
       = link_to 'Duplicate with associations', duplicate_with_associations_api_namespace_path(id: @api_namespace.id), method: :post, target: '_blank', class: 'btn btn-primary'
     .my-3
       = link_to 'Duplicate without associations', duplicate_without_associations_api_namespace_path(id: @api_namespace.id), method: :post, target: '_blank', class: 'btn btn-primary'
-    .my-3
-      = link_to 'Export JSON with associations', export_with_associations_as_json_api_namespace_path(id: @api_namespace.id), method: :get, class: 'btn btn-info'
-    .my-3
-      = link_to 'Export JSON without associations', export_without_associations_as_json_api_namespace_path(id: @api_namespace.id), method: :get, class: 'btn btn-info'
   #export.tab-pane.fade{"aria-labelledby" => "export-tab", :role => "tabpanel"} 
     .my-3
       = link_to 'Download API Namespace as CSV', export_api_namespace_path(@api_namespace, format: :csv), class: 'btn btn-warning'
     .my-3
       = link_to 'Download API Resources as CSV', export_api_resources_api_namespace_path(@api_namespace, format: :csv), class: 'btn btn-warning'
+    .my-3
+      = link_to 'Export JSON with associations', export_with_associations_as_json_api_namespace_path(id: @api_namespace.id), method: :get, class: 'btn btn-info'
+    .my-3
+      = link_to 'Export JSON without associations', export_without_associations_as_json_api_namespace_path(id: @api_namespace.id), method: :get, class: 'btn btn-info'
 
 .container-fluid.mt-5
   .d-flex.justify-content-between.py-2.page-header
