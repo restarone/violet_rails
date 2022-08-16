@@ -29,3 +29,7 @@ $(document).on("turbolinks:load", () => {
 $(document).on("turbo:load", () => {
   console.log("Violet Rails uses turbo!");
 });
+
+$(document).on("turbo:before-cache", () => {
+  $(".g-recaptcha").each(function () { this.innerHTML = "" });
+});
