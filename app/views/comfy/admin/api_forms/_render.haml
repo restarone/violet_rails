@@ -31,7 +31,7 @@
 
     %div{id: "recaptcha_section_#{@api_namespace.id}"}
       - if @api_form.show_recaptcha || session[:recaptcha_v2_fallback]
-        = recaptcha_tags callback: "ctaSuccessHandler_#{@api_namespace.id}"
+        = recaptcha_tags callback: "ctaSuccessHandler_#{@api_namespace.id}", noscript: false
       - elsif @api_form.show_recaptcha_v3
         -# Hiding the recaptch v3 badge.
         -# reference: https://developers.google.com/recaptcha/docs/faq#id-like-to-hide-the-recaptcha-badge.-what-is-allowed
