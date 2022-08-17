@@ -1,6 +1,6 @@
 class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
   before_action :ensure_authority_to_manage_api
-  before_action :set_api_namespace, only: %i[ show edit update destroy discard_failed_api_actions rerun_failed_api_actions export duplicate_with_associations duplicate_without_associations export_without_associations_as_json export_with_associations_as_json ]
+  before_action :set_api_namespace, only: %i[ show edit update destroy discard_failed_api_actions rerun_failed_api_actions export export_api_resources duplicate_with_associations duplicate_without_associations export_without_associations_as_json export_with_associations_as_json ]
 
   # GET /api_namespaces or /api_namespaces.json
   def index
@@ -118,6 +118,20 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
         response.headers['Content-Type'] = 'text/csv'
         response.headers['Content-Disposition'] = "attachment; filename=#{filename}"
         render template: "comfy/admin/api_namespaces/export"
+      end
+    end
+  end
+
+  def export_api_resources
+    @api_resources = @api_namespace.api_resources
+
+    # Naming convention: api_namespace_<API NAMESPACE ID>_api_resources_<CURRENT TIMESTAMP>.csv
+    filename = "api_namespace_#{@api_namespace.id}_api_resources_#{DateTime.now.to_i}.csv"
+    respond_to do |format|
+      format.csv do
+        response.headers['Content-Type'] = 'text/csv'
+        response.headers['Content-Disposition'] = "attachment; filename=#{filename}"
+        render template: "comfy/admin/api_namespaces/export_api_resources"
       end
     end
   end
