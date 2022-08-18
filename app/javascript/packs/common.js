@@ -4,8 +4,14 @@ window.previewFile = function previewFile(event, previewId) {
     if (file && file.type.match(/video/)) {
       output = $('#' + previewId + '_video');
       $('#' + previewId + '_img').hide();
+      $('#' + previewId + '_download_link').hide();
     } else if (file && file.type.match(/image/)) {
       output = $('#' + previewId + '_img');
+      $('#' + previewId + '_video').hide();
+      $('#' + previewId + '_download_link').hide();
+    } else {
+      output = $('#' + previewId + '_download_link')
+      $('#' + previewId + '_img').hide();
       $('#' + previewId + '_video').hide();
     }
     output.show();
