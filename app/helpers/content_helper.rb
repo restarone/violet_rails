@@ -16,4 +16,9 @@ module ContentHelper
 
     options['html'] == 'true' ? snippet.html_safe : cms_snippet_render(snippet)
   end
+
+  def render_api_namespace_resource_index(slug)
+    byebug
+    cms_snippet_render(slug)
+  end
 end
