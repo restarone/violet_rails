@@ -2,6 +2,7 @@ class ApplicationController < ActionController::Base
 
   before_action :prepare_exception_notifier
   before_action :store_user_location!, if: :storable_location?
+  before_action :set_current_user
 
   def after_sign_in_path_for(resource)
     if session[:user_return_to] then return session[:user_return_to] end
@@ -46,5 +47,9 @@ class ApplicationController < ActionController::Base
 
   def store_user_location!
     store_location_for(:user, request.fullpath)
+  end
+
+  def set_current_user
+    Current.user = current_user
   end
 end
