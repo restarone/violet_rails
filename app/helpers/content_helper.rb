@@ -59,8 +59,4 @@ module ContentHelper
     r = ComfortableMexicanSofa::Content::Renderer.new(snippet)
     render inline: r.render(r.nodes(r.tokenize(snippet.content_evaluated(context))))
   end
-
-  def search_params
-    params.require(:properties).permit!
-  end
 end
