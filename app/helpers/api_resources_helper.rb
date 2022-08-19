@@ -5,8 +5,8 @@ module ApiResourcesHelper
     file_url = rails_blob_url(file, subdomain: Apartment::Tenant.current)
     output = ''
     output << <<-HTML
-    #{image_tag (file.content_type.include?('image') ? file_url : ''), height: 200, width: 200, id: "#{label.parameterize.underscore}_preview_img", style: "display: #{file.content_type.include?('image') ? 'block' : 'none'};"}
-    #{video_tag (file.content_type.include?('video') ? file_url : ''), height: 200, controls: true, id: "#{label.parameterize.underscore}_preview_video", style: "display: #{file.content_type.include?('video') ? 'block' : 'none'};"}
+    #{image_tag (file.content_type.include?('image') ? file_url : ''), id: "#{label.parameterize.underscore}_preview_img", class: 'preview-media', style: "display: #{file.content_type.include?('image') ? 'block' : 'none'};"}
+    #{video_tag (file.content_type.include?('video') ? file_url : ''), controls: true, id: "#{label.parameterize.underscore}_preview_video", class: 'preview-media', style: "display: #{file.content_type.include?('video') ? 'block' : 'none'};"}
     #{link_to file.filename.to_s, file_url, target: '_blank', id: "#{label.parameterize.underscore}_preview_download_link", style: "display: #{file.content_type.match?(/video|image/) ? 'none' : 'block'};"}
     HTML
 
