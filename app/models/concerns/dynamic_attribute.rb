@@ -34,7 +34,7 @@ module DynamicAttribute
         value.is_a?(Enumerable) ? JSON.generate(value) : value.to_s.dup
       end
 
-      # access extra contexts as instance variables
+      # add extra contexts as instance variables
       def bind_context(context)
         context.each { |k, v| instance_variable_set("@#{k}", v) }
       end
