@@ -1,0 +1,18 @@
+- main_headers = ApiResource.column_names
+- top_level_attributes = @api_namespace.properties.keys
+- property_column_index = main_headers.index('properties')
+- effective_headers = main_headers.dup.insert(property_column_index, *top_level_attributes)
+- effective_headers.delete('properties')
+
+= CSV.generate_line(effective_headers, row_sep: "").html_safe
+- @api_resources.each do |api_resource|
+  - row_data = []
+  - main_headers.each do |header|
+    - data = api_resource.send(header)
+    - if header == 'properties'
+      - props = data
+      - top_level_attributes.each do |key|
+        - row_data << (props[key].nil? ? '' : props[key])
+    - else
+      - row_data << data
+  = CSV.generate_line(row_data, row_sep: "").html_safe
