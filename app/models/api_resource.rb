@@ -10,7 +10,10 @@ class ApiResource < ApplicationRecord
 
   belongs_to :api_namespace
 
-  before_create :initialize_api_actions, :inject_inherited_properties
+  before_create :inject_inherited_properties
+
+  after_commit :execute_create_api_actions, on: :create
+  after_commit :execute_update_api_actions, on: :update
 
   validate :presence_of_required_properties
 
@@ -35,9 +38,9 @@ class ApiResource < ApplicationRecord
     Arel.sql("api_resources.properties::text") 
   end
 
-  def initialize_api_actions
-    api_namespace.create_api_actions.each do |action|
-      create_api_actions.build(action.attributes.merge(custom_message: action.custom_message.to_s).except("id", "created_at", "updated_at", "api_namespace_id"))
+  def clone_api_actions(action_name)
+    api_namespace.send(action_name).each do |action|
+      self.send(action_name).create(action.attributes.merge('custom_message' => action.custom_message.to_s, 'lifecycle_stage' => 'initialized').except("id", "created_at", "updated_at", "api_namespace_id"))
     end
   end
 
@@ -63,6 +66,28 @@ class ApiResource < ApplicationRecord
     User.find_by(id: tracked_event.properties.dig('user_id')) if tracked_event
   end
 
+  def execute_model_context_api_actions(class_name)
+    api_actions = self.send(class_name).where(action_type: ApiAction::EXECUTION_ORDER[:model_level], lifecycle_stage: 'initialized')
+
+    ApiAction::EXECUTION_ORDER[:model_level].each do |action_type|
+      if ApiAction.action_types[action_type] == ApiAction.action_types[:custom_action]
+        begin
+          custom_actions = api_actions.where(action_type: 'custom_action')
+          custom_actions.each do |custom_action|
+            custom_action.execute_action
+          end
+        rescue
+          # error-actions are executed already in api-action level.
+          nil
+        end
+      elsif [ApiAction.action_types[:send_email], ApiAction.action_types[:send_web_request]].include?(ApiAction.action_types[action_type])
+        api_actions.where(action_type: ApiAction.action_types[action_type]).each do |api_action|
+          api_action.execute_action
+        end
+      end
+    end if api_actions.present?
+  end
+
   private
 
   def inherit_properties_from_parent
@@ -81,5 +106,15 @@ class ApiResource < ApplicationRecord
         self.properties[key] =  api_namespace.properties[key]
       end
     end
+  end
+
+  def execute_create_api_actions
+    clone_api_actions('create_api_actions')
+    FireApiActionsJob.perform_async(self.id, 'create_api_actions', Current.user&.id, Current.visit&.id)
+  end
+
+  def execute_update_api_actions
+    clone_api_actions('update_api_actions')
+    FireApiActionsJob.perform_async(self.id, 'update_api_actions', Current.user&.id, Current.visit&.id)
   end
 end
