@@ -105,7 +105,7 @@ create_custom_api_action_three:
   action_type: custom_action
   include_api_resource_data: false
   payload_mapping:
-  method_definition: "logger = Logger.new(\"#{Rails.root}/log/api_action_response.log\"); logger.info 'Test log message!'"
+  method_definition: "logger = Logger.new(\"#{Rails.root}/log/api_action_response.log\")\n logger.info 'Test log message!'"
   api_namespace: three
 
 create_api_action_plugin_bishop_monitoring_web_request:

@@ -249,6 +249,36 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
   end
 
+  test "should export api_resources" do
+    sign_in(@user)
+    api_namespace = api_namespaces(:namespace_with_all_types)
+    resource_one = api_resources(:resource_with_all_types_one)
+    resource_two = api_resources(:resource_with_all_types_two)
+
+    stubbed_date = DateTime.new(2022, 1, 1)
+    DateTime.stubs(:now).returns(stubbed_date)
+
+    get export_api_resources_api_namespace_url(api_namespace, format: :csv)
+    expected_csv = "id,api_namespace_id,null,array,number,object,string,boolean,created_at,updated_at\n" \
+    "#{resource_one.id},#{api_namespace.id},#{resource_one.properties['null']},#{resource_one.properties['array']},#{resource_one.properties['number']},\"{\"\"a\"\"=>\"\"apple\"\"}\",#{resource_one.properties['string']},\"\",#{resource_one.created_at},#{resource_one.updated_at}\n" \
+    "#{resource_two.id},#{api_namespace.id},#{resource_two.properties['null']},#{resource_two.properties['array']},#{resource_two.properties['number']},\"{\"\"b\"\"=>\"\"ball\"\"}\",#{resource_two.properties['string']},\"\",#{resource_two.created_at},#{resource_two.updated_at}\n"
+
+    assert_response :success
+    assert_equal expected_csv, response.body
+    assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_api_resources_#{DateTime.now.to_i}.csv"
+  end
+
+  test "should deny exporting of api-resources as CSV if the user is not authorized" do
+    @user.update(can_manage_api: false)
+    sign_in(@user)
+    api_namespace = api_namespaces(:namespace_with_all_types)
+
+    get export_api_resources_api_namespace_url(api_namespace, format: :csv)
+
+    assert_response :redirect
+    assert_equal "You do not have the permission to do that. Only users who can_manage_api are allowed to perform that action.", flash[:alert]
+  end
+
   test "should deny export api_namespace without associations as JSON if user is not authorized" do
     @user.update(can_manage_api: false)
     sign_in(@user)

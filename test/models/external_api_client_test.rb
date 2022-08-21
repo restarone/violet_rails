@@ -17,6 +17,7 @@ class ExternalApiClientTest < ActiveSupport::TestCase
   end
 
   test "sets status to error if error is caught and retries are exhausted" do
+    @external_api_client.update!(max_retries: 2)
     assert @external_api_client.retries < @external_api_client.max_retries
     assert @external_api_client.retry_in_seconds == 0
     error_message = "Gateway unavailable"
@@ -27,7 +28,8 @@ class ExternalApiClientTest < ActiveSupport::TestCase
       Sidekiq::Worker.drain_all
     end
     @external_api_client.reload
-    assert @external_api_client.retries > @external_api_client.max_retries
+
+    assert @external_api_client.retries == @external_api_client.max_retries
     assert_equal @external_api_client.status, ExternalApiClient::STATUSES[:error]
     assert_equal @external_api_client.error_message, error_message
     assert @external_api_client.retry_in_seconds > 0
@@ -46,6 +48,7 @@ class ExternalApiClientTest < ActiveSupport::TestCase
   end
 
   test "sets retry_in_seconds if error is caught" do
+    @external_api_client.update!(max_retries: 2)  
     @external_api_client.evaluated_model_definition.any_instance.stubs(:start).raises(StandardError, 'error!')
     assert_changes "@external_api_client.reload.retry_in_seconds" do
       @external_api_client.run

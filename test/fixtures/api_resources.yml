@@ -55,3 +55,21 @@ mailchimp:
     'contact': '555-777',
     'synced_to_mailchimp': false
   }
+resource_with_all_types_one:
+  api_namespace: namespace_with_all_types                
+  properties: {
+    'array': 'no',
+    'object': {'a': 'apple'},
+    'string': 'string 1',
+    'number': 555,
+    'null': true
+  }
+resource_with_all_types_two:
+  api_namespace: namespace_with_all_types                
+  properties: {
+    'array': 'yes',
+    'object': {'b': 'ball'},
+    'string': 'string 2',
+    'number': 666,
+    'null': false
+  }

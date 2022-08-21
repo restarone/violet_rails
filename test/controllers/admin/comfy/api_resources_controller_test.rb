@@ -6,6 +6,8 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
     @user.update(can_manage_api: true)
     @api_namespace = api_namespaces(:one)
     @api_resource = api_resources(:one)
+
+    Sidekiq::Testing.fake!
   end
 
   test "should get new" do
@@ -21,8 +23,11 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
     redirect_action = @api_namespace.create_api_actions.where(action_type: 'redirect').last
     redirect_action.update(redirect_url: '/')
 
-    assert_difference('ApiResource.count') do
-      post api_namespace_resources_url(api_namespace_id: @api_namespace.id), params: { api_resource: { properties: payload_as_stringified_json } }
+    perform_enqueued_jobs do
+      assert_difference('ApiResource.count') do
+        post api_namespace_resources_url(api_namespace_id: @api_namespace.id), params: { api_resource: { properties: payload_as_stringified_json } }
+        Sidekiq::Worker.drain_all
+      end
     end
 
     assert ApiResource.last.properties
@@ -44,7 +49,10 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
 
   test "should update api_resource" do
     sign_in(@user)
-    patch api_namespace_resource_url(@api_resource, api_namespace_id: @api_resource.api_namespace_id), params: { api_resource: { properties: @api_resource.properties } }, headers: { 'HTTP_REFERER': edit_api_namespace_resource_url(api_namespace_id: @api_namespace.id, id: @api_resource.id) }
+    perform_enqueued_jobs do
+      patch api_namespace_resource_url(@api_resource, api_namespace_id: @api_resource.api_namespace_id), params: { api_resource: { properties: @api_resource.properties } }, headers: { 'HTTP_REFERER': edit_api_namespace_resource_url(api_namespace_id: @api_namespace.id, id: @api_resource.id) }
+      Sidekiq::Worker.drain_all
+    end
     assert_redirected_to edit_api_namespace_resource_url(api_namespace_id: @api_namespace.id, id: @api_resource.id)
   end
 
@@ -52,9 +60,12 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
     sign_in(@user)
 
     actions_count = @api_resource.api_namespace.error_api_actions.size
-    assert_raises StandardError do
-      patch api_namespace_resource_url(@api_resource, api_namespace_id: @api_resource.api_namespace_id), params:  { properties: @api_resource.properties }, headers: { 'HTTP_REFERER': edit_api_namespace_resource_url(api_namespace_id: @api_namespace.id, id: @api_resource.id) }
-      assert_equal @api_resource.error_api_actions.count, actions_count
+    perform_enqueued_jobs do
+      assert_raises StandardError do
+        patch api_namespace_resource_url(@api_resource, api_namespace_id: @api_resource.api_namespace_id), params:  { properties: @api_resource.properties }, headers: { 'HTTP_REFERER': edit_api_namespace_resource_url(api_namespace_id: @api_namespace.id, id: @api_resource.id) }
+        Sidekiq::Worker.drain_all
+        assert_equal @api_resource.error_api_actions.count, actions_count
+      end
     end
   end
 

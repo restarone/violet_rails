@@ -85,6 +85,7 @@ Rails.application.routes.draw do
       post 'discard_failed_api_actions'
       post 'rerun_failed_api_actions'
       get 'export'
+      get 'export_api_resources'
     end
   end
   resources :non_primitive_properties, controller: 'comfy/admin/non_primitive_properties', only: [:new]
