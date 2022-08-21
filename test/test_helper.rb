@@ -37,6 +37,7 @@ class ActiveSupport::TestCase
   teardown do
     Apartment::Tenant.drop('public') rescue nil
     Apartment::Tenant.drop('restarone') rescue nil
+    Sidekiq::Worker.clear_all
   end
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
