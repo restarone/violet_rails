@@ -35,7 +35,7 @@
               </div>
               <div>
                 <% if prop.file? %>
-                    <%= show_file(prop.attachment) %>
+                    <%= show_file(prop.attachment, prop.label) %>
                 <% else %>
                     <div>
                     <%= render html: prop.content.to_s.html_safe %>

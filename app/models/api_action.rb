@@ -17,7 +17,10 @@ class ApiAction < ApplicationRecord
   
   enum redirect_type: { cms_page: 0, dynamic_url: 1 }
 
-  EXECUTION_ORDER = ['serve_file', 'redirect', 'send_email', 'send_web_request', 'custom_action']
+  EXECUTION_ORDER = {
+    model_level: ['send_email', 'send_web_request', 'custom_action'],
+    controller_level: ['serve_file', 'redirect'],
+  }
 
   HTTP_METHODS = ['get', 'post', 'patch', 'put', 'delete']
 
@@ -72,7 +75,20 @@ class ApiAction < ApplicationRecord
     end
   end
 
-  def custom_action;end
+  def custom_action
+    begin
+      custom_api_action = CustomApiAction.new
+      eval("def custom_api_action.run_custom_action(api_action: , api_namespace: , api_resource: , current_visit: , current_user: nil); #{self.method_definition}; end")
+
+      response = custom_api_action.run_custom_action(api_action: self, api_namespace: self.api_resource&.api_namespace, api_resource: self.api_resource, current_visit: Current.visit, current_user: Current.user)
+
+      self.update(lifecycle_stage: 'complete', lifecycle_message: response.to_json)
+    rescue => e
+      self.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
+      execute_error_actions
+      raise
+    end
+  end
 
   def redirect;end
 

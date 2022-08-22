@@ -3,6 +3,7 @@ require "test_helper"
 class ResourceControllerTest < ActionDispatch::IntegrationTest
   setup do
     @api_namespace = api_namespaces(:one)
+    Sidekiq::Testing.fake!
   end
 
   test 'should allow #create' do
@@ -22,6 +23,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
           perform_enqueued_jobs do
             post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id, params: payload)
             assert_response :success
+            Sidekiq::Worker.drain_all
           end
         end
       end
@@ -77,7 +79,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'should not allow #create when recaptcha is enabled and recaptcha verification failed' do
+  test 'should not allow #create when recaptcha is enabled and reset recaptcha if recaptcha verification failed' do
     @api_namespace.api_form.update(show_recaptcha: true)
     payload = {
       data: {
@@ -93,6 +95,9 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
       assert_response :success
     end
+
+    assert_match "if (window.grecaptcha) grecaptcha.reset();", response.parsed_body
+    assert_match "reCAPTCHA verification failed, please try again.", response.parsed_body
 
     Recaptcha.configuration.skip_verify_env.push("test")
   end
@@ -222,8 +227,11 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       }
     }
 
-    assert_difference "@api_namespace.api_resources.count", +1 do
-      post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
+    perform_enqueued_jobs do
+      assert_difference "@api_namespace.api_resources.count", +1 do
+        post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
+        Sidekiq::Worker.drain_all
+      end
     end
 
     # Provided current_user & current_visit variable are available through send_web_request api-action
@@ -562,10 +570,14 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
           }
       }
     }
-    assert_difference "api_namespace.api_resources.count", +1 do
-      # Custom Action creates a new user
-      assert_difference "User.count", +1 do
-        post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+
+    perform_enqueued_jobs do
+      assert_difference "api_namespace.api_resources.count", +1 do
+        # Custom Action creates a new user
+        assert_difference "User.count", +1 do
+          post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+          Sidekiq::Worker.drain_all
+        end
       end
     end
   end
@@ -590,10 +602,14 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
           }
       }
     }
-    assert_difference "api_namespace.api_resources.count", +1 do
-      # Total 3 Custom Action. Each creates a new user
-      assert_difference "User.count", +3 do
-        post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+
+    perform_enqueued_jobs do
+      assert_difference "api_namespace.api_resources.count", +1 do
+        # Total 3 Custom Action. Each creates a new user
+        assert_difference "User.count", +3 do
+          post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+          Sidekiq::Worker.drain_all
+        end
       end
     end
 
@@ -628,10 +644,14 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
           }
       }
     }
-    assert_difference "api_namespace.api_resources.count", +1 do
-      # Total 3 Custom Action. Each sends an email.
-      assert_difference "ActionMailer::Base.deliveries.count", +3 do
-        post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+
+    perform_enqueued_jobs do
+      assert_difference "api_namespace.api_resources.count", +1 do
+        # Total 3 Custom Action. Each sends an email.
+        assert_difference "ActionMailer::Base.deliveries.count", +3 do
+          post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+          Sidekiq::Worker.drain_all
+        end
       end
     end
 
@@ -666,8 +686,11 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
           }
       }
     }
-    assert_difference "api_namespace.api_resources.count", +1 do
-      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    perform_enqueued_jobs do
+      assert_difference "api_namespace.api_resources.count", +1 do
+        post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+        Sidekiq::Worker.drain_all
+      end
     end
 
     api_namespace = @controller.view_assigns['api_namespace']
@@ -714,10 +737,14 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
           }
       }
     }
-    assert_difference "api_namespace.api_resources.count", +1 do
-      # Total 3 Custom Action & 1 Send-Email Action. Each sends an email.
-      assert_difference "ActionMailer::Base.deliveries.count", +4 do
-        post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+
+    perform_enqueued_jobs do
+      assert_difference "api_namespace.api_resources.count", +1 do
+        # Total 3 Custom Action & 1 Send-Email Action. Each sends an email.
+        assert_difference "ActionMailer::Base.deliveries.count", +4 do
+          post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+          Sidekiq::Worker.drain_all
+        end
       end
     end
 
@@ -743,7 +770,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     api_namespace = api_namespaces(:three)
     api_namespace.api_form.update(properties: { 'name': {'label': 'name', 'placeholder': 'Test', 'type_validation': 'tel'}})
     custom_api_action_1 = api_actions(:create_custom_api_action_three)
-    custom_api_action_1.update!(position: 0, method_definition: "User.invite!({email: 'custom_action_0@restarone.com'}, current_user)")
+    custom_api_action_1.update!(position: 5, method_definition: "User.invite!({email: 'custom_action_0@restarone.com'}, current_user)")
 
     custom_custom_action_2 = api_actions(:create_custom_api_action_three).dup
     custom_custom_action_2.method_definition = "User.invite!({email: 'custom_action_1@restarone.com'}, current_user)"
@@ -788,10 +815,14 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
           }
       }
     }
-    assert_difference "api_namespace.api_resources.count", +1 do
-      # Total 2 Custom Action & 1 Send-Email Action. Each sends an email.
-      assert_difference "ActionMailer::Base.deliveries.count", +3 do
-        post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+
+    perform_enqueued_jobs do
+      assert_difference "api_namespace.api_resources.count", +1 do
+        # Total 2 Custom Action & 1 Send-Email Action. Each sends an email.
+        assert_difference "ActionMailer::Base.deliveries.count", +3 do
+          post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+          Sidekiq::Worker.drain_all
+        end
       end
     end
 
@@ -800,7 +831,10 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     api_resource = @controller.view_assigns['api_resource']
 
     # Different type of ApiActions are executed in the defined order
-    assert_equal ApiAction::EXECUTION_ORDER, api_resource.create_api_actions.reorder(nil).order(updated_at: :asc).pluck(:action_type).uniq
+    # model level actions are executed according to the defined order asynchronously: EXECUTION_ORDER[:model_level]
+    assert_equal ApiAction::EXECUTION_ORDER[:model_level], api_resource.create_api_actions.reorder(nil).order(updated_at: :asc).where(action_type: ApiAction::EXECUTION_ORDER[:model_level]).pluck(:action_type).uniq
+    # controller level actions are executed according to the defined order: EXECUTION_ORDER[:controller_level]
+    assert_equal ApiAction::EXECUTION_ORDER[:controller_level], api_resource.create_api_actions.reorder(nil).order(updated_at: :asc).where(action_type: ApiAction::EXECUTION_ORDER[:controller_level]).pluck(:action_type).uniq
 
     # Custom Api Action are executed according to their position
     custom_actions = api_resource.reload.create_api_actions.where(action_type: 'custom_action').reorder(nil)

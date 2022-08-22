@@ -30,25 +30,44 @@ class BishopMonitoringPluginTest < ActionDispatch::IntegrationTest
       .to_return(status: 500, body: "Gateway unavailable")
 
     sign_in(@user)
-    # TODO: fix to ensure that only 1 API resource is created (https://github.com/restarone/violet_rails/issues/584)
-    assert_changes 'ApiResource.count' do
+    # ApiResources will be created times the defined max-retries of plugin
+    assert_difference 'ApiResource.count', +(1 * bishop_plugin.max_retries)  do
       get start_api_namespace_external_api_client_path(api_namespace_id: api_namespace.id, id: bishop_plugin.id)
       Sidekiq::Worker.drain_all
     end
   end
 
   test "#BishopMonitoring: does log incident, send HTTP request and email if HTTP endpoint error occurs" do
-    skip("# TODO: this should send the email, but we dont fire it from the model context (https://github.com/restarone/violet_rails/issues/584)")
     bishop_plugin = external_api_clients(:bishop_monitoring)
     api_namespace = api_namespaces(:monitoring_targets)
     bishop_request = stub_request(:get, api_namespace.api_resources.first.properties['url'])
       .to_return(status: 500, body: "Gateway unavailable")
 
+    api_actions(:create_api_action_plugin_bishop_monitoring_web_request).update!(
+      payload_mapping: { 'content': 'test body'},
+      custom_headers: { 'accept': 'application/json'},
+      bearer_token: 'TEST',
+      request_url: 'http://www.discord.com',
+      http_method: 'post'
+    )
+  
+    target_namespace = api_namespaces(:monitoring_target_incident)
+    discord_request = stub_request(:post, "http://www.discord.com").to_return(status: 200, body: 'Success.')
+
     sign_in(@user)
-    assert_changes "ApiActionMailer.deliveries.size" do          
-      get start_api_namespace_external_api_client_path(api_namespace_id: api_namespace.id, id: bishop_plugin.id)
-      Sidekiq::Worker.drain_all
+    
+    # ActiveRecords will be created times the defined max-retries of plugin
+    assert_difference 'ApiResource.count', +(1 * bishop_plugin.max_retries)  do
+      assert_difference 'ApiAction.count', +(target_namespace.create_api_actions.count * bishop_plugin.max_retries) do
+        # 1 send-email (times the defined max-retries of plugin) create-api-action is executed
+        assert_difference "ActionMailer::Base.deliveries.count", +(1 * bishop_plugin.max_retries) do
+          get start_api_namespace_external_api_client_path(api_namespace_id: api_namespace.id, id: bishop_plugin.id)
+          Sidekiq::Worker.drain_all
+        end
+      end
     end
+
+    assert_requested discord_request
   end
 
 end
