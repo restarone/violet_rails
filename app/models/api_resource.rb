@@ -12,7 +12,7 @@ class ApiResource < ApplicationRecord
 
   belongs_to :api_namespace
 
-  before_create :initialize_api_actions, :inject_inherited_properties, :set_creator
+  before_create :inject_inherited_properties, :set_creator
 
   after_commit :execute_create_api_actions, on: :create
   after_commit :execute_update_api_actions, on: :update
