@@ -134,13 +134,3 @@ Rails.application.configure do
   # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
 
 end
-
-# exception notifier
-Rails.application.config.middleware.use ExceptionNotification::Rack,
-  ignore_exceptions: [
-    'ActionController::ParameterMissing', 
-    'ActionController::RoutingError',
-    'ActionController::InvalidAuthenticityToken',
-    'ActionDispatch::Http::MimeNegotiation::InvalidType',
-    'ActiveRecord::RecordNotFound',
-  ]
