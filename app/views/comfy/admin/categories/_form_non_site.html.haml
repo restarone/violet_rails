@@ -1,0 +1,7 @@
+- object = form.object
+- if (categories = Comfy::Cms::Category.of_type(object.class.to_s)).present?
+  .field
+    %label.mr-1 
+      Categories
+    = form.collection_check_boxes(:category_ids, categories, :id, :label) do |f|
+      = f.label(class: 'mr-3') {f.check_box(class: 'mr-1') + f.text}
