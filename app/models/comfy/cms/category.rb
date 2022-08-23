@@ -4,7 +4,7 @@ class Comfy::Cms::Category < ActiveRecord::Base
 
   self.table_name = "comfy_cms_categories"
 
-  NON_SITE_ENTITIES = ['User', 'MessageThread', 'ApiNamespace']
+  NON_SITE_ENTITIES = ['User', 'ApiNamespace']
 
   # -- Relationships --------------------------------------------------------
   belongs_to :site, optional: true
