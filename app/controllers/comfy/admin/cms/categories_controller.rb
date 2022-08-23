@@ -39,7 +39,7 @@ protected
 
   def load_category
     @category = if Comfy::Cms::Category::NON_SITE_ENTITIES.include?(category_params[:categorized_type])
-      Comfy::Cms::Category.of_type(params[:model]).find(params[:id])
+      Comfy::Cms::Category.of_type(category_params[:categorized_type]).find(params[:id])
     else
       @site.categories.find(params[:id])
     end
