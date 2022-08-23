@@ -48,7 +48,7 @@ protected
   end
 
   def category_params
-    params.fetch(:category, {}).permit!
+    params.require(:category).permit(:site_id, :label, :categorized_type)
   end
 
 end
