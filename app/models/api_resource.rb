@@ -8,9 +8,11 @@ class ApiResource < ApplicationRecord
     api_namespace.api_form.api_resource = self unless api_namespace&.api_form.nil?
   end
 
+  belongs_to :user, optional: true
+
   belongs_to :api_namespace
 
-  before_create :inject_inherited_properties
+  before_create :inject_inherited_properties, :set_creator
 
   after_commit :execute_create_api_actions, on: :create
   after_commit :execute_update_api_actions, on: :update
@@ -106,6 +108,10 @@ class ApiResource < ApplicationRecord
         self.properties[key] =  api_namespace.properties[key]
       end
     end
+  end
+
+  def set_creator
+    self.user_id = Current.user&.id
   end
 
   def execute_create_api_actions
