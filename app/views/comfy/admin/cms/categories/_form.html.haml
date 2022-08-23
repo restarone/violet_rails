@@ -7,7 +7,7 @@
   - if non_site_entity
     .field
       %label.mr-1 
-        Categories
+        Categories:
       = form.collection_check_boxes(:category_ids, categories, :id, :label) do |f|
         = f.label(class: 'mr-3') {f.check_box(class: 'mr-1') + f.text}
   - else

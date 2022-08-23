@@ -4,8 +4,11 @@
   %small= @message_thread.recipients.join(', ')
   .form-group.justify-content-end.d-flex
     = link_to "Delete", mailbox_message_thread_path(id: @message_thread.id), class: 'btn btn-danger', method: :delete, data: { confirm: 'Are you sure you want to destroy this email thread? This cannot be undone' }
+= form_for @message_thread, url: add_categories_mailbox_message_thread_path(id: @message_thread.id), method: :patch do |f|
+  = render "comfy/admin/cms/categories/form", form: f
+  = f.submit "Add", class: 'btn btn-primary'
 = form_for @message_thread, url: send_message_mailbox_message_thread_path(id: @message_thread.id), method: :post do |f|
-  = render partial: 'messages/form', locals: { f: f }
+  = render partial: 'messages/form', locals: { f: f, render_submit: true }
 - @message_thread.messages.each do |message|
   .card.my-3
     .card-body 
