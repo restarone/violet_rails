@@ -10,7 +10,7 @@
         = label_tag property.label
         .my-2
           - if property.file?
-            = show_file(property.attachment)
+            = show_file(property.attachment, property.label)
         = map_non_primitive_data_type(ff, property.field_type, form_properties, is_edit)
       = ff.hidden_field :field_type
       = ff.hidden_field :label
@@ -25,7 +25,7 @@
           = "#{prop.label}:"
         %div
           - if prop.file?
-            = show_file(prop.attachment)
+            = show_file(prop.attachment, prop.label)
           - else
             %div
               = render html: prop.content.to_s.html_safe
