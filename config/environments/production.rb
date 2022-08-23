@@ -139,9 +139,4 @@ Rails.application.config.middleware.use ExceptionNotification::Rack,
     'ActionController::InvalidAuthenticityToken',
     'ActionDispatch::Http::MimeNegotiation::InvalidType',
     'ActiveRecord::RecordNotFound',
-  ],
-  violet_rails_error: {
-    app: {
-      host: ENV["APP_HOST"]
-    }
-  }
+  ]
