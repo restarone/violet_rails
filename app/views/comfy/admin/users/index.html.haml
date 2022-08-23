@@ -1,5 +1,5 @@
 - content_for :right_column do
-  = render "comfy/admin/categories/index_non_site", type: "User"
+  = render "comfy/admin/cms/categories/index", type: "User"
 
 .page-header
   = link_to I18n.t('views.comfy.users.index.header.action'), new_admin_user_path, class: 'btn btn-secondary float-right'

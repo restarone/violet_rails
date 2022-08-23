@@ -1,0 +1,15 @@
+- object = form.object
+- object_type = object.class.to_s
+- non_site_entity = Comfy::Cms::Category::NON_SITE_ENTITIES.include?(object_type)
+- categories = non_site_entity ? Comfy::Cms::Category.of_type(object.class.to_s) : @site.categories.of_type(object.class.to_s)
+
+- if categories.present?
+  - if non_site_entity
+    .field
+      %label.mr-1 
+        Categories
+      = form.collection_check_boxes(:category_ids, categories, :id, :label) do |f|
+        = f.label(class: 'mr-3') {f.check_box(class: 'mr-1') + f.text}
+  - else
+    - options = {bootstrap: {check_inline: true, label: {text: t(".label"), class: "pt-0"}}}
+    = form.collection_check_boxes :category_ids, categories, :id, :label, options

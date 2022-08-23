@@ -1,24 +1,26 @@
+- categories = Comfy::Cms::Category::NON_SITE_ENTITIES.include?(type) ? Comfy::Cms::Category.of_type(type) : @site.categories.of_type(type)
+
 .box.categories-widget
   .read
     .categories
       .category
         - active_class = params[:categories].blank?? "active" : nil
-        = link_to 'All Categories', {categories: nil}, class: "btn btn-sm btn-light btn-block #{active_class}"
-      - Comfy::Cms::Category.of_type(type).each do |category|
+        = link_to t('.all'), {categories: nil}, class: "btn btn-sm btn-light btn-block #{active_class}"
+      - categories.each do |category|
         = render "comfy/admin/cms/categories/show", category: category, read: true
     %button.toggle-cat-edit.btn.btn-secondary.btn-sm.btn-block{type: "button"}
       = t(".edit")
 
   .editable 
     .categories
-      - Comfy::Cms::Category.of_type(type).each do |category|
+      - categories.each do |category|
         = render "comfy/admin/cms/categories/show", category: category
 
     - url = comfy_admin_cms_site_categories_path(@site)
     = form_with scope: :category, url: url, html: {id: "new-category"}, local: false do |form|
       = form.hidden_field :categorized_type, value: type
       .input-group
-        = form.text_field :label, placeholder: 'Add Category', class: 'form-control form-control-sm', id: nil
+        = form.text_field :label, placeholder: t('.add_placeholder'), class: 'form-control form-control-sm', id: nil
         .input-group-btn
           %button.btn.btn-primary.btn-sm{aria: {label: "Create Category"}}
             %i.fas.fa-fw.fa-plus
