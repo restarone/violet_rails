@@ -23,8 +23,8 @@
             = map_non_primitive_data_type(ff, property.field_type, form_properties)
             - if property.field_type == 'file'
               .mt-3
-                %video{id: "#{property.label.parameterize.underscore}_preview_video", controls: true, style: "max-height: 150px; display: none"}
-                %img{id: "#{property.label.parameterize.underscore}_preview_img", controls: true,  style: "max-height: 150px; display: none"}
+                %video{id: "#{property.label.parameterize.underscore}_preview_video", class: 'preview-media', controls: true, style: "display: none"}
+                %img{id: "#{property.label.parameterize.underscore}_preview_img", class: 'preview-media', controls: true,  style: "display: none"}
           = ff.hidden_field :field_type
           = ff.hidden_field :label
           = ff.hidden_field :allow_attachments
