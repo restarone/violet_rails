@@ -6,7 +6,12 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
 
   def index
     params[:q] ||= {}
-    @users_q = User.ransack(params[:q])
+    @users_q =
+      if params[:categories].present?
+        User.includes(:categories).for_category(params[:categories]).ransack(params[:q])
+      else
+        User.ransack(params[:q])
+      end
     @users = @users_q.result.paginate(page: params[:page], per_page: 10)
   end
 
@@ -81,7 +86,8 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
       :deliver_analytics_report,
       :can_manage_subdomain_settings,
       :can_access_admin,
-      :deliver_error_notifications
+      :deliver_error_notifications,
+      category_ids: []
     )
   end
 
