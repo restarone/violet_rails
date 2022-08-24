@@ -82,11 +82,19 @@
       = f.check_box :forum_enabled
       %label
         Forum
-    .form-group
+    .form-group#tracking-checkbox
       = f.check_box :tracking_enabled
       %label
         Tracking
-
+      
+      .form-group.consent-text
+        = f.label :cookies_consent_ui
+        = f.text_area :cookies_consent_ui, data: {'cms-cm-mode' => 'text/html'}
+      
+      :css
+        .consent-text { display: none;}
+        #tracking-checkbox > input[type="checkbox"]:checked ~ .consent-text { display: block; }
+  
     .form-group
       = f.check_box :ember_enabled
       %label
@@ -170,3 +178,4 @@
 
 
 = f.submit "Save", class: 'btn btn-primary'
+
