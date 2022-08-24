@@ -3,6 +3,16 @@ default:
   label: Public
   categorized_type: Comfy::Cms::File
 
+layout_1:
+  site: public
+  label: layout-1
+  categorized_type: Comfy::Cms::Layout
+
+layout_2:
+  site: public
+  label: layout-2
+  categorized_type: Comfy::Cms::Layout
+
 user_1:
   label: user-1
   categorized_type: User
