@@ -22,5 +22,6 @@
 
   <body>
     <%= yield %>
+    <%= turbo_frame_tag :cookies_modal, src: cookies_path if cookies[:cookies_accepted].nil? %>
   </body>
 </html>

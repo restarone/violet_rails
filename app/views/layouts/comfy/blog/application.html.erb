@@ -23,5 +23,6 @@
     <%= cms_snippet_render('navbar').html_safe unless mobile?  %>
     <%= yield %>
     <%= cms_snippet_render('footer').html_safe unless mobile? %>
+    <%= turbo_frame_tag :cookies_modal, src: cookies_path if cookies[:cookies_accepted].nil? %>
   </body>
 </html>

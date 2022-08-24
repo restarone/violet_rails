@@ -1,0 +1,9 @@
+<%= turbo_frame_tag :cookies_modal do %>
+  <% if cookies[:cookies_accepted].nil? %>
+    <section class="cookies-consent-modal">
+      <div class="cookies-consent">We process cookies</div>
+      <%= link_to "Accept", cookies_path(cookies: true), class: 'cookies-consent-accept-btn' %>
+      <%= link_to "Reject", cookies_path(cookies: false), class: 'cookies-consent-reject-btn' %>
+    </section>
+  <% end %>
+<% end %>
