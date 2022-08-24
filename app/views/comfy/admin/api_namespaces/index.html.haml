@@ -30,7 +30,8 @@
       %tr
         %td
           = link_to api_namespace.name, api_namespace
-          = render "comfy/admin/cms/categories/categories", object: api_namespace
+          .item-categories
+            = render "comfy/admin/cms/categories/categories", object: api_namespace
         %td= api_namespace.version
         %td= api_namespace.properties
         %td= api_namespace.requires_authentication

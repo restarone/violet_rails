@@ -42,7 +42,8 @@
       %tr
         %td
           = link_to user.email, edit_admin_user_path(id: user.id)
-          = render "comfy/admin/cms/categories/categories", object: user
+          .item-categories
+            = render "comfy/admin/cms/categories/categories", object: user
         %td= user.name
         %td= user.can_manage_web
         %td= user.can_manage_analytics
