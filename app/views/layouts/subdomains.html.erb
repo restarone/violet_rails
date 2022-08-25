@@ -14,6 +14,6 @@
   <%= render partial: 'shared/flash' %>
   <body>
     <%= yield %>
-    <%= turbo_frame_tag :cookies_modal, src: cookies_path if cookies[:cookies_accepted].nil? %>
+    <%= turbo_frame_tag :cookies_modal, src: cookies_path if show_cookies_consent_banner? %>
   </body>
 </html>
