@@ -160,7 +160,7 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'tracks user update (if tracking is enabled)' do
+  test 'tracks user update (if tracking is enabled and cookies accpeted)' do
     @restarone_subdomain.update(tracking_enabled: true)
 
     Apartment::Tenant.switch @restarone_subdomain.name do
@@ -172,7 +172,7 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
       }
 
       assert_difference "Ahoy::Event.count", +1 do
-        patch admin_user_url(subdomain: @restarone_subdomain.name, id: @other_user.id), params: payload
+        patch admin_user_url(subdomain: @restarone_subdomain.name, id: @other_user.id), params: payload, headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
       end
 
     end
@@ -191,7 +191,67 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
         }
       }
 
-      assert_no_difference "Ahoy::Event.count", +1 do
+      assert_no_difference "Ahoy::Event.count" do
+        patch admin_user_url(subdomain: @restarone_subdomain.name, id: @other_user.id), params: payload
+      end
+
+    end
+    assert_response :redirect
+    assert_redirected_to admin_users_url(subdomain: @restarone_subdomain.name)
+  end
+
+  test 'does not track user update (if tracking is disabled but cookies accepted)' do
+    @restarone_subdomain.update(tracking_enabled: false)
+
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      sign_in(@restarone_user)
+      payload = {
+        user: {
+          name: 'foobar'
+        }
+      }
+
+      assert_no_difference "Ahoy::Event.count" do
+        patch admin_user_url(subdomain: @restarone_subdomain.name, id: @other_user.id), params: payload, headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
+      end
+
+    end
+    assert_response :redirect
+    assert_redirected_to admin_users_url(subdomain: @restarone_subdomain.name)
+  end
+
+  test 'does not track user update (if tracking is enabled but cookies rejected)' do
+    @restarone_subdomain.update(tracking_enabled: true)
+
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      sign_in(@restarone_user)
+      payload = {
+        user: {
+          name: 'foobar'
+        }
+      }
+
+      assert_no_difference "Ahoy::Event.count" do
+        patch admin_user_url(subdomain: @restarone_subdomain.name, id: @other_user.id), params: payload, headers: {"HTTP_COOKIE" => "cookies_accepted=false;"}
+      end
+
+    end
+    assert_response :redirect
+    assert_redirected_to admin_users_url(subdomain: @restarone_subdomain.name)
+  end
+
+  test 'does not track user update (if tracking is enabled bugt cookies not consented)' do
+    @restarone_subdomain.update(tracking_enabled: true)
+
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      sign_in(@restarone_user)
+      payload = {
+        user: {
+          name: 'foobar'
+        }
+      }
+
+      assert_no_difference "Ahoy::Event.count" do
         patch admin_user_url(subdomain: @restarone_subdomain.name, id: @other_user.id), params: payload
       end
 
