@@ -6,7 +6,7 @@ class Mailbox::MessageThreadsController < Mailbox::BaseController
     ahoy.track(
       "subdomain-email-visit",
       {visit_id: current_visit.id, message_thread_id: @message_thread.id, user_id: current_user.id}
-    ) if Subdomain.current.tracking_enabled & current_visit
+    ) if tracking_enabled? & current_visit
   end
 
   def new

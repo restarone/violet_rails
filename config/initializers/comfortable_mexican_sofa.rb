@@ -12,7 +12,7 @@ end
 
 module ComfyPublicAuthentication
   def authenticate
-    if Subdomain.current.tracking_enabled
+    if tracking_enabled?
       user_id = current_user ? current_user.id : nil
       visit_id = current_visit ? current_visit.id : nil
       ahoy.track(

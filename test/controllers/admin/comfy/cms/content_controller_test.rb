@@ -18,12 +18,12 @@ class Comfy::Cms::ContentControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "get root page (tracking enabled)" do
+  test "get root page (tracking enabled and cookies accepted)" do
     @restarone_subdomain.update!(tracking_enabled: true)
     Apartment::Tenant.switch @restarone_subdomain.name do
       assert_difference "Ahoy::Event.count", +1 do
           perform_enqueued_jobs do
-            get root_url(subdomain: @restarone_subdomain.name)
+            get root_url(subdomain: @restarone_subdomain.name), headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
           end
       end
     end
@@ -31,6 +31,39 @@ class Comfy::Cms::ContentControllerTest < ActionDispatch::IntegrationTest
 
   test "get root page (tracking disabled)" do
     @restarone_subdomain.update!(tracking_enabled: false)
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      assert_no_difference "Ahoy::Event.count" do
+          perform_enqueued_jobs do
+            get root_url(subdomain: @restarone_subdomain.name)
+          end
+      end
+    end
+  end
+
+  test "get root page (tracking disabled but cookies accepted)" do
+    @restarone_subdomain.update!(tracking_enabled: false)
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      assert_no_difference "Ahoy::Event.count" do
+          perform_enqueued_jobs do
+            get root_url(subdomain: @restarone_subdomain.name), headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
+          end
+      end
+    end
+  end
+
+  test "get root page (tracking enabled but cookies rejected)" do
+    @restarone_subdomain.update!(tracking_enabled: true)
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      assert_no_difference "Ahoy::Event.count" do
+          perform_enqueued_jobs do
+            get root_url(subdomain: @restarone_subdomain.name), headers: {"HTTP_COOKIE" => "cookies_accepted=false;"}
+          end
+      end
+    end
+  end
+
+  test "get root page (tracking enabled but cookies not consented)" do
+    @restarone_subdomain.update!(tracking_enabled: true)
     Apartment::Tenant.switch @restarone_subdomain.name do
       assert_no_difference "Ahoy::Event.count" do
           perform_enqueued_jobs do

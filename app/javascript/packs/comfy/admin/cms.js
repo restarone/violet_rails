@@ -25,3 +25,4 @@ function resetIndex(containerId) {
   }
 
 require("../../common")
+require("../../turbo")

@@ -1,4 +1,19 @@
 class Ahoy::Store < Ahoy::DatabaseStore
+  def track_visit(data)
+    return unless tracking_enabled?
+
+    super(data)
+  end
+
+  def track_event(data)
+    return unless tracking_enabled?
+
+    super(data)
+  end
+
+  def tracking_enabled?
+    Subdomain.current.tracking_enabled && request.cookies['cookies_accepted'] == 'true'
+  end
 end
 
 # set to true for JavaScript tracking

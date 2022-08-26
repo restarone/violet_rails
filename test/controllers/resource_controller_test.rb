@@ -200,6 +200,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should allow #create with the current_user & current_visit being available in the send_web_request action' do
+    Subdomain.current.update(tracking_enabled: true)
     @api_namespace.api_form.update(properties: { 'name': {'label': 'name', 'placeholder': 'Test', 'type_validation': 'tel'}})
 
     api_action = api_actions(:one)
@@ -229,7 +230,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
 
     perform_enqueued_jobs do
       assert_difference "@api_namespace.api_resources.count", +1 do
-        post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
+        post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload, headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
         Sidekiq::Worker.drain_all
       end
     end
@@ -876,7 +877,37 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'tracking enabled: should track current vist and current user after create' do
+  test 'tracking enabled - cookies not consented: should not track current vist and current user after create' do
+    Subdomain.current.update(tracking_enabled: true)
+    api_namespace = api_namespaces(:one)
+    payload = {
+      data: {
+          properties: {
+            name: 123,
+          }
+      }
+    }
+    assert_no_difference "Ahoy::Event.count" do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+    end
+  end
+
+  test 'tracking enabled - cookies not rejected: should not track current vist and current user after create' do
+    Subdomain.current.update(tracking_enabled: true)
+    api_namespace = api_namespaces(:one)
+    payload = {
+      data: {
+          properties: {
+            name: 123,
+          }
+      }
+    }
+    assert_no_difference "Ahoy::Event.count" do
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload, headers: {"HTTP_COOKIE" => "cookies_accepted=false;"}
+    end
+  end
+
+  test 'tracking enabled - cookies accepted: should track current vist and current user after create' do
     user = users(:public)
     Subdomain.current.update(tracking_enabled: true)
     api_namespace = api_namespaces(:one)
@@ -888,7 +919,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       }
     }
     assert_difference "Ahoy::Event.count", +1 do
-      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload, headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
     end
     assert_equal Ahoy::Event.last.properties['api_resource_id'], ApiResource.last.id
     assert_equal Ahoy::Event.last.properties['api_namespace_id'], api_namespace.id
@@ -898,7 +929,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
 
     sign_in(user)
     assert_difference "Ahoy::Event.count", +1 do
-      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+      post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload, headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
     end
     assert_equal Ahoy::Event.last.properties['api_resource_id'], ApiResource.last.id 
     assert_equal Ahoy::Event.last.properties['api_namespace_id'], api_namespace.id

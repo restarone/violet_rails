@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_07_09_172402) do
+ActiveRecord::Schema.define(version: 2022_08_24_121504) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -478,6 +478,7 @@ ActiveRecord::Schema.define(version: 2022_07_09_172402) do
     t.boolean "allow_external_analytics_query", default: false
     t.string "email_name"
     t.text "email_signature"
+    t.text "cookies_consent_ui", default: "<div class=\"py-2 px-3 bg-white w-100 position-fixed\" style=\"bottom: 0; box-shadow: 1px 7px 14px 5px rgb(0 0 0 / 15%); z-index: 9000;\">\n    By using our website, you agree to use the cookies.\n    <a href=\"/cookies?cookies=true\">Accept</a>\n    <a href=\"/cookies?cookies=false\">Reject</a>\n  </div>"
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
     t.index ["name"], name: "index_subdomains_on_name"
   end

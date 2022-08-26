@@ -19,7 +19,7 @@ class SimpleDiscussion::ForumPostsControllerTest < ActionDispatch::IntegrationTe
     end
   end
 
-	test 'tracks forum-post update (if tracking is enabled)' do
+	test 'tracks forum-post update (if tracking is enabled and cookies accepted)' do
     @restarone_subdomain.update(tracking_enabled: true)
 
     Apartment::Tenant.switch @restarone_subdomain.name do
@@ -31,15 +31,35 @@ class SimpleDiscussion::ForumPostsControllerTest < ActionDispatch::IntegrationTe
       }
 
       assert_difference "Ahoy::Event.count", +1 do
-        patch simple_discussion.forum_thread_forum_post_url(subdomain: @restarone_subdomain.name, forum_thread_id: @forum_thread.id, id: @forum_post.id), params: payload
+        patch simple_discussion.forum_thread_forum_post_url(subdomain: @restarone_subdomain.name, forum_thread_id: @forum_thread.id, id: @forum_post.id), params: payload, headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
+      end
+
+    end
+    assert_response :redirect
+    assert_redirected_to simple_discussion.forum_thread_url(subdomain: @restarone_subdomain.name, id: @forum_thread.slug), headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
+    # Validation errors are not present in the response-body
+    assert_select 'div#error_explanation', { count: 0 }
+    refute @controller.view_assigns['forum_post'].errors.present?
+  end
+
+  test 'does not track forum-post update (if tracking is enabled and cookies not accepted)' do
+    @restarone_subdomain.update(tracking_enabled: true)
+
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      sign_in(@restarone_user)
+      payload = {
+        forum_post: {
+          body: 'foobar'
+        }
+      }
+
+      assert_no_difference "Ahoy::Event.count", +1 do
+        patch simple_discussion.forum_thread_forum_post_url(subdomain: @restarone_subdomain.name, forum_thread_id: @forum_thread.id, id: @forum_post.id), params: payload, headers: {"HTTP_COOKIE" => "cookies_accepted=false;"}
       end
 
     end
     assert_response :redirect
     assert_redirected_to simple_discussion.forum_thread_url(subdomain: @restarone_subdomain.name, id: @forum_thread.slug)
-    # Validation errors are not present in the response-body
-    assert_select 'div#error_explanation', { count: 0 }
-    refute @controller.view_assigns['forum_post'].errors.present?
   end
 
 	test 'does not track forum-post update (if tracking is disabled)' do
@@ -55,6 +75,26 @@ class SimpleDiscussion::ForumPostsControllerTest < ActionDispatch::IntegrationTe
 
       assert_no_difference "Ahoy::Event.count", +1 do
         patch simple_discussion.forum_thread_forum_post_url(subdomain: @restarone_subdomain.name, forum_thread_id: @forum_thread.id, id: @forum_post.id), params: payload
+      end
+
+    end
+    assert_response :redirect
+    assert_redirected_to simple_discussion.forum_thread_url(subdomain: @restarone_subdomain.name, id: @forum_thread.slug)
+  end
+
+  test 'does not track forum-post update (if tracking is disabled but cookies accepted)' do
+    @restarone_subdomain.update(tracking_enabled: false)
+
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      sign_in(@restarone_user)
+      payload = {
+        forum_post: {
+          body: 'foobar'
+        }
+      }
+
+      assert_no_difference "Ahoy::Event.count", +1 do
+        patch simple_discussion.forum_thread_forum_post_url(subdomain: @restarone_subdomain.name, forum_thread_id: @forum_thread.id, id: @forum_post.id), params: payload, headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
       end
 
     end

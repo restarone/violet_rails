@@ -99,6 +99,7 @@
 
     <div class="card card-body">
       <%= yield %>
+      <%= turbo_frame_tag :cookies_modal, src: cookies_path if show_cookies_consent_banner? %>
     </div>
 
   </div>

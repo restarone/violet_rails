@@ -10,9 +10,10 @@ class ContentControllerTest < ActionDispatch::IntegrationTest
     Ahoy::Visit.destroy_all
   end
 
-  test "should get index with ahoy signed cookies" do
+  test "should get index with ahoy signed cookies only if tracking enabled and cookies accepted" do
+    Subdomain.current.update(tracking_enabled: true)
     refute Ahoy::Visit.first
-    get root_url
+    get root_url, headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
     assert_response :success
     cookie_keys = ["ahoy_visitor", "ahoy_visit"]
     signed_cookies = cookies.to_hash
@@ -22,6 +23,51 @@ class ContentControllerTest < ActionDispatch::IntegrationTest
     end
     visit = Ahoy::Visit.first
     assert visit
+  end
+
+  test "should get index with out ahoy signed cookies only if tracking enabled but cookies rejected" do
+    Subdomain.current.update(tracking_enabled: true)
+    refute Ahoy::Visit.first
+    get root_url, headers: {"HTTP_COOKIE" => "cookies_accepted=false;"}
+    assert_response :success
+    cookie_keys = ["ahoy_visitor", "ahoy_visit"]
+    signed_cookies = cookies.to_hash
+    cookie_keys.each do |k|
+      refute_includes signed_cookies.keys, k
+      refute signed_cookies[k]
+    end
+    visit = Ahoy::Visit.first
+    refute visit
+  end
+
+  test "should get index with out ahoy signed cookies only if tracking enabled but cookies not consented" do
+    Subdomain.current.update(tracking_enabled: true)
+    refute Ahoy::Visit.first
+    get root_url
+    assert_response :success
+    cookie_keys = ["ahoy_visitor", "ahoy_visit"]
+    signed_cookies = cookies.to_hash
+    cookie_keys.each do |k|
+      refute_includes signed_cookies.keys, k
+      refute signed_cookies[k]
+    end
+    visit = Ahoy::Visit.first
+    refute visit
+  end
+
+  test "should get index with out ahoy signed cookies only if tracking disabled but cookies accepted" do
+    Subdomain.current.update(tracking_enabled: false)
+    refute Ahoy::Visit.first
+    get root_url, headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
+    assert_response :success
+    cookie_keys = ["ahoy_visitor", "ahoy_visit"]
+    signed_cookies = cookies.to_hash
+    cookie_keys.each do |k|
+      refute_includes signed_cookies.keys, k
+      refute signed_cookies[k]
+    end
+    visit = Ahoy::Visit.first
+    refute visit
   end
 
   test "should get index" do
