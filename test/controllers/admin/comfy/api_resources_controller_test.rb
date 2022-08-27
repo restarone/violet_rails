@@ -23,6 +23,8 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
     redirect_action = @api_namespace.create_api_actions.where(action_type: 'redirect').last
     redirect_action.update(redirect_url: '/')
 
+    @api_namespace.api_form.update(success_message: 'test success message')
+
     perform_enqueued_jobs do
       assert_difference('ApiResource.count') do
         post api_namespace_resources_url(api_namespace_id: @api_namespace.id), params: { api_resource: { properties: payload_as_stringified_json } }
@@ -33,12 +35,19 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
     assert ApiResource.last.properties
     assert_equal JSON.parse(payload_as_stringified_json).symbolize_keys.keys, ApiResource.last.properties.symbolize_keys.keys
     assert_equal "window.location.replace('#{redirect_action.redirect_url}')", response.parsed_body
+    
+    # ApiForm's custom success-message is not shown when the form is submitted by from admin-side.
+    refute_equal'test success message', flash[:notice]
   end
 
   test "should show api_resource" do
+    @api_namespace.api_form.update(success_message: 'test success message')
     sign_in(@user)
     get api_namespace_resource_url(api_namespace_id: @api_namespace.id, id: @api_namespace.api_resources.sample.id)
     assert_response :success
+
+    # ApiForm's custom success-message is not shown when viewed from admin-side.
+    refute_equal'test success message', flash[:notice]
   end
 
   test "should get edit" do
@@ -48,12 +57,16 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update api_resource" do
+    @api_namespace.api_form.update(success_message: 'test success message')
     sign_in(@user)
     perform_enqueued_jobs do
       patch api_namespace_resource_url(@api_resource, api_namespace_id: @api_resource.api_namespace_id), params: { api_resource: { properties: @api_resource.properties } }, headers: { 'HTTP_REFERER': edit_api_namespace_resource_url(api_namespace_id: @api_namespace.id, id: @api_resource.id) }
       Sidekiq::Worker.drain_all
     end
     assert_redirected_to edit_api_namespace_resource_url(api_namespace_id: @api_namespace.id, id: @api_resource.id)
+
+    # ApiForm's custom success-message is not shown when updated from admin-side.
+    refute_equal'test success message', flash[:notice]
   end
 
   test "should execute failed response api_resource" do
