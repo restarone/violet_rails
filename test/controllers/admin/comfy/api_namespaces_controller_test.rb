@@ -268,6 +268,104 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_api_resources_#{DateTime.now.to_i}.csv"
   end
 
+  test "should export api_resources with top-level non-primitive properties" do
+    sign_in(@user)
+    api_namespace = api_namespaces(:namespace_with_all_types)
+    api_namespace.non_primitive_properties.create!([
+      {
+        label: 'file_upload_one',
+        field_type: 'file',
+      },
+      {
+        label: 'richtext_field',
+        field_type: 'richtext'
+      },
+      {
+        label: 'file_upload_two',
+        field_type: 'file',
+      }
+    ])
+    resource_one = api_resources(:resource_with_all_types_one)
+    resource_one.non_primitive_properties.create!([
+      {
+        label: 'file_upload_one',
+        field_type: 'file',
+        attachment: fixture_file_upload("fixture_image.png", "image/jpeg")
+      },
+      {
+        label: 'richtext_field',
+        field_type: 'richtext',
+        content: "<div>Hello World</div>"
+      },
+      {
+        label: 'file_upload_two',
+        field_type: 'file',
+        attachment: fixture_file_upload("fixture_image.png", "image/jpeg")
+      }
+    ])
+    resource_two = api_resources(:resource_with_all_types_two)
+
+    stubbed_date = DateTime.new(2022, 1, 1)
+    DateTime.stubs(:now).returns(stubbed_date)
+
+    get export_api_resources_api_namespace_url(api_namespace, format: :csv)
+
+    file_upload_one = resource_one.non_primitive_properties.find_by(label: 'file_upload_one').attachment
+    file_upload_two = resource_one.non_primitive_properties.find_by(label: 'file_upload_two').attachment
+    richtext_field = "\"<div class=\"\"trix-content\"\">\n" \
+    "  <div>Hello World</div>\n" \
+    "</div>\n\""
+
+    expected_csv = "id,api_namespace_id,null,array,number,object,string,boolean,created_at,updated_at,file_upload_one,richtext_field,file_upload_two\n" \
+    "#{resource_one.id},#{api_namespace.id},#{resource_one.properties['null']},#{resource_one.properties['array']},#{resource_one.properties['number']},\"{\"\"a\"\"=>\"\"apple\"\"}\",#{resource_one.properties['string']},\"\",#{resource_one.created_at},#{resource_one.updated_at},#{rails_blob_url(file_upload_one, subdomain: Apartment::Tenant.current)},#{richtext_field},#{rails_blob_url(file_upload_two, subdomain: Apartment::Tenant.current)}\n" \
+    "#{resource_two.id},#{api_namespace.id},#{resource_two.properties['null']},#{resource_two.properties['array']},#{resource_two.properties['number']},\"{\"\"b\"\"=>\"\"ball\"\"}\",#{resource_two.properties['string']},\"\",#{resource_two.created_at},#{resource_two.updated_at},\"\",\"\",\"\"\n"
+
+    assert_response :success
+    assert_equal expected_csv, response.body
+    assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_api_resources_#{DateTime.now.to_i}.csv"
+  end
+
+  test "should export api_resources no non-primitive properties if the api-namespace does not have non-primitive properties" do
+    sign_in(@user)
+    api_namespace = api_namespaces(:namespace_with_all_types)
+
+    resource_one = api_resources(:resource_with_all_types_one)
+    resource_one.non_primitive_properties.create!([
+      {
+        label: 'file_upload_one',
+        field_type: 'file',
+        attachment: fixture_file_upload("fixture_image.png", "image/jpeg")
+      },
+      {
+        label: 'richtext_field',
+        field_type: 'richtext',
+        content: "<div>Hello World</div>"
+      },
+      {
+        label: 'file_upload_two',
+        field_type: 'file',
+        attachment: fixture_file_upload("fixture_image.png", "image/jpeg")
+      }
+    ])
+    resource_two = api_resources(:resource_with_all_types_two)
+
+    stubbed_date = DateTime.new(2022, 1, 1)
+    DateTime.stubs(:now).returns(stubbed_date)
+
+    get export_api_resources_api_namespace_url(api_namespace, format: :csv)
+
+    expected_csv = "id,api_namespace_id,null,array,number,object,string,boolean,created_at,updated_at\n" \
+    "#{resource_one.id},#{api_namespace.id},#{resource_one.properties['null']},#{resource_one.properties['array']},#{resource_one.properties['number']},\"{\"\"a\"\"=>\"\"apple\"\"}\",#{resource_one.properties['string']},\"\",#{resource_one.created_at},#{resource_one.updated_at}\n" \
+    "#{resource_two.id},#{api_namespace.id},#{resource_two.properties['null']},#{resource_two.properties['array']},#{resource_two.properties['number']},\"{\"\"b\"\"=>\"\"ball\"\"}\",#{resource_two.properties['string']},\"\",#{resource_two.created_at},#{resource_two.updated_at}\n"
+
+    assert_response :success
+    assert_equal expected_csv, response.body
+    refute_match 'file_upload_one', response.body
+    refute_match 'file_upload_two', response.body
+    refute_match 'richtext_field', response.body
+    assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_api_resources_#{DateTime.now.to_i}.csv"
+  end
+
   test "should deny exporting of api-resources as CSV if the user is not authorized" do
     @user.update(can_manage_api: false)
     sign_in(@user)
