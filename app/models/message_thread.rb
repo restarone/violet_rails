@@ -1,4 +1,6 @@
 class MessageThread < ApplicationRecord
+  include Comfy::Cms::WithCategories
+
   validates :recipients, presence: true, length: { minimum: 1 }
   has_many :messages, dependent: :destroy
   accepts_nested_attributes_for :messages

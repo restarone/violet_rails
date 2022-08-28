@@ -1,0 +1,38 @@
+default:
+  site: public
+  label: Public
+  categorized_type: Comfy::Cms::File
+
+layout_1:
+  site: public
+  label: layout-1
+  categorized_type: Comfy::Cms::Layout
+
+layout_2:
+  site: public
+  label: layout-2
+  categorized_type: Comfy::Cms::Layout
+
+user_1:
+  label: user-1
+  categorized_type: User
+
+user_2:
+  label: user-2
+  categorized_type: User
+
+api_namespace_1:
+  label: api_namespace-1
+  categorized_type: ApiNamespace
+
+api_namespace_2:
+  label: api_namespace-2
+  categorized_type: ApiNamespace
+
+message_thread_1:
+  label: message_thread-1
+  categorized_type: MessageThread
+
+message_thread_2:
+  label: message_thread-2
+  categorized_type: MessageThread

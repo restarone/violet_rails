@@ -1,8 +1,12 @@
 = form_with model: @user, url: admin_user_path, method: :patch do |f|
   .form-group
-    %label 
-      Name
-    = f.text_field :name
+    .field
+      %label
+        Name
+      = f.text_field :name
+
+    = render "comfy/admin/cms/categories/form", form: f
+
     .card.border-0.my-5
       %h4 Permissions
 
