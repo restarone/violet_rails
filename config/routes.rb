@@ -37,6 +37,7 @@ Rails.application.routes.draw do
       resources :messages
       member do
         post 'send_message'
+        patch 'add_categories'
       end
     end
   end

@@ -1,3 +1,6 @@
+- content_for :right_column do
+  = render "comfy/admin/cms/categories/index", type: "User"
+
 .page-header
   = link_to I18n.t('views.comfy.users.index.header.action'), new_admin_user_path, class: 'btn btn-secondary float-right'
   .h2
@@ -37,7 +40,10 @@
           = sort_link @users_q, :last_sign_in_at
     - @users.each do |user|
       %tr
-        %td= link_to user.email, edit_admin_user_path(id: user.id)
+        %td
+          = link_to user.email, edit_admin_user_path(id: user.id)
+          .item-categories
+            = render "comfy/admin/cms/categories/categories", object: user
         %td= user.name
         %td= user.can_manage_web
         %td= user.can_manage_analytics
