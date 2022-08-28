@@ -64,8 +64,6 @@ module ApiActionable
         handle_redirection if @redirect_action.present?
       end
     end if api_actions.present?
-
-    flash[:notice] = @api_resource.api_namespace.api_form.success_message_evaluated if @api_namespace.api_form&.success_message&.present?
   end
 
   def handle_error(e)

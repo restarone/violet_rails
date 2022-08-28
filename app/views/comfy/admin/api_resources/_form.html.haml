@@ -2,7 +2,7 @@
 - path = @api_resource.persisted? ? api_namespace_resource_url : api_namespace_resources_url
 - is_edit = @api_resource.persisted? ? true : false
 - form_properties = @api_resource.api_namespace&.api_form&.properties&.symbolize_keys
-= form_for @api_resource, url: path, method: action, html: {multipart: true, onsubmit: 'return checkRequiredRichTextFields()'} do |f|
+= form_for @api_resource, url: path, method: action, html: {multipart: true, onsubmit: 'return checkRequiredRichTextFields()'}, remote: true do |f|
   - if @api_resource.errors.any?
     #error_explanation
       %h2= "#{pluralize(@api_resource.errors.count, "error")} prohibited this api_resource from being saved:"
