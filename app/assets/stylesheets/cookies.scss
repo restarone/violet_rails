@@ -1,3 +1,25 @@
 // Place all the styles related to the cookies controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: https://sass-lang.com/
+
+.cookies-consent {
+  position: fixed;
+  bottom: 40px;
+  left: 40px;
+  width: 80%;
+  max-width: 550px;
+  padding: 2rem;
+  border-radius: 5px;
+  z-index: 9000;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.35);
+
+  &__title {
+    font-size: 1.4rem;
+  }
+}
+
+@media only screen and (min-width: 460px) {
+  .cookies-consent {
+    width: 85%;
+  }
+}
