@@ -1,5 +1,6 @@
 <%= turbo_frame_tag :cookies_modal do %>
   <% if cookies[:cookies_accepted].nil? %>
-    <%= Subdomain.current.cookies_consent_ui.html_safe %>
+      <div class="cookies-consent__overlay"></div>
+      <%= Subdomain.current.cookies_consent_ui.html_safe %>
   <% end %>
 <% end %>

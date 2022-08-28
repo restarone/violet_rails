@@ -4,22 +4,48 @@
 
 .cookies-consent {
   position: fixed;
-  bottom: 40px;
-  left: 40px;
-  width: 80%;
-  max-width: 550px;
+  bottom: 0;
+  left: 0;
+  width: 100%;
   padding: 2rem;
-  border-radius: 5px;
+  background-color: #fff;
   z-index: 9000;
-  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.35);
+
+  &__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    background-color: black;
+    opacity: 0.5;
+  }
 
   &__title {
     font-size: 1.4rem;
   }
+
+  &__buttons-container {
+    display: flex;
+    flex-direction: column;
+  }
 }
 
-@media only screen and (min-width: 460px) {
+@media only screen and (min-width: 768px) {
   .cookies-consent {
-    width: 85%;
+    display: flex;
+    justify-content: space-between;
+
+    &__text-content {
+      width: 100%;
+      max-width: 700px;
+      margin-right: 2.5rem;
+    }
+
+    &__buttons-container {
+      width: 100%;
+      max-width: 300px;
+    }
   }
 }
