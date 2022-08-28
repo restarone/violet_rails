@@ -478,7 +478,7 @@ ActiveRecord::Schema.define(version: 2022_08_24_121504) do
     t.boolean "allow_external_analytics_query", default: false
     t.string "email_name"
     t.text "email_signature"
-    t.text "cookies_consent_ui", default: "<div class=\"py-2 px-3 bg-white w-100 position-fixed\" style=\"bottom: 0; box-shadow: 1px 7px 14px 5px rgb(0 0 0 / 15%); z-index: 9000;\">\n    By using our website, you agree to use the cookies.\n    <a href=\"/cookies?cookies=true\">Accept</a>\n    <a href=\"/cookies?cookies=false\">Reject</a>\n  </div>"
+    t.text "cookies_consent_ui", default: "<div class=\"cookies-consent\">\n    <h2 class=\"cookies-consent__title\">We Value Your Privacy</h2>\n    <p>\n      We use cookies to enhance your browsing experience, serve personalized ads or content, and analyze our traffic. By clicking \"Accept All\", you consent to our use of cookies.\n    </p>\n    <a class=\"btn btn-primary mr-2 mb-2 mb-sm-0\" href=\"/cookies?cookies=true\">Accept All</a>\n    <a class=\"btn btn-outline-primary mb-2 mb-sm-0\" href=\"/cookies?cookies=false\">Reject All</a>\n  </div>"
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
     t.index ["name"], name: "index_subdomains_on_name"
   end
