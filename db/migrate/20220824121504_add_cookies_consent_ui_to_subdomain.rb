@@ -1,9 +1,12 @@
 class AddCookiesConsentUiToSubdomain < ActiveRecord::Migration[6.1]
   COOKIE_CONSENT_UI = 
-  "<div class=\"py-2 px-3 bg-white w-100 position-fixed\" style=\"bottom: 0; box-shadow: 1px 7px 14px 5px rgb(0 0 0 / 15%); z-index: 9000;\">
-    By using our website, you agree to use the cookies.
-    <a href=\"/cookies?cookies=true\">Accept</a>
-    <a href=\"/cookies?cookies=false\">Reject</a>
+  "<div class=\"cookies-consent\">
+    <h2 class=\"cookies-consent__title\">We Value Your Privacy</h2>
+    <p>
+      We use cookies to enhance your browsing experience, serve personalized ads or content, and analyze our traffic. By clicking \"Accept All\", you consent to our use of cookies.
+    </p>
+    <a class=\"btn btn-primary mr-2 mb-2 mb-sm-0\" href=\"/cookies?cookies=true\">Accept All</a>
+    <a class=\"btn btn-outline-primary mb-2 mb-sm-0\" href=\"/cookies?cookies=false\">Reject All</a>
   </div>"
 
   def change
