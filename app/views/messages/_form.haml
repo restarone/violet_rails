@@ -1,5 +1,8 @@
+- render_submit ||= false
+
 .my-3
   = f.fields_for Message.new do |message_form|
     = message_form.rich_text_area :content
-  .my-3
-    = f.submit "Send", class: 'btn btn-primary'
+  - if render_submit
+    .my-3
+      = f.submit "Send", class: 'btn btn-primary'

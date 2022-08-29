@@ -183,4 +183,26 @@ class Mailbox::MailboxControllerTest < ActionDispatch::IntegrationTest
       assert_match other_user.email, message_thread.recipients.to_s
     end
   end
+
+  test "#show: shows only the emails with provided categories" do
+    message_thread_one = message_threads(:one)
+    message_thread_two = message_threads(:two)
+    message_thread_three = message_threads(:public)
+
+    category_one = comfy_cms_categories(:message_thread_1)
+    category_two = comfy_cms_categories(:message_thread_2)
+
+    message_thread_one.update!(category_ids: [category_one.id])
+    message_thread_three.update!(category_ids: [category_one.id])
+
+    sign_in(@user)
+    get mailbox_url, params: {categories: category_one.label}
+
+    assert_response :success
+
+    categorized_message_thread_ids = [message_thread_one.id, message_thread_three.id]
+    @controller.view_assigns['message_threads'].each do |message_thread|
+      assert_includes categorized_message_thread_ids, message_thread.id
+    end
+  end
 end

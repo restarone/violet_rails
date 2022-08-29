@@ -8,6 +8,9 @@
       Subject: 
     = f.text_field :subject, class: 'form-control'
   = render partial: 'messages/form', locals: { f: f }
+  = render "comfy/admin/cms/categories/form", form: f
+  .my-3
+    = f.submit "Send", class: 'btn btn-primary'
 
 :javascript
   $(document).ready( function() {

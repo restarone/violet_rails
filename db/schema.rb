@@ -196,7 +196,7 @@ ActiveRecord::Schema.define(version: 2022_08_24_121504) do
   end
 
   create_table "comfy_cms_categories", force: :cascade do |t|
-    t.integer "site_id", null: false
+    t.integer "site_id"
     t.string "label", null: false
     t.string "categorized_type", null: false
     t.index ["site_id", "categorized_type", "label"], name: "index_cms_categories_on_site_id_and_cat_type_and_label", unique: true

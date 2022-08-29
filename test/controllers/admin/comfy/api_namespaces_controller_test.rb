@@ -513,4 +513,26 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
       assert_select "thead th", {count: 1, text: heading}, "Api-resources table must contain '#{heading}' column"
     end
   end
+
+  test "#index: should show only the api-namespaces with selected categories" do
+    api_namespace_one = api_namespaces(:one)
+    api_namespace_two = api_namespaces(:two)
+    api_namespace_three = api_namespaces(:three)
+    api_namespace_four = api_namespaces(:plugin_subdomain_events)
+
+    category_one = comfy_cms_categories(:api_namespace_1)
+    category_two = comfy_cms_categories(:api_namespace_2)
+
+    api_namespace_one.update!(category_ids: [category_one.id])
+    api_namespace_four.update!(category_ids: [category_one.id])
+
+    sign_in(@user)
+    get api_namespaces_url, params: {categories: category_one.label}
+    assert_response :success
+
+    categorized_api_namespace_ids = [api_namespace_one.id, api_namespace_four.id]
+    @controller.view_assigns['api_namespaces'].each do |api_namespace|
+      assert_includes categorized_api_namespace_ids, api_namespace.id
+    end
+  end
 end
