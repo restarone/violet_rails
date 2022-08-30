@@ -15,4 +15,5 @@
   = render 'layouts/comfy/admin/cms/head'
   = render 'layouts/comfy/admin/cms/body'
   = render 'shared/file_download'
-  = turbo_frame_tag :cookies_modal, src: cookies_path if show_cookies_consent_banner?
+  %div{"data-turbo": true}
+    = turbo_frame_tag :cookies_modal, src: cookies_path if show_cookies_consent_banner?
