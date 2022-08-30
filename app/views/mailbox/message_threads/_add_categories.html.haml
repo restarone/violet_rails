@@ -1,0 +1,4 @@
+- if Comfy::Cms::Category.of_type(@message_thread.class.to_s).present?
+  = form_for @message_thread, url: add_categories_mailbox_message_thread_path(id: @message_thread.id), method: :patch do |f|
+    = render "comfy/admin/cms/categories/form", form: f
+    = f.submit "Add", class: 'btn btn-primary'

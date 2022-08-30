@@ -341,4 +341,18 @@ class Comfy::Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     refute flash.alert
     assert_redirected_to admin_users_url(subdomain: @domain)
   end
+
+  test "#index: shows on the users with provided categories" do
+    category = comfy_cms_categories(:user_1)
+    @user.update!(category_ids: [category.id])
+
+    sign_in(@user)
+    get admin_users_url(subdomain: @domain), params: {categories: category.label}
+    assert_response :success
+
+    categorized_user_ids = [@user.id]
+    @controller.view_assigns['users'].each do |user|
+      assert_includes categorized_user_ids, user.id
+    end
+  end
 end

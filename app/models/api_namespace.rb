@@ -1,6 +1,8 @@
 class ApiNamespace < ApplicationRecord
   extend FriendlyId
   include JsonbFieldsParsable
+  include Comfy::Cms::WithCategories
+
   friendly_id :name, use: :slugged
 
   attr_accessor :has_form

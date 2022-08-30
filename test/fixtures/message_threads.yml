@@ -1,7 +1,18 @@
 public:
-  unread: true,
+  unread: true
   subject: foo
   recipients: 
    - contact2@restarone.com
-  
+
+one:
+  unread: true
+  subject: subject one
+  recipients: 
+   - test_one@restarone.com
+
+two:
+  unread: true
+  subject: subject two
+  recipients: 
+   - test_two@restarone.com
   

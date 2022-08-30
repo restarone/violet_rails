@@ -50,6 +50,11 @@ class Mailbox::MessageThreadsController < Mailbox::BaseController
     redirect_to mailbox_path
   end
 
+  def add_categories
+    @message_thread.update(add_categories_params)
+    redirect_to mailbox_path
+  end
+
   private
   def message_params
     params.require(:message_thread).permit(
@@ -62,8 +67,13 @@ class Mailbox::MessageThreadsController < Mailbox::BaseController
   def message_thread_params
     params.require(:message_thread).permit(
       :subject,
-      recipients: []
+      recipients: [],
+      category_ids: [],
     )
+  end
+
+  def add_categories_params
+    params.require(:message_thread).permit(category_ids: [])
   end
 
   def load_thread

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_07_09_172402) do
+ActiveRecord::Schema.define(version: 2022_08_22_163022) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -196,7 +196,7 @@ ActiveRecord::Schema.define(version: 2022_07_09_172402) do
   end
 
   create_table "comfy_cms_categories", force: :cascade do |t|
-    t.integer "site_id", null: false
+    t.integer "site_id"
     t.string "label", null: false
     t.string "categorized_type", null: false
     t.index ["site_id", "categorized_type", "label"], name: "index_cms_categories_on_site_id_and_cat_type_and_label", unique: true
