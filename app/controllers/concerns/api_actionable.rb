@@ -44,7 +44,13 @@ module ApiActionable
     if @redirect_action.present?
       redirect_url = @redirect_action.dynamic_url? ? @redirect_action.redirect_url_evaluated : @redirect_action.redirect_url
       if @redirect_action.update!(lifecycle_stage: 'complete', lifecycle_message: redirect_url)
-        redirect_with_js(redirect_url) and return
+        # Redirecting with JS is only needed when dealing with reCaptcha.
+        # reCaptcha related request is handled by ResourceController
+        if controller_name == "resource"
+          redirect_with_js(redirect_url) and return
+        else
+          redirect_to redirect_url and return
+        end
       else
         @redirect_action.update!(lifecycle_stage: 'failed', lifecycle_message: redirect_url)
         execute_error_actions
@@ -84,7 +90,13 @@ module ApiActionable
 
     if redirect_action
       redirect_action.update(lifecycle_stage: 'complete', lifecycle_message: redirect_action.redirect_url)
-      redirect_with_js(redirect_action.redirect_url) and return
+      # Redirecting with JS is only needed when dealing with reCaptcha.
+      # reCaptcha related request is handled by ResourceController
+      if controller_name == "resource"
+        redirect_with_js(redirect_url) and return
+      else
+        redirect_to redirect_url and return
+      end
     end
 
     @error_api_actions_exectuted = true

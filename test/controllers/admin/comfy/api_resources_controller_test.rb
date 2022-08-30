@@ -34,7 +34,7 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
 
     assert ApiResource.last.properties
     assert_equal JSON.parse(payload_as_stringified_json).symbolize_keys.keys, ApiResource.last.properties.symbolize_keys.keys
-    assert_equal "window.location.replace('#{redirect_action.redirect_url}')", response.parsed_body
+    assert_redirected_to '/'
     
     # ApiForm's custom success-message is not shown when the form is submitted by from admin-side.
     refute_equal'test success message', flash[:notice]
@@ -77,7 +77,7 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
       Sidekiq::Worker.drain_all
     end
 
-    assert_match root_url, response.body
+    assert_redirected_to root_url
     # ApiForm's custom success-message is not shown when viewed from admin-side.
     refute_equal 'test success message', flash[:notice]
   end
