@@ -3,10 +3,13 @@
 - property_column_index = main_headers.index('properties')
 - effective_headers = main_headers.dup.insert(property_column_index, *top_level_attributes)
 - effective_headers.delete('properties')
+- non_primitive_columns = @api_namespace.non_primitive_properties.pluck(:label)
+- effective_headers = effective_headers + non_primitive_columns
 
 = CSV.generate_line(effective_headers, row_sep: "").html_safe
 - @api_resources.each do |api_resource|
   - row_data = []
+
   - main_headers.each do |header|
     - data = api_resource.send(header)
     - if header == 'properties'
@@ -15,4 +18,14 @@
         - row_data << (props[key].nil? ? '' : props[key])
     - else
       - row_data << data
+
+  - non_primitive_columns.each do |label|
+    - non_primitive_property = api_resource.non_primitive_properties.find_by(label: label)
+    - if non_primitive_property.present? && non_primitive_property.richtext?
+      - row_data << non_primitive_property.content.to_s
+    - elsif non_primitive_property.present? && non_primitive_property.file?
+      - row_data << (non_primitive_property.attachment.attached? ? rails_blob_url(non_primitive_property.attachment, subdomain: Apartment::Tenant.current) : '')
+    - else
+      - row_data << ''
+
   = CSV.generate_line(row_data, row_sep: "").html_safe
