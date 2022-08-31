@@ -48,7 +48,7 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
         # Preventing double render error
         return if @redirect_action.present?
 
-        format.html { redirect_to edit_api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id,id: @api_resource.id), notice: "Api resource was successfully updates." }
+        format.html { redirect_to edit_api_namespace_resource_path(api_namespace_id: @api_resource.api_namespace_id,id: @api_resource.id), notice: "Api resource was successfully updated." }
         format.json { render :show, status: :ok, location: @api_resource }
       else
         execute_error_actions
