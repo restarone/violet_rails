@@ -51,4 +51,8 @@ module ApplicationHelper
   def show_cookies_consent_banner?
     Subdomain.current.tracking_enabled? && cookies[:cookies_accepted].nil?
   end
+
+  def render_cookies_consent_ui
+    render partial: 'shared/cookies_consent_ui'
+  end
 end
