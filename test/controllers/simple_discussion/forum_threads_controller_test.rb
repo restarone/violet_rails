@@ -299,7 +299,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     assert @controller.view_assigns['forum_post'].errors.present?
   end
 
-  test 'tracks forum-thread view (if tracking is enabled)' do
+  test 'tracks forum-thread view (if tracking is enabled and cookies accepted)' do
     @restarone_subdomain.update(tracking_enabled: true)
 
     Apartment::Tenant.switch @restarone_subdomain.name do
@@ -312,7 +312,27 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
       sign_in(@restarone_user)
 
       assert_difference "Ahoy::Event.count", +1 do
-        get simple_discussion.forum_thread_url(subdomain: @restarone_subdomain.name, id: forum_thread.slug)
+        get simple_discussion.forum_thread_url(subdomain: @restarone_subdomain.name, id: forum_thread.slug), headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
+      end
+
+    end
+    assert_response :success
+  end
+
+  test 'does not track forum-thread view (if tracking is enabled and cookies not accepted)' do
+    @restarone_subdomain.update(tracking_enabled: false)
+
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      forum_category = ForumCategory.create!(name: 'test', slug: 'test')
+      forum_thread = @restarone_user.forum_threads.new(title: 'Test Thread', forum_category_id: forum_category.id)
+      forum_thread.save!
+      forum_post = ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @restarone_user.id, body: 'test body')
+
+
+      sign_in(@restarone_user)
+
+      assert_no_difference "Ahoy::Event.count", +1 do
+        get simple_discussion.forum_thread_url(subdomain: @restarone_subdomain.name, id: forum_thread.slug), headers: {"HTTP_COOKIE" => "cookies_accepted=false;"}
       end
 
     end
