@@ -1,1 +1,1 @@
-<%= Subdomain.current.cookies_consent_ui.html_safe if show_cookies_consent_banner? %>
+<%= render html: Subdomain.current.cookies_consent_ui.html_safe if show_cookies_consent_banner? %>
