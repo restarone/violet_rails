@@ -36,7 +36,7 @@ class SimpleDiscussion::ForumThreadsController < SimpleDiscussion::ApplicationCo
     ahoy.track(
       "subdomain-forum-thread-visit",
       {visit_id: current_visit.id, forum_thread_id: @forum_thread.id, user_id: current_user&.id}
-    ) if Subdomain.current.tracking_enabled && current_visit
+    ) if tracking_enabled? && current_visit
   end
 
   def new

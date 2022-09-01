@@ -50,13 +50,31 @@ class Comfy::Admin::Cms::FilesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'tracks file update (if tracking is enabled)' do
+  test 'tracks file update (if tracking is enabled and cookies accepted)' do
     @restarone_subdomain.update(tracking_enabled: true)
 
     Apartment::Tenant.switch @restarone_subdomain.name do
       sign_in(@restarone_user)
 
       assert_difference "Ahoy::Event.count", +1 do
+        patch comfy_admin_cms_site_file_url(subdomain: @restarone_subdomain.name, site_id: @site, id: @file), params: { file: {
+          label:       "Updated File",
+          description: "Updated Description",
+          file:        fixture_file_upload("fixture_image.png", "image/jpeg")
+        } }, headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
+      end
+    end
+    assert_response :redirect
+    assert_redirected_to action: :edit, site_id: @site, id: @file
+  end
+
+  test 'does not track file update (if tracking is disabled)' do
+    @restarone_subdomain.update(tracking_enabled: false)
+
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      sign_in(@restarone_user)
+
+      assert_no_difference "Ahoy::Event.count", +1 do
         patch comfy_admin_cms_site_file_url(subdomain: @restarone_subdomain.name, site_id: @site, id: @file), params: { file: {
           label:       "Updated File",
           description: "Updated Description",
@@ -68,8 +86,44 @@ class Comfy::Admin::Cms::FilesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to action: :edit, site_id: @site, id: @file
   end
 
-  test 'does not track file update (if tracking is enabled)' do
+  test 'does not track file update (if tracking is disabled but cookies accepted)' do
     @restarone_subdomain.update(tracking_enabled: false)
+
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      sign_in(@restarone_user)
+
+      assert_no_difference "Ahoy::Event.count", +1 do
+        patch comfy_admin_cms_site_file_url(subdomain: @restarone_subdomain.name, site_id: @site, id: @file), params: { file: {
+          label:       "Updated File",
+          description: "Updated Description",
+          file:        fixture_file_upload("fixture_image.png", "image/jpeg")
+        } }, headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
+      end
+    end
+    assert_response :redirect
+    assert_redirected_to action: :edit, site_id: @site, id: @file
+  end
+
+  test 'does not track file update (if tracking is enabled but cookies rejected)' do
+    @restarone_subdomain.update(tracking_enabled: true)
+
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      sign_in(@restarone_user)
+
+      assert_no_difference "Ahoy::Event.count", +1 do
+        patch comfy_admin_cms_site_file_url(subdomain: @restarone_subdomain.name, site_id: @site, id: @file), params: { file: {
+          label:       "Updated File",
+          description: "Updated Description",
+          file:        fixture_file_upload("fixture_image.png", "image/jpeg")
+        } }, headers: {"HTTP_COOKIE" => "cookies_accepted=false;"}
+      end
+    end
+    assert_response :redirect
+    assert_redirected_to action: :edit, site_id: @site, id: @file
+  end
+
+  test 'does not track file update (if tracking is enabled but cookies not consented)' do
+    @restarone_subdomain.update(tracking_enabled: true)
 
     Apartment::Tenant.switch @restarone_subdomain.name do
       sign_in(@restarone_user)

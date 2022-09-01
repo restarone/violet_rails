@@ -53,7 +53,7 @@ class Comfy::Admin::Cms::PagesControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
   end
 
-  test 'tracks page update (if tracking is enabled)' do
+  test 'tracks page update (if tracking is enabled and cookies enabled)' do
     @restarone_subdomain.update(tracking_enabled: true)
 
     Apartment::Tenant.switch @restarone_subdomain.name do
@@ -69,7 +69,7 @@ class Comfy::Admin::Cms::PagesControllerTest < ActionDispatch::IntegrationTest
             { identifier: "header",
               content:    "new_page_string_content" }
           ]
-        } }
+        } }, headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
       end
 
     end
@@ -77,7 +77,30 @@ class Comfy::Admin::Cms::PagesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to action: :edit, id: @page
   end
 
-  test 'does not track page update (if tracking is enabled)' do
+  test 'does not track page update (if tracking is enabled but cookies not consented)' do
+    @restarone_subdomain.update(tracking_enabled: true)
+
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      @user.update(can_access_admin: true, can_manage_web: true)
+      sign_in(@user)
+
+      assert_no_difference "Ahoy::Event.count", +1 do
+        patch comfy_admin_cms_site_page_url(subdomain: @restarone_subdomain.name, site_id: @site, id: @page), params: { page: {
+          label:      "Updated Label",
+          fragments_attributes: [
+            { identifier: "content",
+              content:    "new_page_text_content" },
+            { identifier: "header",
+              content:    "new_page_string_content" }
+          ]
+        } }
+      end
+    end
+    assert_response :redirect
+    assert_redirected_to action: :edit, id: @page
+  end
+
+  test 'does not track page update (if tracking is disabled)' do
     @restarone_subdomain.update(tracking_enabled: false)
 
     Apartment::Tenant.switch @restarone_subdomain.name do
@@ -94,6 +117,52 @@ class Comfy::Admin::Cms::PagesControllerTest < ActionDispatch::IntegrationTest
               content:    "new_page_string_content" }
           ]
         } }
+      end
+    end
+    assert_response :redirect
+    assert_redirected_to action: :edit, id: @page
+  end
+
+  test 'does not track page update (if tracking is enabled and cookies disabled)' do
+    @restarone_subdomain.update(tracking_enabled: true)
+
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      @user.update(can_access_admin: true, can_manage_web: true)
+      sign_in(@user)
+
+      assert_no_difference "Ahoy::Event.count", +1 do
+        patch comfy_admin_cms_site_page_url(subdomain: @restarone_subdomain.name, site_id: @site, id: @page), params: { page: {
+          label:      "Updated Label",
+          fragments_attributes: [
+            { identifier: "content",
+              content:    "new_page_text_content" },
+            { identifier: "header",
+              content:    "new_page_string_content" }
+          ]
+        } }, headers: {"HTTP_COOKIE" => "cookies_accepted=false;"}
+      end
+    end
+    assert_response :redirect
+    assert_redirected_to action: :edit, id: @page
+  end
+
+  test 'does not track page update (if tracking is disabled and cookies enabled)' do
+    @restarone_subdomain.update(tracking_enabled: false)
+
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      @user.update(can_access_admin: true, can_manage_web: true)
+      sign_in(@user)
+
+      assert_no_difference "Ahoy::Event.count", +1 do
+        patch comfy_admin_cms_site_page_url(subdomain: @restarone_subdomain.name, site_id: @site, id: @page), params: { page: {
+          label:      "Updated Label",
+          fragments_attributes: [
+            { identifier: "content",
+              content:    "new_page_text_content" },
+            { identifier: "header",
+              content:    "new_page_string_content" }
+          ]
+        } }, headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
       end
     end
     assert_response :redirect
