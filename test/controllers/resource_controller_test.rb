@@ -331,6 +331,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
     end
 
+    # ApiForm's custom success-message is only shown when the form submitted by end-user.
     assert_equal 'test success message', flash[:notice]
     refute flash[:error]
   end
@@ -352,6 +353,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
       post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
     end
 
+    # ApiForm's custom success-message is only shown when the form submitted by end-user.
     assert_equal 'test success message', flash[:notice]
     refute flash[:error]
   end
@@ -370,6 +372,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
 
     assert_response :success
+    # ApiForm's custom success-message is only shown when the form submitted by end-user.
     assert_equal "<div class=\"custom-class\">test success message #{api_namespace.id}</div>", flash[:notice]
   end
 
@@ -388,6 +391,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
 
     assert_response :success
+    # ApiForm's custom success-message is only shown when the form submitted by end-user.
     assert_equal "<div class=\"custom-class\">test success message #{api_namespace.id}</div>", flash[:notice]
   end
 
