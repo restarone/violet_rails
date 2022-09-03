@@ -11,6 +11,15 @@ class EMailer < ApplicationMailer
     message_id = "#{Digest::SHA2.hexdigest(Time.now.to_i.to_s)}@#{Apartment::Tenant.current}@#{ENV['APP_HOST']}"
     @message_thread.update(current_email_message_id: message_id)
 
+    unless params[:attachments].nil?
+      Array.wrap(params[:attachments]).each do |attachment|
+        attachments[attachment[:filename]] = {
+          mime_type: attachment[:mime_type],
+          content: attachment[:content]
+        }
+      end
+    end
+
     mail(
       # This will make the mail addresses visible to all (no Blank Carbon Copy)
       to: @message_thread.recipients, 

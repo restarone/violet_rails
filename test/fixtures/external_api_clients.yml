@@ -360,3 +360,113 @@ sync_attribute_to_api_namespace_plugin:
     end
     # at the end of the file we have to implicitly return the class 
     SyncAttributeToApiNamespace
+
+compliance_visitor_data_request_plugin:
+  api_namespace: compliance_visitor_data_request
+  slug: compliance-visitor-request
+  label: ComplianceVisitorDataRequest
+  enabled: true
+  metadata:
+    {
+      "EXCLUDE_API_NAMESPACES":
+        ["subdomain_events", "compliance-visitor-request"],
+      "MESSAGE": "This is your data request, please see it below",
+    }
+  model_definition: |
+    class ComplianceVisitorDataRequest
+      def initialize(parameters)
+        @external_api_client = parameters[:external_api_client]
+        @visitor_api_namespace = @external_api_client.api_namespace
+        @visitor_api_resources_with_no_message_sent = @visitor_api_namespace.api_resources.where("properties @> ?", {compliance_message_sent: false}.to_json)
+        @connection_service = Violet::ConnectionService.new
+      end
+
+      def start
+        excluded_api_namespaces = @external_api_client.metadata["EXCLUDE_API_NAMESPACES"].nil? ? [] : @external_api_client.metadata["EXCLUDE_API_NAMESPACES"]
+        should_scan_all_namespaces = excluded_api_namespaces.length > 0 ? false : @external_api_client.metadata["SCAN_ALL_NAMESPACES"]
+        message = @external_api_client.metadata["MESSAGE"]
+
+        @visitor_api_resources_with_no_message_sent.each do |visitor_api_resource|
+          visitor_email = visitor_api_resource.properties["email"]
+          attachments = []
+
+          raise "Permission to scan all api namespaces is not given" if excluded_api_namespaces.length == 0 && !should_scan_all_namespaces
+          
+          # determine which api namespaces need to be scanned
+          included_api_namespaces = ApiNamespace.where.not(slug: excluded_api_namespaces)
+
+          included_api_namespaces.each do |api_namespace|
+            # api resources that the visitor submitted
+            api_resources = api_namespace.api_resources.where("properties @> ?", {email: visitor_email}.to_json)
+
+            # if there are no api resources for this api namespace, then no need to attach a CSV file
+            if api_resources.length > 0
+              attachment = {
+                filename: "api_namespace_#{api_namespace.slug}_#{DateTime.now.to_i}.csv",
+                mime_type: "text/csv",
+                content: generateCSVWithApiResources(api_namespace, api_resources)
+              }
+              attachments << attachment
+            end
+          end
+
+          if (attachments.length > 0)
+            email_thread = MessageThread.create(subject: "#{visitor_email} compliance: visitor submitted data request", recipients: [visitor_email])
+            email_message = email_thread.messages.create(content: "<p>#{message}</p>", from: @connection_service.get_current_subdomain_formatted_email)
+            EMailer.with(message: email_message, message_thread: email_thread, attachments: attachments).ship.deliver_later
+            # Currently sending emails asynchronously and not checking if they got sent successfully before setting compliance_message_sent to true
+            visitor_api_resource.properties["compliance_message_sent"] = true
+            visitor_api_resource.save
+          end
+        end
+      end
+
+      def generateCSVWithApiResources(api_namespace, api_resources)
+        main_headers = ApiResource.column_names
+        top_level_attributes = api_namespace.properties.keys
+        property_column_index = main_headers.index('properties')
+        effective_headers = main_headers.dup.insert(property_column_index, *top_level_attributes)
+        effective_headers.delete('properties')
+        non_primitive_columns = api_namespace.non_primitive_properties.pluck(:label)
+        effective_headers += non_primitive_columns
+
+        csv_content = CSV.generate do |csv|
+          # adding column headers
+          csv << effective_headers
+
+          api_resources.each do |api_resource|
+            row_data = []
+            # Populating primitive columns
+            main_headers.each do |header|
+              data = api_resource[header]
+              if header == "properties"
+                propsData = data
+                top_level_attributes.each do |attribute|
+                  row_data << (propsData[attribute].nil? ? "" : propsData[attribute])
+                end
+              else
+                row_data << data
+              end
+            end
+
+            # Populating non-primitive columns
+            non_primitive_columns.each do |label|
+              non_primitive_property = api_resource.non_primitive_properties.find_by(label: label)
+              if non_primitive_property.present? && non_primitive_property.richtext?
+                row_data << non_primitive_property.content.to_s
+              elsif non_primitive_property.present? && non_primitive_property.file?
+                blob_url = non_primitive_property.attachment.attached? ? @connection_service.get_blob_url_with_current_subdomain(non_primitive_property.attachment) : ''
+                row_data << blob_url
+              else
+                row_data << ''
+              end
+            end
+
+            csv << row_data
+          end
+        end
+        csv_content.html_safe
+      end
+    end
+    # at the end of the file we have to implicitly return the class 
+    ComplianceVisitorDataRequest
