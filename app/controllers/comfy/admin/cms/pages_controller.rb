@@ -52,7 +52,7 @@ class Comfy::Admin::Cms::PagesController < Comfy::Admin::Cms::BaseController
     ahoy.track(
       "comfy-cms-page-update",
       {visit_id: current_visit.id, page_id: @page.id, user_id: current_user.id}
-    ) if Subdomain.current.tracking_enabled && current_visit
+    ) if tracking_enabled? && current_visit
 
     flash[:success] = I18n.t("comfy.admin.cms.pages.updated")
     redirect_to action: :edit, id: @page

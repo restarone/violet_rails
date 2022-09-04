@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_08_19_052000) do
+ActiveRecord::Schema.define(version: 2022_08_24_121504) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -198,7 +198,7 @@ ActiveRecord::Schema.define(version: 2022_08_19_052000) do
   end
 
   create_table "comfy_cms_categories", force: :cascade do |t|
-    t.integer "site_id", null: false
+    t.integer "site_id"
     t.string "label", null: false
     t.string "categorized_type", null: false
     t.index ["site_id", "categorized_type", "label"], name: "index_cms_categories_on_site_id_and_cat_type_and_label", unique: true
@@ -480,6 +480,7 @@ ActiveRecord::Schema.define(version: 2022_08_19_052000) do
     t.boolean "allow_external_analytics_query", default: false
     t.string "email_name"
     t.text "email_signature"
+    t.text "cookies_consent_ui", default: "<div class=\"cookies-consent__overlay position-fixed\" style=\"top: 0; bottom: 0; left: 0; right: 0; background-color: black; opacity: 0.5; z-index: 1000;\"></div>\n  <div class=\"cookies-consent position-fixed bg-white d-md-flex justify-content-md-between\" style=\"bottom: 0; left: 0; width: 100%; padding: 2rem 1rem; z-index: 9000;\">\n    <div class=\"cookies-consent__text-content col-md-8\" style=\"max-width: 700px;\">\n      <h2 class=\"cookies-consent__title\" style=\"font-size: 1.4rem;\">We Value Your Privacy</h2>\n      <p class=\"mb-4 mb-md-0\">\n        We use cookies to enhance your browsing experience, serve personalized ads or content, and analyze our traffic. By clicking \"Accept All\", you consent to our use of cookies.\n      </p>\n    </div>\n    <div class=\"cookies-consent__buttons-container d-flex flex-column col-md-4 col-xl-3\">\n      <a class=\"btn btn-primary mb-3\" href=\"/cookies?cookies=true\">Accept All</a>\n      <a class=\"btn btn-outline-primary\" href=\"/cookies?cookies=false\">Reject All</a>\n    </div>  \n  </div>"
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
     t.index ["name"], name: "index_subdomains_on_name"
   end

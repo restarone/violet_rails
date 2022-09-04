@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   include SimpleDiscussion::ForumUser
+  include Comfy::Cms::WithCategories
   # Include default devise modules. Others available are:
   #  and :omniauthable
   devise :invitable, :database_authenticatable, :registerable,

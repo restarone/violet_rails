@@ -47,4 +47,12 @@ module ApplicationHelper
       return cms_snippet_render('footer').html_safe
     end
   end
+
+  def show_cookies_consent_banner?
+    Subdomain.current.tracking_enabled? && cookies[:cookies_accepted].nil?
+  end
+
+  def render_cookies_consent_ui
+    render partial: 'shared/cookies_consent_ui'
+  end
 end

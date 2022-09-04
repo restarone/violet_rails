@@ -5,7 +5,11 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
   # GET /api_namespaces or /api_namespaces.json
   def index
     params[:q] ||= {}
-    @api_namespaces_q = ApiNamespace.ransack(params[:q])
+    @api_namespaces_q = if params[:categories].present?
+      ApiNamespace.includes(:categories).for_category(params[:categories]).ransack(params[:q])
+    else
+      ApiNamespace.ransack(params[:q])
+    end
     @api_namespaces = @api_namespaces_q.result.paginate(page: params[:page], per_page: 10)
   end
 
@@ -184,6 +188,7 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
                                             update_api_actions_attributes: api_actions_attributes,
                                             destroy_api_actions_attributes: api_actions_attributes,
                                             error_api_actions_attributes: api_actions_attributes,
+                                            category_ids: []
                                            )
     end
 

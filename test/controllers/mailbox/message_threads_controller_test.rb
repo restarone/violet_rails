@@ -35,7 +35,7 @@ class Mailbox::MessageThreadsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "tracks message view (if tracking is enabled)" do
+  test "tracks message view (if tracking is enabled and cookies accepted)" do
     @restarone_subdomain.update(tracking_enabled: true)
     @restarone_subdomain.initialize_mailbox
 
@@ -46,7 +46,7 @@ class Mailbox::MessageThreadsControllerTest < ActionDispatch::IntegrationTest
       sign_in(@unauthorized_user)
 
       assert_difference "Ahoy::Event.count", +1 do
-        get mailbox_message_thread_url(subdomain: @restarone_subdomain.name, id: @unauthorized_user.id)
+        get mailbox_message_thread_url(subdomain: @restarone_subdomain.name, id: @unauthorized_user.id), headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
         assert_response :success
       end
 
@@ -55,6 +55,60 @@ class Mailbox::MessageThreadsControllerTest < ActionDispatch::IntegrationTest
 
   test "does not track message view (if tracking is disabled)" do
     @restarone_subdomain.update(tracking_enabled: false)
+    @restarone_subdomain.initialize_mailbox
+
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_message_thread = MessageThread.create!(unread: true, subject: 'foo', recipients: [@unauthorized_user.email])
+
+      @unauthorized_user.update(can_access_admin: true)
+      sign_in(@unauthorized_user)
+
+      assert_no_difference "Ahoy::Event.count", +1 do
+        get mailbox_message_thread_url(subdomain: @restarone_subdomain.name, id: @unauthorized_user.id)
+        assert_response :success
+      end
+
+    end
+  end
+
+  test "does not track message view (if tracking is disabled but cookies accepted)" do
+    @restarone_subdomain.update(tracking_enabled: false)
+    @restarone_subdomain.initialize_mailbox
+
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_message_thread = MessageThread.create!(unread: true, subject: 'foo', recipients: [@unauthorized_user.email])
+
+      @unauthorized_user.update(can_access_admin: true)
+      sign_in(@unauthorized_user)
+
+      assert_no_difference "Ahoy::Event.count", +1 do
+        get mailbox_message_thread_url(subdomain: @restarone_subdomain.name, id: @unauthorized_user.id), headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
+        assert_response :success
+      end
+
+    end
+  end
+
+  test "does not track message view (if tracking is enabled but cookies rejected)" do
+    @restarone_subdomain.update(tracking_enabled: true)
+    @restarone_subdomain.initialize_mailbox
+
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_message_thread = MessageThread.create!(unread: true, subject: 'foo', recipients: [@unauthorized_user.email])
+
+      @unauthorized_user.update(can_access_admin: true)
+      sign_in(@unauthorized_user)
+
+      assert_no_difference "Ahoy::Event.count", +1 do
+        get mailbox_message_thread_url(subdomain: @restarone_subdomain.name, id: @unauthorized_user.id), headers: {"HTTP_COOKIE" => "cookies_accepted=false;"}
+        assert_response :success
+      end
+
+    end
+  end
+
+  test "does not track message view (if tracking is enabled but cookies not consented)" do
+    @restarone_subdomain.update(tracking_enabled: true)
     @restarone_subdomain.initialize_mailbox
 
     Apartment::Tenant.switch @restarone_subdomain.name do

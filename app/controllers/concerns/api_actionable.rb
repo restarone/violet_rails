@@ -44,7 +44,13 @@ module ApiActionable
     if @redirect_action.present?
       redirect_url = @redirect_action.dynamic_url? ? @redirect_action.redirect_url_evaluated : @redirect_action.redirect_url
       if @redirect_action.update!(lifecycle_stage: 'complete', lifecycle_message: redirect_url)
-        redirect_with_js(redirect_url) and return
+        # Redirecting with JS is only needed when dealing with reCaptcha.
+        # reCaptcha related request is handled by ResourceController
+        if controller_name == "resource"
+          redirect_with_js(redirect_url) and return
+        else
+          redirect_to redirect_url and return
+        end
       else
         @redirect_action.update!(lifecycle_stage: 'failed', lifecycle_message: redirect_url)
         execute_error_actions
@@ -64,8 +70,6 @@ module ApiActionable
         handle_redirection if @redirect_action.present?
       end
     end if api_actions.present?
-
-    flash[:notice] = @api_resource.api_namespace.api_form.success_message_evaluated if @api_namespace.api_form&.success_message&.present?
   end
 
   def handle_error(e)
@@ -86,7 +90,13 @@ module ApiActionable
 
     if redirect_action
       redirect_action.update(lifecycle_stage: 'complete', lifecycle_message: redirect_action.redirect_url)
-      redirect_with_js(redirect_action.redirect_url) and return
+      # Redirecting with JS is only needed when dealing with reCaptcha.
+      # reCaptcha related request is handled by ResourceController
+      if controller_name == "resource"
+        redirect_with_js(redirect_url) and return
+      else
+        redirect_to redirect_url and return
+      end
     end
 
     @error_api_actions_exectuted = true
@@ -123,7 +133,7 @@ module ApiActionable
     ahoy.track(
       "api-resource-create",
       { visit_id: current_visit.id, api_resource_id: @api_resource.id, api_namespace_id: @api_namespace.id, user_id: current_user&.id }
-    ) if Subdomain.current.tracking_enabled && current_visit
+    ) if tracking_enabled? && current_visit
   end
 
   def redirect_back_with_js
