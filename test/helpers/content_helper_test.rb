@@ -198,6 +198,50 @@ class ContentHelperTest < ActionView::TestCase
     end
   end
 
+  test 'render_api_namespace_resource_index - sort jsonb - ASC' do
+    params[:order] = {properties: {name: 'ASC'}}.to_json
+
+    snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<% @api_resources.each do |res| %><%= res.properties['name'] %><% end %>")
+    
+    response = render_api_namespace_resource_index(@api_namespace.slug)
+    excepted_response = "#{@api_resource.properties['name']}#{@api_resource_1.properties['name']}#{@api_resource_2.properties['name']}"
+    assert_equal excepted_response, response
+  end
+
+  test 'render_api_namespace_resource_index - sort jsonb - DESC' do
+    params[:order] = {properties: {name: 'DESC'}}.to_json
+
+    snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<% @api_resources.each do |res| %><%= res.properties['name'] %><% end %>")
+    
+    response = render_api_namespace_resource_index(@api_namespace.slug)
+    excepted_response = "#{@api_resource_2.properties['name']}#{@api_resource_1.properties['name']}#{@api_resource.properties['name']}"
+    assert_equal excepted_response, response
+  end
+
+  test 'render_api_namespace_resource_index - scope & filter by params and sort ASC' do
+    @current_user = @user
+    params[:properties] = {name: { value: 'test user', option: 'PARTIAL' }}.to_json
+    params[:order] = {properties: {name: 'ASC'}}.to_json
+
+    snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<% @api_resources.each do |res| %><%= res.properties['name'] %><% end %>")
+    
+    response = render_api_namespace_resource_index(@api_namespace.slug, { 'scope' => { 'current_user' => 'true' } })
+    excepted_response = "#{@api_resource_1.properties['name']}#{@api_resource_2.properties['name']}"
+    assert_equal excepted_response, response
+  end
+
+  test 'render_api_namespace_resource_index - scope & filter by params and sort DESC' do
+    @current_user = @user
+    params[:properties] = {name: { value: 'test user', option: 'PARTIAL' }}.to_json
+    params[:order] = {properties: {name: 'DESC'}}.to_json
+
+    snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<% @api_resources.each do |res| %><%= res.properties['name'] %><% end %>")
+    
+    response = render_api_namespace_resource_index(@api_namespace.slug, { 'scope' => { 'current_user' => 'true' } })
+    excepted_response = "#{@api_resource_2.properties['name']}#{@api_resource_1.properties['name']}"
+    assert_equal excepted_response, response
+  end
+
   def current_user
     @current_user
   end

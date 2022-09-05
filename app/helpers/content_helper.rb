@@ -30,6 +30,10 @@ module ContentHelper
 
     response = response.jsonb_search(:properties, JSON.parse(params[:properties]).to_hash) if params[:properties]
 
+    response = response.jsonb_order(:properties, scope["order"]) if scope&.has_key?("order")
+
+    response = response.jsonb_order(:properties, JSON.parse(params[:order]).to_hash) if params[:order].present?
+
     cms_dynamic_snippet_render(slug, nil, { api_resources: response, api_namespace: api_namespace })
   end
 
