@@ -22,7 +22,8 @@ module DynamicAttribute
         end
 
         # parse erb
-        parser = ERB.new(CGI.unescapeHTML(parsed_text))
+        # unescape html and decode uri-encoded charcters
+        parser = ERB.new(CGI.unescapeHTML(URI.decode(parsed_text)))
         result = parser.result(binding)
         result.html_safe
       end
