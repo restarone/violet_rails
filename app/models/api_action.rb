@@ -43,6 +43,28 @@ class ApiAction < ApplicationRecord
     send(action_type)
   end
 
+  def self.execute_model_context_api_actions
+    api_actions = self.where(action_type: ApiAction::EXECUTION_ORDER[:model_level], lifecycle_stage: 'initialized')
+    
+    ApiAction::EXECUTION_ORDER[:model_level].each do |action_type|
+      if ApiAction.action_types[action_type] == ApiAction.action_types[:custom_action]
+        begin
+          custom_actions = api_actions.where(action_type: 'custom_action')
+          custom_actions.each do |custom_action|
+            custom_action.execute_action
+          end
+        rescue
+          # error-actions are executed already in api-action level.
+          nil
+        end
+      elsif [ApiAction.action_types[:send_email], ApiAction.action_types[:send_web_request]].include?(ApiAction.action_types[action_type])
+        api_actions.where(action_type: ApiAction.action_types[action_type]).each do |api_action|
+          api_action.execute_action
+        end
+      end
+    end if api_actions.present?
+  end
+
   private
 
   def update_executed_actions_payload

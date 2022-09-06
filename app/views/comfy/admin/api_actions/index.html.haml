@@ -29,7 +29,14 @@
     - @api_actions.each do |api_action|
       %tr
         %td.px-3.py-2= link_to api_action.id, api_namespace_api_action_path(api_namespace_id: @api_namespace.id, id: api_action.id) 
-        %td.px-3.py-2= link_to api_action.api_resource_id, api_namespace_resource_path(api_namespace_id: @api_namespace.id, id: api_action.api_resource_id) 
+        %td.px-3.py-2
+          - if api_action.api_resource_id
+            = link_to api_action.api_resource_id, api_namespace_resource_path(api_namespace_id: @api_namespace.id, id: api_action.api_resource_id)
+          - else
+            %div= api_action.additional_data.dig('api_resource', 'properties')
+            %div
+              %strong Error:
+              = api_action.additional_data.dig('api_resource', 'errors')
         %td.px-3= api_action.type
         %td.px-3= api_action.action_type
         %td.px-3
