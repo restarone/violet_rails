@@ -242,6 +242,20 @@ class ContentHelperTest < ActionView::TestCase
     assert_equal excepted_response, response
   end
 
+  test 'render_api_namespace_resource_index - order from params should overrride predefined order' do
+    snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<% @api_resources.each do |res| %><%= res.properties['name'] %><% end %>")
+    
+    response = render_api_namespace_resource_index(@api_namespace.slug, {'order' => { 'properties' => { 'name' => 'DESC' } } } )
+    excepted_response = "#{@api_resource_2.properties['name']}#{@api_resource_1.properties['name']}#{@api_resource.properties['name']}"
+    assert_equal excepted_response, response
+
+    params[:order] = {properties: {name: 'ASC'}}.to_json
+
+    response = render_api_namespace_resource_index(@api_namespace.slug, {'order' => { 'properties' => { 'name' => 'DESC' } } } )
+    excepted_response = "#{@api_resource.properties['name']}#{@api_resource_1.properties['name']}#{@api_resource_2.properties['name']}"
+    assert_equal excepted_response, response
+  end
+
   def current_user
     @current_user
   end

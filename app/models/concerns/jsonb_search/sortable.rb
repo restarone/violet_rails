@@ -7,7 +7,7 @@ module JsonbSearch
     extend ActiveSupport::Concern
   
     included do 
-      scope :jsonb_order, -> (column_name, query) { order(build_sort_query(query)) }
+      scope :jsonb_order, -> (query) { reorder(build_sort_query(query)) }
 
       def self.build_sort_query(query)
         q_string = query.map do |key, value|

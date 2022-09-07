@@ -21,6 +21,7 @@ module ContentHelper
   # available variables on view: @api_resources, @api_namespace
   def render_api_namespace_resource_index(slug, options = {})
     scope = options["scope"]
+
     api_namespace = ApiNamespace.find_by(slug: slug)
     response = api_namespace.api_resources
 
@@ -30,9 +31,9 @@ module ContentHelper
 
     response = response.jsonb_search(:properties, JSON.parse(params[:properties]).to_hash) if params[:properties]
 
-    response = response.jsonb_order(:properties, scope["order"]) if scope&.has_key?("order")
+    response = response.jsonb_order(options["order"]) if options["order"]
 
-    response = response.jsonb_order(:properties, JSON.parse(params[:order]).to_hash) if params[:order].present?
+    response = response.jsonb_order(JSON.parse(params[:order]).to_hash) if params[:order].present?
 
     cms_dynamic_snippet_render(slug, nil, { api_resources: response, api_namespace: api_namespace })
   end
