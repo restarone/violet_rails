@@ -378,7 +378,7 @@ compliance_visitor_data_request_plugin:
         @external_api_client = parameters[:external_api_client]
         @visitor_api_namespace = @external_api_client.api_namespace
         @visitor_api_resources_with_no_message_sent = @visitor_api_namespace.api_resources.where("properties @> ?", {compliance_message_sent: false}.to_json)
-        @connection_service = Violet::ConnectionService.new
+        @connection_service = Violet::Connection.new
       end
 
       def start
@@ -412,7 +412,7 @@ compliance_visitor_data_request_plugin:
 
           if (attachments.length > 0)
             email_thread = MessageThread.create(subject: "#{visitor_email} compliance: visitor submitted data request", recipients: [visitor_email])
-            email_message = email_thread.messages.create(content: "<p>#{message}</p>", from: @connection_service.get_current_subdomain_formatted_email)
+            email_message = email_thread.messages.create(content: "<p>#{message}</p>", from: @connection_service.get_subdomain_email_address)
             EMailer.with(message: email_message, message_thread: email_thread, attachments: attachments).ship.deliver_later
             # Currently sending emails asynchronously and not checking if they got sent successfully before setting compliance_message_sent to true
             visitor_api_resource.properties["compliance_message_sent"] = true
@@ -455,7 +455,7 @@ compliance_visitor_data_request_plugin:
               if non_primitive_property.present? && non_primitive_property.richtext?
                 row_data << non_primitive_property.content.to_s
               elsif non_primitive_property.present? && non_primitive_property.file?
-                blob_url = non_primitive_property.attachment.attached? ? @connection_service.get_blob_url_with_current_subdomain(non_primitive_property.attachment) : ''
+                blob_url = non_primitive_property.attachment.attached? ? @connection_service.get_blob_url(non_primitive_property.attachment) : ''
                 row_data << blob_url
               else
                 row_data << ''

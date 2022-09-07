@@ -17,7 +17,7 @@ class ComplianceVisitorDataRequestPluginTest < ActiveSupport::TestCase
         # By default, each visitor has no submission in an api namespace
     end
 
-    test "Should not send email to visitors if they already received one" do
+    test "Should not send email to visitor if they already received one" do
         @visitor_one.properties["compliance_message_sent"] = true
         @visitor_one.save
         @visitor_two.properties["compliance_message_sent"] = true
@@ -31,7 +31,7 @@ class ComplianceVisitorDataRequestPluginTest < ActiveSupport::TestCase
         end
     end
 
-    test "Should send email if visitor did not receive one and has made a submission" do
+    test "Should send email if compliance_message_sent is set to false on the API resource" do
         # Visitor one and two are making a submission under namespace_with_email_one
         ApiResource.create(api_namespace_id: @namespace_with_email_one.id, properties: {"post": "Hello world", "email": @visitor_one.properties["email"]})
         ApiResource.create(api_namespace_id: @namespace_with_email_one.id, properties: {"post": "Hello world", "email": @visitor_two.properties["email"]})
@@ -55,6 +55,8 @@ class ComplianceVisitorDataRequestPluginTest < ActiveSupport::TestCase
         end
 
         sent_email = ActionMailer::Base.deliveries.last
+        p Subdomain.current.name
+        p sent_email.from
         assert(sent_email.from.include?(Subdomain.current.name))
         assert(sent_email.from.include?(ENV["APP_HOST"]))
         assert_equal [visitor_email], sent_email.to
@@ -75,7 +77,7 @@ class ComplianceVisitorDataRequestPluginTest < ActiveSupport::TestCase
         end
     end
 
-    test "Email should contain the right number of CSV attachments" do
+    test "Email should contain a CSV attachment per API Namespace" do
         visitor_email = @visitor_one.properties["email"]
         ApiResource.create(api_namespace_id: @namespace_with_email_one.id, properties: {"post": "Hello world", "email": visitor_email})
         ApiResource.create(api_namespace_id: @namespace_with_email_two.id, properties: {"name": "Test Name", "email": visitor_email})
@@ -87,14 +89,29 @@ class ComplianceVisitorDataRequestPluginTest < ActiveSupport::TestCase
 
         # Visitor one making submissions under two namespaces, so the email should contain two attachments
         sent_email = ActionMailer::Base.deliveries.last
+        first_attachment_content = sent_email.attachments[0].body.raw_source.gsub(/\r/, "")
+        second_attachment_content = sent_email.attachments[1].body.raw_source.gsub(/\r/, "")
+
         assert_equal 2, sent_email.attachments.length
 
         sent_email.attachments.each do |attachment|
             assert(attachment.content_type.start_with?("text/csv"))
         end
+
+        assert_not(first_attachment_content == second_attachment_content)
+
+        @namespace_with_email_one.properties.each do |key, value|
+            assert(first_attachment_content.include?(key))
+            assert(first_attachment_content.include?(value))
+        end
+
+        @namespace_with_email_two.properties.each do |key, value|
+            assert(second_attachment_content.include?(key))
+            assert(second_attachment_content.include?(value))
+        end
     end
 
-    test "CSV file should have the right format" do
+    test "CSV file should be named according to the API Namespace and have file extension .csv" do
         visitor_email = @visitor_one.properties["email"]
         ApiResource.create(api_namespace_id: @namespace_with_email_one.id, properties: {"post": "Hello world", "email": visitor_email})
 
@@ -143,7 +160,7 @@ class ComplianceVisitorDataRequestPluginTest < ActiveSupport::TestCase
         assert_equal expected_csv, sent_email.attachments.first.body.raw_source.gsub(/\r/, "")
     end
 
-    test "Should raise an exception if visitor does not exclude any api namespace as well as does not give permission to scan all namespaces" do
+    test "Should raise an exception if admin does not exclude any api namespace and does not grant explicit permission to scan all API Namespaces" do
         @data_request_plugin.metadata["EXCLUDE_API_NAMESPACES"] = []
         @data_request_plugin.metadata["SCAN_ALL_NAMESPACES"] = false
         @data_request_plugin.save
