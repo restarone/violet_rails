@@ -633,4 +633,52 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
       assert_includes categorized_api_namespace_ids, api_namespace.id
     end
   end
+
+  test "#show: should properly show documentation of urls for REST and Graph interface" do
+    sign_in(@user)
+    get api_namespace_url(@api_namespace)
+    assert_response :success
+
+    # REST Interface
+    assert_select ".tab-content #interface .card .card-body:nth-child(1)" do
+      assert_select "h4", { count: 1, text: "REST Interface" }
+
+      assert_select "strong", { count: 1, text: "Request description endpoint:" } do
+        assert_select "+ p + pre", { count: 1, text: "#{ApplicationController.helpers.api_base_url(Subdomain.current, @api_namespace)}/describe" }
+      end
+
+      assert_select "strong", { count: 1, text: "Request index endpoint:" } do
+        assert_select "+ p + pre", { count: 1, text: ApplicationController.helpers.api_base_url(Subdomain.current, @api_namespace) }
+      end
+
+      assert_select "strong", { count: 1, text: "Request query endpoint:" } do
+        assert_select "+ p + pre", { count: 1, text: "#{ApplicationController.helpers.api_base_url(Subdomain.current, @api_namespace)}/query" }
+      end
+    end
+
+    # Graph Interface
+    assert_select ".tab-content #interface .card .card-body:nth-child(2)" do
+      assert_select "h4", { count: 1, text: "Graph Interface" }
+
+      assert_select "strong", { count: 1, text: "Request description endpoint:" } do
+        assert_select "+ p + pre", { count: 1, text: "#{ApplicationController.helpers.graphql_base_url(Subdomain.current, @api_namespace)}/describe" }
+      end
+
+      assert_select "strong", { count: 1, text: "Request query endpoint:" } do
+        assert_select "+ p + pre", { count: 1, text: ApplicationController.helpers.graphql_base_url(Subdomain.current, @api_namespace) }
+      end
+
+      assert_select "p", { count: 1, text: "Payload (this)" } do
+        assert_select "+ pre", { count: 1, text: "query: { apiNamespaces(slug: \"#{@api_namespace.slug}\") { id } }" }
+      end
+
+      assert_select "p", { count: 1, text: "Payload (this + children)" } do
+        assert_select "+ pre", { count: 1, text: "query: { apiNamespaces(slug: \"#{@api_namespace.slug}\") { id apiResources { id } } }" }
+      end
+
+      assert_select "p", { count: 1, text: "Payload (global)" } do
+        assert_select "+ pre", { count: 1, text: "query: { apiNamespaces { id } }" }
+      end
+    end
+  end
 end
