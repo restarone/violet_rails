@@ -1,4 +1,3 @@
-
 <%= form_for [@forum_thread, @forum_post],
   url: (@forum_post.persisted? ? simple_discussion.forum_thread_forum_post_path(@forum_thread, @forum_post) : simple_discussion.forum_thread_forum_posts_path(@forum_thread)),
   html: { data: { behavior: "comment-form" } } do |f| %>

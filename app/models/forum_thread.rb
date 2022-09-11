@@ -16,7 +16,6 @@ class ForumThread < ApplicationRecord
   validates :title, presence: true
   validates_associated :forum_posts
 
-  
   scope :pinned_first, -> { order(pinned: :desc) }
   scope :solved, -> { where(solved: true) }
   scope :sorted, -> { order(updated_at: :desc) }
@@ -30,6 +29,7 @@ class ForumThread < ApplicationRecord
     .where('action_text_rich_texts.body ILIKE ? OR forum_threads.title ILIKE ?',value, value)
     .distinct
   }
+
   def subscribed_users
     (users + optin_subscribers).uniq - optout_subscribers
   end
@@ -88,6 +88,7 @@ class ForumThread < ApplicationRecord
   def notify_users
     []
   end
+
   private
   def self.ransackable_scopes(auth_object = nil)
     [:search_forum_threads_content_body_or_title]
