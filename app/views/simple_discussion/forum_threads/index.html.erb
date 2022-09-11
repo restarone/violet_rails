@@ -15,10 +15,15 @@
 
 <% else %>
 
+  <div>
+  <%= render partial: "simple_discussion/forum_threads/search"%>
 
+  </p>
+  <%= render partial: "simple_discussion/forum_threads/forum_thread", collection: @forum_threads, spacer_template: "shared/spacer" %>
 
-    <%= render partial: "simple_discussion/forum_threads/forum_thread", collection: @forum_threads, spacer_template: "shared/spacer" %>
+  </div>
 
+    
   <div class="forum-threads-nav text-center">
     <%= will_paginate @forum_threads, url_builder: simple_discussion, renderer: SimpleDiscussion::BootstrapLinkRenderer %>
   </div>

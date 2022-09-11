@@ -1,0 +1,4 @@
+<%= search_form_for @forum_threads_q, url:'/forum' do |f| %>
+    <%= f.search_field :search_forum_threads_content_body_or_title, value: params[:q][:search_forum_threads_content_body_or_title], class: 'form-control' %>
+    <%= f.submit %>
+<% end %>

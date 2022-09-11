@@ -16,7 +16,7 @@ Rails.application.routes.draw do
   get 'dashboard/events_list', to: 'comfy/admin/dashboard#events_list', as: :dashboard_events_list
   delete 'dashboard/events/:ahoy_event_type/destroy_event', to: 'comfy/admin/dashboard#destroy_event', as: :dashboard_destroy_event
   delete 'dashboard/events/:ahoy_event_type/destroy_visits', to: 'comfy/admin/dashboard#destroy_visits', as: :dashboard_destroy_visits
-
+  
   post 'import_api_namespace', to: 'comfy/admin/api_namespaces#import_as_json', as: :import_as_json_api_namespaces
 
   resources :signup_wizard
