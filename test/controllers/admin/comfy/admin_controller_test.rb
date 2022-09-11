@@ -32,6 +32,7 @@ class Comfy::Admin::Cms::BaseControllerTest < ActionDispatch::IntegrationTest
 
 
   test "should get admin index" do
+    Comfy::Cms::Layout.delete_all
     get comfy_admin_cms_site_layouts_url(subdomain: @user_subdomain, site_id: Comfy::Cms::Site.first.id)
     assert_response :redirect
     assert_redirected_to new_comfy_admin_cms_site_layout_url(subdomain: @user_subdomain, site_id: Comfy::Cms::Site.first.id)
