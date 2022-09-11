@@ -5,7 +5,6 @@ class Mailbox::MailboxController < Mailbox::BaseController
     @message_threads_q = if params[:categories].present?
       MessageThread.includes(:categories).for_category(params[:categories]).all.includes(:messages).ransack(params[:q])
     else
-      byebug
       MessageThread.all.includes(:messages).ransack(params[:q])
     end
 
