@@ -13,8 +13,8 @@ class SimpleDiscussion::ForumThreadsController < SimpleDiscussion::ApplicationCo
 
     @forum_threads_q.sorts = ['created_at desc'] if @forum_threads_q.sorts.empty?
     @forum_threads = @forum_threads_q.result(distinct: true).paginate(page: params[:page], per_page: params[:per_page] || 10)
-    byebug
-    #@forum_threads = ForumThread.pinned_first.sorted.includes(:user, :forum_category).paginate(page: page_number)
+
+
   end
 
   def answered
