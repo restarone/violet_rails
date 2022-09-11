@@ -21,6 +21,14 @@ class ForumThread < ApplicationRecord
   scope :sorted, -> { order(updated_at: :desc) }
   scope :unpinned, -> { where.not(pinned: true) }
   scope :unsolved, -> { where.not(solved: true) }
+  
+  scope :search_forum_threads_content_body_or_title,->(value) {
+    value = "%#{value}%"
+  
+    left_outer_joins(forum_posts: :body)
+    .where('action_text_rich_texts.body ILIKE ? OR forum_threads.title ILIKE ?',value, value)
+    .distinct
+  }
 
   def subscribed_users
     (users + optin_subscribers).uniq - optout_subscribers
@@ -79,5 +87,10 @@ class ForumThread < ApplicationRecord
   # For example: You might use this to send all moderators an email of new threads.
   def notify_users
     []
+  end
+
+  private
+  def self.ransackable_scopes(auth_object = nil)
+    [:search_forum_threads_content_body_or_title]
   end
 end

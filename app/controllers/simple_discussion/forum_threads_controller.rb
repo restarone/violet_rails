@@ -6,7 +6,15 @@ class SimpleDiscussion::ForumThreadsController < SimpleDiscussion::ApplicationCo
   after_action :broadcast_to_mods, only: [:create]
 
   def index
-    @forum_threads = ForumThread.pinned_first.sorted.includes(:user, :forum_category).paginate(page: page_number)
+    
+    params[:q] ||= {}
+    @forum_threads_q = ForumThread.all.includes(:user, :forum_category).ransack(params[:q])
+    
+
+    @forum_threads_q.sorts = ['created_at desc'] if @forum_threads_q.sorts.empty?
+    @forum_threads = @forum_threads_q.result(distinct: true).paginate(page: params[:page], per_page: params[:per_page] || 10)
+
+
   end
 
   def answered
@@ -32,7 +40,7 @@ class SimpleDiscussion::ForumThreadsController < SimpleDiscussion::ApplicationCo
   def show
     @forum_post = ForumPost.new
     @forum_post.user = current_user
-
+    
     ahoy.track(
       "subdomain-forum-thread-visit",
       {visit_id: current_visit.id, forum_thread_id: @forum_thread.id, user_id: current_user&.id}
@@ -95,4 +103,6 @@ class SimpleDiscussion::ForumThreadsController < SimpleDiscussion::ApplicationCo
   def forum_thread_params
     params.require(:forum_thread).permit(:title, :forum_category_id, forum_posts_attributes: [:body])
   end
+
+  
 end

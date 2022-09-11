@@ -1,0 +1,7 @@
+<%= search_form_for @forum_threads_q, url:'/forum' do |f| %>
+    <div class="form-group" style="display:flex; justify-content: space-between; align-items: center">
+    <%= f.search_field :search_forum_threads_content_body_or_title, value: params[:q][:search_forum_threads_content_body_or_title], class: 'form-control' %>
+    <%= f.submit class: 'btn btn-primary my-2'%>
+    <a href='/forum' class="btn btn-link">Cancel </a>
+    </div>
+<% end %>

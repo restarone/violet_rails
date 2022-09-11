@@ -4,7 +4,7 @@ class ForumPost < ApplicationRecord
 
   validates :body, presence: true
   has_rich_text :body
-
+  has_one :body, class_name: 'ActionText::RichText', as: :record
   scope :sorted, -> { order(:created_at) }
 
   after_update :solve_forum_thread, if: :solved?
