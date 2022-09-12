@@ -1,13 +1,9 @@
-
 test:
   api_namespace: two
   slug: test-second
   label: Test API 2
   enabled: true
-  metadata: {
-              "api_key": "x-api-key-foo",
-              "bearer_token": "foo"
-            }
+  metadata: { "api_key": "x-api-key-foo", "bearer_token": "foo" }
   model_definition: |
     class ExternalApiModelExample
       def initialize(parameters)  
@@ -28,10 +24,7 @@ open_json_server:
   slug: test-second
   label: Test API 2
   enabled: true
-  metadata:  {
-                "api_key": "x-api-key-foo",
-                "bearer_token": "foo"
-              }
+  metadata: { "api_key": "x-api-key-foo", "bearer_token": "foo" }
   model_definition: |
     class OpenJsonServer
       def initialize(parameters)  
@@ -56,7 +49,7 @@ bishop_monitoring:
   slug: bishop-monitoring
   label: Bishop Monitoring in a box
   enabled: true
-  metadata: { 'log_incidents_to': 'monitoring-target-incident' }
+  metadata: { "log_incidents_to": "monitoring-target-incident" }
   model_definition: |
     class BishopMonitoring
       def initialize(parameters)  
@@ -128,7 +121,7 @@ bishop_tls_monitoring:
   slug: bishop-tls-monitoring
   label: TLS monitoring in a box
   enabled: true
-  metadata: { 'log_incidents_to': 'monitoring-target-incident' }
+  metadata: { "log_incidents_to": "monitoring-target-incident" }
   model_definition: |
     class BishopTlsMonitoring
       def initialize(parameters)  
@@ -201,12 +194,12 @@ vacuum_job:
   label: VacuumJob
   enabled: true
   metadata: {
-            'ORDER': 'descending',
-            'DIMENSION': 'created_at',
-            'BATCH_SIZE': '5',
-            'API_NAMESPACE_ID': '1',
-            'OLDER_THAN': '2880' # 2 days (in minutes)
-          }
+      "ORDER": "descending",
+      "DIMENSION": "created_at",
+      "BATCH_SIZE": "5",
+      "API_NAMESPACE_ID": "1",
+      "OLDER_THAN": "2880", # 2 days (in minutes)
+    }
   model_definition: |
     class VacuumJob
       def initialize(parameters)  
@@ -240,11 +233,8 @@ mailchimp_plugin:
   slug: mailchimp-plugin
   label: MailChimp
   enabled: true
-  metadata: {
-            'API_KEY': 'testkey',
-            'SERVER_PREFIX': 'us9',
-            'LIST_ID': 'valid_list_id',
-          }
+  metadata:
+    { "API_KEY": "testkey", "SERVER_PREFIX": "us9", "LIST_ID": "valid_list_id" }
   model_definition: |
     class SyncToMailchimp
       def initialize(parameters)
@@ -316,10 +306,8 @@ sync_attribute_to_api_namespace_plugin:
   slug: sync-attribute-to-api-namespace
   label: SyncAttributeToApiNamespace
   enabled: true
-  metadata: {
-            'ATTRIBUTE_NAME': 'test_attribute',
-            'DEFAULT_VALUE': 'test_value',
-          }
+  metadata:
+    { "ATTRIBUTE_NAME": "test_attribute", "DEFAULT_VALUE": "test_value" }
   model_definition: |
     class SyncAttributeToApiNamespace
       def initialize(parameters)  
@@ -360,3 +348,42 @@ sync_attribute_to_api_namespace_plugin:
     end
     # at the end of the file we have to implicitly return the class 
     SyncAttributeToApiNamespace
+
+string_aggregator_api_namespace_plugin:
+  api_namespace: one
+  slug: string-aggregator-api-namespace-slug
+  label: StringAggregator
+  enabled: true
+  metadata:
+    {
+      "pristine": true,
+      "resolve_string_path": "api_namespace_slug.property.another_property",
+      "output_api_namespace_slug": "output_api_namespace",
+    }
+  model_definition: |
+    class StringAggregator
+       def initialize(parameters)  
+         @external_api_client = parameters[:external_api_client]
+         @api_namespace = @external_api_client.api_namespace
+       end
+
+       def start
+         # Fetching provided inputs (pristine, resolve_string_path, output_api_namespace)
+         resolve_string_path = @external_api_client.metadata["resolve_string_path"]
+         output_api_namespace_slug = @external_api_client.metadata["output_api_namespace"]
+         pristine = @external_api_client.metadata["pristine"] || false
+
+         # Getting slug string from resolve_string_path
+         api_namespace_slug = resolve_string_path.split(".").first
+         
+         # Validations
+         raise "Missing Inputs" if resolve_string_path.blank? || output_api_namespace.blank?
+         raise "Slugs dont match" if api_namespace_slug == @api_namespace.slug
+         raise "API Namespace resource pollution detected, check resolve_string_path and output_api_namespace" if api_namespace_slug == output_api_namespace_slug
+
+         # To do: Logics implementation part.
+
+       end
+     end
+     # at the end of the file we have to implicitly return the class 
+     StringAggregator
