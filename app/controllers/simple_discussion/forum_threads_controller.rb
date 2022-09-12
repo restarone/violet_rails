@@ -6,7 +6,10 @@ class SimpleDiscussion::ForumThreadsController < SimpleDiscussion::ApplicationCo
   after_action :broadcast_to_mods, only: [:create]
 
   def index
-    @forum_threads = ForumThread.pinned_first.sorted.includes(:user, :forum_category).paginate(page: page_number)
+    params[:q] ||= {}
+    @forums_threads_q =  ForumThread.pinned_first.sorted.includes(:user, :forum_category).ransack(params[:q])
+    @forum_threads =@forums_threads_q.result.paginate(page: page_number).distinct
+
   end
 
   def answered

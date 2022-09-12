@@ -1,4 +1,4 @@
-<div class="m-5">
+<div>
   <div>
     <% if @category && current_user && current_user.moderator %>
       <strong>Mod Controls</strong>
@@ -9,7 +9,12 @@
     <% end %>
   </div>
 </div>
-<% if @forum_threads.none? %>
+
+ <div>
+<%= render partial: 'forum_search_filters', locals: { objects: @forums_threads_q, path: '/forum' }  %>
+ </div>
+
+ <% if @forum_threads.none? %>
 
     <div><%= t('search_not_found') %>. <%= t('check_out') %> <%= link_to t('latest_questions'), simple_discussion.forum_threads_path %> <%= t('instead') %> </div>
 
