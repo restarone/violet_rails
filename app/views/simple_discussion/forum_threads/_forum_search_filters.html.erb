@@ -1,0 +1,12 @@
+<%= search_form_for objects, url: path do |f| %> 
+
+<div class = 'form-group'>
+    <%= f.label "Search Threads", class: 'col-form-label'  %>
+    <%= f.search_field :title_or_forum_posts_action_text_rich_text_body_cont, value: params[:q][:title_or_forum_posts_action_text_rich_text_body_cont], class: 'form-control' %>
+    <div class='text-center'>
+    <%= f.submit class: 'btn btn-primary my-2' %>
+    <%= link_to "Clear Search", request.path, class:"cancel-button" %>
+    </div>
+</div>
+
+<% end %>
