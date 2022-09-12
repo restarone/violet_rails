@@ -6,8 +6,7 @@ class SimpleDiscussion::ForumPostsController < SimpleDiscussion::ApplicationCont
   before_action :require_mod_or_author_for_thread!, only: [:solved, :unsolved]
 
   def create
-    forum_post_values = forum_post_params[:body].blank? ? forum_post_params.except(:body) : forum_post_params
-    @forum_post = @forum_thread.forum_posts.new(forum_post_values)
+    @forum_post = @forum_thread.forum_posts.new(forum_post_params)
     @forum_post.user_id = current_user.id
 
     if @forum_post.save
