@@ -114,7 +114,7 @@ class ApiAction < ApplicationRecord
   def serve_file;end
 
   def request_headers
-    headers = custom_headers_evaluated.gsub('SECRET_BEARER_TOKEN', bearer_token)
+    headers = custom_headers_evaluated.gsub('SECRET_BEARER_TOKEN', bearer_token.to_s)
     { 'Content-Type' => 'application/json' }.merge(JSON.parse(headers))
   end
 

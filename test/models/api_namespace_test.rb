@@ -34,6 +34,6 @@ class ApiNamespaceTest < ActiveSupport::TestCase
       Sidekiq::Worker.drain_all
     end
 
-    assert_equal @subdomain_events_api.reload.executed_api_actions.first.lifecycle_stage, 'failed'
+    assert_equal @subdomain_events_api.reload.executed_api_actions.first.lifecycle_stage, 'complete'
   end
 end

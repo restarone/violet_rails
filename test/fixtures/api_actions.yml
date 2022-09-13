@@ -94,11 +94,12 @@ create_api_action_plugin_subdomain_events:
   action_type: send_web_request
   include_api_resource_data: true
   payload_mapping: {
-                      "content": "#{self.api_resource.properties['representation']['body']}"
+                      "content": "#{api_resource.properties&.dig('representation', 'body')}"
                     }
   request_url: "http://www.example.com/success"
   api_namespace: plugin_subdomain_events
   http_method: post
+  custom_headers: {"AUTHORIZATION":"SECRET_BEARER_TOKEN"}
 
 create_custom_api_action_three:
   type: CreateApiAction
@@ -112,11 +113,12 @@ create_api_action_plugin_bishop_monitoring_web_request:
   type: CreateApiAction
   action_type: send_web_request
   payload_mapping: {
-                      "content": "#{self.api_resource.properties['representation']['body']}"
+                      "content": "#{api_resource.properties&.dig('representation', 'body')}"
                     }
   request_url: "http://www.discord.com"
   api_namespace: monitoring_target_incident
   http_method: post
+  custom_headers: {"AUTHORIZATION":"SECRET_BEARER_TOKEN"}
 
 create_api_action_plugin_bishop_monitoring_email:
   type: CreateApiAction
