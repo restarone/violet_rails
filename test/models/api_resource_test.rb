@@ -84,6 +84,8 @@ class ApiResourceTest < ActiveSupport::TestCase
       assert_difference 'ApiResource.count', +1 do
         assert_difference 'CreateApiAction.count', +api_namespace.reload.create_api_actions.count do
           @api_resource = ApiResource.create!(api_namespace_id: api_namespace.id, properties: {'name': 'John Doe'})
+          # each model level api action should be executed individually
+          assert_equal api_namespace.create_api_actions.where(action_type: ApiAction::EXECUTION_ORDER[:model_level]).count, FireApiActionsJob.jobs.count
           Sidekiq::Worker.drain_all
         end
       end
@@ -136,10 +138,13 @@ class ApiResourceTest < ActiveSupport::TestCase
     send_web_request_action.save!
 
     @api_resource = ApiResource.create!(api_namespace_id: api_namespace.id, properties: {'name': 'John Doe'})
+    Sidekiq::Worker.drain_all
     perform_enqueued_jobs do
       assert_no_difference 'ApiResource.count' do
         assert_difference '@api_resource.reload.update_api_actions.count', +api_namespace.reload.update_api_actions.count do
           @api_resource.update!(properties: {'name': 'John Doe 2'})
+          # each model level api action should be executed individually
+          assert_equal api_namespace.reload.update_api_actions.where(action_type: ApiAction::EXECUTION_ORDER[:model_level]).count, FireApiActionsJob.jobs.count
           Sidekiq::Worker.drain_all
         end
       end
