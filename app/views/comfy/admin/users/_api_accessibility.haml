@@ -10,35 +10,35 @@
       
       %ul.mt-2{ style: "display: none"}
         %li
-          = hidden_field_tag 'user[api_accessibility][all_namespaces][full_read_access]', false
+          -# = hidden_field_tag 'user[api_accessibility][all_namespaces][full_read_access]', false
           = check_box_tag 'user[api_accessibility][all_namespaces][full_read_access]', true, true, disabled: true
           = label_tag 'Full read access'
         %li
-          = hidden_field_tag 'user[api_accessibility][all_namespaces][full_access]', false
+          -# = hidden_field_tag 'user[api_accessibility][all_namespaces][full_access]', false
           = check_box_tag 'user[api_accessibility][all_namespaces][full_access]', true, true, disabled: true
           = label_tag 'Full access'
         %li
-          = hidden_field_tag 'user[api_accessibility][all_namespaces][read_api_resources_only]', false
+          -# = hidden_field_tag 'user[api_accessibility][all_namespaces][read_api_resources_only]', false
           = check_box_tag 'user[api_accessibility][all_namespaces][read_api_resources_only]', true, true, disabled: true
           = label_tag 'Read API Resources only'
         %li
-          = hidden_field_tag 'user[api_accessibility][all_namespaces][allow_exports]', false
+          -# = hidden_field_tag 'user[api_accessibility][all_namespaces][allow_exports]', false
           = check_box_tag 'user[api_accessibility][all_namespaces][allow_exports]', true, true, disabled: true
           = label_tag 'Allow exports'
         %li
-          = hidden_field_tag 'user[api_accessibility][all_namespaces][allow_duplication]', false
+          -# = hidden_field_tag 'user[api_accessibility][all_namespaces][allow_duplication]', false
           = check_box_tag 'user[api_accessibility][all_namespaces][allow_duplication]', true, true, disabled: true
           = label_tag 'Allow duplication'
         %li
-          = hidden_field_tag 'user[api_accessibility][all_namespaces][access_api_settings]', false
+          -# = hidden_field_tag 'user[api_accessibility][all_namespaces][access_api_settings]', false
           = check_box_tag 'user[api_accessibility][all_namespaces][access_api_settings]', true, true, disabled: true
           = label_tag 'Can access API settings'
         %li
-          = hidden_field_tag 'user[api_accessibility][all_namespaces][access_api_actions]', false
+          -# = hidden_field_tag 'user[api_accessibility][all_namespaces][access_api_actions]', false
           = check_box_tag 'user[api_accessibility][all_namespaces][access_api_actions]', true, true, disabled: true
           = label_tag 'Can access API Actions'
         %li
-          = hidden_field_tag 'user[api_accessibility][all_namespaces][access_external_api_connections]', false
+          -# = hidden_field_tag 'user[api_accessibility][all_namespaces][access_external_api_connections]', false
           = check_box_tag 'user[api_accessibility][all_namespaces][access_external_api_connections]', true, true, disabled: true
           = label_tag 'Can access External API Connections'
 
@@ -47,7 +47,7 @@
       %label
         API Namespaces by category
 
-      - categories = Comfy::Cms::Category.of_type('User')
+      - categories = Comfy::Cms::Category.of_type('ApiNamespace')
       
       %ul.mt-2{ style: "display: none"}
         - categories.each do |category|
@@ -58,35 +58,35 @@
                 = category.label
               %ul.mt-2{ style: "display: none"}
                 %li
-                  = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][full_read_access]", false
+                  -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][full_read_access]", false
                   = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][full_read_access]", true, true, disabled: true
                   = label_tag 'Full read access'
                 %li
-                  = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][full_access]", false
+                  -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][full_access]", false
                   = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][full_access]", true, true, disabled: true
                   = label_tag 'Full access'
                 %li
-                  = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][read_api_resources_only]", false
+                  -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][read_api_resources_only]", false
                   = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][read_api_resources_only]", true, true, disabled: true
                   = label_tag 'Read API Resources only'
                 %li
-                  = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][allow_exports]", false
+                  -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][allow_exports]", false
                   = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][allow_exports]", true, true, disabled: true
                   = label_tag 'Allow exports'
                 %li
-                  = hidden_field_tag 'user[api_accessibility][all_namespaces][allow_duplication]', false
-                  = check_box_tag 'user[api_accessibility][all_namespaces][allow_duplication]', true, true, disabled: true
+                  -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][allow_duplication]", false
+                  = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][allow_duplication]", true, true, disabled: true
                   = label_tag 'Allow duplication'
                 %li
-                  = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][access_api_settings]", false
+                  -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][access_api_settings]", false
                   = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][access_api_settings]", true, true, disabled: true
                   = label_tag 'Can access API settings'
                 %li
-                  = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][access_api_actions]", false
+                  -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][access_api_actions]", false
                   = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][access_api_actions]", true, true, disabled: true
                   = label_tag 'Can access API Actions'
                 %li
-                  = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][access_external_api_connections]", false
+                  -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][access_external_api_connections]", false
                   = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][access_external_api_connections]", true, true, disabled: true
                   = label_tag 'Can access External API Connections'
 
@@ -97,35 +97,35 @@
               uncategorized
             %ul.mt-2{ style: "display: none"}
               %li
-                = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][full_read_access]", false
+                -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][full_read_access]", false
                 = check_box_tag "user[api_accessibility][namespaces_by_category][uncategorized][full_read_access]", true, true, disabled: true
                 = label_tag 'Full read access'
               %li
-                = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][full_access]", false
+                -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][full_access]", false
                 = check_box_tag "user[api_accessibility][namespaces_by_category][uncategorized][full_access]", true, true, disabled: true
                 = label_tag 'Full access'
               %li
-                = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][read_api_resources_only]", false
+                -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][read_api_resources_only]", false
                 = check_box_tag "user[api_accessibility][namespaces_by_category][uncategorized][read_api_resources_only]", true, true, disabled: true
                 = label_tag 'Read API Resources only'
               %li
-                = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][allow_exports]", false
+                -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][allow_exports]", false
                 = check_box_tag "user[api_accessibility][namespaces_by_category][uncategorized][allow_exports]", true, true, disabled: true
                 = label_tag 'Allow exports'
               %li
-                = hidden_field_tag 'user[api_accessibility][all_namespaces][allow_duplication]', false
+                -# = hidden_field_tag 'user[api_accessibility][all_namespaces][allow_duplication]', false
                 = check_box_tag 'user[api_accessibility][all_namespaces][allow_duplication]', true, true, disabled: true
                 = label_tag 'Allow duplication'
               %li
-                = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][access_api_settings]", false
+                -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][access_api_settings]", false
                 = check_box_tag "user[api_accessibility][namespaces_by_category][uncategorized][access_api_settings]", true, true, disabled: true
                 = label_tag 'Can access API settings'
               %li
-                = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][access_api_actions]", false
+                -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][access_api_actions]", false
                 = check_box_tag "user[api_accessibility][namespaces_by_category][uncategorized][access_api_actions]", true, true, disabled: true
                 = label_tag 'Can access API Actions'
               %li
-                = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][access_external_api_connections]", false
+                -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][access_external_api_connections]", false
                 = check_box_tag "user[api_accessibility][namespaces_by_category][uncategorized][access_external_api_connections]", true, true, disabled: true
                 = label_tag 'Can access External API Connections'
 

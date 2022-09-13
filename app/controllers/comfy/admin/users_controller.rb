@@ -87,7 +87,8 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
       :can_manage_subdomain_settings,
       :can_access_admin,
       :deliver_error_notifications,
-      category_ids: []
+      category_ids: [],
+      api_accessibility: {}
     )
   end
 
