@@ -47,8 +47,10 @@ class ApiResource < ApplicationRecord
     end
   end
 
-  def properties_object
-    JSON.parse(properties.to_json, object_class: OpenStruct)
+  # access both primitive and non-primitive properties as hash
+  def props
+    non_primitive_properties = self.non_primitive_properties.map { |prop| [prop.label, prop] }.to_h
+    properties.merge(non_primitive_properties)
   end
 
   def presence_of_required_properties
