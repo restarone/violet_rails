@@ -94,7 +94,7 @@ create_api_action_plugin_subdomain_events:
   action_type: send_web_request
   include_api_resource_data: true
   payload_mapping: {
-                      "content": "#{self.representation.body}"
+                      "content": "#{self.api_resource.properties['representation']['body']}"
                     }
   request_url: "http://www.example.com/success"
   api_namespace: plugin_subdomain_events
@@ -112,7 +112,7 @@ create_api_action_plugin_bishop_monitoring_web_request:
   type: CreateApiAction
   action_type: send_web_request
   payload_mapping: {
-                      "content": "#{self.representation.body}"
+                      "content": "#{self.api_resource.properties['representation']['body']}"
                     }
   request_url: "http://www.discord.com"
   api_namespace: monitoring_target_incident
