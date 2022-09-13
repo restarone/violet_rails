@@ -5,6 +5,10 @@ class ForumPost < ApplicationRecord
   validates :body, presence: true
   has_rich_text :body
 
+   # couldn't ransack action text attribute
+   # https://stackoverflow.com/a/59583109
+   has_one :action_text_rich_text, class_name: 'ActionText::RichText', as: :record
+
   scope :sorted, -> { order(:created_at) }
 
   after_update :solve_forum_thread, if: :solved?

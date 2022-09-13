@@ -14,6 +14,43 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     Sidekiq::Testing.fake!
   end
 
+  test '#index - search forum threads by exact' do
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      forum_category = ForumCategory.create!(name: 'test', slug: 'test')
+      forum_thread_1 = @restarone_user.forum_threads.create!(title: 'Test Thread 1', forum_category_id: forum_category.id)
+      ForumPost.create!(forum_thread_id: forum_thread_1.id, user_id: @restarone_user.id, body: 'test body 1')
+      ForumPost.create!(forum_thread_id: forum_thread_1.id, user_id: @restarone_user.id, body: 'test body 2')
+    
+      forum_thread_2 = @restarone_user.forum_threads.create!(title: 'Test Thread 2', forum_category_id: forum_category.id)
+      ForumPost.create!(forum_thread_id: forum_thread_2.id, user_id: @restarone_user.id, body: 'test body 4')
+      ForumPost.create!(forum_thread_id: forum_thread_2.id, user_id: @restarone_user.id, body: 'test body 5')
+
+      forum_thread_3 = @restarone_user.forum_threads.create!(title: 'not found', forum_category_id: forum_category.id)
+      ForumPost.create!(forum_thread_id: forum_thread_2.id, user_id: @restarone_user.id, body: 'not found 1')
+      ForumPost.create!(forum_thread_id: forum_thread_2.id, user_id: @restarone_user.id, body: 'not found 2')
+
+      # title exact match
+      get simple_discussion.root_url(subdomain: @restarone_subdomain.name), params: {q: {title_or_forum_posts_action_text_rich_text_body_cont: 'Test Thread 1'}}
+      assert_equal [forum_thread_1.id], @controller.view_assigns['forum_threads'].pluck(:id)
+
+      # title partial match
+      get simple_discussion.root_url(subdomain: @restarone_subdomain.name), params: {q: {title_or_forum_posts_action_text_rich_text_body_cont: 'Test Thread'}}
+      assert_equal [forum_thread_1.id, forum_thread_2.id].sort, @controller.view_assigns['forum_threads'].pluck(:id).sort
+
+       # forum post exact match
+       get simple_discussion.root_url(subdomain: @restarone_subdomain.name), params: {q: {title_or_forum_posts_action_text_rich_text_body_cont: 'test body 1'}}
+       assert_equal [forum_thread_1.id], @controller.view_assigns['forum_threads'].pluck(:id)
+ 
+       # forum post partial match
+       get simple_discussion.root_url(subdomain: @restarone_subdomain.name), params: {q: {title_or_forum_posts_action_text_rich_text_body_cont: 'test body'}}
+       assert_equal [forum_thread_1.id, forum_thread_2.id].sort, @controller.view_assigns['forum_threads'].pluck(:id).sort
+
+       # empty search query
+       get simple_discussion.root_url(subdomain: @restarone_subdomain.name), params: {q: {title_or_forum_posts_action_text_rich_text_body_cont: ''}}
+       assert_equal ForumThread.where(forum_category_id: forum_category.id).pluck(:id).sort, @controller.view_assigns['forum_threads'].pluck(:id).sort
+    end
+  end
+
   test 'denies #index if forum is disabled' do
     @restarone_subdomain.update(forum_enabled: false)
     get simple_discussion.root_url(subdomain: @restarone_subdomain.name)
