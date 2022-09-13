@@ -48,18 +48,13 @@ class ApiAction < ApplicationRecord
     
     ApiAction::EXECUTION_ORDER[:model_level].each do |action_type|
       if ApiAction.action_types[action_type] == ApiAction.action_types[:custom_action]
-        begin
-          custom_actions = api_actions.where(action_type: 'custom_action')
-          custom_actions.each do |custom_action|
-            custom_action.execute_action
-          end
-        rescue
-          # error-actions are executed already in api-action level.
-          nil
+        custom_actions = api_actions.where(action_type: 'custom_action')
+        custom_actions.each do |custom_action|
+          FireApiActionsJob.perform_async(custom_action.id, Current.user&.id, Current.visit&.id)
         end
       elsif [ApiAction.action_types[:send_email], ApiAction.action_types[:send_web_request]].include?(ApiAction.action_types[action_type])
         api_actions.where(action_type: ApiAction.action_types[action_type]).each do |api_action|
-          api_action.execute_action
+          FireApiActionsJob.perform_async(api_action.id, Current.user&.id, Current.visit&.id)
         end
       end
     end if api_actions.present?
@@ -75,9 +70,10 @@ class ApiAction < ApplicationRecord
     begin
       ApiActionMailer.send_email(self).deliver_now
       self.update(lifecycle_stage: 'complete', lifecycle_message: email)
-    rescue => e
+    rescue Exception => e
       self.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
       execute_error_actions
+      raise
     end
   end
 
@@ -94,6 +90,7 @@ class ApiAction < ApplicationRecord
     rescue => e
       self.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
       execute_error_actions
+      raise
     end
   end
 
