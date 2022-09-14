@@ -2,7 +2,7 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
   before_action :ensure_authority_to_manage_api
   before_action :set_api_resource
   before_action :ensure_authority_for_read_api_resources_only_in_api, only: %i[ show ]
-  before_action :ensure_authority_for_full_access_in_api, only: %i[ new edit create update destroy ]
+  before_action :ensure_authority_for_full_access_for_api_resources_only_in_api, only: %i[ new edit create update destroy ]
 
   include ApiActionable
   # GET /api_resources/1 or /api_resources/1.json

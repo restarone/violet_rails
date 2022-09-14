@@ -7,9 +7,16 @@ class Subdomains::BaseController < ApplicationController
   API_ACCESSIBILITIES = {
     full_read_access: ['full_access', 'full_read_access'],
     full_access: ['full_access'],
-    read_api_resources_only: ['full_access', 'full_read_access', 'read_api_resources_only'],
     allow_exports: ['full_access', 'allow_exports'],
     allow_duplication: ['full_access', 'allow_duplication'],
+    read_api_resources_only: ['full_access', 'full_read_access', 'full_access_for_api_resources_only', 'read_api_resources_only'],
+    full_access_for_api_resources_only: ['full_access', 'full_access_for_api_resources_only'],
+    read_api_actions_only: ['full_access', 'full_read_access', 'full_access_for_api_actions_only', 'read_api_actions_only'],
+    full_access_for_api_actions_only: ['full_access', 'full_access_for_api_actions_only'],
+    read_external_api_connections_only: ['full_access', 'full_read_access', 'full_access_for_external_api_connections_only', 'read_external_api_connections_only'],
+    full_access_for_external_api_connections_only: ['full_access', 'full_access_for_external_api_connections_only'],
+    read_api_clients_only: ['full_access', 'full_read_access', 'full_access_for_api_clients_only', 'read_api_clients_only'],
+    full_access_for_api_clients_only: ['full_access', 'full_access_for_api_clients_only'],
   }
 
   def ensure_user_belongs_to_subdomain
@@ -78,7 +85,14 @@ class Subdomains::BaseController < ApplicationController
 
   def ensure_authority_for_read_api_resources_only_in_api
     unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:read_api_resources_only])
-      flash.alert = "You do not have the permission to do that. Only users with full_access or full_read_access or read_api_resources_only are allowed to perform that action."
+      flash.alert = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_for_api_resources_only or read_api_resources_only are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
+    end
+  end
+
+  def ensure_authority_for_full_access_for_api_resources_only_in_api
+    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:full_access_for_api_resources_only])
+      flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_for_api_resources_only are allowed to perform that action."
       redirect_back(fallback_location: root_url)
     end
   end
@@ -93,6 +107,48 @@ class Subdomains::BaseController < ApplicationController
   def ensure_authority_for_allow_duplication_in_api
     unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:allow_duplication])
       flash.alert = "You do not have the permission to do that. Only users with full_access or allow_duplication are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
+    end
+  end
+
+  def ensure_authority_for_read_api_actions_only_in_api
+    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:read_api_actions_only])
+      flash.alert = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_for_api_actions_only or read_api_actions_only are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
+    end
+  end
+
+  def ensure_authority_for_full_access_for_api_actions_only_in_api
+    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:full_access_for_api_actions_only])
+      flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_for_api_actions_only are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
+    end
+  end
+
+  def ensure_authority_for_read_external_api_connections_only_in_api
+    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:read_external_api_connections_only])
+      flash.alert = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_for_external_api_connections_only or read_external_api_connections_only are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
+    end
+  end
+
+  def ensure_authority_for_full_access_for_external_api_connections_only_in_api
+    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:full_access_for_external_api_connections_only])
+      flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_for_external_api_connections_only are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
+    end
+  end
+
+  def ensure_authority_for_read_api_clients_only_in_api
+    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:read_api_clients_only])
+      flash.alert = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_for_api_clients_only or read_api_clients_only are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
+    end
+  end
+
+  def ensure_authority_for_full_access_for_api_clients_only_in_api
+    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:full_access_for_api_clients_only])
+      flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_for_api_clients_only are allowed to perform that action."
       redirect_back(fallback_location: root_url)
     end
   end
