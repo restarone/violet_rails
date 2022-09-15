@@ -153,8 +153,23 @@ class Subdomains::BaseController < ApplicationController
     end
   end
 
+  def ensure_authority_for_viewing_all_api
+    unless user_authorized_to_view_all_api?(API_ACCESSIBILITIES[:full_read_access])
+      flash.alert = "You do not have the permission to do that. Only users with full_read_access or full_access for all_namespaces are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
+    end
+  end
+
+  # For new, create action of api_namespaces_controller, we cannot use the category specicfic authorization
+  def ensure_authority_for_creating_api
+    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:full_access], check_categories: false)
+      flash.alert = "You do not have the permission to do that. Only users with full_access for all_namespaces are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
+    end
+  end
+
   private
-  def user_authorized_for_api_accessibility?(api_permissions)
+  def user_authorized_for_api_accessibility?(api_permissions, check_categories: true)
     user_api_accessibility = current_user.api_accessibility
 
     return false unless user_api_accessibility.present?
@@ -165,7 +180,7 @@ class Subdomains::BaseController < ApplicationController
       is_user_authorized = api_permissions.any? do |access_name|
         user_api_accessibility.dig('all_namespaces', access_name).present? && user_api_accessibility.dig('all_namespaces', access_name) == 'true'
       end
-    elsif user_api_accessibility.keys.include?('namespaces_by_category')
+    elsif check_categories && user_api_accessibility.keys.include?('namespaces_by_category')
       categories = @api_namespace.categories.pluck(:label)
 
       if categories.blank? && user_api_accessibility.dig('namespaces_by_category', 'uncategorized').present?
@@ -177,6 +192,30 @@ class Subdomains::BaseController < ApplicationController
           is_user_authorized = api_permissions.any? do |access_name|
             user_api_accessibility.dig('namespaces_by_category', category, access_name).present? && user_api_accessibility.dig('namespaces_by_category', category, access_name) == 'true'
           end
+        end
+      end
+    end
+
+    is_user_authorized
+  end
+
+  def user_authorized_to_view_all_api?(api_permissions)
+    user_api_accessibility = current_user.api_accessibility
+
+    return false unless user_api_accessibility.present?
+
+    is_user_authorized = false
+
+    if user_api_accessibility.keys.include?('all_namespaces')
+      is_user_authorized = api_permissions.any? do |access_name|
+        user_api_accessibility.dig('all_namespaces', access_name).present? && user_api_accessibility.dig('all_namespaces', access_name) == 'true'
+      end
+    elsif user_api_accessibility.keys.include?('namespaces_by_category')
+      categories = user_api_accessibility.dig('namespaces_by_category').keys
+
+      categories.any? do |category|
+        is_user_authorized = api_permissions.any? do |access_name|
+          user_api_accessibility.dig('namespaces_by_category', category, access_name).present? && user_api_accessibility.dig('namespaces_by_category', category, access_name) == 'true'
         end
       end
     end
