@@ -55,11 +55,11 @@ class ComplianceVisitorDataRequestPluginTest < ActiveSupport::TestCase
         end
 
         sent_email = ActionMailer::Base.deliveries.last
-        p Subdomain.current.name
-        p sent_email.from
-        assert(sent_email.from.include?(Subdomain.current.name))
-        assert(sent_email.from.include?(ENV["APP_HOST"]))
-        assert_equal [visitor_email], sent_email.to
+        
+        # sent_email.from returns a string in development, but in production it returns an array
+        assert(Array.wrap(sent_email.from).first.include?(Subdomain.current.name))
+        assert(Array.wrap(sent_email.from).first.include?(ENV["APP_HOST"]))
+        assert(sent_email.to.include?(visitor_email))
         assert(sent_email.parts.first.body.raw_source.include?(expected_message))
     end
 
