@@ -84,6 +84,8 @@ class User < ApplicationRecord
 
   has_one_attached :avatar
 
+  has_many :api_resources
+
   # to run User.find(123).visits
   has_many :visits, class_name: "Ahoy::Visit", dependent: :nullify
   has_many :events, class_name: "Ahoy::Event", dependent: :nullify
