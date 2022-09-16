@@ -1,8 +1,8 @@
-window["ctaSuccessHandler_<%= @api_namespace.id %>"] = function () {
-  enableForm("#api_form_<%= @api_namespace.id %>");
+window["ctaSuccessHandler_<%= @form_id %>"] = function () {
+  enableForm("#api_form_<%= @form_id %>");
 }
 
-$("#recaptcha_section_<%= @api_namespace.id %>").html('<small class="text-danger">*Please prove your humanity by solving the challenge.</small><%= recaptcha_tags(callback: "ctaSuccessHandler_#{@api_namespace.id}").gsub(/\n/, '').html_safe %>');
+$("#recaptcha_section_<%= @form_id %>").html('<small class="text-danger">*Please prove your humanity by solving the challenge.</small><%= recaptcha_tags(callback: "ctaSuccessHandler_#{@api_namespace.id}").gsub(/\n/, '').html_safe %>');
 $('.grecaptcha-badge').css('visibility', 'hidden');
 
 $("#flash").html("<%= j render(partial: 'shared/flash_content', locals: { flash: @flash }) %>");
