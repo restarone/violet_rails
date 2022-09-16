@@ -10,53 +10,42 @@
       
       %ul.mt-2{ style: "display: none"}
         %li
-          -# = hidden_field_tag 'user[api_accessibility][all_namespaces][full_read_access]', false
-          = check_box_tag 'user[api_accessibility][all_namespaces][full_read_access]', true, true, disabled: true
-          = label_tag nil, 'Full read access'
-        %li
-          -# = hidden_field_tag 'user[api_accessibility][all_namespaces][full_access]', false
-          = check_box_tag 'user[api_accessibility][all_namespaces][full_access]', true, true, disabled: true
+          = check_box_tag 'user[api_accessibility][all_namespaces][full_access]', true, true, class: 'full-access-option', disabled: true
           = label_tag nil, 'Full access'
-        %li
-          -# = hidden_field_tag 'user[api_accessibility][all_namespaces][allow_exports]', false
-          = check_box_tag 'user[api_accessibility][all_namespaces][allow_exports]', true, true, disabled: true
-          = label_tag nil, 'Allow exports'
-        %li
-          -# = hidden_field_tag 'user[api_accessibility][all_namespaces][allow_duplication]', false
-          = check_box_tag 'user[api_accessibility][all_namespaces][allow_duplication]', true, true, disabled: true
-          = label_tag nil, 'Allow duplication'
-        %li
-          -# = hidden_field_tag 'user[api_accessibility][all_namespaces][read_api_resources_only]', false
-          = check_box_tag 'user[api_accessibility][all_namespaces][read_api_resources_only]', true, true, disabled: true
-          = label_tag nil, 'Read API Resources only'
-        %li
-          -# = hidden_field_tag 'user[api_accessibility][all_namespaces][full_access_for_api_resources_only]', false
-          = check_box_tag 'user[api_accessibility][all_namespaces][full_access_for_api_resources_only]', true, true, disabled: true
-          = label_tag nil, 'Full access for API Resources only'
-        %li
-          -# = hidden_field_tag 'user[api_accessibility][all_namespaces][read_api_actions_only]', false
-          = check_box_tag 'user[api_accessibility][all_namespaces][read_api_actions_only]', true, true, disabled: true
-          = label_tag nil, 'Read API Actions only'
-        %li
-          -# = hidden_field_tag 'user[api_accessibility][all_namespaces][full_access_for_api_actions_only]', false
-          = check_box_tag 'user[api_accessibility][all_namespaces][full_access_for_api_actions_only]', true, true, disabled: true
-          = label_tag nil, 'Full access for API Actions only'
-        %li
-          -# = hidden_field_tag 'user[api_accessibility][all_namespaces][read_external_api_connections_only]', false
-          = check_box_tag 'user[api_accessibility][all_namespaces][read_external_api_connections_only]', true, true, disabled: true
-          = label_tag nil, 'Read External API Connections only'
-        %li
-          -# = hidden_field_tag 'user[api_accessibility][all_namespaces][full_access_for_external_api_connections_only]', false
-          = check_box_tag 'user[api_accessibility][all_namespaces][full_access_for_external_api_connections_only]', true, true, disabled: true
-          = label_tag nil, 'Full access for External API Connections only'
-        %li
-          -# = hidden_field_tag 'user[api_accessibility][all_namespaces][read_api_clients_only]', false
-          = check_box_tag 'user[api_accessibility][all_namespaces][read_api_clients_only]', true, true, disabled: true
-          = label_tag nil, 'Read API Clients only'
-        %li
-          -# = hidden_field_tag 'user[api_accessibility][all_namespaces][full_access_for_api_clients_only]', false
-          = check_box_tag 'user[api_accessibility][all_namespaces][full_access_for_api_clients_only]', true, true, disabled: true
-          = label_tag nil, 'Full access for API Clients only'
+        %ul.mb-2.sub-options
+          %li
+            = check_box_tag nil, true, true, disabled: true, data: { name: 'user[api_accessibility][all_namespaces][full_read_access]'}
+            = label_tag nil, 'Full read access'
+          %li
+            = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][allow_exports]'}
+            = label_tag nil, 'Allow exports'
+          %li
+            = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][allow_duplication]'}
+            = label_tag nil, 'Allow duplication'
+          %li
+            = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][read_api_resources_only]'}
+            = label_tag nil, 'Read API Resources only'
+          %li
+            = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][full_access_for_api_resources_only]'}
+            = label_tag nil, 'Full access for API Resources only'
+          %li
+            = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][read_api_actions_only]'}
+            = label_tag nil, 'Read API Actions only'
+          %li
+            = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][full_access_for_api_actions_only]'}
+            = label_tag nil, 'Full access for API Actions only'
+          %li
+            = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][read_external_api_connections_only]'}
+            = label_tag nil, 'Read External API Connections only'
+          %li
+            = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][full_access_for_external_api_connections_only]'}
+            = label_tag nil, 'Full access for External API Connections only'
+          %li
+            = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][read_api_clients_only]'}
+            = label_tag nil, 'Read API Clients only'
+          %li
+            = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][full_access_for_api_clients_only]'}
+            = label_tag nil, 'Full access for API Clients only'
 
     .form-group
       = check_box_tag '', nil, nil, data: { group: 'api-sub-settings', type: 'toggle-checkboxes' }
@@ -74,53 +63,42 @@
                 = category.label
               %ul.mt-2{ style: "display: none"}
                 %li
-                  -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][full_read_access]", false
-                  = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][full_read_access]", true, true, disabled: true
-                  = label_tag nil, 'Full read access'
-                %li
-                  -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][full_access]", false
-                  = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][full_access]", true, true, disabled: true
+                  = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][full_access]", true, true, class: 'full-access-option', disabled: true
                   = label_tag nil, 'Full access'
-                %li
-                  -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][allow_exports]", false
-                  = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][allow_exports]", true, true, disabled: true
-                  = label_tag nil, 'Allow exports'
-                %li
-                  -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][allow_duplication]", false
-                  = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][allow_duplication]", true, true, disabled: true
-                  = label_tag nil, 'Allow duplication'
-                %li
-                  -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][read_api_resources_only]", false
-                  = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][read_api_resources_only]", true, true, disabled: true
-                  = label_tag nil, 'Read API Resources only'
-                %li
-                  -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_api_resources_only]", false
-                  = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_api_resources_only]", true, true, disabled: true
-                  = label_tag nil, 'Full access for API Resources only'
-                %li
-                  -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][read_api_actions_only]", false
-                  = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][read_api_actions_only]", true, true, disabled: true
-                  = label_tag nil, 'Read API Actions only'
-                %li
-                  -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_api_actions_only]", false
-                  = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_api_actions_only]", true, true, disabled: true
-                  = label_tag nil, 'Full access for API Actions only'
-                %li
-                  -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][read_external_api_connections_only]", false
-                  = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][read_external_api_connections_only]", true, true, disabled: true
-                  = label_tag nil, 'Read External API Connections only'
-                %li
-                  -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_external_api_connections_only]", false
-                  = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_external_api_connections_only]", true, true, disabled: true
-                  = label_tag nil, 'Full access for External API Connections only'
-                %li
-                  -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][read_api_clients_only]", false
-                  = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][read_api_clients_only]", true, true, disabled: true
-                  = label_tag nil, 'Read API Clients only'
-                %li
-                  -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_api_clients_only]", false
-                  = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_api_clients_only]", true, true, disabled: true
-                  = label_tag nil, 'Full access for API Clients only'
+                %ul.mb-2.sub-options
+                  %li
+                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_read_access]"}
+                    = label_tag nil, 'Full read access'
+                  %li
+                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][allow_exports]"}
+                    = label_tag nil, 'Allow exports'
+                  %li
+                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][allow_duplication]"}
+                    = label_tag nil, 'Allow duplication'
+                  %li
+                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][read_api_resources_only]"}
+                    = label_tag nil, 'Read API Resources only'
+                  %li
+                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_api_resources_only]"}
+                    = label_tag nil, 'Full access for API Resources only'
+                  %li
+                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][read_api_actions_only]"}
+                    = label_tag nil, 'Read API Actions only'
+                  %li
+                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_api_actions_only]"}
+                    = label_tag nil, 'Full access for API Actions only'
+                  %li
+                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][read_external_api_connections_only]"}
+                    = label_tag nil, 'Read External API Connections only'
+                  %li
+                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_external_api_connections_only]"}
+                    = label_tag nil, 'Full access for External API Connections only'
+                  %li
+                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][read_api_clients_only]"}
+                    = label_tag nil, 'Read API Clients only'
+                  %li
+                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_api_clients_only]"}
+                    = label_tag nil, 'Full access for API Clients only'
 
         %li
           .form-group
@@ -129,53 +107,42 @@
               uncategorized
             %ul.mt-2{ style: "display: none"}
               %li
-                -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][full_read_access]", false
-                = check_box_tag "user[api_accessibility][namespaces_by_category][uncategorized][full_read_access]", true, true, disabled: true
-                = label_tag nil, 'Full read access'
-              %li
-                -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][full_access]", false
-                = check_box_tag "user[api_accessibility][namespaces_by_category][uncategorized][full_access]", true, true, disabled: true
+                = check_box_tag "user[api_accessibility][namespaces_by_category][uncategorized][full_access]", true, true, class: 'full-access-option', disabled: true
                 = label_tag nil, 'Full access'
-              %li
-                -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][allow_exports]", false
-                = check_box_tag "user[api_accessibility][namespaces_by_category][uncategorized][allow_exports]", true, true, disabled: true
-                = label_tag nil, 'Allow exports'
-              %li
-                -# = hidden_field_tag 'user[api_accessibility][namespaces_by_category][uncategorized][allow_duplication]', false
-                = check_box_tag 'user[api_accessibility][namespaces_by_category][uncategorized][allow_duplication]', true, true, disabled: true
-                = label_tag nil, 'Allow duplication'
-              %li
-                -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][read_api_resources_only]", false
-                = check_box_tag "user[api_accessibility][namespaces_by_category][uncategorized][read_api_resources_only]", true, true, disabled: true
-                = label_tag nil, 'Read API Resources only'
-              %li
-                -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_api_resources_only]", false
-                = check_box_tag "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_api_resources_only]", true, true, disabled: true
-                = label_tag nil, 'Full access for API Resources only'
-              %li
-                -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][read_api_actions_only]", false
-                = check_box_tag "user[api_accessibility][namespaces_by_category][uncategorized][read_api_actions_only]", true, true, disabled: true
-                = label_tag nil, 'Read API Actions only'
-              %li
-                -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_api_actions_only]", false
-                = check_box_tag "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_api_actions_only]", true, true, disabled: true
-                = label_tag nil, 'Full access for API Actions only'
-              %li
-                -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][read_external_api_connections_only]", false
-                = check_box_tag "user[api_accessibility][namespaces_by_category][uncategorized][read_external_api_connections_only]", true, true, disabled: true
-                = label_tag nil, 'Read External API Connections only'
-              %li
-                -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_external_api_connections_only]", false
-                = check_box_tag "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_external_api_connections_only]", true, true, disabled: true
-                = label_tag nil, 'Full access for External API Connections only'
-              %li
-                -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][read_api_clients_only]", false
-                = check_box_tag "user[api_accessibility][namespaces_by_category][uncategorized][read_api_clients_only]", true, true, disabled: true
-                = label_tag nil, 'Read API Clients only'
-              %li
-                -# = hidden_field_tag "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_api_clients_only]", false
-                = check_box_tag "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_api_clients_only]", true, true, disabled: true
-                = label_tag nil, 'Full access for API Clients only'
+              %ul.mb-2.sub-options
+                %li
+                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_read_access]"}
+                  = label_tag nil, 'Full read access'
+                %li
+                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][allow_exports]"}
+                  = label_tag nil, 'Allow exports'
+                %li
+                  = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][namespaces_by_category][uncategorized][allow_duplication]'}
+                  = label_tag nil, 'Allow duplication'
+                %li
+                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][read_api_resources_only]"}
+                  = label_tag nil, 'Read API Resources only'
+                %li
+                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_api_resources_only]"}
+                  = label_tag nil, 'Full access for API Resources only'
+                %li
+                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][read_api_actions_only]"}
+                  = label_tag nil, 'Read API Actions only'
+                %li
+                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_api_actions_only]"}
+                  = label_tag nil, 'Full access for API Actions only'
+                %li
+                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][read_external_api_connections_only]"}
+                  = label_tag nil, 'Read External API Connections only'
+                %li
+                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_external_api_connections_only]"}
+                  = label_tag nil, 'Full access for External API Connections only'
+                %li
+                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][read_api_clients_only]"}
+                  = label_tag nil, 'Read API Clients only'
+                %li
+                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_api_clients_only]"}
+                  = label_tag nil, 'Full access for API Clients only'
 
 :css
   .api-accessibility ul {
@@ -190,28 +157,32 @@
   $(document).ready(function() {
     toggleContent();
     toggleCheckboxes();
+    toggleFullAccessAndSubOptions();
   });
 
   function toggleContent() {
     $("input[data-group='api-sub-settings']").on('change', function() {
-      const specificAccessCheckboxes = $(this).siblings('ul').first().find("> li > input[type='checkbox']");
+      const specificAccessCheckboxes = $(this).siblings('ul').first().find("> li > input.full-access-option[type='checkbox'], > li + ul.sub-options input[type='checkbox']");
       const categoryCheckboxes = $(this).siblings('ul').first().find("> li > div > input[type='checkbox']");
 
       if (this.checked) {
         if ($(specificAccessCheckboxes).attr('value')) {
           $(specificAccessCheckboxes).attr('disabled', false);
+          $(specificAccessCheckboxes).prop('checked', true);
         }
         $(this).siblings('ul').show();
       } else {
         if ($(specificAccessCheckboxes).attr('value')) {
           $(specificAccessCheckboxes).attr('disabled', true);
+          $(specificAccessCheckboxes).prop('checked', false);
         }
-        console.log(categoryCheckboxes);
         $(categoryCheckboxes).prop('checked', false);
         $(categoryCheckboxes).trigger('change');
 
         $(this).siblings('ul').hide();
       }
+
+      $(specificAccessCheckboxes).trigger('change');
     })
   }
 
@@ -226,6 +197,44 @@
             $(this).trigger('change');
           }
         })
+      }
+    })
+  }
+
+  function toggleFullAccessAndSubOptions() {
+    $('input.full-access-option').on('change', function() {
+      const subOptionCheckboxes = $(this).parent().siblings('ul.sub-options').find("input[type='checkbox']");
+
+
+      if (this.checked) {
+        subOptionCheckboxes.prop('checked', true);
+      } else {
+        subOptionCheckboxes.prop('checked', false);
+      }
+      subOptionCheckboxes.trigger('change');
+    })
+
+    $("ul.sub-options input[type='checkbox']").on('change', function() {
+      const fullAccessCheckbox = $(this).parents("ul.sub-options").siblings('li').find("input.full-access-option[type='checkbox']");
+      const subOptions = $(this).parents("ul.sub-options").find("input[type='checkbox']");
+      const totalSubOptions = subOptions.length;
+      const totalCheckedSubOptions = $(this).parents("ul.sub-options").find("input[type='checkbox']:checked").length;
+
+      const shouldCheckFullAccess = totalCheckedSubOptions > 0 && totalCheckedSubOptions == totalSubOptions;
+      const shouldFullAccessBeIndeterminate = totalCheckedSubOptions > 0 && totalCheckedSubOptions < totalSubOptions;
+
+      fullAccessCheckbox.prop('checked', shouldCheckFullAccess);
+      fullAccessCheckbox.prop('indeterminate', shouldFullAccessBeIndeterminate);
+
+      if (shouldCheckFullAccess) {
+        subOptions.each(function() {
+          $(this).removeAttr('name');
+        });
+      } else {
+        subOptions.each(function() {
+          const nameAttrValue = $(this).attr('data-name');
+          $(this).attr('name', nameAttrValue);
+        });
       }
     })
   }
