@@ -4,7 +4,7 @@ require "test_helper"
 class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
-    @user.update(can_manage_api: true)
+    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
     @api_client = api_clients(:one)
     @api_namespace = api_namespaces(:one)
     @external_api_client = external_api_clients(:test)
@@ -63,7 +63,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test "should not get #index, if signed in but not allowed to manage api" do
-    @user.update(can_manage_api: false)
+    @user.update(api_accessibility: {})
     sign_in(@user)
     get api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)
     assert_response :redirect
@@ -84,11 +84,11 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test "#new: denies if user not permissioned to manage api" do
-    @user.update(can_manage_api: false)
+    @user.update(api_accessibility: {})
     sign_in(@user)
 
     get new_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id)
-    expected_message = "You do not have the permission to do that. Only users who can_manage_api are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_external_api_connections_only are allowed to perform that action."
 
     assert_response :redirect
     assert_match expected_message, flash[:alert]
@@ -191,14 +191,14 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
       }
     }
 
-    @user.update(can_manage_api: false)
+    @user.update(api_accessibility: {})
     sign_in(@user)
 
     assert_no_difference "ExternalApiClient.count" do
       post api_namespace_external_api_clients_url(api_namespace_id: @api_namespace.id), params: payload
     end
 
-    expected_message = "You do not have the permission to do that. Only users who can_manage_api are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_external_api_connections_only are allowed to perform that action."
     assert_match expected_message, flash[:alert]
     assert_response :redirect
   end
@@ -212,14 +212,14 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test "#show: denies if user not permissioned to manage api" do
-    @user.update(can_manage_api: false)
+    @user.update(api_accessibility: {})
     sign_in(@user)
 
     get api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
-    expected_message = "You do not have the permission to do that. Only users who can_manage_api are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_for_external_api_connections_only or read_external_api_connections_only are allowed to perform that action."
 
     assert_response :redirect
-    assert_match expected_message, flash[:alert]
+    assert_equal expected_message, flash[:alert]
   end
 
   test "#show: allows if permissioned user is signed in" do
@@ -240,11 +240,11 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test "#edit: denies if user not permissioned to manage api" do
-    @user.update(can_manage_api: false)
+    @user.update(api_accessibility: {})
     sign_in(@user)
 
     get edit_api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
-    expected_message = "You do not have the permission to do that. Only users who can_manage_api are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_external_api_connections_only are allowed to perform that action."
 
     assert_response :redirect
     assert_match expected_message, flash[:alert]
@@ -343,12 +343,12 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
       }
     }
 
-    @user.update(can_manage_api: false)
+    @user.update(api_accessibility: {})
     sign_in(@user)
 
     patch api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id), params: payload
 
-    expected_message = "You do not have the permission to do that. Only users who can_manage_api are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_external_api_connections_only are allowed to perform that action."
     assert_match expected_message, flash[:alert]
     assert_response :redirect
   end
@@ -365,14 +365,14 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test "#destroy: denies if user not permissioned to manage api" do
-    @user.update(can_manage_api: false)
+    @user.update(api_accessibility: {})
     sign_in(@user)
 
     assert_no_difference "ExternalApiClient.count" do
       delete api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
     end
 
-    expected_message = "You do not have the permission to do that. Only users who can_manage_api are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_external_api_connections_only are allowed to perform that action."
 
     assert_response :redirect
     assert_match expected_message, flash[:alert]
@@ -407,12 +407,12 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test "#stop: denies if user not permissioned to manage api" do
     @external_api_client.update(status: ExternalApiClient::STATUSES[:running])
 
-    @user.update(can_manage_api: false)
+    @user.update(api_accessibility: {})
     sign_in(@user)
 
     get stop_api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
 
-    expected_message = "You do not have the permission to do that. Only users who can_manage_api are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_external_api_connections_only are allowed to perform that action."
 
     assert_response :redirect
     assert_match expected_message, flash[:alert]
@@ -449,12 +449,12 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test "#clear_errors: denies if user not permissioned to manage api" do
     @external_api_client.update(status: ExternalApiClient::STATUSES[:error], error_message: 'test error message', retries: 3, error_metadata: { 'testKey': 'testMessage'})
 
-    @user.update(can_manage_api: false)
+    @user.update(api_accessibility: {})
     sign_in(@user)
 
     get clear_errors_api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
 
-    expected_message = "You do not have the permission to do that. Only users who can_manage_api are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_external_api_connections_only are allowed to perform that action."
 
     assert_response :redirect
     assert_match expected_message, flash[:alert]
@@ -494,12 +494,12 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test "#clear_state: denies if user not permissioned to manage api" do
     @external_api_client.update(state_metadata: { 'testKey': 'testMessage'})
 
-    @user.update(can_manage_api: false)
+    @user.update(api_accessibility: {})
     sign_in(@user)
 
     get clear_state_api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
 
-    expected_message = "You do not have the permission to do that. Only users who can_manage_api are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_external_api_connections_only are allowed to perform that action."
 
     assert_response :redirect
     assert_match expected_message, flash[:alert]

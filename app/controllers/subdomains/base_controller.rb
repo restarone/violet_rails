@@ -101,14 +101,14 @@ class Subdomains::BaseController < ApplicationController
 
   def ensure_authority_for_allow_exports_in_api
     unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:allow_exports])
-      flash.alert = "You do not have the permission to do that. Only users with full_access or allow_exports are allowed to perform that action."
+      flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or allow_exports are allowed to perform that action."
       redirect_back(fallback_location: root_url)
     end
   end
 
   def ensure_authority_for_allow_duplication_in_api
     unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:allow_duplication])
-      flash.alert = "You do not have the permission to do that. Only users with full_access or allow_duplication are allowed to perform that action."
+      flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or allow_duplication are allowed to perform that action."
       redirect_back(fallback_location: root_url)
     end
   end

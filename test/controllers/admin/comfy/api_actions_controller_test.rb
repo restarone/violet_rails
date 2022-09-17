@@ -3,15 +3,15 @@ require "test_helper"
 class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
-    @user.update(can_manage_api: true)
+    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
     @api_namespace = api_namespaces(:one)
     @api_action = api_actions(:one)
   end
 
   test "should not get #index, #new, #show if signed in but not allowed to manage api" do
-    @user.update(can_manage_api: false)
+    @user.update(api_accessibility: {})
     sign_in(@user)
-    get new_api_action_url(index: 1, type: 'new_api_actions'), xhr: true
+    get new_api_namespace_api_action_url(api_namespace_id: @api_action.api_namespace_id, index: 1, type: 'new_api_actions'), xhr: true
     assert_response :redirect
     get api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
     assert_response :redirect
@@ -21,7 +21,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
 
   test "should get new" do
     sign_in(@user)
-    get new_api_action_url(index: 1, type: 'new_api_actions'), xhr: true
+    get new_api_namespace_api_action_url(api_namespace_id: @api_action.api_namespace_id, index: 1, type: 'new_api_actions'), xhr: true
     assert_response :success
   end
 

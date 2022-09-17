@@ -3,7 +3,7 @@ require "test_helper"
 class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
-    @user.update(can_manage_api: true)
+    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
     @api_namespace = api_namespaces(:one)
     @api_resource = api_resources(:one)
 
@@ -14,6 +14,14 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
     sign_in(@user)
     get new_api_namespace_resource_url(api_namespace_id: @api_namespace.id)
     assert_response :success
+  end
+
+  test "deny new if not permissioned" do
+    @user.update(api_accessibility: {all_namespaces: {full_read_access: 'true'}})
+    sign_in(@user)
+    get new_api_namespace_resource_url(api_namespace_id: @api_namespace.id)
+    assert_response :redirect
+    assert_equal "You do not have the permission to do that. Only users with full_access or full_access_for_api_resources_only are allowed to perform that action.", flash[:alert]
   end
 
   test "should create api_resource" do

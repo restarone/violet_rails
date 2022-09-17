@@ -3,7 +3,7 @@ require "test_helper"
 class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
-    @user.update(can_manage_api: true)
+    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
     @api_namespace = api_namespaces(:one)
   end
 
@@ -14,7 +14,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
   test "should not get index if signed in but not allowed to manage api" do
     sign_in(@user)
-    @user.update(can_manage_api: false)
+    @user.update(api_accessibility: {})
     get api_namespaces_url
     assert_response :redirect
   end
@@ -140,14 +140,14 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
   test "should not allow duplicate_without_associations if not allowed to manage api" do
     api_form = api_forms(:one)
-    @user.update(can_manage_api: false)
+    @user.update(api_accessibility: {})
 
     sign_in(@user)
     
     post duplicate_without_associations_api_namespace_url(id: @api_namespace.id)
     assert_response :redirect
     
-    error_message = "You do not have the permission to do that. Only users who can_manage_api are allowed to perform that action."
+    error_message = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or allow_duplication are allowed to perform that action."
     assert_match error_message, request.flash[:alert]
   end
 
@@ -199,14 +199,14 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
   test "should not allow duplicate_with_associations if not allowed to manage api" do
     api_form = api_forms(:one)
-    @user.update(can_manage_api: false)
+    @user.update(api_accessibility: {})
 
     sign_in(@user)
     
     post duplicate_with_associations_api_namespace_url(id: @api_namespace.id)
     assert_response :redirect
     
-    error_message = "You do not have the permission to do that. Only users who can_manage_api are allowed to perform that action."
+    error_message = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or allow_duplication are allowed to perform that action."
     assert_match error_message, request.flash[:alert]
   end
 
@@ -367,18 +367,18 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should deny exporting of api-resources as CSV if the user is not authorized" do
-    @user.update(can_manage_api: false)
+    @user.update(api_accessibility: {})
     sign_in(@user)
     api_namespace = api_namespaces(:namespace_with_all_types)
 
     get export_api_resources_api_namespace_url(api_namespace, format: :csv)
 
     assert_response :redirect
-    assert_equal "You do not have the permission to do that. Only users who can_manage_api are allowed to perform that action.", flash[:alert]
+    assert_equal "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or allow_exports are allowed to perform that action.", flash[:alert]
   end
 
   test "should deny export api_namespace without associations as JSON if user is not authorized" do
-    @user.update(can_manage_api: false)
+    @user.update(api_accessibility: {})
     sign_in(@user)
     get export_without_associations_as_json_api_namespace_url(@api_namespace)
     assert_response :redirect
@@ -393,7 +393,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should deny export api_namespace with associations as JSON if user is not authorized" do
-    @user.update(can_manage_api: false)
+    @user.update(api_accessibility: {})
     sign_in(@user)
     get export_with_associations_as_json_api_namespace_url(@api_namespace)
     assert_response :redirect
@@ -442,7 +442,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
       file: fixture_file_upload(json_file.path, 'application/json')
     }
 
-    @user.update(can_manage_api: false)
+    @user.update(api_accessibility: {})
     sign_in(@user)
     assert_no_difference('ApiNamespace.count') do
       assert_no_difference('ApiResource.count') do
@@ -452,6 +452,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
               assert_no_difference('NonPrimitiveProperty.count') do
                 post import_as_json_api_namespaces_url, params: payload
                 assert_response :redirect
+                assert_equal "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only for all_namespaces are allowed to perform that action.", flash[:alert]
               end
             end
           end

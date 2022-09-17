@@ -3,7 +3,7 @@ require "test_helper"
 class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
-    @user.update(can_manage_api: true)
+    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
     @api_client = api_clients(:one)
     @api_namespace = api_namespaces(:one)
   end
@@ -15,7 +15,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
 
   test "should not get #index, #new if signed in but not allowed to manage web" do
     sign_in(@user)
-    @user.update(can_manage_api: false)
+    @user.update(api_accessibility: {})
     get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
     assert_response :redirect
     get new_api_namespace_api_client_url(api_namespace_id: @api_namespace.id)

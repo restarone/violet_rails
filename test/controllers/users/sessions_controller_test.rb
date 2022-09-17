@@ -218,14 +218,14 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
       post user_session_url(subdomain: @restarone_subdomain.name), params: payload
       assert_redirected_to api_namespace_url(subdomain: @restarone_subdomain.name, id: api_namespace.id)
 
-      # The response will be success if the user can manage api
-      @restarone_user.update!(can_manage_api: true)
+      # The response will be success if the user is properly permissioned
+      @restarone_user.update!(api_accessibility: {all_namespaces: {full_access: 'true'}})
       sign_in(@restarone_user)
       get api_namespace_url(subdomain: @restarone_subdomain.name, id: api_namespace.id)
       assert_response :success
 
-      # The response will be redirected to root_url  if the user cannot manage api
-      @restarone_user.update!(can_manage_api: false)
+      # The response will be redirected to root_url  if the user is not permissioned
+      @restarone_user.update!(api_accessibility: {})
       sign_in(@restarone_user)
       get api_namespace_url(subdomain: @restarone_subdomain.name, id: api_namespace.id)
       assert_redirected_to root_url(subdomain: @restarone_subdomain.name)
