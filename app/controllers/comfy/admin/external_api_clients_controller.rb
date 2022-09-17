@@ -1,5 +1,4 @@
 class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseController
-    before_action :ensure_authority_to_manage_api
     before_action :set_external_api_client, only: %i[ show edit update destroy start stop clear_errors clear_state]
     before_action :set_api_namespace
     before_action :ensure_authority_for_read_external_api_connections_only_in_api, only: %i[ show index ]

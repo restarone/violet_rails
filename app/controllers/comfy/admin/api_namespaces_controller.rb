@@ -1,12 +1,11 @@
 class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
-  before_action :ensure_authority_to_manage_api
   before_action :set_api_namespace, only: %i[ show edit update destroy discard_failed_api_actions rerun_failed_api_actions export export_api_resources duplicate_with_associations duplicate_without_associations export_without_associations_as_json export_with_associations_as_json ]
 
   before_action :ensure_authority_for_creating_api, only: %i[ new create]
   before_action :ensure_authority_for_viewing_all_api, only: :index
   
   before_action :ensure_authority_for_full_read_access_in_api, only: [:show]
-  before_action :ensure_authority_for_full_access_in_api, only: %i[ edit update destroy discard_failed_api_actions rerun_failed_api_actions ] # Do we need all_namespaces access for [ create import_as_json ] because we cannot determine by category specific api_access since the namespace has not been created.
+  before_action :ensure_authority_for_full_access_in_api_namespace_only, only: %i[ edit update destroy discard_failed_api_actions rerun_failed_api_actions ] # Do we need all_namespaces access for [ create import_as_json ] because we cannot determine by category specific api_access since the namespace has not been created.
   before_action :ensure_authority_for_allow_exports_in_api, only: %i[ export export_api_resources export_without_associations_as_json export_with_associations_as_json ]
   before_action :ensure_authority_for_allow_duplication_in_api, only: %i[ duplicate_with_associations duplicate_without_associations ]
 
