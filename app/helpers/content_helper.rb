@@ -16,4 +16,52 @@ module ContentHelper
 
     options['html'] == 'true' ? snippet.html_safe : cms_snippet_render(snippet)
   end
+
+  # render resource index
+  # available variables on view: @api_resources, @api_namespace
+  def render_api_namespace_resource_index(slug, options = {})
+    scope = options["scope"]
+
+    api_namespace = ApiNamespace.find_by(slug: slug)
+    response = api_namespace.api_resources
+
+    response = response.where.not(user_id: nil).where(user_id: current_user&.id) if scope&.dig('current_user') == 'true'
+
+    response = response.jsonb_search(:properties, scope["properties"]) if scope&.has_key?("properties")
+
+    response = response.jsonb_search(:properties, JSON.parse(params[:properties]).to_hash) if params[:properties]
+
+    response = response.jsonb_order(options["order"]) if options["order"]
+
+    response = response.jsonb_order(JSON.parse(params[:order]).to_hash) if params[:order].present?
+
+    cms_dynamic_snippet_render(slug, nil, { api_resources: response, api_namespace: api_namespace })
+  end
+
+  # render resource show
+  # available variables on view: @api_resource , @api_namespace
+  def render_api_namespace_resource(api_namespace_slug, options = {})
+    scope = options["scope"]
+
+    api_namespace = ApiNamespace.find_by(slug: api_namespace_slug)
+    api_resources = api_namespace.api_resources
+
+    api_resources = api_resources.where.not(user_id: nil).where(user_id: current_user&.id) if scope&.dig('current_user') == 'true'
+
+    api_resources = api_resources.jsonb_search(:properties, scope["properties"]) if scope&.has_key?("properties")
+
+    api_resource = api_resources.find(params[:id])
+
+    cms_dynamic_snippet_render("#{api_namespace_slug}-show", nil, { api_resource: api_resource, api_namespace: api_namespace })
+  end
+
+  private
+
+  def cms_dynamic_snippet_render(identifier, cms_site = @cms_site, context = {})
+    cms_site = @cms_site || cms_site_detect
+    snippet = cms_site&.snippets&.find_by_identifier(identifier)
+    return "" unless snippet
+    r = ComfortableMexicanSofa::Content::Renderer.new(snippet)
+    render inline: r.render(r.nodes(r.tokenize(snippet.content_evaluated(context))))
+  end
 end
