@@ -17,6 +17,9 @@
             = check_box_tag nil, true, true, disabled: true, data: { name: 'user[api_accessibility][all_namespaces][full_read_access]'}
             = label_tag nil, 'Full read access'
           %li
+            = check_box_tag nil, true, true, disabled: true, data: { name: 'user[api_accessibility][all_namespaces][full_access_api_namespace_only]'}
+            = label_tag nil, 'Full access for API Namespace only'
+          %li
             = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][allow_exports]'}
             = label_tag nil, 'Allow exports'
           %li
@@ -46,6 +49,9 @@
           %li
             = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][full_access_for_api_clients_only]'}
             = label_tag nil, 'Full access for API Clients only'
+          %li
+            = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][full_access_for_api_form_only]'}
+            = label_tag nil, 'Full access for API Form only'
 
     .form-group
       = check_box_tag '', nil, nil, data: { group: 'api-sub-settings', type: 'toggle-checkboxes' }
@@ -69,6 +75,9 @@
                   %li
                     = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_read_access]"}
                     = label_tag nil, 'Full read access'
+                  %li
+                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_api_namespace_only]"}
+                    = label_tag nil, 'Full access for API Namespace only'
                   %li
                     = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][allow_exports]"}
                     = label_tag nil, 'Allow exports'
@@ -99,6 +108,9 @@
                   %li
                     = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_api_clients_only]"}
                     = label_tag nil, 'Full access for API Clients only'
+                  %li
+                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_api_form_only]"}
+                    = label_tag nil, 'Full access for API Form only'
 
         %li
           .form-group
@@ -113,6 +125,9 @@
                 %li
                   = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_read_access]"}
                   = label_tag nil, 'Full read access'
+                %li
+                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_access_api_namespace_only]"}
+                  = label_tag nil, 'Full access for API Namespace only'
                 %li
                   = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][allow_exports]"}
                   = label_tag nil, 'Allow exports'
@@ -143,6 +158,9 @@
                 %li
                   = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_api_clients_only]"}
                   = label_tag nil, 'Full access for API Clients only'
+                %li
+                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_api_form_only]"}
+                  = label_tag nil, 'Full access for API Form only'
 
 :css
   .api-accessibility ul {
