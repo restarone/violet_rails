@@ -72,8 +72,8 @@ class Subdomains::BaseController < ApplicationController
   end
 
   def ensure_authority_for_full_read_access_in_api
-    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:full_read_access])
-      flash.alert = "You do not have the permission to do that. Only users with full_access or full_read_access are allowed to perform that action."
+    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:full_read_access] + API_ACCESSIBILITIES[:full_access_api_namespace_only])
+      flash.alert = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_api_namespace_only are allowed to perform that action."
       redirect_back(fallback_location: root_url)
     end
   end
