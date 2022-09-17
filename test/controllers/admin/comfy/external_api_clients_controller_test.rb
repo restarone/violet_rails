@@ -95,7 +95,6 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test "#new: allows if permissioned user is signed in" do
-    @user.update(can_manage_api: true)
     sign_in(@user)
 
     get new_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id)
@@ -128,7 +127,6 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
       }
     }
 
-    @user.update(can_manage_api: true)
     sign_in(@user)
 
     assert_difference "ExternalApiClient.count", +1 do
@@ -223,7 +221,6 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test "#show: allows if permissioned user is signed in" do
-    @user.update(can_manage_api: true)
     sign_in(@user)
 
     get api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
@@ -251,7 +248,6 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test "#edit: allows if permissioned user is signed in" do
-    @user.update(can_manage_api: true)
     sign_in(@user)
 
     get edit_api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
@@ -284,7 +280,6 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
       }
     }
 
-    @user.update(can_manage_api: true)
     sign_in(@user)
 
     patch api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id), params: payload
@@ -379,7 +374,6 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test "#destroy: allows if permissioned user is signed in" do
-    @user.update(can_manage_api: true)
     sign_in(@user)
 
     assert_difference "ExternalApiClient.count", -1 do
@@ -422,7 +416,6 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test "#stop: allows if permissioned user is signed in" do
     @external_api_client.update(status: ExternalApiClient::STATUSES[:running])
 
-    @user.update(can_manage_api: true)
     sign_in(@user)
 
     get stop_api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
@@ -467,7 +460,6 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test "#clear_errors: allows if permissioned user is signed in" do
     @external_api_client.update(status: ExternalApiClient::STATUSES[:error], error_message: 'test error message', retries: 3, error_metadata: { 'testKey': 'testMessage'})
 
-    @user.update(can_manage_api: true)
     sign_in(@user)
 
     get clear_errors_api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
@@ -509,7 +501,6 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test "#clear_state: allows if permissioned user is signed in" do
     @external_api_client.update(state_metadata: { 'testKey': 'testMessage'})
 
-    @user.update(can_manage_api: true)
     sign_in(@user)
 
     get clear_state_api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)

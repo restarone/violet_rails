@@ -78,7 +78,6 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
       :can_manage_blog,
       :can_manage_email,
       :can_manage_users,
-      :can_manage_api,
       :can_manage_analytics,
       :can_manage_files,
       :moderator,
