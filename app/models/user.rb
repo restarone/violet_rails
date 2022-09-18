@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  include JsonbFieldsParsable
   include SimpleDiscussion::ForumUser
   include Comfy::Cms::WithCategories
   # Include default devise modules. Others available are:
