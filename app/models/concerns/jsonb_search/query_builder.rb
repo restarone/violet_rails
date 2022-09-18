@@ -5,6 +5,11 @@ module JsonbSearch
       PARTIAL: 'PARTIAL'
     }.freeze
 
+    MATCH_OPTION = {
+      ALL: 'ALL',
+      ANY: 'ANY'
+  }.freeze
+
     class << self
       def build_jsonb_query(column_name, query_params)
         parsed_params = parse_params(query_params.deep_symbolize_keys)
@@ -19,12 +24,12 @@ module JsonbSearch
         query_params.each do |key, value|
           if value.is_a?(Hash) && value.key?(:value)
             # { name: { value: 'violet', query }} || { name: { value: 'violet', option: 'EXACT' }}
-            queries << { option: value[:option] || QUERY_OPTION[:EXACT], key: key, value: value[:value] }
+            queries << { option: value[:option] || QUERY_OPTION[:EXACT], key: key, value: value[:value], match: value[:match] }
           elsif value.is_a?(Hash)
             # { foo: { bar: 'baz', wat: 'up' }}
             value.each do |k, v|
               if v.is_a?(Hash) && v.key?(:value)
-                queries <<  { key: key, value: [{ option: v[:option] || QUERY_OPTION[:EXACT], key: k, value: v[:value] }] }
+                queries <<  { key: key, value: [{ option: v[:option] || QUERY_OPTION[:EXACT], key: k, value: v[:value], match: v[:match] }] }
               else
                 queries << { key: key, value: [{ option: QUERY_OPTION[:EXACT], key: k, value: v }]}
               end
@@ -49,13 +54,14 @@ module JsonbSearch
         key = param[:key]
         term = param[:value]
         option = param[:option]
+
         case term.class.to_s
 
         when 'Hash'
           return hash_query(key, term, option, query_string)
         when 'Array'
           if option
-            return array_query(key, term, option, query_string)
+            return array_query(key, term, option, query_string, param[:match])
           else
             term.each do |obj|
               # "column -> 'property' ->> 'nested property' = 'term'" 
@@ -86,9 +92,9 @@ module JsonbSearch
       end
 
       # "column -> 'property' ? '['term']'" 
-      def array_query(key, term, option, query)
+      def array_query(key, term, option, query, match)
         if option == QUERY_OPTION[:PARTIAL]
-          "#{query} -> '#{key}' @> '#{term.to_json}'"
+          match == MATCH_OPTION[:ANY] ? term.map { |q| "#{query} -> '#{key}' ? '#{q}'" }.join(' OR ') : "#{query} -> '#{key}' @> '#{term.to_json}'"
         else
           "#{query} -> '#{key}' @> '#{term.to_json}' AND #{query} -> '#{key}' <@ '#{term.to_json}'"
         end
