@@ -453,10 +453,11 @@ class ContentHelperTest < ActionView::TestCase
   end
 
   test 'render_api_namespace_resource_index - limit resource' do
-    snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<% @api_resources.each do |res| %><%= res.properties['name'] %><% end %>")
+    Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<% @api_resources.each do |res| %><%= res.properties['name'] %><% end %>")
     
-    response = render_api_namespace_resource_index(@api_namespace.slug, { 'limit' => 2 })
-    excepted_response = "#{@api_resource.properties['name']}#{@api_resource_1.properties['name']}"
+    response = render_api_namespace_resource_index(@api_namespace.slug, { 'limit' => '2', 'order' => { 'created_at': 'DESC' } })
+    excepted_response = "#{@api_resource_2.properties['name']}#{@api_resource_1.properties['name']}"
+
     assert_equal excepted_response, response
   end
 
