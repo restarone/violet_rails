@@ -9,7 +9,6 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
   before_action :ensure_authority_for_allow_exports_in_api, only: %i[ export export_api_resources export_without_associations_as_json export_with_associations_as_json ]
   before_action :ensure_authority_for_allow_duplication_in_api, only: %i[ duplicate_with_associations duplicate_without_associations ]
 
-  # TODO: handle api access separately
   # GET /api_namespaces or /api_namespaces.json
   def index
     params[:q] ||= {}
@@ -28,7 +27,6 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
     @api_resources = @api_resources_q.result.paginate(page: params[:page], per_page: 10)
   end
 
-  # ? Which api_accessibility to use ? 
   # GET /api_namespaces/new
   def new
     @api_namespace = ApiNamespace.new
