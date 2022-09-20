@@ -78,7 +78,7 @@ module ApiActionable
   end
 
   def execute_error_actions
-    FireApiActionsJob.perform_async(create_error_actions.map(&:id), 'ErrorApiAction', Current.user&.id, Current.visit&.id)
+    ErrorApiAction.where(id: create_error_actions.map(&:id)).execute_model_context_api_actions
     @error_api_actions_exectuted = true
   end
 
