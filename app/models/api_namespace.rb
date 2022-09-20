@@ -285,6 +285,6 @@ class ApiNamespace < ApplicationRecord
   end
 
   def executed_api_actions
-    ApiAction.where(api_resource_id: api_resources.pluck(:id)).or(ApiAction.where("additional_data->'api_resource' ->> 'api_namespace_id' = '#{self.id}'"))
+    ApiAction.where(api_resource_id: api_resources.pluck(:id)).or(ApiAction.where("meta_data->'api_resource' ->> 'api_namespace_id' = '#{self.id}'"))
   end
 end

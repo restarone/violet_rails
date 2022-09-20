@@ -107,7 +107,7 @@ module ApiActionable
         api_namespace_id: @api_namespace.id,
         errors: @api_resource.errors.full_messages.to_sentence
       }
-      ErrorApiAction.create(action.attributes.merge(custom_message: action.custom_message.to_s, additional_data: { api_resource: api_resource_json }).except("id", "created_at", "updated_at", "api_namespace_id"))
+      ErrorApiAction.create(action.attributes.merge(custom_message: action.custom_message.to_s, meta_data: { api_resource: api_resource_json }).except("id", "created_at", "updated_at", "api_namespace_id"))
     end
   end
 

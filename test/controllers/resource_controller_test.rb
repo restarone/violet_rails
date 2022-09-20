@@ -962,7 +962,7 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
 
     # should store user input with proper error message
     expected_json = {"api_resource"=>{"errors"=>"reCAPTCHA verification failed, please try again.", "properties"=>{"first_name"=>"Don"}, "api_namespace_id"=>@api_namespace.id}}
-    assert_equal expected_json,  @api_namespace.executed_api_actions.order(:created_at).last.additional_data
+    assert_equal expected_json,  @api_namespace.executed_api_actions.order(:created_at).last.meta_data
 
     Recaptcha.configuration.skip_verify_env.push("test")
   end
@@ -984,6 +984,6 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
 
     # should store user input with proper error message
     expected_json = {"api_resource"=>{"errors"=>"Properties name is required", "properties"=>{"name"=>""}, "api_namespace_id"=>@api_namespace.id}}
-    assert_equal expected_json, @api_namespace.executed_api_actions.order(:created_at).last.additional_data
+    assert_equal expected_json, @api_namespace.executed_api_actions.order(:created_at).last.meta_data
   end
 end

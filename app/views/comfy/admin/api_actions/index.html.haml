@@ -33,10 +33,10 @@
           - if api_action.api_resource_id
             = link_to api_action.api_resource_id, api_namespace_resource_path(api_namespace_id: @api_namespace.id, id: api_action.api_resource_id)
           - else
-            %div= api_action.additional_data.dig('api_resource', 'properties')
+            %div= api_action.meta_data.dig('api_resource', 'properties')
             %div
               %strong Error:
-              = api_action.additional_data.dig('api_resource', 'errors')
+              = api_action.meta_data.dig('api_resource', 'errors')
         %td.px-3= api_action.type
         %td.px-3= api_action.action_type
         %td.px-3
