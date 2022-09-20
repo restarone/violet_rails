@@ -1,7 +1,7 @@
 class Comfy::Admin::ApiActionsController < Comfy::Admin::Cms::BaseController
   before_action :set_api_action
   before_action :ensure_authority_for_read_api_actions_only_in_api, only: %i[ show index ]
-  before_action :ensure_authority_for_full_access_for_api_actions_only_in_api, only: %i[ new edit create update destroy ]
+  before_action :ensure_authority_for_full_access_for_api_actions_only_in_api, only: %i[ new action_workflow ]
   before_action :set_current_user_and_visit
 
   def new
