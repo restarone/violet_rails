@@ -1,4 +1,3 @@
-
 test:
   api_namespace: two
   slug: test-second
@@ -404,7 +403,7 @@ compliance_visitor_data_request_plugin:
               attachment = {
                 filename: "api_namespace_#{api_namespace.slug}_#{DateTime.now.to_i}.csv",
                 mime_type: "text/csv",
-                content: generateCSVWithApiResources(api_namespace, api_resources)
+                content: generate_csv_with_api_resources(api_namespace, api_resources)
               }
               attachments << attachment
             end
@@ -412,7 +411,7 @@ compliance_visitor_data_request_plugin:
 
           if (attachments.length > 0)
             email_thread = MessageThread.create(subject: "#{visitor_email} compliance: visitor submitted data request", recipients: [visitor_email])
-            email_message = email_thread.messages.create(content: "<p>#{message}</p>", from: @connection_service.get_subdomain_email_address)
+            email_message = email_thread.messages.create(content: "<p>#{message}</p>#{get_action_text_content(attachments)}", from: @connection_service.get_subdomain_email_address)
             EMailer.with(message: email_message, message_thread: email_thread, attachments: attachments).ship.deliver_later
             # Currently sending emails asynchronously and not checking if they got sent successfully before setting compliance_message_sent to true
             visitor_api_resource.properties["compliance_message_sent"] = true
@@ -421,8 +420,17 @@ compliance_visitor_data_request_plugin:
         end
       end
 
-      def generateCSVWithApiResources(api_namespace, api_resources)
-        main_headers = ApiResource.column_names
+      def get_action_text_content(attachments)
+        action_text_content = ""
+        attachments.each do |attachment|
+          blob = ActiveStorage::Blob.create_and_upload!(io: StringIO.new(attachment[:content]), filename: attachment[:filename], content_type: attachment[:mime_type], metadata: nil)
+          action_text_content += "<action-text-attachment sgid='#{blob.attachable_sgid}'></action-text-attachment>"
+        end
+        ActionText::Content.new(action_text_content).to_s
+      end
+
+      def generate_csv_with_api_resources(api_namespace, api_resources)
+        main_headers = ApiResource.column_names.reject {|header| header == "user_id"}
         top_level_attributes = api_namespace.properties.keys
         property_column_index = main_headers.index('properties')
         effective_headers = main_headers.dup.insert(property_column_index, *top_level_attributes)

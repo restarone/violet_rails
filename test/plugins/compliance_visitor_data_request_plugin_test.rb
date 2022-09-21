@@ -173,4 +173,40 @@ class ComplianceVisitorDataRequestPluginTest < ActiveSupport::TestCase
         expected_error_message = "Permission to scan all api namespaces is not given"
         assert_equal expected_error_message, @data_request_plugin.reload.error_message
     end
+
+    test "A message thread with a message is created when email is sent" do
+        visitor_email = @visitor_one.properties["email"]
+        ApiResource.create(api_namespace_id: @namespace_with_email_one.id, properties: {"post": "Hello world", "email": visitor_email})
+        
+        assert_difference "MessageThread.all.length", +1 do
+            assert_difference "Message.all.length", +1 do
+                perform_enqueued_jobs do
+                    @data_request_plugin.run
+                    Sidekiq::Worker.drain_all
+                end 
+            end
+        end
+    end
+
+    test "Message contains rich text content with a CSV attachment per API namespace" do
+        visitor_email = @visitor_one.properties["email"]
+        ApiResource.create(api_namespace_id: @namespace_with_email_one.id, properties: {"post": "Hello world", "email": visitor_email})
+        ApiResource.create(api_namespace_id: @namespace_with_email_two.id, properties: {"name": "Test Name", "email": visitor_email})
+
+        perform_enqueued_jobs do
+            @data_request_plugin.run
+            Sidekiq::Worker.drain_all
+        end
+
+        rich_text_content = Message.last.rich_text_content
+        attachments = rich_text_content.body.attachments
+
+        assert_not(rich_text_content.blank?)
+        assert_equal 2, attachments.length
+        
+        attachments.each do |attachment|
+            assert_equal "text/csv", attachment[:content_type]
+            assert(attachment[:filename].include?(".csv"))
+        end
+    end
 end
