@@ -174,8 +174,10 @@ ActiveRecord::Schema.define(version: 2022_08_24_121504) do
     t.jsonb "properties"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "user_id"
     t.index ["api_namespace_id"], name: "index_api_resources_on_api_namespace_id"
     t.index ["properties"], name: "index_api_resources_on_properties", opclass: :jsonb_path_ops, using: :gin
+    t.index ["user_id"], name: "index_api_resources_on_user_id"
   end
 
   create_table "comfy_blog_posts", force: :cascade do |t|
