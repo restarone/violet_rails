@@ -155,3 +155,13 @@ no_api_actions:
               }
   requires_authentication: false
   namespace_type: create-read-update-delete
+
+namespace_with_transcript:
+  name: namespace_with_transcript
+  slug: namespace_with_transcript
+  version: 1
+  properties: {
+    "raw_transcript": "",
+    "transcript": "",
+    "transcript_parsed": false
+  }
