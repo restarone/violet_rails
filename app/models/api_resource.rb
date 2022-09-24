@@ -72,25 +72,7 @@ class ApiResource < ApplicationRecord
   end
 
   def execute_model_context_api_actions(class_name)
-    api_actions = self.send(class_name).where(action_type: ApiAction::EXECUTION_ORDER[:model_level], lifecycle_stage: 'initialized')
-
-    ApiAction::EXECUTION_ORDER[:model_level].each do |action_type|
-      if ApiAction.action_types[action_type] == ApiAction.action_types[:custom_action]
-        begin
-          custom_actions = api_actions.where(action_type: 'custom_action')
-          custom_actions.each do |custom_action|
-            custom_action.execute_action
-          end
-        rescue
-          # error-actions are executed already in api-action level.
-          nil
-        end
-      elsif [ApiAction.action_types[:send_email], ApiAction.action_types[:send_web_request]].include?(ApiAction.action_types[action_type])
-        api_actions.where(action_type: ApiAction.action_types[action_type]).each do |api_action|
-          api_action.execute_action
-        end
-      end
-    end if api_actions.present?
+    self.send(class_name).execute_model_context_api_actions
   end
 
   private
@@ -119,11 +101,11 @@ class ApiResource < ApplicationRecord
 
   def execute_create_api_actions
     clone_api_actions('create_api_actions')
-    FireApiActionsJob.perform_async(self.id, 'create_api_actions', Current.user&.id, Current.visit&.id)
+    CreateApiAction.where(id: self.create_api_actions.pluck(:id)).execute_model_context_api_actions
   end
 
   def execute_update_api_actions
     clone_api_actions('update_api_actions')
-    FireApiActionsJob.perform_async(self.id, 'update_api_actions', Current.user&.id, Current.visit&.id)
+    UpdateApiAction.where(id: self.update_api_actions.pluck(:id)).execute_model_context_api_actions
   end
 end

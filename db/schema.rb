@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_08_24_121504) do
+ActiveRecord::Schema.define(version: 2022_09_06_063031) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -127,6 +127,7 @@ ActiveRecord::Schema.define(version: 2022_08_24_121504) do
     t.text "method_definition", default: "raise StandardError"
     t.text "email_subject"
     t.integer "redirect_type", default: 0
+    t.jsonb "meta_data", default: {}
     t.index ["api_namespace_id"], name: "index_api_actions_on_api_namespace_id"
     t.index ["api_resource_id"], name: "index_api_actions_on_api_resource_id"
   end
