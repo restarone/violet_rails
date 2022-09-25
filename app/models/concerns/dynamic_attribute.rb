@@ -7,6 +7,7 @@
 module DynamicAttribute
     extend ActiveSupport::Concern
     include Rails.application.routes.url_helpers
+    include ActionView::Helpers::DateHelper
 
     included do
       def parse_dynamic_attribute(value, context = {})
