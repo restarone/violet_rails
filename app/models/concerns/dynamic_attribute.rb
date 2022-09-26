@@ -21,6 +21,12 @@ module DynamicAttribute
     include ActionView::Helpers::DebugHelper
     include ActionView::Helpers::CspHelper
     include ActionView::Helpers::CsrfHelper
+    include ActionView::Helpers::BenchMarkHelper
+    include ActionView::Helpers::AtomFeedHelper
+    include ActionView::Helpers::BenchMarkHelper
+    include ActionView::Helpers::SanitizeHelper
+
+
 
 
 
