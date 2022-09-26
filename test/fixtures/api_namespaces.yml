@@ -155,3 +155,25 @@ no_api_actions:
               }
   requires_authentication: false
   namespace_type: create-read-update-delete
+
+movies:
+  name: movies
+  slug: movies
+  version: 1
+  properties: {
+                "title": "",
+                "tags": []
+              }
+  requires_authentication: false
+  namespace_type: create-read-update-delete
+
+movie_tags:
+  name: movie_tags
+  slug: movie_tags
+  version: 1
+  properties: {
+                "tags": "",
+                "representation": ""
+              }
+  requires_authentication: false
+  namespace_type: create-read-update-delete

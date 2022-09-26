@@ -360,3 +360,70 @@ sync_attribute_to_api_namespace_plugin:
     end
     # at the end of the file we have to implicitly return the class 
     SyncAttributeToApiNamespace
+
+unique_string_aggregator_plugin:
+  api_namespace: movies
+  slug: unique-string-aggregator
+  label: UniqueStringAggregator
+  enabled: true
+  metadata: {
+    'INPUT_PROPERTY': 'tags',
+    'OUTPUT_API_NAMESPACE': 'movie_tags',
+    'PRISTINE': true
+  }
+  model_definition: |
+    class UniqueStringAggregator
+      def initialize(parameters)
+        @external_api_client = parameters[:external_api_client]
+        @api_namespace = @external_api_client.api_namespace
+      end
+
+      def start
+        output_api_namespace_slug = @external_api_client.metadata["OUTPUT_API_NAMESPACE"]
+        pristine = @external_api_client.metadata["PRISTINE"]
+        input_property_name = @external_api_client.metadata["INPUT_PROPERTY"]
+
+        raise "API Namespace resource pollution detected. OUTPUT_API_NAMESPACE slug and the slug of the current API namespace cannot be the same." if output_api_namespace_slug == @api_namespace.slug
+        raise "Input property does not exist on the current API namespace" unless @api_namespace.properties.key?(input_property_name)
+
+        output_api_namespace = ApiNamespace.where(slug: output_api_namespace_slug).first
+
+        raise "An API namespace with the provided output API namespace slug does not exist" if output_api_namespace.nil?
+        raise "Input property does not exist on the output API namespace" unless output_api_namespace.properties.key?(input_property_name)
+
+        ids_of_existing_api_resources = []
+        unique_strings_hash = {}
+
+        # if pristine is true, collect ID's of all existing API Resources in the target API Namespace and delete them after successful connection execution
+        if pristine
+          output_api_namespace.api_resources.each do |api_resource|
+            ids_of_existing_api_resources << api_resource.id
+          end
+        end
+
+        @api_namespace.api_resources.each do |api_resource|
+          Array.wrap(api_resource.properties[input_property_name]).each do |str|
+            processed_str = str.downcase.strip
+            unique_strings_hash[processed_str] = [] unless unique_strings_hash.key?(processed_str)
+            unique_strings_hash[processed_str] << api_resource.id
+          end
+        end
+
+        unique_strings_hash.keys.each do |key|
+          representation_text = key.split.map(&:capitalize).join(" ")
+          propertiesObj = {input_property_name => key, "representation" => representation_text}
+          ApiResource.create(api_namespace_id: output_api_namespace.id, properties: propertiesObj)
+        end
+
+        unless ids_of_existing_api_resources.empty?
+          api_resources_to_be_deleted = ApiResource.where(api_namespace_id: output_api_namespace.id, id: ids_of_existing_api_resources)
+          ActiveRecord::Base.transaction do
+            api_resources_to_be_deleted.each do |api_resource|
+              api_resource.destroy!
+            end
+          end
+        end
+      end
+    end
+    # at the end of the file we have to implicitly return the class 
+    UniqueStringAggregator
