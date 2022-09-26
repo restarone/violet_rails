@@ -466,7 +466,7 @@ class ContentHelperTest < ActionView::TestCase
     snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<ul><% @api_resources.each do |res| %><li><%= time_ago_in_words(res.created_at) %></li><% end %></ul>")
     
     response = render_api_namespace_resource_index(@api_namespace.slug, { 'scope' => { 'current_user' => 'true' } })
-    expected_response = "<ul><li>#{time_ago_in_words(@api_namespace.api_resources.last.created_at)}</li><li>#{time_ago_in_words(@api_namespace.api_resources.first.created_at)}</li></ul>"
+    expected_response = "<ul><li>#{time_ago_in_words(@api_namespace.api_resources.third.created_at)}</li><li>#{time_ago_in_words(@api_namespace.api_resources.last.created_at)}</li></ul>"
     assert_equal expected_response, response
   end
 
