@@ -8,6 +8,23 @@ module DynamicAttribute
     extend ActiveSupport::Concern
     include Rails.application.routes.url_helpers
     include ActionView::Helpers::DateHelper
+    include ActionView::Helpers::JavaScriptHelper
+    include ActionView::Helpers::RenderingHelper
+    include ActionView::Helpers::TagHelper
+    include ActionView::Helpers::UrlHelper
+    include ActionView::Helpers::TranslationHelper
+    include ActionView::Helpers::Tags
+    include ActionView::Helpers::NumberHelper
+    include ActionView::Helpers::AssetUrlHelper
+    include ActionView::Helpers::AssetTagHelper
+    include ActionView::Helpers::TextHelper
+    include ActionView::Helpers::DebugHelper
+    include ActionView::Helpers::CspHelper
+    include ActionView::Helpers::CsrfHelper
+
+
+
+    
 
     included do
       def parse_dynamic_attribute(value, context = {})
