@@ -608,7 +608,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     assert_select "table", 1, "This page must contain a api-resources table"
     properties.keys.each do |heading|
-      assert_select "thead th", {count: 1, text: heading}, "Api-resources table must contain '#{heading}' column"
+      assert_select "thead th", {count: 1, text: heading.capitalize.gsub('_', ' ')}, "Api-resources table must contain '#{heading}' column"
     end
   end
 
