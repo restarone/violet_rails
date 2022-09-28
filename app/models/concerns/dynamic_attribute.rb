@@ -4,29 +4,20 @@
 # example attr_dynamic :custom_message will add a method custom_message_evaluated
 # column content example: Hi my name is #{api_resource.properties["first_name"]}
 
+
+
+
 module DynamicAttribute
     extend ActiveSupport::Concern
     include Rails.application.routes.url_helpers
     include ActionView::Helpers::DateHelper
-    include ActionView::Helpers::JavaScriptHelper
-    include ActionView::Helpers::RenderingHelper
-    include ActionView::Helpers::TagHelper
-    include ActionView::Helpers::UrlHelper
     include ActionView::Helpers::TranslationHelper
-    include ActionView::Helpers::Tags
     include ActionView::Helpers::NumberHelper
-    include ActionView::Helpers::AssetUrlHelper
-    include ActionView::Helpers::AssetTagHelper
     include ActionView::Helpers::TextHelper
-    include ActionView::Helpers::DebugHelper
     include ActionView::Helpers::CspHelper
     include ActionView::Helpers::CsrfHelper
     include ActionView::Helpers::AtomFeedHelper
     include ActionView::Helpers::SanitizeHelper
-
-
-
-
 
     
 

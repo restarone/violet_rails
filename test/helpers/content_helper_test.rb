@@ -461,12 +461,39 @@ class ContentHelperTest < ActionView::TestCase
     assert_equal excepted_response, response
   end
 
-  test 'render_api_namespace_resource_index - properly render using time_ago_in_words helper' do
+  test 'render_api_namespace_resource_index - properly render using time_ago_in_words of DateHelper' do
     @current_user = @user
     snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<ul><% @api_resources.each do |res| %><li><%= time_ago_in_words(res.created_at) %></li><% end %></ul>")
     
     response = render_api_namespace_resource_index(@api_namespace.slug, { 'scope' => { 'current_user' => 'true' } })
     expected_response = "<ul><li>#{time_ago_in_words(@api_namespace.api_resources.third.created_at)}</li><li>#{time_ago_in_words(@api_namespace.api_resources.last.created_at)}</li></ul>"
+    assert_equal expected_response, response
+  end
+
+  test 'render_api_namespace_resource_index - properly render using number_to_currency of NumberHelper' do
+    @current_user = @user
+    snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<ul><% @api_resources.each do |res| %><li><%= number_to_currency(res.id) %></li><% end %></ul>")
+    
+    response = render_api_namespace_resource_index(@api_namespace.slug, { 'scope' => { 'current_user' => 'true' } })
+    expected_response = "<ul><li>#{number_to_currency(@api_namespace.api_resources.third.id)}</li><li>#{number_to_currency(@api_namespace.api_resources.last.id)}</li></ul>"
+    assert_equal expected_response, response
+  end
+
+  test 'render_api_namespace_resource_index - properly render using simple_format of TextHelper' do
+    @current_user = @user
+    snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<ul><% @api_resources.each do |res| %><li><%= simple_format(res.properties['string']) %></li><% end %></ul>")
+    
+    response = render_api_namespace_resource_index(@api_namespace.slug, { 'scope' => { 'current_user' => 'true' } })
+    expected_response = "<ul><li>#{simple_format(@api_namespace.api_resources.third.properties['string'])}</li><li>#{simple_format(@api_namespace.api_resources.last.properties['string'])}</li></ul>"
+    assert_equal expected_response, response
+  end
+
+  test 'render_api_namespace_resource_index - properly render using find_zone of Time helper' do
+    @current_user = @user
+    snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<span><%= Time.find_zone('EST').name %></span>")
+    
+    response = render_api_namespace_resource_index(@api_namespace.slug, { 'scope' => { 'current_user' => 'true' } })
+    expected_response = "<span>EST</span>"
     assert_equal expected_response, response
   end
 
