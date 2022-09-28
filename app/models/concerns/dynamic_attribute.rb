@@ -4,9 +4,6 @@
 # example attr_dynamic :custom_message will add a method custom_message_evaluated
 # column content example: Hi my name is #{api_resource.properties["first_name"]}
 
-
-
-
 module DynamicAttribute
     extend ActiveSupport::Concern
     include Rails.application.routes.url_helpers
