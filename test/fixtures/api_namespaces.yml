@@ -156,6 +156,40 @@ no_api_actions:
   requires_authentication: false
   namespace_type: create-read-update-delete
 
+compliance_visitor_data_request:
+  name: compliance/visitor/request
+  slug: compliance-visitor-request
+  version: 1
+  properties: {
+    'name': '',
+    'email': '',
+    'compliance_message_sent': false
+  }
+  requires_authentication: false
+  namespace_type: create-read-update-delete
+
+namespace_with_email_one:
+  name: namespace_with_email_one
+  slug: namespace_with_email_one
+  version: 1
+  properties: {
+    'post': '',
+    'email': '',
+  }
+  requires_authentication: false
+  namespace_type: create-read-update-delete
+
+namespace_with_email_two:
+  name: namespace_with_email_two
+  slug: namespace_with_email_two
+  version: 1
+  properties: {
+    'email': '',
+    'name': '',
+  }
+  requires_authentication: false
+  namespace_type: create-read-update-delete
+  
 movies:
   name: movies
   slug: movies
