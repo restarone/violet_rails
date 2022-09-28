@@ -461,7 +461,7 @@ class ContentHelperTest < ActionView::TestCase
     assert_equal excepted_response, response
   end
 
-  test 'render_api_namespace_resource_index - properly render using time_ago_in_words of DateHelper' do
+  test 'render_api_namespace_resource_index - using time_ago_in_words of DateHelper' do
     @current_user = @user
     snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<ul><% @api_resources.each do |res| %><li><%= time_ago_in_words(res.created_at) %></li><% end %></ul>")
     
@@ -470,7 +470,7 @@ class ContentHelperTest < ActionView::TestCase
     assert_equal expected_response, response
   end
 
-  test 'render_api_namespace_resource_index - properly render using number_to_currency of NumberHelper' do
+  test 'render_api_namespace_resource_index - using number_to_currency of NumberHelper' do
     @current_user = @user
     snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<ul><% @api_resources.each do |res| %><li><%= number_to_currency(res.id) %></li><% end %></ul>")
     
@@ -479,7 +479,7 @@ class ContentHelperTest < ActionView::TestCase
     assert_equal expected_response, response
   end
 
-  test 'render_api_namespace_resource_index - properly render using simple_format of TextHelper' do
+  test 'render_api_namespace_resource_index - using simple_format of TextHelper' do
     @current_user = @user
     snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<ul><% @api_resources.each do |res| %><li><%= simple_format(res.properties['string']) %></li><% end %></ul>")
     
@@ -488,7 +488,7 @@ class ContentHelperTest < ActionView::TestCase
     assert_equal expected_response, response
   end
 
-  test 'render_api_namespace_resource_index - properly render using find_zone of Time helper' do
+  test 'render_api_namespace_resource_index - using find_zone of Time helper' do
     @current_user = @user
     snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<span><%= Time.find_zone('EST').name %></span>")
     
@@ -500,6 +500,4 @@ class ContentHelperTest < ActionView::TestCase
   def current_user
     @current_user
   end
-
-
 end

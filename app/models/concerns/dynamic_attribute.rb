@@ -14,12 +14,6 @@ module DynamicAttribute
     include ActionView::Helpers::TranslationHelper
     include ActionView::Helpers::NumberHelper
     include ActionView::Helpers::TextHelper
-    include ActionView::Helpers::CspHelper
-    include ActionView::Helpers::CsrfHelper
-    include ActionView::Helpers::AtomFeedHelper
-    include ActionView::Helpers::SanitizeHelper
-
-    
 
     included do
       def parse_dynamic_attribute(value, context = {})
