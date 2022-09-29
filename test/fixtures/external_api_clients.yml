@@ -511,12 +511,17 @@ unique_string_aggregator_plugin:
 
         ids_of_existing_api_resources = []
         unique_strings_hash = {}
+        existing_unique_strings_hash = {}
 
         # if pristine is true, collect ID's of all existing API Resources in the target API Namespace and delete them after successful connection execution
-        if pristine
-          output_api_namespace.api_resources.each do |api_resource|
-            ids_of_existing_api_resources << api_resource.id
-          end
+        # if pristine is false, collect existing unique strings so that they can be used to only add new ones
+        output_api_namespace.api_resources.each do |api_resource|
+            if pristine
+              ids_of_existing_api_resources << api_resource.id
+            else
+              unique_string = api_resource.properties[input_property_name]
+              existing_unique_strings_hash[unique_string] = true
+            end  
         end
 
         @api_namespace.api_resources.each do |api_resource|
@@ -530,7 +535,9 @@ unique_string_aggregator_plugin:
         unique_strings_hash.keys.each do |key|
           representation_text = key.split.map(&:capitalize).join(" ")
           propertiesObj = {input_property_name => key, "representation" => representation_text}
-          ApiResource.create(api_namespace_id: output_api_namespace.id, properties: propertiesObj)
+          if pristine || (!pristine && !existing_unique_strings_hash.key?(key))
+            ApiResource.create(api_namespace_id: output_api_namespace.id, properties: propertiesObj)
+          end
         end
 
         unless ids_of_existing_api_resources.empty?

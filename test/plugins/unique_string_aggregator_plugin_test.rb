@@ -143,4 +143,44 @@ class UniqueStringAggregatorPluginTest < ActiveSupport::TestCase
         assert_not(@output_api_namespace.api_resources.include?(resource_one))
         assert_not(@output_api_namespace.api_resources.include?(resource_two))
     end
+
+    test "Existing API resources of the output API namespace are not removed If PRISTINE is set to false" do
+        metadata = @unique_string_aggregator_plugin.metadata
+        metadata["PRISTINE"] = false
+        @unique_string_aggregator_plugin.update(metadata: metadata)
+
+        input_property_name = metadata["INPUT_PROPERTY"]
+
+        resource_one = ApiResource.create(api_namespace_id: @output_api_namespace.id, properties: {input_property_name => "animation", "representation" => "animation"})
+        resource_two = ApiResource.create(api_namespace_id: @output_api_namespace.id, properties: {input_property_name => "family", "representation" => "family"})
+
+        perform_enqueued_jobs do
+            @unique_string_aggregator_plugin.run
+            Sidekiq::Worker.drain_all
+        end
+
+        assert_equal resource_one.id, @output_api_namespace.reload.api_resources[0].id
+        assert_equal resource_two.id, @output_api_namespace.reload.api_resources[1].id
+    end
+
+    test "API resources under the output API namespace are created only for new unique strings If PRISTINE is set to false" do
+        metadata = @unique_string_aggregator_plugin.metadata
+        metadata["PRISTINE"] = false
+        @unique_string_aggregator_plugin.update(metadata: metadata)
+
+        input_property_name = metadata["INPUT_PROPERTY"]
+
+        resource_one = ApiResource.create(api_namespace_id: @output_api_namespace.id, properties: {input_property_name => "animation", "representation" => "animation"})
+        resource_two = ApiResource.create(api_namespace_id: @output_api_namespace.id, properties: {input_property_name => "family", "representation" => "family"})
+
+        ApiResource.create(api_namespace_id: @api_namespace.id, properties: {"title" => "The Lion King", "tags" => ['animation', 'family', 'disney']})
+
+        # disney is the new tag, so only 1 API resource should be created
+        assert_difference "@output_api_namespace.reload.api_resources.length", +1 do
+            perform_enqueued_jobs do
+                @unique_string_aggregator_plugin.run
+                Sidekiq::Worker.drain_all
+            end
+        end
+    end
 end
