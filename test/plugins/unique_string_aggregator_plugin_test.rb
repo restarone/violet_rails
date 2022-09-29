@@ -159,8 +159,10 @@ class UniqueStringAggregatorPluginTest < ActiveSupport::TestCase
             Sidekiq::Worker.drain_all
         end
 
-        assert_equal resource_one.id, @output_api_namespace.reload.api_resources[0].id
-        assert_equal resource_two.id, @output_api_namespace.reload.api_resources[1].id
+        assert(ApiResource.exists?(api_namespace_id: @output_api_namespace.id, id: resource_one.id))
+        assert(ApiResource.exists?(api_namespace_id: @output_api_namespace.id, id: resource_two.id))
+
+        assert_equal 2, @output_api_namespace.reload.api_resources.length
     end
 
     test "API resources under the output API namespace are created only for new unique strings If PRISTINE is set to false" do
