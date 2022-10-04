@@ -11,9 +11,9 @@ module JsonbSearch
   }.freeze
 
     class << self
-      def build_jsonb_query(column_name, query_params)
+      def build_jsonb_query(column_name, query_params, match = MATCH_OPTION[:ALL])
         parsed_params = parse_params(query_params.deep_symbolize_keys)
-        build(parsed_params, column_name)
+        build(parsed_params, column_name, match)
       end
 
       private
@@ -43,11 +43,11 @@ module JsonbSearch
         queries
       end
 
-      def build(queries, column_name)
+      def build(queries, column_name, match)
         queries_array = queries.map do |object|
           generate_query(object, column_name)
         end
-        queries_array.join(' AND ')
+        queries_array.join(match == MATCH_OPTION[:ANY] ? ' OR ' : ' AND ')
       end
 
       def generate_query(param, query_string)
