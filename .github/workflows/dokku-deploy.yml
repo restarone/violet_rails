@@ -1,0 +1,43 @@
+name: Deploy to Dokku
+
+on:
+  pull_request:
+    branches: [ master, rc, dev ]
+
+jobs:
+  review_app:
+    runs-on: ubuntu-latest
+    # only run when a pull request is opened
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    steps:
+      - name: Cloning repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Push to dokku
+        uses: dokku/github-action@master
+        with:
+          # create a review app
+          command: review-apps:create
+          # specify a name for the review app
+          review_app_name: review-violet-rails-pull-${{ github.event.pull_request.number }}
+          git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE }}
+          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          git_push_flags: '--force'
+
+  destroy_review_app:
+    runs-on: ubuntu-latest
+    # only run when a pull request is closed
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    steps:
+      - name: Destroy the review app
+        uses: dokku/github-action@master
+        with:
+          # destroy a review app
+          command: review-apps:destroy
+          # specify a name for the review app
+          review_app_name: review-violet-rails-pull-${{ github.event.pull_request.number }}
+          git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE }}
+          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          git_push_flags: '--force'
