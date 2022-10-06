@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_08_24_121504) do
+ActiveRecord::Schema.define(version: 2022_09_22_080350) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -127,6 +127,7 @@ ActiveRecord::Schema.define(version: 2022_08_24_121504) do
     t.text "method_definition", default: "raise StandardError"
     t.text "email_subject"
     t.integer "redirect_type", default: 0
+    t.jsonb "meta_data", default: {}
     t.index ["api_namespace_id"], name: "index_api_actions_on_api_namespace_id"
     t.index ["api_resource_id"], name: "index_api_actions_on_api_resource_id"
   end
@@ -155,6 +156,25 @@ ActiveRecord::Schema.define(version: 2022_08_24_121504) do
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "show_recaptcha_v3", default: false
     t.index ["api_namespace_id"], name: "index_api_forms_on_api_namespace_id"
+  end
+
+  create_table "api_keys", force: :cascade do |t|
+    t.string "slug", null: false
+    t.string "label", default: "customer_identifier_here", null: false
+    t.string "authentication_strategy", default: "bearer_token", null: false
+    t.string "bearer_token"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["bearer_token"], name: "index_api_keys_on_bearer_token"
+  end
+
+  create_table "api_namespace_keys", force: :cascade do |t|
+    t.bigint "api_namespace_id", null: false
+    t.bigint "api_key_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["api_key_id"], name: "index_api_namespace_keys_on_api_key_id"
+    t.index ["api_namespace_id"], name: "index_api_namespace_keys_on_api_namespace_id"
   end
 
   create_table "api_namespaces", force: :cascade do |t|
@@ -544,6 +564,8 @@ ActiveRecord::Schema.define(version: 2022_08_24_121504) do
   add_foreign_key "api_actions", "api_resources"
   add_foreign_key "api_clients", "api_namespaces"
   add_foreign_key "api_forms", "api_namespaces"
+  add_foreign_key "api_namespace_keys", "api_keys"
+  add_foreign_key "api_namespace_keys", "api_namespaces"
   add_foreign_key "api_resources", "api_namespaces"
   add_foreign_key "external_api_clients", "api_namespaces"
   add_foreign_key "forum_posts", "forum_threads"

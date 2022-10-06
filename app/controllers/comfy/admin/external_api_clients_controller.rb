@@ -1,7 +1,9 @@
 class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseController
-    before_action :ensure_authority_to_manage_api
+    before_action :ensure_authority_to_manage_api, excpet: :webhook
     before_action :set_external_api_client, only: %i[ show edit update destroy start stop clear_errors clear_state]
     before_action :set_api_namespace
+    skip_before_action :authenticate_user!,  only: :webhook
+    skip_before_action :ensure_user_belongs_to_subdomain, only: :webhook
   
     # GET /api_clients or /api_clients.json
     def index
@@ -60,6 +62,13 @@ class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseContro
     def start
       @external_api_client.run
       redirect_back(fallback_location: api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id))
+    end
+
+    def webhook
+      raise ActionController::RoutingError.new('Not Found') unless @external_api_client.drive_strategy == ExternalApiClient::DRIVE_STRATEGIES[:web_hook]
+
+      @external_api_client.run
+      render json: { success: true }
     end
 
     def stop
