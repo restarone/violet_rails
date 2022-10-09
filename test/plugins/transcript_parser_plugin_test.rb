@@ -68,6 +68,18 @@ class TranscriptParserPluginTest < ActiveSupport::TestCase
         assert(@transcript.reload.properties["transcript"].empty?)
     end
 
+    test "transcript_parsed should be false if a parsed transcript isn't generated" do
+        @transcript.properties["raw_transcript"] = ""
+        @transcript.save
+        
+        perform_enqueued_jobs do
+            @transcript_parser_plugin.run
+            Sidekiq::Worker.drain_all
+        end
+
+        assert_not(@transcript.reload.properties["transcript_parsed"])
+    end
+
     test "Transcript is parsed correctly" do
         raw_transcript = "1\n00:00:00,300 --> 00:00:02,167\n[sally]: i'm in los angeles and\n\n2\n00:00:01,920 --> 00:00:02,102\n[bobby]: okay\n\n3\n00:00:03,151 --> 00:00:04,737\n[sally]: maybe possibly\n\n4\n00:00:05,780 --> 00:00:13,613\n[bobby78]: $ oh maybe ye so nice an is a\nsupporter financial supporter of hollows\n\n5\n00:00:13,345 --> 00:00:15,510\n[sally]: 10 s yeah\n10 hello world\nhi there\n$10 in my wallet"
         properties = {"raw_transcript": raw_transcript, "transcript": "", "transcript_parsed": false}

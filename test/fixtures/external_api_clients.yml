@@ -511,7 +511,7 @@ transcript_parser_plugin:
           # gsub(/\n/, " ") is used to add whitespace between lines of text
           parsed_transcript = raw_transcript.strip.gsub(/^([\d\n][0-9:,->\s]*\n)|^(\[\w*\]:\s)/i, "").gsub(/\n/, " ")
           api_resource.properties[output_string_property] = parsed_transcript
-          api_resource.properties["transcript_parsed"] = true
+          api_resource.properties["transcript_parsed"] = true unless parsed_transcript.blank?
           api_resource.save
         end
       end
