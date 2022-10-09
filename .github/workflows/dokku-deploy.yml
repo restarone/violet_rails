@@ -5,26 +5,8 @@ on:
     branches: [ master, rc, dev ]
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cloning repo
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - name: Push to dokku
-        uses: dokku/github-action@master
-        with:
-          git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE }}
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          ssh_host_key: ${{ secrets.SSH_HOST_KEY }}
-          git_push_flags: '--force'
-
-  # review_app:
+  # deploy:
   #   runs-on: ubuntu-latest
-  #   # only run when a pull request is opened
-  #   if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened')
   #   steps:
   #     - name: Cloning repo
   #       uses: actions/checkout@v2
@@ -34,62 +16,46 @@ jobs:
   #     - name: Push to dokku
   #       uses: dokku/github-action@master
   #       with:
-  #         # create a review app
-  #         command: review-apps:create
-  #         # specify a name for the review app
-  #         review_app_name: review-violet-rails-pull-${{ github.event.pull_request.number }}
   #         git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE }}
   #         ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
   #         ssh_host_key: ${{ secrets.SSH_HOST_KEY }}
   #         git_push_flags: '--force'
 
-  # destroy_review_app:
-  #   runs-on: ubuntu-latest
-  #   # only run when a pull request is closed
-  #   if: github.event_name == 'pull_request' && github.event.action == 'closed'
-  #   steps:
-  #     - name: Destroy the review app
-  #       uses: dokku/github-action@master
-  #       with:
-  #         # destroy a review app
-  #         command: review-apps:destroy
-  #         # specify a name for the review app
-  #         review_app_name: review-violet-rails-pull-${{ github.event.pull_request.number }}
-  #         git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE }}
-  #         ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-  #         ssh_host_key: ${{ secrets.SSH_HOST_KEY }}
-  #         git_push_flags: '--force'
+  review_app:
+    runs-on: ubuntu-latest
+    # only run when a pull request is opened
+    if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'synchronize')
+    steps:
+      - name: Cloning repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
-  # destroy_and_review_app:
-  #   runs-on: ubuntu-latest
-  #   # only run when a pull request is synchronized
-  #   if: github.event_name == 'pull_request' && github.event.action == 'synchronize'
-  #   steps:
-  #     - name: Destroy the review app
-  #       uses: dokku/github-action@master
-  #       with:
-  #         # destroy a review app
-  #         command: review-apps:destroy
-  #         # specify a name for the review app
-  #         review_app_name: review-violet-rails-pull-${{ github.event.pull_request.number }}
-  #         git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE }}
-  #         ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-  #         ssh_host_key: ${{ secrets.SSH_HOST_KEY }}
-  #         git_push_flags: '--force'
+      - name: Push to dokku
+        uses: dokku/github-action@master
+        with:
+          # create a review app
+          command: review-apps:create
+          # specify a name for the review app
+          review_app_name: review-violet-rails-pull-${{ github.event.pull_request.number }}
+          git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE }}
+          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh_host_key: ${{ secrets.SSH_HOST_KEY }}
+          git_push_flags: '--force'
 
-  #     # - name: Cloning repo
-  #     #   uses: actions/checkout@v2
-  #     #   with:
-  #     #     fetch-depth: 0
-
-  #     # - name: Push to dokku
-  #     #   uses: dokku/github-action@master
-  #     #   with:
-  #     #     # create a review app
-  #     #     command: review-apps:create
-  #     #     # specify a name for the review app
-  #     #     review_app_name: review-violet-rails-pull-${{ github.event.pull_request.number }}
-  #     #     git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE }}
-  #     #     ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-  #     #     ssh_host_key: ${{ secrets.SSH_HOST_KEY }}
-  #     #     git_push_flags: '--force'
+  destroy_review_app:
+    runs-on: ubuntu-latest
+    # only run when a pull request is closed
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    steps:
+      - name: Destroy the review app
+        uses: dokku/github-action@master
+        with:
+          # destroy a review app
+          command: review-apps:destroy
+          # specify a name for the review app
+          review_app_name: review-violet-rails-pull-${{ github.event.pull_request.number }}
+          git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE }}
+          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh_host_key: ${{ secrets.SSH_HOST_KEY }}
+          git_push_flags: '--force'
