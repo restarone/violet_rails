@@ -18,6 +18,8 @@ jobs:
         with:
           git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE }}
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh_host_key: ${{ secrets.SSH_HOST_KEY }}
+          git_push_flags: '--force'
 
   # review_app:
   #   runs-on: ubuntu-latest
