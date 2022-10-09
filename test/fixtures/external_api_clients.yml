@@ -552,3 +552,43 @@ unique_string_aggregator_plugin:
     end
     # at the end of the file we have to implicitly return the class 
     UniqueStringAggregator
+
+transcript_parser_plugin:
+  api_namespace: namespace_with_transcript
+  slug: transcript-parser
+  label: TranscriptParser
+  enabled: true
+  metadata: {
+            'INPUT_STRING_PROPERTY': 'raw_transcript',
+            'OUTPUT_STRING_PROPERTY': 'transcript',
+          }
+  model_definition: |
+    class TranscriptParser
+      def initialize(parameters)
+        @external_api_client = parameters[:external_api_client]
+        @api_namespace = @external_api_client.api_namespace
+        @api_resources_with_no_parsed_transcript = @api_namespace.api_resources.where("properties @> ?", {transcript_parsed: false}.to_json)
+      end
+
+      def start
+        input_string_property = @external_api_client.metadata["INPUT_STRING_PROPERTY"]
+        output_string_property = @external_api_client.metadata["OUTPUT_STRING_PROPERTY"]
+
+        raise "Input and output string properties cannot be the same (no overwriting allowed)" if input_string_property == output_string_property 
+        raise "The specified input string property does not exist" unless @api_namespace.properties.key?(input_string_property)
+        raise "The specified output string property does not exist" unless @api_namespace.properties.key?(output_string_property)
+
+        @api_resources_with_no_parsed_transcript.each do |api_resource|
+          raw_transcript = api_resource.properties[input_string_property]
+          # ^([\d\n][0-9:,->\s]*\n) matches numbers and timestamps at the beginning or newline characters at the beginning or end of a line
+          # ^(\[\w*\]:\s) matches names within [], e.g. [sally], [sally32]
+          # gsub(/\n/, " ") is used to add whitespace between lines of text
+          parsed_transcript = raw_transcript.strip.gsub(/^([\d\n][0-9:,->\s]*\n)|^(\[\w*\]:\s)/i, "").gsub(/\n/, " ")
+          api_resource.properties[output_string_property] = parsed_transcript
+          api_resource.properties["transcript_parsed"] = true unless parsed_transcript.blank?
+          api_resource.save
+        end
+      end
+    end
+    # at the end of the file we have to implicitly return the class
+    TranscriptParser
