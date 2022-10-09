@@ -102,4 +102,18 @@ class JsonbSearch::QueryBuilderTest < ActiveSupport::TestCase
 
     assert_equal "properties -> 'foo' -> 'array' ? '#{query[:foo][:array][:value][0]}' OR properties -> 'foo' -> 'array' ? '#{query[:foo][:array][:value][1]}'", jsonb_query
   end
+
+  test 'query string - multiple properties - match any condition' do
+    query = { name: 'violet', age: 20 }
+    jsonb_query = JsonbSearch::QueryBuilder.build_jsonb_query(:properties, query, JsonbSearch::QueryBuilder::MATCH_OPTION[:ANY])
+
+    assert_equal "lower(properties ->> 'name') = lower('violet') OR lower(properties ->> 'age') = lower('20')", jsonb_query
+  end
+
+  test 'query string - extended format - multiple properties - match any condition' do
+    query = { name: { value: 'violet', option: 'PARTIAL' }, age: { value: 20, option: 'EXACT' } }
+    jsonb_query = JsonbSearch::QueryBuilder.build_jsonb_query(:properties, query, JsonbSearch::QueryBuilder::MATCH_OPTION[:ANY])
+
+    assert_equal "lower(properties ->> 'name') LIKE lower('%violet%') OR lower(properties ->> 'age') = lower('20')", jsonb_query
+  end
 end
