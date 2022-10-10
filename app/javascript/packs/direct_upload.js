@@ -29,7 +29,6 @@ addEventListener("direct-upload:error", event => {
   const element = document.getElementById(`direct-upload-${id}`)
   element.classList.add("direct-upload--error")
   element.setAttribute("title", error)
-  console.log(event)
   element.querySelector('.direct-upload__filename').textContent = `Could not upload ${event.detail.file.name}. Please try again.`
   enableForm(event.srcElement.form)
 })
