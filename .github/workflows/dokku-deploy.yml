@@ -42,6 +42,8 @@ jobs:
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
           ssh_host_key: ${{ secrets.SSH_HOST_KEY }}
           git_push_flags: '--force'
+        env:
+          AWS_REGION: ${{secrets.AWS_DEFAULT_REGION}}
 
   destroy_review_app:
     runs-on: ubuntu-latest
@@ -59,3 +61,5 @@ jobs:
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
           ssh_host_key: ${{ secrets.SSH_HOST_KEY }}
           git_push_flags: '--force'
+        env:
+          AWS_REGION: ${{secrets.AWS_DEFAULT_REGION}}
