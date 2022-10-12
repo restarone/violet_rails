@@ -1,0 +1,9 @@
+$("#otp").css({ visibility: 'visible', display: 'block' }) 
+$("#main-div").css({ visibility: 'hidden', display: 'none' }) 
+$('#update-btn').text("Verify");
+$("#error_msg").html("<%= render "users/shared/error_messages", resource: resource  %>")
+$('#invite_header').text("2 Factor Authentication");
+$("#update-btn").addClass('btn btn-primary p-2');
+$('#update-btn').prop('value', 'Verify');
+
+

@@ -22,9 +22,95 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # end
 
   # PUT /resource
-  # def update
-  #   super
-  # end
+  def update
+    # update_user unless enable_2fa?
+    # update_user unless 
+
+
+
+    if find_user&.valid_password?(params[:user][:current_password]) 
+      if enable_2fa?
+        if !params[:user][:password].nil? && !params[:user][:password_confirmation].nil? && params[:user][:password] == params[:user][:password_confirmation] && params[:user][:password].present? && params[:user][:password_confirmation].present? && !user_params[:otp_attempt].present?
+          prompt_for_otp_two_factor(resource)
+        else 
+          if valid_otp_attempt?(resource)
+            update_user
+          else
+            resource.errors.add(:otp_attempt, 'Invalid two-factor code.')
+            render 'users/registrations/error.js.erb'
+          end
+        end
+      else 
+        update_user
+      end
+    else 
+      update_user
+    end
+  end
+ 
+  def update_resource(resource, params)
+    resource.update_with_password(params)
+  end
+
+  def update_user 
+    self.resource = resource_class.to_adapter.get!(send(:"current_#{resource_name}").to_key)
+    prev_unconfirmed_email = resource.unconfirmed_email if resource.respond_to?(:unconfirmed_email)
+    resource_updated = update_resource(resource, account_update_params)
+    yield resource if block_given?
+    if resource_updated
+      set_flash_message_for_update(resource, prev_unconfirmed_email)
+      bypass_sign_in resource, scope: resource_name if sign_in_after_change_password?
+      redirect_with_js(after_update_path_for(resource))
+    else
+      clean_up_passwords resource
+      set_minimum_password_length
+      render 'users/registrations/update.js.erb'
+    end
+  end
+
+  def redirect_with_js(url)
+    @redirect_url = url
+    render 'shared/redirect.js.erb'
+  end
+
+  private
+
+  def valid_otp_attempt?(user)
+    user.validate_and_consume_otp!(user_params[:otp_attempt]) 
+  end
+
+  def prompt_for_otp_two_factor(user)
+    @user = user
+    UserMailer.send_otp(@user).deliver_later
+    session[:otp_user_id] = user.id
+    render 'users/registrations/otp_visible.js.erb'
+  end
+
+  def user_params
+    params.require(:user).permit(:email, :password, :remember_me, :otp_attempt, :current_password, :password_confirmation)
+  end
+
+  def account_update_params
+    params.require(:user).permit(:email, :password, :remember_me, :otp_attempt, :current_password, :password_confirmation)
+  end
+
+  def find_user
+    if session[:otp_user_id]
+      User.find(session[:otp_user_id])
+    elsif user_params[:email]
+      User.find_by(email: user_params[:email])
+    end
+  end
+
+  protected
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:edit, keys: [:otp_attempt])
+  end
+
+  def enable_2fa?
+    Subdomain.current.enable_2fa
+  end
 
   # DELETE /resource
   def destroy

@@ -240,6 +240,66 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert @controller.view_assigns['user'].errors.present?
   end
 
+  test 'show allow #update without otp if enable_2fa is set to false' do
+    Subdomain.current.update(enable_2fa: false)
+    payload = {
+      user: {
+        name: 'foo',
+        current_password: '123456',
+        password: 'dkslafj',
+        password_confirmation: 'dkslafj'
+      }
+    }
+    assert_changes "@user.reload.name" do
+      sign_in(@user)
+      patch user_registration_url, params: payload
+    end
+
+    assert_select "div#error_explanation", { count: 0 }
+    refute @controller.view_assigns['user'].errors.present?
+  end
+
+  test 'show deny #update without otp if enable_2fa is set to true' do
+    Subdomain.current.update(enable_2fa: true)
+    payload = {
+      user: {
+        name: 'foo',
+        current_password: '123456',
+        password: 'dkslafj',
+        password_confirmation: 'dkslafj'
+      }
+    }
+    assert_changes "@user.reload.name" do
+      sign_in(@user)
+      patch user_registration_url, params: payload
+    end
+
+    assert_select "div#error_explanation", { count: 0 }
+    refute @controller.view_assigns['user'].errors.present?
+  end
+
+
+  test 'show allow #update with otp if enable_2fa is set to true' do
+    Subdomain.current.update(enable_2fa: true)
+    payload = {
+      user: {
+        name: 'foo',
+        current_password: '123456',
+        password: 'dkslafj',
+        password_confirmation: 'dkslafj',
+        otp_attempt: @user.current_otp
+      }
+    }
+    assert_changes "@user.reload.name" do
+      sign_in(@user)
+      patch user_registration_url, params: payload
+    end
+
+    assert_select "div#error_explanation", { count: 0 }
+    refute @controller.view_assigns['user'].errors.present?
+  end
+
+
   test 'deny #destroy' do
     assert_no_difference "User.all.size" do
       sign_in(@user)

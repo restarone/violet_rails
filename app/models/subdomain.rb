@@ -9,7 +9,7 @@ class Subdomain < ApplicationRecord
   before_destroy :purge_stored_files, :drop_tenant
 
   after_save :send_analytics_report, if: -> { self.saved_change_to_analytics_report_frequency? && self.analytics_report_frequency != REPORT_FREQUENCY_MAPPING[:never] }
-
+  after_save :change_2fa_setting, if: -> { self.saved_change_to_enable_2fa? }
   has_one_attached :logo
   has_one_attached :favicon
   has_one_attached :og_image
@@ -162,6 +162,17 @@ class Subdomain < ApplicationRecord
   end
 
   private
+
+  def change_2fa_setting 
+    if self.enable_2fa 
+      User.all.map do |u|
+        u.generate_two_factor_secret_if_missing!
+        u.enable_two_factor!
+      end
+    else 
+      User.all.map(&:disable_two_factor!)
+    end
+  end
 
   def purge_stored_files
     Apartment::Tenant.switch(self.name) do
