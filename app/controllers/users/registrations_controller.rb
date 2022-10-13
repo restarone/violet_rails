@@ -21,17 +21,14 @@ class Users::RegistrationsController < Devise::RegistrationsController
   #   super
   # end
 
+
+
   # PUT /resource
   def update
-    # update_user unless enable_2fa?
-    # update_user unless 
-
-
-
-    if find_user&.valid_password?(params[:user][:current_password]) 
-      if enable_2fa?
-        if !params[:user][:password].nil? && !params[:user][:password_confirmation].nil? && params[:user][:password] == params[:user][:password_confirmation] && params[:user][:password].present? && params[:user][:password_confirmation].present? && !user_params[:otp_attempt].present?
-          prompt_for_otp_two_factor(resource)
+    if enable_2fa? && (params[:user][:password].present? || params[:user][:password_confirmation].present?)
+      if find_user&.valid_password?(params[:user][:current_password]) 
+        if !params[:user][:password].blank? && !params[:user][:password_confirmation].blank? && params[:user][:password] == params[:user][:password_confirmation] && !account_update_params[:otp_attempt].present?
+        prompt_for_otp_two_factor(resource)
         else 
           if valid_otp_attempt?(resource)
             update_user
@@ -48,6 +45,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
   end
  
+  # DELETE /resource
+  def destroy
+    redirect_to root_path
+  end
+
   def update_resource(resource, params)
     resource.update_with_password(params)
   end
@@ -76,7 +78,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   private
 
   def valid_otp_attempt?(user)
-    user.validate_and_consume_otp!(user_params[:otp_attempt]) 
+    user.validate_and_consume_otp!(account_update_params[:otp_attempt]) 
   end
 
   def prompt_for_otp_two_factor(user)
@@ -86,19 +88,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
     render 'users/registrations/otp_visible.js.erb'
   end
 
-  def user_params
-    params.require(:user).permit(:email, :password, :remember_me, :otp_attempt, :current_password, :password_confirmation)
-  end
-
-  def account_update_params
-    params.require(:user).permit(:email, :password, :remember_me, :otp_attempt, :current_password, :password_confirmation)
-  end
-
   def find_user
     if session[:otp_user_id]
       User.find(session[:otp_user_id])
-    elsif user_params[:email]
-      User.find_by(email: user_params[:email])
+    elsif account_update_params[:email]
+      User.find_by(email: account_update_params[:email])
     end
   end
 
@@ -110,11 +104,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def enable_2fa?
     Subdomain.current.enable_2fa
-  end
-
-  # DELETE /resource
-  def destroy
-    redirect_to root_path
   end
 
   # GET /resource/cancel
@@ -135,7 +124,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # If you have extra params to permit, append them to the sanitizer.
   def configure_account_update_params
-    devise_parameter_sanitizer.permit(:account_update, keys: [:name, :avatar, :session_timeoutable_in])
+    devise_parameter_sanitizer.permit(:account_update, keys: [:name, :avatar, :session_timeoutable_in,:otp_attempt])
   end
 
   # The path used after sign up.
