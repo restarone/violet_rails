@@ -5,7 +5,7 @@ on:
     branches: [ master, rc, dev, dokku-migration ]
 
 jobs:
- job_details:
+  job_details:
     runs-on: ubuntu-latest
     steps:
     - run: |
