@@ -1,1 +1,1 @@
-Your OTP is : <%= @user.current_otp %>
+Your OTP for <%= link_to Subdomain.current.name, root_url(subdomain: Subdomain.current.name) %> is: <%= @user.current_otp %>

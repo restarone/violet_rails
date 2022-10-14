@@ -6,6 +6,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   before_action :verify_ability_to_self_signup, only: [:new, :create]
 
+  include TwofactorAuthenticable
+
   # GET /resource/sign_up
   # def new
   #   redirect_to signup_wizard_index_url(subdomain: '')
@@ -26,15 +28,21 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # PUT /resource
   def update
     if enable_2fa? && (params[:user][:password].present? || params[:user][:password_confirmation].present?)
-      if find_user&.valid_password?(params[:user][:current_password]) 
-        if !params[:user][:password].blank? && !params[:user][:password_confirmation].blank? && params[:user][:password] == params[:user][:password_confirmation] && !account_update_params[:otp_attempt].present?
-        prompt_for_otp_two_factor(resource)
+      if resource&.valid_password?(params[:user][:current_password]) 
+        if !params[:user][:password].blank? && !params[:user][:password_confirmation].blank? && params[:user][:password] == params[:user][:password_confirmation] && !session[:otp_user_id]
+          prompt_for_otp_two_factor(resource)
+          render 'users/shared/otp_visible.js.erb'
         else 
           if valid_otp_attempt?(resource)
+            session.delete(:otp_user_id)
             update_user
           else
-            resource.errors.add(:otp_attempt, 'Invalid two-factor code.')
-            render 'users/registrations/error.js.erb'
+            if params[:user][:otp_attempt].present?
+              resource.errors.add(:otp_attempt, 'Invalid two-factor code.')
+            else
+              resource.errors.add(:otp_attempt, 'OTP Required')
+            end
+            render 'users/shared/error.js.erb'
           end
         end
       else 
@@ -66,33 +74,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     else
       clean_up_passwords resource
       set_minimum_password_length
-      render 'users/registrations/update.js.erb'
-    end
-  end
-
-  def redirect_with_js(url)
-    @redirect_url = url
-    render 'shared/redirect.js.erb'
-  end
-
-  private
-
-  def valid_otp_attempt?(user)
-    user.validate_and_consume_otp!(account_update_params[:otp_attempt]) 
-  end
-
-  def prompt_for_otp_two_factor(user)
-    @user = user
-    UserMailer.send_otp(@user).deliver_later
-    session[:otp_user_id] = user.id
-    render 'users/registrations/otp_visible.js.erb'
-  end
-
-  def find_user
-    if session[:otp_user_id]
-      User.find(session[:otp_user_id])
-    elsif account_update_params[:email]
-      User.find_by(email: account_update_params[:email])
+      render 'users/shared/error.js.erb'
     end
   end
 
@@ -100,10 +82,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:edit, keys: [:otp_attempt])
-  end
-
-  def enable_2fa?
-    Subdomain.current.enable_2fa
   end
 
   # GET /resource/cancel

@@ -165,10 +165,7 @@ class Subdomain < ApplicationRecord
 
   def change_2fa_setting 
     if self.enable_2fa 
-      User.all.map do |u|
-        u.generate_two_factor_secret_if_missing!
-        u.enable_two_factor!
-      end
+      User.all.map(&:enable_two_factor!)
     else 
       User.all.map(&:disable_two_factor!)
     end

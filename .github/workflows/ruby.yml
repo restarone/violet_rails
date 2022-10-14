@@ -62,6 +62,8 @@ jobs:
         tmpfile=$(mktemp)
         cp ./db/schema.rb tmpfile
     - name: Setup main DB
+      env:
+        SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
       run: |
         bin/rails db:create
         bin/rails db:migrate
@@ -76,6 +78,8 @@ jobs:
         rm tmpfile
         echo "Migrations have been committed."
     - name: compile assets/javascript
+      env:
+        SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
       run: |
         yarn install
         bin/rails assets:precompile
@@ -84,6 +88,8 @@ jobs:
         cd client
         npm install -g ember-cli
     - name: Run Tests
+      env:
+        SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
       run: bin/rails test -f
     - name: Save code coverage report
       uses: actions/upload-artifact@v3

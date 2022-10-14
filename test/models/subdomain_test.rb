@@ -140,4 +140,27 @@ class SubdomainTest < ActiveSupport::TestCase
       Sidekiq::Worker.drain_all
     end
   end
+
+  test "expect Otp required to be true if 2fa is enabled" do
+    @subdomain.update!(enable_2fa: true)
+    User.all.each do |user|
+      assert user.otp_required_for_login 
+      assert user.otp_secret 
+    end
+  end
+
+  test "expect Otp required to be false if 2fa is disabled" do
+    @subdomain.update!(enable_2fa: false)
+    User.all.each do |user|
+      refute user.otp_required_for_login
+      refute user.otp_secret 
+    end
+  end
+
+  test "expect new User's default 2fa to be true if enable_2fa is already true" do
+    @subdomain.update!(enable_2fa: true)
+    new_user = User.create(email: 'abc@test.com', password: '123456')
+    assert new_user.otp_required_for_login
+    assert new_user.otp_secret 
+  end
 end

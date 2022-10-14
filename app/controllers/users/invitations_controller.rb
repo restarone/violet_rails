@@ -1,19 +1,25 @@
 class Users::InvitationsController < Devise::InvitationsController
  
+include TwofactorAuthenticable
+
 def update 
   self.resource = User.find_by_invitation_token( params[:user][:invitation_token], false)
-
-  if params[:user][:password] == params[:user][:password_confirmation] && enable_2fa?
-    unless params[:user][:otp_attempt].present?
-    prompt_for_otp_two_factor(resource)
-  else
-    if  valid_otp_attempt?(resource)
-      new_user
-    else 
-      resource.errors.add(:otp_attempt, 'Invalid two-factor code.')
-      render 'users/invitations/error.js.erb'
+  if  params[:user][:password].present? &&  params[:user][:password_confirmation] && params[:user][:password] == params[:user][:password_confirmation] && enable_2fa?
+    unless session[:otp_user_id]
+      generate_and_prompt_for_otp_two_factor(resource)
+    else
+      if  valid_otp_attempt?(resource)
+        session.delete(:otp_user_id)
+        new_user
+      else 
+        if params[:user][:otp_attempt].present?
+          resource.errors.add(:otp_attempt, 'Invalid two-factor code.')
+        else 
+          resource.errors.add(:otp_attempt, 'OTP Required')
+        end
+        render 'users/shared/error.js.erb'
+      end
     end
-  end
   else
    new_user
   end
@@ -47,32 +53,6 @@ def resource_from_invitation_token
   unless params[:invitation_token] && self.resource = resource_class.find_by_invitation_token(params[:invitation_token], true)
     redirect_to after_sign_out_path_for(resource_name)
   end
-end
-
-def redirect_with_js(url)
-  @redirect_url = url
-  render 'shared/redirect.js.erb'
-end
-
-private
-
-def valid_otp_attempt?(user)
-  user.validate_and_consume_otp!(params[:user][:otp_attempt]) 
-end
-
-def prompt_for_otp_two_factor(user)
-  @user = user
-  @user.generate_two_factor_secret_if_missing!
-  @user.enable_two_factor!
-  UserMailer.send_otp(@user).deliver_later
-  session[:otp_user_id] = user.id
-  render 'users/invitations/otp_visible.js.erb'
-end
-
-protected
-
-def enable_2fa?
-  Subdomain.current.enable_2fa
 end
 
 end
