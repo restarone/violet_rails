@@ -2,17 +2,10 @@ name: Deploy to Dokku
 
 on:
   pull_request:
-    branches: [ master, rc, dev, dokku-migration ]
+    branches: [ master, rc, dev ]
     types: [ opened, reopened, synchronize, closed ]
 
 jobs:
-  job_details:
-    runs-on: ubuntu-latest
-    steps:
-    - run: |
-        echo PR event-name: #${{ github.event_name }}
-        echo PR event-action: #${{ github.event.action }}
-
   review_app:
     runs-on: ubuntu-latest
     # only run when a pull request is opened
