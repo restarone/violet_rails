@@ -17,6 +17,9 @@ class SafeExecutableValidator < ActiveModel::EachValidator
         'Subdomain',
         'Tenant',
         'Apartment',
+        'ActiveRecord::Base',
+        'find_by_sql',
+        'Rails'
     ] + User::PRIVATE_ATTRIBUTES.map(&:to_s) + User::FULL_PERMISSIONS.keys.map(&:to_s)
      
     # BLACKLISTED_KEYWORDS are usually attached to one of these delimiters

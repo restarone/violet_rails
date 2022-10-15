@@ -100,11 +100,14 @@ class ExternalApiClientTest < ActiveSupport::TestCase
       'eval("1 + 1")',
       'User.last.update(can_manage_users: true)',
       'User.send(:new)',
-      '#{User.destroy_all}'
+      '#{User.destroy_all}',
+      'ActiveRecord::Base.connection.execute("Select * from users")',
+      'User.find_by_sql("SELECT * from users WHERE email = \'test@restarone.com\'")'
     ]
 
     invalid_model_definations.each do |invalid_executable|
       external_api_client = ExternalApiClient.new(api_namespace_id: api_namespace.id, model_definition: invalid_executable)
+      byebug if external_api_client.valid?
       refute external_api_client.valid?
       assert_includes external_api_client.errors.messages[:model_definition].to_s, 'contains disallowed keyword'
     end
