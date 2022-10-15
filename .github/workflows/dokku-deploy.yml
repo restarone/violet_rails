@@ -22,7 +22,7 @@ jobs:
           # create a review app
           command: review-apps:create
           # specify a name for the review app
-          review_app_name: review-violet-rails-pull-${{ github.event.pull_request.number }}
+          review_app_name: review-${{ github.event.pull_request.number }}
           git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE }}
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
           ssh_host_key: ${{ secrets.SSH_HOST_KEY }}
@@ -41,7 +41,7 @@ jobs:
           # destroy a review app
           command: review-apps:destroy
           # specify a name for the review app
-          review_app_name: review-violet-rails-pull-${{ github.event.pull_request.number }}
+          review_app_name: review-${{ github.event.pull_request.number }}
           git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE }}
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
           ssh_host_key: ${{ secrets.SSH_HOST_KEY }}
