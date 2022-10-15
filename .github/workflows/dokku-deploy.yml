@@ -3,6 +3,7 @@ name: Deploy to Dokku
 on:
   pull_request:
     branches: [ master, rc, dev, dokku-migration ]
+    types: [ opened, reopened, synchronize, closed ]
 
 jobs:
   job_details:
