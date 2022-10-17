@@ -34,7 +34,7 @@ jobs:
           host: 3.211.7.66
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           username: ubuntu
-          script: dokku letsencrypt:active review-${{ github.event.pull_request.number }} || dokku letsencrypt:enable review-${{ github.event.pull_request.number
+          script: dokku letsencrypt:active review-${{ github.event.pull_request.number }} || dokku letsencrypt:enable review-${{ github.event.pull_request.number }}
 
   destroy_review_app:
     runs-on: ubuntu-latest
