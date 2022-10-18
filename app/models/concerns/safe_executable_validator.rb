@@ -19,6 +19,7 @@ class SafeExecutableValidator < ActiveModel::EachValidator
         'Apartment',
         'ActiveRecord::Base',
         'find_by_sql',
+        'select_all',
         'Rails'
     ] + User::PRIVATE_ATTRIBUTES.map(&:to_s) + User::FULL_PERMISSIONS.keys.map(&:to_s)
      
