@@ -4,7 +4,14 @@ class Api::ExternalApiClientsController < Api::BaseController
     def webhook
       raise ActionController::RoutingError.new('Not Found') unless @external_api_client.drive_strategy == ExternalApiClient::DRIVE_STRATEGIES[:web_hook]
 
-      @external_api_client.run
+      if @external_api_client.webhook_verification_method.present?
+        verified, message = Webhook::Verification.new(request, @external_api_client.webhook_verification_method).call
+
+        return render json: { message: message, success: false }, status: 400 unless verified
+      end
+
+      @external_api_client.run({request: request})
+      
       render json: { success: true }
     end
 

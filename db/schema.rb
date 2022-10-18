@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_09_22_080350) do
+ActiveRecord::Schema.define(version: 2022_10_18_082555) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -558,6 +558,16 @@ ActiveRecord::Schema.define(version: 2022_09_22_080350) do
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
+  create_table "webhook_verification_methods", force: :cascade do |t|
+    t.bigint "external_api_client_id", null: false
+    t.string "webhook_type"
+    t.text "encrypted_webhook_secret"
+    t.binary "salt"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["external_api_client_id"], name: "index_webhook_verification_methods_on_external_api_client_id"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "api_actions", "api_namespaces"
@@ -577,4 +587,5 @@ ActiveRecord::Schema.define(version: 2022_09_22_080350) do
   add_foreign_key "messages", "message_threads"
   add_foreign_key "non_primitive_properties", "api_namespaces"
   add_foreign_key "non_primitive_properties", "api_resources"
+  add_foreign_key "webhook_verification_methods", "external_api_clients"
 end
