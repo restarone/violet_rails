@@ -20,4 +20,12 @@ class UserMailer < ApplicationMailer
       subject: "Analytics report for #{@report[:start_date]} - #{@report[:end_date]}"
     )
   end
+
+  def send_reply
+    mail = params[:mail]
+    mail(
+      to: mail[:to],
+      subject: mail[:subject]
+    )
+  end
 end
