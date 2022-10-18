@@ -18,6 +18,23 @@
   .field
     = f.label :drive_strategy
     = f.select :drive_strategy, options_for_select(ExternalApiClient::DRIVE_STRATEGIES.keys, f.object.drive_strategy)
+  
+  #webhook_verification_container
+    .field
+      = f.label :require_webhook_verification
+      = f.check_box :require_webhook_verification, checked: @external_api_client.webhook_verification_method.persisted?
+
+    .card.p-3#webhook_verification_method_container
+      = f.fields_for :webhook_verification_method do |webhook_form|
+        .field
+          = webhook_form.label :webhook_type
+          = webhook_form.select :webhook_type, options_for_select(WebhookVerificationMethod.webhook_types, webhook_form.object&.webhook_type)
+      
+        .field
+          = webhook_form.label :webhook_secret
+          %div 
+            = webhook_form.text_area :webhook_secret, class: "w-100"
+
   .field
     = f.label :drive_every
     = f.select :drive_every, options_for_select(ExternalApiClient::DRIVE_INTERVALS.keys, f.object.drive_every), include_blank: true
@@ -44,4 +61,24 @@
 
 
 = render 'comfy/admin/api_namespaces/init_editor', {read_only: false}
+
+:javascript
+  $('#external_api_client_drive_strategy').change(function(event) {
+    if ($(this).val() === 'web_hook') {
+      $('#webhook_verification_container').show();
+    } else {
+      $('#webhook_verification_container').hide();
+      $('#external_api_client_require_webhook_verification').prop("checked", false);
+      $('#webhook_verification_method_container').hide();
+    }
+  }).change();
+
+  $('#external_api_client_require_webhook_verification').change(function(event) {
+    if ($(this).is(':checked')) {
+      $('#webhook_verification_method_container').show();
+    } else {
+      $('#webhook_verification_method_container').hide();
+    }
+  }).change();
+  
 
