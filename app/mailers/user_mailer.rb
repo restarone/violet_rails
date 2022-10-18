@@ -22,10 +22,11 @@ class UserMailer < ApplicationMailer
   end
 
   def send_reply
-    mail = params[:mail]
+    mail_to = params[:mail][:to]
+    subject = params[:mail][:subject]
     mail(
-      to: mail[:to],
-      subject: mail[:subject]
+      to: mail_to,
+      subject: subject
     )
   end
 end
