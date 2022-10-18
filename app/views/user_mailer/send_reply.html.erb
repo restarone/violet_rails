@@ -4,7 +4,7 @@
   </head>
   <body>
     <main>
-      <div><%= params[:mail][:content].html_safe %></div>
+      <div><%= render html: params[:mail][:content].to_s.html_safe %></div>
     </main>
   </body>
 </html>
