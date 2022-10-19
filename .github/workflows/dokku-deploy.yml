@@ -27,8 +27,8 @@ jobs:
 
   review_app:
     runs-on: ubuntu-latest
-    # only run when a pull request is opened/reopened/synchronize with label:deploy-review-app OR the label is added
-    if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'synchronize' || github.event.action == 'labeled') && contains( github.event.pull_request.labels.*.name, 'deploy-review-app')
+    # only run when a PR is opened/reopened/synchronize with label:deploy-review-app OR the label is added in open PR
+    if: github.event_name == 'pull_request' && github.event.pull_request.state == 'open' && (github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'synchronize' || github.event.action == 'labeled') && contains( github.event.pull_request.labels.*.name, 'deploy-review-app')
     steps:
       - name: Cloning repo
         uses: actions/checkout@v2
@@ -56,7 +56,7 @@ jobs:
   
   checklabel:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.action == 'unlabeled'
+    if: github.event_name == 'pull_request' && github.event.pull_request.state == 'open' && github.event.action == 'unlabeled'
     outputs:
       deploy_review_app_removed: ${{ steps.check.outputs.deploy_review_app_removed }}
     steps:
@@ -76,8 +76,8 @@ jobs:
   destroy_review_app:
     needs: checklabel
     runs-on: ubuntu-latest
-    # only run when a pull request with label:deploy-review-app is closed OR the label is removed
-    if: github.event_name == 'pull_request' && ((github.event.action == 'closed' && contains( github.event.pull_request.labels.*.name, 'deploy-review-app')) || (github.event.action == 'unlabeled' && needs.checklabel.outputs.deploy_review_app_removed))
+    # only run when a pull request with label:deploy-review-app is closed OR the label is removed from open PR
+    if: github.event_name == 'pull_request' && ((github.event.action == 'closed' && contains( github.event.pull_request.labels.*.name, 'deploy-review-app')) || (github.event.pull_request.state == 'open' && github.event.action == 'unlabeled' && needs.checklabel.outputs.deploy_review_app_removed))
     steps:
       - name: Destroy the review app
         uses: dokku/github-action@master
