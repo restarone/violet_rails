@@ -1,4 +1,5 @@
 class Comfy::Admin::ApiKeysController < Comfy::Admin::Cms::BaseController
+  before_action :ensure_authority_to_manage_api
   before_action :set_api_key, only: [:update, :edit, :destroy, :show]
 
   def index

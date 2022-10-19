@@ -45,7 +45,7 @@ class ApiNamespace < ApplicationRecord
   has_many :error_api_actions, dependent: :destroy
   accepts_nested_attributes_for :error_api_actions, allow_destroy: true
 
-  has_many :api_namespace_keys
+  has_many :api_namespace_keys, dependent: :destroy
   has_many :api_keys, through: :api_namespace_keys
 
   REGISTERED_PLUGINS = {
