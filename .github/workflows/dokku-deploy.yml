@@ -3,7 +3,7 @@ name: Deploy to Dokku
 on:
   pull_request:
     branches: [ master, rc, dev ]
-    types: [ opened, reopened, synchronize, closed ]
+    types: [ opened, reopened, synchronize, closed, labeled, unlabeled ]
 
   push:
     branches: [ master, rc, dev ]
@@ -27,8 +27,8 @@ jobs:
 
   review_app:
     runs-on: ubuntu-latest
-    # only run when a pull request is opened
-    if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'synchronize')
+    # only run when a pull request is opened/reopened/synchronize with label:deploy-review-app OR the label is added
+    if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'synchronize' || github.event.action == 'labeled') && contains( github.event.pull_request.labels.*.name, 'deploy-review-app')
     steps:
       - name: Cloning repo
         uses: actions/checkout@v2
@@ -54,11 +54,31 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           username: ubuntu
           script: dokku letsencrypt:active review-${{ github.event.pull_request.number }} || dokku letsencrypt:enable review-${{ github.event.pull_request.number }}
+  
+  checklabel:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'unlabeled'
+    outputs:
+      deploy-review-app-removed: ${{ steps.check.outputs.deploy-review-app }}
+    steps:
+      - name: Check if label:deploy-review-app was removed
+        id: check
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          pr=${{ github.event.number }}
+          label=$(gh api "repos/$GITHUB_REPOSITORY/issues/$pr/events" \
+              --jq 'map(select(.event == "unlabeled"))[-1].label.name')
+
+          if [[ $label == 'deploy-review-app' ]]; then
+              echo "::set-output name=deploy-review-app-removed::true"
+          fi
 
   destroy_review_app:
+    needs: checklabel
     runs-on: ubuntu-latest
-    # only run when a pull request is closed
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    # only run when a pull request with label:deploy-review-app is closed OR the label is removed
+    if: github.event_name == 'pull_request' && ((github.event.action == 'closed' && contains( github.event.pull_request.labels.*.name, 'deploy-review-app')) || (github.event.action == 'unlabeled' && needs.checklabel.outputs.deploy-review-app-removed))
     steps:
       - name: Destroy the review app
         uses: dokku/github-action@master
