@@ -5,7 +5,26 @@ on:
     branches: [ master, rc, dev ]
     types: [ opened, reopened, synchronize, closed ]
 
+  push:
+    branches: [ master, rc, dev ]
+
 jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # only run when a pull request is opened
+    if: github.event_name == 'push'
+    steps:
+      - name: Cloning repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Push to dokku
+        uses: dokku/github-action@master
+        with:
+          git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE }}
+          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
   review_app:
     runs-on: ubuntu-latest
     # only run when a pull request is opened
