@@ -2,11 +2,11 @@ name: Deploy to Dokku
 
 on:
   pull_request:
-    branches: [ master, rc, dev, dokku-migration ]
+    branches: [ master, rc, dev ]
     types: [ opened, reopened, synchronize, closed, labeled, unlabeled ]
 
   push:
-    branches: [ master, rc, dev, dokku-migration ]
+    branches: [ master, rc, dev ]
 
 jobs:
   deploy:
