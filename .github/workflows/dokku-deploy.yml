@@ -2,11 +2,11 @@ name: Deploy to Dokku
 
 on:
   pull_request:
-    branches: [ master, rc, dev ]
+    branches: [ master, rc, dev, dokku-migration ]
     types: [ opened, reopened, synchronize, closed, labeled, unlabeled ]
 
   push:
-    branches: [ master, rc, dev ]
+    branches: [ master, rc, dev, dokku-migration ]
 
 jobs:
   deploy:
@@ -40,7 +40,6 @@ jobs:
         with:
           # create a review app
           command: review-apps:create
-          # specify a name for the review app
           review_app_name: review-${{ github.event.pull_request.number }}
           git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE }}
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -85,7 +84,6 @@ jobs:
         with:
           # destroy a review app
           command: review-apps:destroy
-          # specify a name for the review app
           review_app_name: review-${{ github.event.pull_request.number }}
           git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE }}
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
