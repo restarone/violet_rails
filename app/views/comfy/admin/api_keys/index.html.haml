@@ -4,24 +4,26 @@
 %table.table.table-responsive.mt-5
   %thead
     %tr
+      %th Id
+      %th Label
+      %th Api Key
+      %th Api Namespaces
       %th
-        Id
       %th
-        Label
       %th
-        Api Key
-      %th
-        Api Namespaces
   %tbody
     - @api_keys.each do |api_key|
       %tr
-        %td
-          = link_to api_key.id, api_key_path(id: api_key.id)
-        %td
-          = api_key.label
-        %td
-          = api_key.bearer_token
+        %td= link_to api_key.id, api_key_path(id: api_key.id)
+        %td= api_key.label
+        %td= api_key.token
         %td
           - api_key.api_namespaces.each do |api_namespace|
-            .mb-3
-              = link_to api_namespace.name, api_namespace_path(id: api_namespace.id)
+            .mb-2
+              = link_to api_namespace.name, api_namespace_path(id: api_namespace.id), class: 'link badge badge-primary'
+        %td= link_to 'Show', api_key_path(id: api_key.id)
+        %td= link_to 'Edit', edit_api_key_path(id: api_key.id)
+        %td= link_to 'Destroy', api_key_path(id: api_key.id), method: :delete, data: { confirm: 'Are you sure?' }
+
+
+= link_to 'New Api Key', new_api_key_path

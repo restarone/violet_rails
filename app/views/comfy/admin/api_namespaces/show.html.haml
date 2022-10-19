@@ -110,11 +110,13 @@
                 %tr
                   %th.px-3 External Api Client
                   %th.px-3 Webhook Interface
+                  %th.px-3 Verification Method
               %tbody
                 - @api_namespace.external_api_clients.where(drive_strategy: ExternalApiClient::DRIVE_STRATEGIES[:web_hook]).each do |external_api_client|
                   %tr
                     %td.px-3= link_to external_api_client.label, api_namespace_external_api_client_path(api_namespace_id: external_api_client.api_namespace.id, id: external_api_client.id)
                     %td.px-3= api_external_api_client_webhook_url(version: external_api_client.api_namespace.version, api_namespace: external_api_client.api_namespace.slug, external_api_client: external_api_client.slug)
+                    %td.px-3= external_api_client.webhook_verification_method&.webhook_type
 
   #connections.tab-pane.fade{"aria-labelledby" => "connections-tab", :role => "tabpanel"} 
     .card.p-3

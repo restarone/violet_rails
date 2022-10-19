@@ -1,16 +1,25 @@
 class ApiKey < ApplicationRecord
-    before_create :set_bearer_token_if_applicable
+  include Encryptable
+  extend FriendlyId
 
-    has_many :api_namespace_keys
-    has_many :api_namespaces, through: :api_namespace_keys
+  friendly_id :label, use: :slugged
 
-    enum authentication_strategy: { bearer_token: 'bearer_token' }
+  attr_encrypted :token
 
-    private
-  
-    def set_bearer_token_if_applicable
-      if self.bearer_token? && bearer_token.nil?
-        self.bearer_token = SecureRandom.uuid
-      end
+  before_create :set_encrypted_token_if_applicable
+
+  has_many :api_namespace_keys, dependent: :destroy
+  accepts_nested_attributes_for :api_namespace_keys
+
+  has_many :api_namespaces, through: :api_namespace_keys
+
+  enum authentication_strategy: { bearer_token: 'bearer_token' }
+
+  private
+
+  def set_encrypted_token_if_applicable
+    if self.bearer_token? && token.nil?
+      self.token = SecureRandom.uuid
     end
+  end
 end

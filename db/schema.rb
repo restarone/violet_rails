@@ -162,10 +162,11 @@ ActiveRecord::Schema.define(version: 2022_10_18_082555) do
     t.string "slug", null: false
     t.string "label", default: "customer_identifier_here", null: false
     t.string "authentication_strategy", default: "bearer_token", null: false
-    t.string "bearer_token"
+    t.string "encrypted_token"
+    t.binary "salt"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["bearer_token"], name: "index_api_keys_on_bearer_token"
+    t.index ["encrypted_token"], name: "index_api_keys_on_encrypted_token"
   end
 
   create_table "api_namespace_keys", force: :cascade do |t|
