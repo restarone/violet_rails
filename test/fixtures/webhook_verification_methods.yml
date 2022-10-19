@@ -3,9 +3,7 @@
 one:
   external_api_client: one
   webhook_type: MyString
-  webhook_secret: MyText
 
 two:
   external_api_client: two
   webhook_type: MyString
-  webhook_secret: MyText

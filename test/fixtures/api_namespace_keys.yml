@@ -7,3 +7,7 @@ one:
 two:
   api_namespace: two
   api_key: two
+
+for_users:
+  api_namespace: users
+  api_key: for_users
