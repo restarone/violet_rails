@@ -77,7 +77,7 @@ jobs:
     needs: checklabel
     runs-on: ubuntu-latest
     # only run when a pull request with label:deploy-review-app is closed OR the label is removed from open PR
-    if: github.event_name == 'pull_request' && ((github.event.action == 'closed' && contains( github.event.pull_request.labels.*.name, 'deploy-review-app')) || (github.event.pull_request.state == 'open' && github.event.action == 'unlabeled' && needs.checklabel.outputs.deploy_review_app_removed))
+    if: github.event_name == 'pull_request' && ((github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'deploy-review-app')) || (github.event.pull_request.state == 'open' && github.event.action == 'unlabeled' && needs.checklabel.outputs.deploy_review_app_removed))
     steps:
       - name: Destroy the review app
         uses: dokku/github-action@master
