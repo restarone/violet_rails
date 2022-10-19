@@ -3,6 +3,7 @@
 
 .page-header
   = link_to I18n.t('views.mailbox.index.header.actions.new'), new_mailbox_message_thread_path, class: 'btn btn-success float-right mx-1'
+  hello
   .h2
     = I18n.t('views.mailbox.index.header.title')
     = Subdomain.current.mailing_address
