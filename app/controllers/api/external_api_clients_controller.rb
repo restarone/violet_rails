@@ -11,7 +11,7 @@ class Api::ExternalApiClientsController < Api::BaseController
         return render json: { message: message, success: false }, status: 400 unless verified
       end
 
-      @external_api_client.run({request: request})
+      @external_api_client.run({ request: { body: JSON.parse(request.body.read) } })
       
       render json: { success: true }
     end

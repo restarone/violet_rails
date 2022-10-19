@@ -75,7 +75,7 @@ class ExternalApiClient < ApplicationRecord
     return false if !self.enabled || self.status == ExternalApiClient::STATUSES[:error]
     # prevent race conditions, if a client is running already-- dont run
     return false if self.status == ExternalApiClient::STATUSES[:running]
-    ExternalApiClientJob.perform_async(self.id, args)
+    ExternalApiClientJob.perform_async(self.id, args.deep_stringify_keys)
   end
 
   def evaluated_model_definition

@@ -592,3 +592,26 @@ transcript_parser_plugin:
     end
     # at the end of the file we have to implicitly return the class
     TranscriptParser
+
+webhook_drive_strategy:
+  api_namespace: two
+  slug: test-webhook-drive-strategy
+  label: Test Webhook Drive Strategy
+  enabled: true
+  metadata: {}
+  drive_strategy: 'web_hook'
+  model_definition: |
+    class ExternalApiModelExample
+      def initialize(parameters)  
+        # do init stuff
+      end
+      def start
+        return true
+      end
+
+      def log
+        return true
+      end
+    end
+    # at the end of the file we have to implicitly return the class 
+    ExternalApiModelExample
