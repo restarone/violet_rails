@@ -13,7 +13,7 @@ class ExternalApiClient < ApplicationRecord
   DRIVE_STRATEGIES = {
     on_demand: 'on_demand',
     cron: 'cron',
-    web_hook: 'web_hook'
+    webhook: 'webhook'
   }
 
   DRIVE_INTERVALS = {

@@ -11,7 +11,7 @@ class Api::ExternalApiClientsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test '#webhook: route should not exist if drive strategy id not web_hook' do
+  test '#webhook: route should not exist if drive strategy id not webhook' do
     @external_api_client.update(drive_strategy: 'on_demand')
     assert_raises ActionController::RoutingError do
       post api_external_api_client_webhook_url(version: @api_namespace.version, api_namespace: @api_namespace.slug, external_api_client: @external_api_client.slug), params: {},  as: :json

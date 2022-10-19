@@ -599,7 +599,7 @@ webhook_drive_strategy:
   label: Test Webhook Drive Strategy
   enabled: true
   metadata: {}
-  drive_strategy: 'web_hook'
+  drive_strategy: 'webhook'
   model_definition: |
     class ExternalApiModelExample
       def initialize(parameters)  
