@@ -6,7 +6,7 @@ on:
     types: [ opened, reopened, synchronize, closed ]
 
   push:
-    branches: [ master, rc, dev ]
+    branches: [ master, rc, dev, dokku-migration ]
 
 jobs:
   deploy:
