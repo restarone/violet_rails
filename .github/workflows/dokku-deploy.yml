@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && github.event.action == 'unlabeled'
     outputs:
-      deploy-review-app-removed: ${{ steps.check.outputs.deploy-review-app }}
+      deploy_review_app_removed: ${{ steps.check.outputs.deploy_review_app_removed }}
     steps:
       - name: Check if label:deploy-review-app was removed
         id: check
@@ -71,14 +71,14 @@ jobs:
               --jq 'map(select(.event == "unlabeled"))[-1].label.name')
 
           if [[ $label == 'deploy-review-app' ]]; then
-              echo "::set-output name=deploy-review-app-removed::true"
+              echo "deploy_review_app_removed=true" >> $GITHUB_OUTPUT
           fi
 
   destroy_review_app:
     needs: checklabel
     runs-on: ubuntu-latest
     # only run when a pull request with label:deploy-review-app is closed OR the label is removed
-    if: github.event_name == 'pull_request' && ((github.event.action == 'closed' && contains( github.event.pull_request.labels.*.name, 'deploy-review-app')) || (github.event.action == 'unlabeled' && needs.checklabel.outputs.deploy-review-app-removed))
+    if: github.event_name == 'pull_request' && ((github.event.action == 'closed' && contains( github.event.pull_request.labels.*.name, 'deploy-review-app')) || (github.event.action == 'unlabeled' && needs.checklabel.outputs.deploy_review_app_removed))
     steps:
       - name: Destroy the review app
         uses: dokku/github-action@master
