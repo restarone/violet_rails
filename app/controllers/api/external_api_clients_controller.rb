@@ -1,5 +1,6 @@
 class Api::ExternalApiClientsController < Api::BaseController
     before_action :find_external_api_client
+    skip_before_action :authenticate_request
 
     def webhook
       raise ActionController::RoutingError.new('Not Found') unless @external_api_client.drive_strategy == ExternalApiClient::DRIVE_STRATEGIES[:web_hook]
@@ -14,6 +15,8 @@ class Api::ExternalApiClientsController < Api::BaseController
       
       render json: { success: true }
     end
+
+    private
 
     def find_external_api_client
       @external_api_client = ExternalApiClient.find_by(slug: params[:external_api_client])
