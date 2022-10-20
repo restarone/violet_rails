@@ -1,4 +1,3 @@
-require 'stripe'
 module Webhook
   module VerificationMethod
     class Stripe

@@ -3,6 +3,7 @@ class Api::ExternalApiClientsController < Api::BaseController
     skip_before_action :authenticate_request
 
     def webhook
+      # should only exist if drive strategy is webhook
       raise ActionController::RoutingError.new('Not Found') unless @external_api_client.drive_strategy == ExternalApiClient::DRIVE_STRATEGIES[:webhook]
 
       if @external_api_client.webhook_verification_method.present?

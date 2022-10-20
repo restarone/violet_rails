@@ -1,4 +1,3 @@
-
 module Webhook
   class Verification
     attr_accessor :request, :webhook_type, :secret_key

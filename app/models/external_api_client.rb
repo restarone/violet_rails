@@ -36,7 +36,7 @@ class ExternalApiClient < ApplicationRecord
 
   extend FriendlyId
 
-  before_save :remove_webhook_verification_method, if: -> { require_webhook_verification == "0" }
+  before_save :remove_webhook_verification_method, unless: -> { ActiveModel::Type::Boolean.new.cast(require_webhook_verification) }
 
   friendly_id :label, use: :slugged
   belongs_to :api_namespace
