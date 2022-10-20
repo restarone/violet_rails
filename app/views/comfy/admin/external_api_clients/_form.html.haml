@@ -32,6 +32,8 @@
       
         .field
           = webhook_form.label :webhook_secret
+          %small.text-muted
+            (Secret shared between webhook server and reciever)
           %div 
             = webhook_form.text_area :webhook_secret, class: "w-100"
 
