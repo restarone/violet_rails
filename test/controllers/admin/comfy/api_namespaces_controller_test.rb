@@ -608,7 +608,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     assert_select "table", 1, "This page must contain a api-resources table"
     properties.keys.each do |heading|
-      assert_select "thead th", {count: 1, text: heading}, "Api-resources table must contain '#{heading}' column"
+      assert_select "thead th", {count: 1, text: heading.capitalize.gsub('_', ' ')}, "Api-resources table must contain '#{heading}' column"
     end
   end
 
@@ -631,6 +631,33 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     categorized_api_namespace_ids = [api_namespace_one.id, api_namespace_four.id]
     @controller.view_assigns['api_namespaces'].each do |api_namespace|
       assert_includes categorized_api_namespace_ids, api_namespace.id
+    end
+  end
+
+  test "#show: should allow sorting by dynamic columns" do 
+    sign_in(@user)
+    api_namespace = api_namespaces(:users)
+    api_namespace.update(properties: {
+      last_name: "",
+      first_name: ""
+    })
+    api_namespace.api_resources.create!({
+      properties: {
+        last_name: "Doe",
+        first_name: "John",
+      }
+    })
+
+    assert_equal api_namespace.api_resources.length, 2
+    assert_equal api_namespace.api_resources[0].properties['first_name'], "Don"
+    assert_equal api_namespace.api_resources[1].properties['first_name'], "John"
+
+    get api_namespace_url(api_namespace), params: {q: { s: "first_name desc" }}
+    assert_response :success
+
+    assert_select "tbody tr" do |rows|
+      assert_includes rows[0].to_s, "John"
+      assert_includes rows[1].to_s, "Don"
     end
   end
 end

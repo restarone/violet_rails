@@ -9,6 +9,9 @@ class ApiResource < ApplicationRecord
     api_namespace.api_form.api_resource = self unless api_namespace&.api_form.nil?
   end
 
+  # Need to convert and then parse again in order to preserve keys as strings
+  scope :jsonb_order_pre, -> (query_obj) { jsonb_order(JSON.parse(query_obj.to_json)) }
+
   belongs_to :user, optional: true
 
   belongs_to :api_namespace
