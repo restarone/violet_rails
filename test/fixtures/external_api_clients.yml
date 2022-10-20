@@ -602,16 +602,24 @@ webhook_drive_strategy:
   drive_strategy: 'webhook'
   model_definition: |
     class ExternalApiModelExample
-      def initialize(parameters)  
-        # do init stuff
+      def initialize(parameters)
+        @external_api_client = parameters[:external_api_client]
+        @request = parameters[:request]
       end
+  
       def start
-        return true
+        if @request['body']['type'] == 'customer.created'
+          @external_api_client.api_namespace.api_resources.create(
+            properties: {
+              request_body: @request["body"]	
+            }
+          )
+        end
       end
 
       def log
         return true
       end
     end
-    # at the end of the file we have to implicitly return the class 
+    
     ExternalApiModelExample

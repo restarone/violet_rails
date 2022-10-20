@@ -22,7 +22,16 @@ class Api::ExternalApiClientsControllerTest < ActionDispatch::IntegrationTest
     WebhookVerificationMethod.create(webhook_type: 'stripe', external_api_client_id: @external_api_client.id, webhook_secret: 'secret')
     Webhook::Verification.any_instance.stubs(:call).returns([true, 'success'])
 
-    post api_external_api_client_webhook_url(version: @api_namespace.version, api_namespace: @api_namespace.slug, external_api_client: @external_api_client.slug), params: {},  as: :json
+    assert_difference "@api_namespace.api_resources.reload.count", +1 do
+      post api_external_api_client_webhook_url(version: @api_namespace.version, api_namespace: @api_namespace.slug, external_api_client: @external_api_client.slug), params: { type: 'customer.created' },  as: :json
+      Sidekiq::Worker.drain_all
+    end
+    assert_response :success
+
+    assert_no_difference "@api_namespace.api_resources.reload.count" do
+      post api_external_api_client_webhook_url(version: @api_namespace.version, api_namespace: @api_namespace.slug, external_api_client: @external_api_client.slug), params: { type: 'customer.removed' },  as: :json
+      Sidekiq::Worker.drain_all
+    end
     assert_response :success
   end
 
