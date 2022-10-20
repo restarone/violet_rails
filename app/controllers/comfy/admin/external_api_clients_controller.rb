@@ -56,7 +56,7 @@ class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseContro
     def destroy
       @external_api_client.destroy
       respond_to do |format|
-        format.html { redirect_to api_namespace_api_clients_path(api_namespace_id: @api_namespace.id), notice: "Api client was successfully destroyed." }
+        format.html { redirect_to api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id), notice: "Api client was successfully destroyed." }
         format.json { head :no_content }
       end
     end
