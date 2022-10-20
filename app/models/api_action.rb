@@ -96,7 +96,7 @@ class ApiAction < ApplicationRecord
       if response.success?
         self.update(lifecycle_stage: 'complete', lifecycle_message: response.to_s)
       else
-        execute_error_actions(response.to_s, false)
+        execute_error_actions(response.to_s)
       end 
     rescue => e
       execute_error_actions(e.message) if run_error_action 
