@@ -38,9 +38,9 @@ class ApiAction < ApplicationRecord
     ['new_api_actions', 'create_api_actions', 'show_api_actions', 'update_api_actions', 'destroy_api_actions', 'error_api_actions']
   end
 
-  def execute_action
+  def execute_action(run_error_action = true)
     self.update(lifecycle_stage: 'executing')
-    send(action_type)
+    send(action_type, run_error_action)
   end
 
   def self.execute_model_context_api_actions
@@ -60,41 +60,51 @@ class ApiAction < ApplicationRecord
     end if api_actions.present?
   end
 
+
+  def execute_error_actions(error)
+    self.update(lifecycle_stage: 'failed', lifecycle_message: error)
+
+    p "sdd: #{self}"
+    return if type == 'ErrorApiAction' || api_resource.nil?
+
+    api_resource.api_namespace.error_api_actions.each do |action|
+      api_resource.error_api_actions.create(action.attributes.merge(custom_message: action.custom_message.to_s).except("id", "created_at", "updated_at", "api_namespace_id"))
+    end
+    api_resource.error_api_actions.each(&:execute_action)
+  end
+
   private
 
   def update_executed_actions_payload
     ApiAction.where(api_resource_id: api_namespace.api_resources.pluck(:id), payload_mapping: payload_mapping_previously_was, type: type, action_type: action_type).update_all(payload_mapping: payload_mapping)
   end
 
-  def send_email
+  def send_email(run_error_action = true)
     begin
       ApiActionMailer.send_email(self).deliver_now
       self.update(lifecycle_stage: 'complete', lifecycle_message: email)
     rescue Exception => e
-      self.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
-      execute_error_actions
+      execute_error_actions(e.message) if run_error_action
       raise
     end
   end
 
-  def send_web_request
+  def send_web_request(run_error_action = true)
     begin
       response = HTTParty.send(http_method.to_s, request_url_evaluated, 
                     { body: payload_mapping_evaluated, headers: request_headers })
       if response.success?
         self.update(lifecycle_stage: 'complete', lifecycle_message: response.to_s)
       else
-        self.update(lifecycle_stage: 'failed', lifecycle_message: response.to_s)
-        execute_error_actions
+        execute_error_actions(response.to_s, false)
       end 
     rescue => e
-      self.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
-      execute_error_actions
+      execute_error_actions(e.message) if run_error_action 
       raise
     end
   end
 
-  def custom_action
+  def custom_action(run_error_action = true)
     begin
       custom_api_action = CustomApiAction.new
       eval("def custom_api_action.run_custom_action(api_action: , api_namespace: , api_resource: , current_visit: , current_user: nil); #{self.method_definition}; end")
@@ -103,27 +113,17 @@ class ApiAction < ApplicationRecord
 
       self.update(lifecycle_stage: 'complete', lifecycle_message: response.to_json)
     rescue => e
-      self.update(lifecycle_stage: 'failed', lifecycle_message: e.message)
-      execute_error_actions
+      execute_error_actions(e.message) if run_error_action
       raise
     end
   end
 
-  def redirect;end
+  def redirect(run_error_action = true);end
 
-  def serve_file;end
+  def serve_file(run_error_action = true);end
 
   def request_headers
     headers = custom_headers_evaluated.gsub('SECRET_BEARER_TOKEN', bearer_token.to_s)
     { 'Content-Type' => 'application/json' }.merge(JSON.parse(headers))
-  end
-
-  def execute_error_actions
-    return if type == 'ErrorApiAction' || api_resource.nil?
-
-    api_resource.api_namespace.error_api_actions.each do |action|
-      api_resource.error_api_actions.create(action.attributes.merge(custom_message: action.custom_message.to_s).except("id", "created_at", "updated_at", "api_namespace_id"))
-    end
-    api_resource.error_api_actions.each(&:execute_action)
   end
 end
