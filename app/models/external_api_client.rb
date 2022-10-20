@@ -36,7 +36,7 @@ class ExternalApiClient < ApplicationRecord
 
   extend FriendlyId
 
-  before_save :remove_webhook_verification_method, unless: -> { ActiveModel::Type::Boolean.new.cast(require_webhook_verification) }
+  before_save :remove_webhook_verification_method, unless: -> { (require_webhook_verification.nil? || ActiveModel::Type::Boolean.new.cast(require_webhook_verification)) }
 
   friendly_id :label, use: :slugged
   belongs_to :api_namespace
@@ -75,7 +75,7 @@ class ExternalApiClient < ApplicationRecord
     return false if !self.enabled || self.status == ExternalApiClient::STATUSES[:error]
     # prevent race conditions, if a client is running already-- dont run
     return false if self.status == ExternalApiClient::STATUSES[:running]
-    ExternalApiClientJob.perform_async(self.id, args.deep_stringify_keys)
+    ExternalApiClientJob.new.perform(self.id, args.deep_stringify_keys)
   end
 
   def evaluated_model_definition

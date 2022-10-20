@@ -146,4 +146,11 @@ class ExternalApiClientTest < ActiveSupport::TestCase
     assert @external_api_client.reload.webhook_verification_method 
   end
 
+  test 'should not remove webhook_verification_method if require_webhook_verification is not provided' do
+    WebhookVerificationMethod.create(webhook_type: 'stripe', external_api_client_id: @external_api_client.id, webhook_secret: 'secret')
+    assert @external_api_client.reload.webhook_verification_method 
+    @external_api_client.update(label: 'test')
+    
+    assert @external_api_client.reload.webhook_verification_method 
+  end
 end
