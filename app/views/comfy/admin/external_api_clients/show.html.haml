@@ -28,6 +28,17 @@
 %p
   %b drive strategy:
   = @external_api_client.drive_strategy
+
+- if @external_api_client.drive_strategy == 'webhook'
+  %p
+    %b Required webhook verification:
+    = @external_api_client.webhook_verification_method.present?
+
+  - if @external_api_client.webhook_verification_method.present?
+    %p
+      %b  webhook Verification Type:
+      = @external_api_client.webhook_verification_method.webhook_type
+
 - if !@external_api_client.drive_every.blank?
   %p
     %b drive every:
