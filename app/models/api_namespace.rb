@@ -108,11 +108,11 @@ class ApiNamespace < ApplicationRecord
             new_api_form.save!
           end
     
-          # Duplicate ApiClients
-          self.api_clients.each do |api_client|
-            new_api_client = api_client.dup
-            new_api_client.api_namespace = new_api_namespace
-            new_api_client.save!
+          # Duplicate ApiNamespaceKeys
+          self.api_namespace_keys.each do |api_namespace_key|
+            new_api_namespace_key = api_namespace_key.dup
+            new_api_namespace_key.api_namespace = new_api_namespace
+            new_api_namespace_key.save!
           end
     
           # Duplicate ExternalApiClients
@@ -164,7 +164,7 @@ class ApiNamespace < ApplicationRecord
         root: 'api_namespace',
         include: [
           :api_form,
-          :api_clients,
+          :api_namespace_keys,
           :external_api_clients,
           :non_primitive_properties,
           {
@@ -197,7 +197,7 @@ class ApiNamespace < ApplicationRecord
       ActiveRecord::Base.transaction do
         neglected_attributes = {
           api_action: ['id', 'created_at', 'updated_at', 'encrypted_bearer_token', 'salt', 'api_namespace_id', 'api_resource_id'],
-          api_client: ['id', 'created_at', 'updated_at', 'api_namespace_id', 'slug'],
+          api_namespace_key: ['id', 'created_at', 'updated_at', 'api_namespace_id'],
           api_form: ['id', 'created_at', 'updated_at', 'api_namespace_id'],
           api_namespace: ['id', 'created_at', 'updated_at', 'slug'],
           api_resource: ['id', 'created_at', 'updated_at', 'api_namespace_id'],
@@ -229,12 +229,12 @@ class ApiNamespace < ApplicationRecord
           api_form_hash = hash['api_form'].except(*neglected_attributes[:api_form]).merge({'api_namespace_id': new_api_namespace.id})
           ApiForm.create!(api_form_hash)
         end
-        
-        # Creating api_clients
-        if hash['api_clients'].present? && hash['api_clients'].is_a?(Array)
-          hash['api_clients'].each do |api_client_hash|
-            api_client_hash = api_client_hash.except(*neglected_attributes[:api_client]).merge({'api_namespace_id': new_api_namespace.id})
-            ApiClient.create!(api_client_hash)
+
+        # Creating api_namespace_keys
+        if hash['api_namespace_keys'].present? && hash['api_namespace_keys'].is_a?(Array)
+          hash['api_namespace_keys'].each do |api_namespace_key_hash|
+            api_namespace_key_hash = api_namespace_key_hash.except(*neglected_attributes[:api_namespace_key]).merge({'api_namespace_id': new_api_namespace.id})
+            ApiNamespaceKey.create!(api_namespace_key_hash)
           end
         end
         
