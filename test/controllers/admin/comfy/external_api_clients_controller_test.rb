@@ -5,7 +5,6 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   setup do
     @user = users(:public)
     @user.update(can_manage_api: true)
-    @api_client = api_clients(:one)
     @api_namespace = api_namespaces(:one)
     @external_api_client = external_api_clients(:test)
     
