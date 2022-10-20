@@ -24,6 +24,11 @@ jobs:
         with:
           git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE }}
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+        env:
+          RECAPTCHA_SECRET_KEY: ${{ secrets.RECAPTCHA_SECRET_KEY }}
+          RECAPTCHA_SECRET_KEY_V3: ${{ secrets.RECAPTCHA_SECRET_KEY_V3 }}
+          RECAPTCHA_SITE_KEY: ${{ secrets.RECAPTCHA_SITE_KEY }}
+          RECAPTCHA_SITE_KEY_V3: ${{ secrets.RECAPTCHA_SITE_KEY_V3 }}
 
   review_app:
     runs-on: ubuntu-latest
@@ -45,6 +50,11 @@ jobs:
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
           ssh_host_key: ${{ secrets.SSH_HOST_KEY }}
           git_push_flags: '--force'
+        env:
+          RECAPTCHA_SECRET_KEY: ${{ secrets.RECAPTCHA_SECRET_KEY }}
+          RECAPTCHA_SECRET_KEY_V3: ${{ secrets.RECAPTCHA_SECRET_KEY_V3 }}
+          RECAPTCHA_SITE_KEY: ${{ secrets.RECAPTCHA_SITE_KEY }}
+          RECAPTCHA_SITE_KEY_V3: ${{ secrets.RECAPTCHA_SITE_KEY_V3 }}
 
       - name: executing remote ssh commands
         uses: appleboy/ssh-action@master
