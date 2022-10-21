@@ -23,7 +23,7 @@ jobs:
         uses: dokku/github-action@master
         with:
           git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE }}
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh_private_key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
 
   review_app:
     runs-on: ubuntu-latest
@@ -42,15 +42,15 @@ jobs:
           command: review-apps:create
           review_app_name: review-${{ github.event.pull_request.number }}
           git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE }}
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          ssh_host_key: ${{ secrets.SSH_HOST_KEY }}
+          ssh_private_key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
+          ssh_host_key: ${{ secrets.DOKKU_SSH_HOST_KEY }}
           git_push_flags: '--force'
 
       - name: executing remote ssh commands
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DOKKU_HOST }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
           username: ubuntu
           script: dokku letsencrypt:active review-${{ github.event.pull_request.number }} || dokku letsencrypt:enable review-${{ github.event.pull_request.number }}
   
@@ -86,6 +86,6 @@ jobs:
           command: review-apps:destroy
           review_app_name: review-${{ github.event.pull_request.number }}
           git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE }}
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          ssh_host_key: ${{ secrets.SSH_HOST_KEY }}
+          ssh_private_key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
+          ssh_host_key: ${{ secrets.DOKKU_SSH_HOST_KEY }}
           git_push_flags: '--force'
