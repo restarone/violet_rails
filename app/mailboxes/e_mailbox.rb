@@ -5,8 +5,7 @@ class EMailbox < ApplicationMailbox
     recipients = mail.to.map{|email| Mail::Address.new(email)}
     recipients.each do |address|
       schema_domain = address.local == Subdomain::ROOT_DOMAIN_EMAIL_NAME ? 'public' : address.local
-      next if !Subdomain.find_by(name: schema_domain)
-      schema_domain = 'public' if schema_domain == 'root'
+      next if !Subdomain.find_by(name: schema_domain == 'public' ? 'root' : schema_domain)
       Apartment::Tenant.switch schema_domain do
         mailbox = Mailbox.first_or_create
         if mailbox

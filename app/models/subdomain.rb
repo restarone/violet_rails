@@ -19,7 +19,7 @@ class Subdomain < ApplicationRecord
   # max 1GB by default storage allowance
   MAXIMUM_STORAGED_ALLOWANCE = 1073741824
   # www/domain apex maps to public schema. So to recieve email on public schema we need a subdomain. it will be www
-  ROOT_DOMAIN_EMAIL_NAME = 'www'
+  ROOT_DOMAIN_EMAIL_NAME = 'root'
 
   # root domain name schema name
   ROOT_DOMAIN_NAME = 'root'
