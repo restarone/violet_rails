@@ -1,5 +1,4 @@
 require "test_helper"
-include Rails.application.routes.url_helpers
 
 class UserMailerTest < ActionMailer::TestCase
   setup do
@@ -37,7 +36,7 @@ class UserMailerTest < ActionMailer::TestCase
     last_email  = ActionMailer::Base.deliveries.last
     assert_equal "OTP", last_email.subject
     assert_equal last_email.to, [@user.email]
-    assert_match root_url(subdomain: subdomain.name, host: ENV['APP_HOST']), last_email.body.to_s
+    assert_match Rails.application.routes.url_helpers.root_url(subdomain: subdomain.name, host: ENV['APP_HOST']), last_email.body.to_s
     assert_match @user.reload.current_otp, last_email.body.to_s
   end
 end
