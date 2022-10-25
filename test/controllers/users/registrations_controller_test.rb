@@ -309,7 +309,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_match 'Invalid two-factor code.', response.body
   end
 
-  test 'shouldn\'t allow #update with invalid password' do
+  test "shouldn't allow #update with invalid password" do
     Subdomain.current.update(enable_2fa: true)
     payload = {
       user: {

@@ -1,4 +1,5 @@
 require "test_helper"
+include Rails.application.routes.url_helpers
 
 class UserMailerTest < ActionMailer::TestCase
   setup do
@@ -26,15 +27,17 @@ class UserMailerTest < ActionMailer::TestCase
   end
 
   test 'sends OTP in email to user when 2fa is enabled' do
-    Subdomain.current.update(enable_2fa: true)
+    subdomain = Subdomain.current
+    subdomain.update(enable_2fa: true)
 
     assert_emails 1 do
       UserMailer.send_otp(@user).deliver_later
     end
 
     last_email  = ActionMailer::Base.deliveries.last
-
     assert_equal "OTP", last_email.subject
     assert_equal last_email.to, [@user.email]
+    assert_match root_url(subdomain: subdomain.name, host: ENV['APP_HOST']), last_email.body.to_s
+    assert_match @user.reload.current_otp, last_email.body.to_s
   end
 end
