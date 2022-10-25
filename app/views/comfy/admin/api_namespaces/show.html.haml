@@ -34,6 +34,9 @@
   %li.nav-item
     %a#export-tab.nav-link{"aria-controls" => "export", "aria-selected" => "false", "data-toggle" => "tab", :href => "#export", :role => "tab"} 
       Export
+  %li.nav-item
+    %a#social-tab.nav-link{"aria-controls" => "social", "aria-selected" => "false", "data-toggle" => "tab", :href => "#social", :role => "tab"} 
+      Social Share Preview
 
 .tab-content
   #interface.tab-pane.fade.show.active{"aria-labelledby" => "interface-tab", :role => "tabpanel"} 
@@ -140,6 +143,23 @@
       = link_to 'Export JSON with associations', export_with_associations_as_json_api_namespace_path(id: @api_namespace.id), method: :get, class: 'btn btn-info'
     .my-3
       = link_to 'Export JSON without associations', export_without_associations_as_json_api_namespace_path(id: @api_namespace.id), method: :get, class: 'btn btn-info'
+  #social.tab-pane.fade{"aria-labelledby" => "social-tab", :role => "tabpanel"} 
+    = form_for(@api_namespace, url: api_namespace_api_form_path(api_namespace_id: @api_namespace.id, id: @api_namespace.api_form.id)) do |f|
+      .form-group
+        = f.label :title
+        %br/
+        = f.text_field :metadata, class: 'form-control'
+      .form-group
+        = f.label :description
+        %br/
+        = f.text_area :metadata, class: 'form-control'
+      .form-group
+        = f.label :image
+        %br/
+        = f.file_field :metadata, class: 'form-control-file'
+      .form-group
+        = f.submit "Submit", class: 'btn btn-primary'
+      
 
 .container-fluid.mt-5
   .d-flex.justify-content-between.py-2.page-header
