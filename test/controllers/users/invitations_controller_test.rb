@@ -38,6 +38,35 @@ class Users::InvitationsControllerTest < ActionDispatch::IntegrationTest
         assert_match 'Invalid two-factor code.', response.body
       end
 
+      test 'should deny #accept_invitation without otp if enable_2fa is set to true' do
+        Subdomain.current.update(enable_2fa: true)
+
+        invitee_email = 'invitee@example.org'
+        
+       @invitee =  User.invite!(email: invitee_email) do |u|
+          u.invited_by = @user
+        end
+        payload = {
+          user: {
+            invitation_token: @invitee.raw_invitation_token,
+            password: 'dkslafj',
+            password_confirmation: 'dkslafj',
+          }
+        }
+        put user_invitation_url, params: payload
+        assert_template 'users/shared/otp_visible.js.erb'
+
+        payload = {
+          user: {
+            invitation_token: @invitee.raw_invitation_token,
+            password: 'dkslafj',
+            password_confirmation: 'dkslafj',
+          }
+        }
+        put user_invitation_url, params: payload
+        assert_match 'OTP Required', response.body
+      end
+
       test 'should allow #accept_invitation without otp if enable_2fa is set to false' do
         Subdomain.current.update(enable_2fa: false)
 
