@@ -40,7 +40,6 @@ class SimpleDiscussion::UserMailerTest < ActionMailer::TestCase
     assert_difference "SimpleDiscussion::UserMailer.deliveries.size", +1 do
       SimpleDiscussion::UserMailer.new_post(forum_post, @other_user).deliver_now
     end
-    byebug
     assert(action_txt_content.to_s, SimpleDiscussion::UserMailer.deliveries.first.body.to_s)
   end
 
@@ -60,7 +59,6 @@ class SimpleDiscussion::UserMailerTest < ActionMailer::TestCase
     end
     
     mailer_address = SimpleDiscussion::UserMailer.deliveries.last.from.last
-    byebug
     assert_equal mailer_address, forum_post.user.email
   end
 
@@ -82,7 +80,6 @@ class SimpleDiscussion::UserMailerTest < ActionMailer::TestCase
     end
     
     mailer_address = SimpleDiscussion::UserMailer.deliveries.last.from.last
-    byebug
     assert_equal mailer_address, subdomain.mailing_address
   end
 
