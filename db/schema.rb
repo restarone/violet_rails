@@ -562,6 +562,7 @@ ActiveRecord::Schema.define(version: 2022_10_18_082555) do
     t.bigint "external_api_client_id", null: false
     t.string "webhook_type"
     t.text "encrypted_webhook_secret"
+    t.text "custom_method_defination", default: "[false, 'Verification failed']"
     t.binary "salt"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
