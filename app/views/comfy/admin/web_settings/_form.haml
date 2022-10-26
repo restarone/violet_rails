@@ -144,6 +144,20 @@
 .card.mt-5
   .card-header
     %strong
+     Forum Email Notifications
+  .card-body
+    .form-group
+      = f.radio_button :email_strategy, false, checked: !f.object.email_strategy
+      %label
+        Email Notifications via User Email
+    .form-group
+      = f.radio_button :email_strategy, true, checked: f.object.email_strategy
+      %label
+        Email Notifications via Restarone Solutions Email
+
+.card.mt-5
+  .card-header
+    %strong
       Redirections
   .card-body
     .form-group

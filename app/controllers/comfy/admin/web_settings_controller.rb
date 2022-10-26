@@ -44,7 +44,8 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
       :after_sign_up_path,
       :allow_external_analytics_query,
       :email_name,
-      :email_signature
+      :email_signature,
+      :email_strategy
     )
   end
 end
