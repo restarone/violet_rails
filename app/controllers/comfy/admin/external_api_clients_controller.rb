@@ -106,7 +106,7 @@ class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseContro
             :model_definition,
             :drive_every,
             :require_webhook_verification,
-            webhook_verification_method_attributes: [:id, :webhook_type, :webhook_secret]
+            webhook_verification_method_attributes: [:id, :webhook_type, :webhook_secret, :custom_method_defination]
           ).merge({
             api_namespace_id: @api_namespace.id,
           })
