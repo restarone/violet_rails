@@ -497,6 +497,18 @@ class ContentHelperTest < ActionView::TestCase
     assert_equal expected_response, response
   end
 
+  test 'render_api_namespace_resource_index - filter by params - containing quotes' do
+    @api_resource_1.update(properties: { name: "test's user", tags: ["'action'", "\"superhero\""], json: {"bar": '\'baz'} })
+
+    params[:properties] = {name: "test's user", tags: { value: ["\"superhero\""], option: 'PARTIAL', match: 'ANY'}, json: {value: {"bar": '\'baz' }}  }.to_json
+
+    snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<% @api_resources.each do |res| %><%= res.properties['name'] %><% end %>")
+    
+    response = render_api_namespace_resource_index(@api_namespace.slug)
+    excepted_response = "#{@api_resource_1.properties['name']}"
+    assert_equal excepted_response, response
+  end
+
   def current_user
     @current_user
   end
