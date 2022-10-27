@@ -67,6 +67,7 @@ class SimpleDiscussion::UserMailerTest < ActionMailer::TestCase
     attachment = ActiveStorage::Blob.create_and_upload!(io: File.open(file_path), filename: 'fixture_image', content_type: 'image/png', metadata: nil)
     action_txt_content = ActionText::Content.new(%Q(<action-text-attachment sgid="#{attachment.attachable_sgid}"></action-text-attachment>))
     @user.update(name: "Test name")
+    ENV["APP_HOST"] = "example_mail.com"
 
     subdomain = Subdomain.current
  
