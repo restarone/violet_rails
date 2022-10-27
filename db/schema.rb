@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_08_24_121504) do
+ActiveRecord::Schema.define(version: 2022_10_10_105643) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -481,6 +481,7 @@ ActiveRecord::Schema.define(version: 2022_08_24_121504) do
     t.string "email_name"
     t.text "email_signature"
     t.text "cookies_consent_ui", default: "<div class=\"cookies-consent__overlay position-fixed\" style=\"top: 0; bottom: 0; left: 0; right: 0; background-color: black; opacity: 0.5; z-index: 1000;\"></div>\n  <div class=\"cookies-consent position-fixed bg-white d-md-flex justify-content-md-between\" style=\"bottom: 0; left: 0; width: 100%; padding: 2rem 1rem; z-index: 9000;\">\n    <div class=\"cookies-consent__text-content col-md-8\" style=\"max-width: 700px;\">\n      <h2 class=\"cookies-consent__title\" style=\"font-size: 1.4rem;\">We Value Your Privacy</h2>\n      <p class=\"mb-4 mb-md-0\">\n        We use cookies to enhance your browsing experience, serve personalized ads or content, and analyze our traffic. By clicking \"Accept All\", you consent to our use of cookies.\n      </p>\n    </div>\n    <div class=\"cookies-consent__buttons-container d-flex flex-column col-md-4 col-xl-3\">\n      <a class=\"btn btn-primary mb-3\" href=\"/cookies?cookies=true\">Accept All</a>\n      <a class=\"btn btn-outline-primary\" href=\"/cookies?cookies=false\">Reject All</a>\n    </div>  \n  </div>"
+    t.boolean "enable_2fa", default: false
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
     t.index ["name"], name: "index_subdomains_on_name"
   end
@@ -529,6 +530,11 @@ ActiveRecord::Schema.define(version: 2022_08_24_121504) do
     t.boolean "deliver_error_notifications", default: false
     t.boolean "can_manage_analytics", default: false
     t.boolean "can_manage_files", default: false
+    t.string "encrypted_otp_secret"
+    t.string "encrypted_otp_secret_iv"
+    t.string "encrypted_otp_secret_salt"
+    t.integer "consumed_timestep"
+    t.boolean "otp_required_for_login", default: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
