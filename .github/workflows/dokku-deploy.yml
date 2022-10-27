@@ -18,6 +18,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+
       - name: Add public IP to AWS security group
         uses: sohelamin/aws-security-group-add-ip-action@master
         with:
