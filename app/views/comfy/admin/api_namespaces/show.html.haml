@@ -161,7 +161,7 @@
           %th.px-3= sort_link @api_resources_q, :updated_at
           - dynamic_columns = @api_namespace.properties.keys
           - dynamic_columns.each do |dynamic_column|
-            %th.px-3= dynamic_column
+            %th.px-3= sort_link @api_resources_q, dynamic_column
           %th.px-3
           %th.px-3
       %tbody
