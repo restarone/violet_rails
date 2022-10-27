@@ -25,7 +25,7 @@ jobs:
           aws-access-key-id: ${{ secrets.DOKKU_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.DOKKU_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.DOKKU_AWS_REGION }}
-          aws-security-group-id: ${{ secrets.DOKKU_AWS_SECURITY_GROUP_ID }}
+          aws-security-group-id: ${{ secrets.AWS_SECURITY_GROUP_ID }}
           port: '22'
           protocol: 'tcp'
           description: 'GitHub Action'
@@ -52,7 +52,7 @@ jobs:
           aws-access-key-id: ${{ secrets.DOKKU_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.DOKKU_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.DOKKU_AWS_REGION }}
-          aws-security-group-id: ${{ secrets.DOKKU_AWS_SECURITY_GROUP_ID }}
+          aws-security-group-id: ${{ secrets.AWS_SECURITY_GROUP_ID }}
           port: '22'
           protocol: 'tcp'
           description: 'GitHub Action'
@@ -116,7 +116,7 @@ jobs:
           aws-access-key-id: ${{ secrets.DOKKU_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.DOKKU_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.DOKKU_AWS_REGION }}
-          aws-security-group-id: ${{ secrets.DOKKU_AWS_SECURITY_GROUP_ID }}
+          aws-security-group-id: ${{ secrets.AWS_SECURITY_GROUP_ID }}
           port: '22'
           protocol: 'tcp'
           description: 'GitHub Action'
