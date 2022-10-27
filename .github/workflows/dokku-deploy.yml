@@ -19,6 +19,17 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Add public IP to AWS security group
+        uses: sohelamin/aws-security-group-add-ip-action@master
+        with:
+          aws-access-key-id: ${{ secrets.DOKKU_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DOKKU_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.DOKKU_AWS_REGION }}
+          aws-security-group-id: ${{ secrets.DOKKU_AWS_SECURITY_GROUP_ID }}
+          port: '22'
+          protocol: 'tcp'
+          description: 'GitHub Action'
+
       - name: Push to dokku
         uses: dokku/github-action@master
         with:
@@ -34,6 +45,17 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+
+      - name: Add public IP to AWS security group
+        uses: sohelamin/aws-security-group-add-ip-action@master
+        with:
+          aws-access-key-id: ${{ secrets.DOKKU_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DOKKU_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.DOKKU_AWS_REGION }}
+          aws-security-group-id: ${{ secrets.DOKKU_AWS_SECURITY_GROUP_ID }}
+          port: '22'
+          protocol: 'tcp'
+          description: 'GitHub Action'
 
       - name: Push to dokku
         uses: dokku/github-action@master
@@ -88,6 +110,17 @@ jobs:
     # only run when a pull request with label:deploy-review-app is closed OR the label is removed from open PR
     if: github.event_name == 'pull_request' && ((github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'deploy-review-app')) || (github.event.pull_request.state == 'open' && github.event.action == 'unlabeled' && needs.checklabel.outputs.deploy_review_app_removed))
     steps:
+      - name: Add public IP to AWS security group
+        uses: sohelamin/aws-security-group-add-ip-action@master
+        with:
+          aws-access-key-id: ${{ secrets.DOKKU_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DOKKU_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.DOKKU_AWS_REGION }}
+          aws-security-group-id: ${{ secrets.DOKKU_AWS_SECURITY_GROUP_ID }}
+          port: '22'
+          protocol: 'tcp'
+          description: 'GitHub Action'
+
       - name: Destroy the review app
         uses: dokku/github-action@master
         with:
