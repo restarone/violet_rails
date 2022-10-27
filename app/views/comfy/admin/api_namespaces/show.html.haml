@@ -141,6 +141,7 @@
     .my-3
       = link_to 'Export JSON without associations', export_without_associations_as_json_api_namespace_path(id: @api_namespace.id), method: :get, class: 'btn btn-info'
 
+-# User can only view this page if they have atleast full_read_access. So, we don't need to guard this block by checking read_api_resources_only.
 .container-fluid.mt-5
   .d-flex.justify-content-between.py-2.page-header
     %h2

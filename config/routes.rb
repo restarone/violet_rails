@@ -77,7 +77,7 @@ Rails.application.routes.draw do
 
     resources :resource, controller: 'resource', only: [:create]
 
-    resources :api_actions, controller: 'comfy/admin/api_actions', only: [:index, :show] do
+    resources :api_actions, controller: 'comfy/admin/api_actions', only: [:index, :show, :new] do
       collection do
         get 'action_workflow'
       end
@@ -91,7 +91,6 @@ Rails.application.routes.draw do
     end
   end
   resources :non_primitive_properties, controller: 'comfy/admin/non_primitive_properties', only: [:new]
-  resources :api_actions, controller: 'comfy/admin/api_actions', only: [:new]
 
   # system admin panel login
   devise_scope :user do

@@ -3,6 +3,7 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
   before_action :track_ahoy_visit,  only: %i[update], raise: false
   before_action :load_user, only: [:edit, :update, :destroy]
   before_action :ensure_authority_to_manage_users
+  before_action :set_default_api_accessibility_param, only: :update
 
   def index
     params[:q] ||= {}
@@ -77,7 +78,6 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
       :can_manage_blog,
       :can_manage_email,
       :can_manage_users,
-      :can_manage_api,
       :can_manage_analytics,
       :can_manage_files,
       :moderator,
@@ -87,11 +87,16 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
       :can_manage_subdomain_settings,
       :can_access_admin,
       :deliver_error_notifications,
-      category_ids: []
+      category_ids: [],
+      api_accessibility: {}
     )
   end
 
   def invite_params
     params.require(:user).permit(:email)
+  end
+
+  def set_default_api_accessibility_param
+    params[:user].merge!(api_accessibility: {}) if params[:user].present? && params.dig(:user, :api_accessibility).blank?
   end
 end

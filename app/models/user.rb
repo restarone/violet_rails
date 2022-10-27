@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  include JsonbFieldsParsable
   include SimpleDiscussion::ForumUser
   include Comfy::Cms::WithCategories
   # Include default devise modules. Others available are:
@@ -47,7 +48,7 @@ class User < ApplicationRecord
     can_manage_users: true,
     can_manage_blog: true,
     can_manage_subdomain_settings: true,
-    can_manage_api: true,
+    api_accessibility: {all_namespaces: {full_access: 'true'}},
     can_view_restricted_pages: true,
     moderator: true
   }

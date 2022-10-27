@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_08_24_121504) do
+ActiveRecord::Schema.define(version: 2022_09_17_134117) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -522,13 +522,13 @@ ActiveRecord::Schema.define(version: 2022_08_24_121504) do
     t.boolean "moderator"
     t.boolean "can_view_restricted_pages"
     t.boolean "deliver_analytics_report", default: false
-    t.boolean "can_manage_api", default: false
     t.boolean "can_manage_subdomain_settings", default: false
     t.string "session_timeoutable_in", default: "1-hour"
     t.boolean "can_access_admin", default: false
     t.boolean "deliver_error_notifications", default: false
     t.boolean "can_manage_analytics", default: false
     t.boolean "can_manage_files", default: false
+    t.jsonb "api_accessibility", default: {}
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true

@@ -71,7 +71,7 @@
 
   function appendApiActionForm(type) {
     var index = $("#" + `${type}_forms > .form-container`).length
-    var url = "#{new_api_action_path()}" + `?index=${index}&type=${type}`
+    var url = "#{new_api_namespace_api_action_path(api_namespace_id: @api_namespace.id)}" + `?index=${index}&type=${type}`
     $.ajax({
       url: url ,
       type: 'GET',
