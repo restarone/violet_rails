@@ -27,6 +27,7 @@ jobs:
           aws-region: ${{ secrets.DOKKU_AWS_REGION }}
           aws-security-group-id: ${{ secrets.DOKKU_AWS_SECURITY_GROUP_ID }}
           port: '22'
+          to-port: '30'
           protocol: 'tcp'
           description: 'GitHub Action'
 
@@ -54,6 +55,7 @@ jobs:
           aws-region: ${{ secrets.DOKKU_AWS_REGION }}
           aws-security-group-id: ${{ secrets.DOKKU_AWS_SECURITY_GROUP_ID }}
           port: '22'
+          to-port: '30'
           protocol: 'tcp'
           description: 'GitHub Action'
 
@@ -118,6 +120,7 @@ jobs:
           aws-region: ${{ secrets.DOKKU_AWS_REGION }}
           aws-security-group-id: ${{ secrets.DOKKU_AWS_SECURITY_GROUP_ID }}
           port: '22'
+          to-port: '30'
           protocol: 'tcp'
           description: 'GitHub Action'
 
