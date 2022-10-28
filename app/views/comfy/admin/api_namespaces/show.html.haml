@@ -36,7 +36,7 @@
       Export
   %li.nav-item
     %a#social-tab.nav-link{"aria-controls" => "social", "aria-selected" => "false", "data-toggle" => "tab", :href => "#social", :role => "tab"} 
-      Social Share Preview
+      Social Share Mapping
 
 .tab-content
   #interface.tab-pane.fade.show.active{"aria-labelledby" => "interface-tab", :role => "tabpanel"} 
@@ -144,23 +144,19 @@
     .my-3
       = link_to 'Export JSON without associations', export_without_associations_as_json_api_namespace_path(id: @api_namespace.id), method: :get, class: 'btn btn-info'
   #social.tab-pane.fade{"aria-labelledby" => "social-tab", :role => "tabpanel"} 
-    = form_for(@api_namespace, url: api_namespace_api_form_path(api_namespace_id: @api_namespace.id, id: @api_namespace.api_form.id)) do |f|
+    = form_with(method: :patch , url: api_namespace_path(@api_namespace))  do |f|
       .form-group
         = f.label :title
-        %br/
-        = f.text_field :metadata, class: 'form-control'
+        = f.select 'api_namespace[social_share_metadata][title]', options_for_select(@api_namespace.properties&.keys,(@api_namespace.social_share_metadata.present? ? @api_namespace.social_share_metadata["title"] : nil)),{include_blank: "Choose an option"}, {class: 'form-control'}
       .form-group
         = f.label :description
-        %br/
-        = f.text_area :metadata, class: 'form-control'
+        = f.select 'api_namespace[social_share_metadata][description]', options_for_select(@api_namespace.properties&.keys,(@api_namespace.social_share_metadata.present? ? @api_namespace.social_share_metadata["description"] : nil)),{include_blank: "Choose an option"}, {class: 'form-control'}
       .form-group
         = f.label :image
-        %br/
-        = f.file_field :metadata, class: 'form-control-file'
+        = f.select 'api_namespace[social_share_metadata][image]', options_for_select(@api_namespace.properties&.keys,(@api_namespace.social_share_metadata.present? ? @api_namespace.social_share_metadata["image"] : nil)),{include_blank: "Choose an option"}, {class: 'form-control'}
       .form-group
         = f.submit "Submit", class: 'btn btn-primary'
       
-
 .container-fluid.mt-5
   .d-flex.justify-content-between.py-2.page-header
     %h2

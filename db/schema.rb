@@ -166,7 +166,7 @@ ActiveRecord::Schema.define(version: 2022_10_25_091924) do
     t.string "namespace_type", default: "create-read-update-delete", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.jsonb "metadata"
+    t.jsonb "social_share_metadata"
     t.index ["properties"], name: "index_api_namespaces_on_properties", opclass: :jsonb_path_ops, using: :gin
   end
 
