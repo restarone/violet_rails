@@ -43,19 +43,35 @@ module ContentHelper
   # render resource show
   # available variables on view: @api_resource , @api_namespace
   def render_api_namespace_resource(api_namespace_slug, options = {})
-
+    @is_show_page = true
     scope = options["scope"]
     
-    api_namespace = ApiNamespace.find_by(slug: api_namespace_slug)
-    api_resources = api_namespace.api_resources
-    
+    @api_namespace = ApiNamespace.find_by(slug: api_namespace_slug)
+    api_resources = @api_namespace.api_resources
+
     api_resources = api_resources.where.not(user_id: nil).where(user_id: current_user&.id) if scope&.dig('current_user') == 'true'
     
     api_resources = api_resources.jsonb_search(:properties, scope["properties"], scope["match"]) if scope&.has_key?("properties")
     
-    api_resource = api_resources.find(params[:id])
+    @api_resource = api_resources.find(params[:id])
     
-    cms_dynamic_snippet_render("#{api_namespace_slug}-show", nil, { api_resource: api_resource, api_namespace: api_namespace })
+    cms_dynamic_snippet_render("#{api_namespace_slug}-show", nil, { api_resource: @api_resource, api_namespace: @api_namespace })
+  end
+
+  def og_metadata(show_page)
+      if show_page && @api_resource&.api_namespace.social_share_metadata.present? 
+        { 
+          title: @api_resource.properties[@api_namespace.social_share_metadata["title"]],
+          description: @api_resource.properties[@api_namespace.social_share_metadata["description"]],
+          image: @api_resource.non_primitive_properties.find_by(field_type: "file", label: @api_namespace.social_share_metadata["image"]).file_url
+         }
+      else
+        {
+          image: og_image_url(Subdomain.current),
+          title: html_title(Subdomain.current),
+          description: site_description(Subdomain.current)
+        }
+      end
   end
 
   private
@@ -65,19 +81,6 @@ module ContentHelper
     snippet = cms_site&.snippets&.find_by_identifier(identifier)
     return "" unless snippet
     r = ComfortableMexicanSofa::Content::Renderer.new(snippet)
-    
-    
-    page_content = snippet.content_evaluated(context)
-    resource = context[:api_resource]
-    namespace = context[:api_namespace]
-
-    if namespace.social_share_metadata.present?
-      page_content = page_content + ERB.new(CGI.unescapeHTML("<%
-        set_meta_tags title: #{resource.properties[namespace.social_share_metadata["title"]]},
-                description: #{resource.properties[namespace.social_share_metadata["description"]]},
-                image: #{resource.properties[namespace.social_share_metadata["image"]]}
-        %>"))
-    end
-    render inline: r.render(r.nodes(r.tokenize(page_content)))
+    render inline: r.render(r.nodes(r.tokenize(snippet.content_evaluated(context))))
   end
 end
