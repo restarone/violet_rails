@@ -474,6 +474,16 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to api_namespace_url(id: @api_namespace.id)
   end
 
+  test 'should destroy if user has delete_access_for_api_resources_only for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {delete_access_for_api_resources_only: 'true'}})
+
+    sign_in(@user)
+    assert_difference('ApiResource.count', -1) do
+      delete api_namespace_resource_url(@api_resource, api_namespace_id: @api_resource.api_namespace_id)
+    end
+    assert_redirected_to api_namespace_url(id: @api_namespace.id)
+  end
+
   test 'should not destroy if user has other access for all namespace' do
     @user.update(api_accessibility: {all_namespaces: {read_api_resources_only: 'true'}})
 
@@ -484,7 +494,7 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
 
-    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_resources_only are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_resources_only or delete_access_for_api_resources_only are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
   end
 
@@ -513,8 +523,8 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to api_namespace_url(id: @api_namespace.id)
   end
 
-  test 'should destroy if user has read_api_resources_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_api_resources_only: 'true'}}})
+  test 'should destroy if user has delete_access_for_api_resources_only for the uncategorized namespace' do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {delete_access_for_api_resources_only: 'true'}}})
 
     sign_in(@user)
     assert_difference('ApiResource.count', -1) do
@@ -535,11 +545,7 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
 
-    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_resources_only are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_resources_only or delete_access_for_api_resources_only are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
   end
-
-
-
-
 end

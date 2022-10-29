@@ -1191,6 +1191,17 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_redirected_to api_namespaces_url
   end
 
+  test "should destroy if user has delete_access_api_namespace_only for all_namespaces" do
+    @user.update(api_accessibility: {all_namespaces: {delete_access_api_namespace_only: 'true'}})
+
+    sign_in(@user)
+    assert_difference('ApiNamespace.count', -1) do
+      delete api_namespace_url(@api_namespace)
+    end
+
+    assert_redirected_to api_namespaces_url
+  end
+
   test "should not destroy if user has other access for all_namespaces" do
     @user.update(api_accessibility: {all_namespaces: {full_access_for_api_resources_only: 'true'}})
 
@@ -1201,7 +1212,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     assert_response :redirect
 
-    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or delete_access_api_namespace_only are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
   end
 
@@ -1232,6 +1243,19 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_redirected_to api_namespaces_url
   end
 
+  test "should destroy if user has category specific delete_access_api_namespace_only for the namespace" do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {delete_access_api_namespace_only: 'true'}}})
+
+    sign_in(@user)
+    assert_difference('ApiNamespace.count', -1) do
+      delete api_namespace_url(@api_namespace)
+    end
+
+    assert_redirected_to api_namespaces_url
+  end
+
   test "should not destroy if user has category specific other access for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
@@ -1244,7 +1268,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     assert_response :redirect
 
-    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or delete_access_api_namespace_only are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
   end
 
@@ -1262,7 +1286,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     assert_response :redirect
 
-    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or delete_access_api_namespace_only are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
   end
 
