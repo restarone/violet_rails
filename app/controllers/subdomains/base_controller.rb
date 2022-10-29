@@ -8,10 +8,12 @@ class Subdomains::BaseController < ApplicationController
     full_access: ['full_access'],
     full_read_access: ['full_access', 'full_read_access'],
     full_access_api_namespace_only: ['full_access', 'full_access_api_namespace_only'],
+    delete_access_api_namespace_only: ['full_access', 'full_access_api_namespace_only', 'delete_access_api_namespace_only'],
     allow_exports: ['full_access', 'full_access_api_namespace_only', 'allow_exports'],
     allow_duplication: ['full_access', 'full_access_api_namespace_only', 'allow_duplication'],
     read_api_resources_only: ['full_access', 'full_read_access', 'full_access_for_api_resources_only', 'read_api_resources_only'],
     full_access_for_api_resources_only: ['full_access', 'full_access_for_api_resources_only'],
+    delete_access_for_api_resources_only: ['full_access', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only'],
     read_api_actions_only: ['full_access', 'full_read_access', 'full_access_for_api_actions_only', 'read_api_actions_only'],
     full_access_for_api_actions_only: ['full_access', 'full_access_for_api_actions_only'],
     read_external_api_connections_only: ['full_access', 'full_read_access', 'full_access_for_external_api_connections_only', 'read_external_api_connections_only'],
@@ -85,6 +87,13 @@ class Subdomains::BaseController < ApplicationController
     end
   end
 
+  def ensure_authority_for_delete_access_in_api_namespace_only
+    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:delete_access_api_namespace_only])
+      flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or delete_access_api_namespace_only are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
+    end
+  end
+
   def ensure_authority_for_read_api_resources_only_in_api
     unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:read_api_resources_only])
       flash.alert = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_for_api_resources_only or read_api_resources_only are allowed to perform that action."
@@ -95,6 +104,13 @@ class Subdomains::BaseController < ApplicationController
   def ensure_authority_for_full_access_for_api_resources_only_in_api
     unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:full_access_for_api_resources_only])
       flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_for_api_resources_only are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
+    end
+  end
+
+  def ensure_authority_for_delete_access_for_api_resources_only_in_api
+    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:delete_access_for_api_resources_only])
+      flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_for_api_resources_only or delete_access_for_api_resources_only are allowed to perform that action."
       redirect_back(fallback_location: root_url)
     end
   end
