@@ -4,162 +4,180 @@
       Can manage API
   .card-body
     .form-group
-      = check_box_tag '', nil, nil, data: { group: 'api-sub-settings', type: 'toggle-checkboxes' }
+      = check_box_tag '', nil, has_access_to_main_category?(@user.api_accessibility, 'all_namespaces'), data: { group: 'api-sub-settings', type: 'toggle-checkboxes' }
       %label
         All Namespaces
       
-      %ul.mt-2{ style: "display: none"}
+      %ul.mt-2{ style: "display: #{has_access_to_main_category?(@user.api_accessibility, 'all_namespaces') ? 'block' : 'none'}"}
         %li
-          = check_box_tag 'user[api_accessibility][all_namespaces][full_access]', true, true, class: 'full-access-option', disabled: true
+          = check_box_tag 'user[api_accessibility][all_namespaces][full_access]', true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'all_namespaces'), class: 'full-access-option', disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'all_namespaces')
           = label_tag nil, 'Full access'
         %ul.mb-2.sub-options
           %li
-            = check_box_tag nil, true, true, disabled: true, data: { name: 'user[api_accessibility][all_namespaces][full_read_access]'}
+            = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'all_namespaces') || has_sub_access_to_specific_category?(@user.api_accessibility, 'full_read_access', 'all_namespaces'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'all_namespaces'), data: { name: 'user[api_accessibility][all_namespaces][full_read_access]'}
             = label_tag nil, 'Full read access'
           %li
-            = check_box_tag nil, true, true, disabled: true, data: { name: 'user[api_accessibility][all_namespaces][full_access_api_namespace_only]'}
+            = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'all_namespaces') || has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access_api_namespace_only', 'all_namespaces'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'all_namespaces'), data: { name: 'user[api_accessibility][all_namespaces][full_access_api_namespace_only]'}
             = label_tag nil, 'Full access for API Namespace only'
           %li
-            = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][allow_exports]'}
+            = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'all_namespaces') || has_sub_access_to_specific_category?(@user.api_accessibility, 'delete_access_api_namespace_only', 'all_namespaces'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'all_namespaces'), data: { name: 'user[api_accessibility][all_namespaces][delete_access_api_namespace_only]'}
+            = label_tag nil, 'Delete access for API Namespace only'
+          %li
+            = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'all_namespaces') || has_sub_access_to_specific_category?(@user.api_accessibility, 'allow_exports', 'all_namespaces'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'all_namespaces'), data: {name: 'user[api_accessibility][all_namespaces][allow_exports]'}
             = label_tag nil, 'Allow exports'
           %li
-            = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][allow_duplication]'}
+            = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'all_namespaces') || has_sub_access_to_specific_category?(@user.api_accessibility, 'allow_duplication', 'all_namespaces'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'all_namespaces'), data: {name: 'user[api_accessibility][all_namespaces][allow_duplication]'}
             = label_tag nil, 'Allow duplication'
           %li
-            = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][read_api_resources_only]'}
+            = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'all_namespaces') || has_sub_access_to_specific_category?(@user.api_accessibility, 'read_api_resources_only', 'all_namespaces'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'all_namespaces'), data: {name: 'user[api_accessibility][all_namespaces][read_api_resources_only]'}
             = label_tag nil, 'Read API Resources only'
           %li
-            = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][full_access_for_api_resources_only]'}
+            = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'all_namespaces') || has_sub_access_to_specific_category?(@user.api_accessibility, 'delete_access_for_api_resources_only', 'all_namespaces'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'all_namespaces'), data: {name: 'user[api_accessibility][all_namespaces][delete_access_for_api_resources_only]'}
+            = label_tag nil, 'Delete access for API Resources only'
+          %li
+            = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'all_namespaces') || has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access_for_api_resources_only', 'all_namespaces'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'all_namespaces'), data: {name: 'user[api_accessibility][all_namespaces][full_access_for_api_resources_only]'}
             = label_tag nil, 'Full access for API Resources only'
           %li
-            = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][read_api_actions_only]'}
+            = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'all_namespaces') || has_sub_access_to_specific_category?(@user.api_accessibility, 'read_api_actions_only', 'all_namespaces'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'all_namespaces'), data: {name: 'user[api_accessibility][all_namespaces][read_api_actions_only]'}
             = label_tag nil, 'Read API Actions only'
           %li
-            = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][full_access_for_api_actions_only]'}
+            = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'all_namespaces') || has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access_for_api_actions_only', 'all_namespaces'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'all_namespaces'), data: {name: 'user[api_accessibility][all_namespaces][full_access_for_api_actions_only]'}
             = label_tag nil, 'Full access for API Actions only'
           %li
-            = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][read_external_api_connections_only]'}
+            = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'all_namespaces') || has_sub_access_to_specific_category?(@user.api_accessibility, 'read_external_api_connections_only', 'all_namespaces'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'all_namespaces'), data: {name: 'user[api_accessibility][all_namespaces][read_external_api_connections_only]'}
             = label_tag nil, 'Read External API Connections only'
           %li
-            = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][full_access_for_external_api_connections_only]'}
+            = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'all_namespaces') || has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access_for_external_api_connections_only', 'all_namespaces'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'all_namespaces'), data: {name: 'user[api_accessibility][all_namespaces][full_access_for_external_api_connections_only]'}
             = label_tag nil, 'Full access for External API Connections only'
           %li
-            = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][read_api_clients_only]'}
+            = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'all_namespaces') || has_sub_access_to_specific_category?(@user.api_accessibility, 'read_api_clients_only', 'all_namespaces'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'all_namespaces'), data: {name: 'user[api_accessibility][all_namespaces][read_api_clients_only]'}
             = label_tag nil, 'Read API Clients only'
           %li
-            = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][full_access_for_api_clients_only]'}
+            = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'all_namespaces') || has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access_for_api_clients_only', 'all_namespaces'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'all_namespaces'), data: {name: 'user[api_accessibility][all_namespaces][full_access_for_api_clients_only]'}
             = label_tag nil, 'Full access for API Clients only'
           %li
-            = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][all_namespaces][full_access_for_api_form_only]'}
+            = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'all_namespaces') || has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access_for_api_form_only', 'all_namespaces'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'all_namespaces'), data: {name: 'user[api_accessibility][all_namespaces][full_access_for_api_form_only]'}
             = label_tag nil, 'Full access for API Form only'
 
     .form-group
-      = check_box_tag '', nil, nil, data: { group: 'api-sub-settings', type: 'toggle-checkboxes' }
+      = check_box_tag '', nil, has_access_to_main_category?(@user.api_accessibility, 'namespaces_by_category'), data: { group: 'api-sub-settings', type: 'toggle-checkboxes' }
       %label
         API Namespaces by category
 
       - categories = Comfy::Cms::Category.of_type('ApiNamespace')
       
-      %ul.mt-2{ style: "display: none"}
+      %ul.mt-2{ style: "display: #{has_access_to_main_category?(@user.api_accessibility, 'namespaces_by_category') ? 'block' : 'none'}"}
         - categories.each do |category|
           %li
             .form-group
-              = check_box_tag '', nil, nil, data: { group: 'api-sub-settings' }
+              = check_box_tag '', nil, has_access_to_specific_category?(@user.api_accessibility, category.label), data: { group: 'api-sub-settings' }
               %label
                 = category.label
-              %ul.mt-2{ style: "display: none"}
+              %ul.mt-2{ style:  "display: #{has_access_to_specific_category?(@user.api_accessibility, category.label) ? 'block' : 'none'}"}
                 %li
-                  = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][full_access]", true, true, class: 'full-access-option', disabled: true
+                  = check_box_tag "user[api_accessibility][namespaces_by_category][#{category.label}][full_access]", true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', category.label), class: 'full-access-option', disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', category.label)
                   = label_tag nil, 'Full access'
                 %ul.mb-2.sub-options
                   %li
-                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_read_access]"}
+                    = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', category.label) || has_sub_access_to_specific_category?(@user.api_accessibility, 'full_read_access', 'namespaces_by_category', category.label), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', category.label), data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_read_access]"}
                     = label_tag nil, 'Full read access'
                   %li
-                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_api_namespace_only]"}
+                    = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', category.label) || has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access_api_namespace_only', 'namespaces_by_category', category.label), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', category.label), data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_api_namespace_only]"}
                     = label_tag nil, 'Full access for API Namespace only'
                   %li
-                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][allow_exports]"}
+                    = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', category.label) || has_sub_access_to_specific_category?(@user.api_accessibility, 'delete_access_api_namespace_only', 'namespaces_by_category', category.label), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', category.label), data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][delete_access_api_namespace_only]"}
+                    = label_tag nil, 'Delete access for API Namespace only'
+                  %li
+                    = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', category.label) || has_sub_access_to_specific_category?(@user.api_accessibility, 'allow_exports', 'namespaces_by_category', category.label), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', category.label), data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][allow_exports]"}
                     = label_tag nil, 'Allow exports'
                   %li
-                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][allow_duplication]"}
+                    = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', category.label) || has_sub_access_to_specific_category?(@user.api_accessibility, 'allow_duplication', 'namespaces_by_category', category.label), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', category.label), data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][allow_duplication]"}
                     = label_tag nil, 'Allow duplication'
                   %li
-                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][read_api_resources_only]"}
+                    = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', category.label) || has_sub_access_to_specific_category?(@user.api_accessibility, 'read_api_resources_only', 'namespaces_by_category', category.label), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', category.label), data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][read_api_resources_only]"}
                     = label_tag nil, 'Read API Resources only'
                   %li
-                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_api_resources_only]"}
+                    = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', category.label) || has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access_for_api_resources_only', 'namespaces_by_category', category.label), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', category.label), data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_api_resources_only]"}
                     = label_tag nil, 'Full access for API Resources only'
                   %li
-                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][read_api_actions_only]"}
+                    = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', category.label) || has_sub_access_to_specific_category?(@user.api_accessibility, 'delete_access_for_api_resources_only', 'namespaces_by_category', category.label), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', category.label), data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][delete_access_for_api_resources_only]"}
+                    = label_tag nil, 'Delete access for API Resources only'
+                  %li
+                    = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', category.label) || has_sub_access_to_specific_category?(@user.api_accessibility, 'read_api_actions_only', 'namespaces_by_category', category.label), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', category.label), data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][read_api_actions_only]"}
                     = label_tag nil, 'Read API Actions only'
                   %li
-                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_api_actions_only]"}
+                    = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', category.label) || has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access_for_api_actions_only', 'namespaces_by_category', category.label), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', category.label), data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_api_actions_only]"}
                     = label_tag nil, 'Full access for API Actions only'
                   %li
-                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][read_external_api_connections_only]"}
+                    = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', category.label) || has_sub_access_to_specific_category?(@user.api_accessibility, 'read_external_api_connections_only', 'namespaces_by_category', category.label), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', category.label), data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][read_external_api_connections_only]"}
                     = label_tag nil, 'Read External API Connections only'
                   %li
-                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_external_api_connections_only]"}
+                    = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', category.label) || has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access_for_external_api_connections_only', 'namespaces_by_category', category.label), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', category.label), data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_external_api_connections_only]"}
                     = label_tag nil, 'Full access for External API Connections only'
                   %li
-                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][read_api_clients_only]"}
+                    = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', category.label) || has_sub_access_to_specific_category?(@user.api_accessibility, 'read_api_clients_only', 'namespaces_by_category', category.label), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', category.label), data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][read_api_clients_only]"}
                     = label_tag nil, 'Read API Clients only'
                   %li
-                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_api_clients_only]"}
+                    = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', category.label) || has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access_for_api_clients_only', 'namespaces_by_category', category.label), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', category.label), data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_api_clients_only]"}
                     = label_tag nil, 'Full access for API Clients only'
                   %li
-                    = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_api_form_only]"}
+                    = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', category.label) || has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access_for_api_form_only', 'namespaces_by_category', category.label), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', category.label), data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][full_access_for_api_form_only]"}
                     = label_tag nil, 'Full access for API Form only'
 
         %li
           .form-group
-            = check_box_tag '', nil, nil, data: { group: 'api-sub-settings' }
+            = check_box_tag '', nil, has_access_to_specific_category?(@user.api_accessibility, 'uncategorized'), data: { group: 'api-sub-settings' }
             %label.text-primary
               uncategorized
-            %ul.mt-2{ style: "display: none"}
+            %ul.mt-2{ style: "display: #{has_access_to_specific_category?(@user.api_accessibility, 'uncategorized') ? 'block' : 'none'}"}
               %li
-                = check_box_tag "user[api_accessibility][namespaces_by_category][uncategorized][full_access]", true, true, class: 'full-access-option', disabled: true
+                = check_box_tag "user[api_accessibility][namespaces_by_category][uncategorized][full_access]", true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', 'uncategorized'), class: 'full-access-option', disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', 'uncategorized')
                 = label_tag nil, 'Full access'
               %ul.mb-2.sub-options
                 %li
-                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_read_access]"}
+                  = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', 'uncategorized') || has_sub_access_to_specific_category?(@user.api_accessibility, 'full_read_access', 'namespaces_by_category', 'uncategorized'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', 'uncategorized'), data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_read_access]"}
                   = label_tag nil, 'Full read access'
                 %li
-                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_access_api_namespace_only]"}
+                  = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', 'uncategorized') || has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access_api_namespace_only', 'namespaces_by_category', 'uncategorized'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', 'uncategorized'), data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_access_api_namespace_only]"}
                   = label_tag nil, 'Full access for API Namespace only'
                 %li
-                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][allow_exports]"}
+                  = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', 'uncategorized') || has_sub_access_to_specific_category?(@user.api_accessibility, 'delete_access_api_namespace_only', 'namespaces_by_category', 'uncategorized'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', 'uncategorized'), data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][delete_access_api_namespace_only]"}
+                  = label_tag nil, 'Delete access for API Namespace only'
+                %li
+                  = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', 'uncategorized') || has_sub_access_to_specific_category?(@user.api_accessibility, 'allow_exports', 'namespaces_by_category', 'uncategorized'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', 'uncategorized'), data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][allow_exports]"}
                   = label_tag nil, 'Allow exports'
                 %li
-                  = check_box_tag nil, true, true, disabled: true, data: {name: 'user[api_accessibility][namespaces_by_category][uncategorized][allow_duplication]'}
+                  = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', 'uncategorized') || has_sub_access_to_specific_category?(@user.api_accessibility, 'allow_duplication', 'namespaces_by_category', 'uncategorized'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', 'uncategorized'), data: {name: 'user[api_accessibility][namespaces_by_category][uncategorized][allow_duplication]'}
                   = label_tag nil, 'Allow duplication'
                 %li
-                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][read_api_resources_only]"}
+                  = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', 'uncategorized') || has_sub_access_to_specific_category?(@user.api_accessibility, 'read_api_resources_only', 'namespaces_by_category', 'uncategorized'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', 'uncategorized'), data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][read_api_resources_only]"}
                   = label_tag nil, 'Read API Resources only'
                 %li
-                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_api_resources_only]"}
+                  = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', 'uncategorized') || has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access_for_api_resources_only', 'namespaces_by_category', 'uncategorized'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', 'uncategorized'), data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_api_resources_only]"}
                   = label_tag nil, 'Full access for API Resources only'
                 %li
-                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][read_api_actions_only]"}
+                  = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', 'uncategorized') || has_sub_access_to_specific_category?(@user.api_accessibility, 'delete_access_for_api_resources_only', 'namespaces_by_category', 'uncategorized'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', 'uncategorized'), data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][delete_access_for_api_resources_only]"}
+                  = label_tag nil, 'Delete access for API Resources only'
+                %li
+                  = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', 'uncategorized') || has_sub_access_to_specific_category?(@user.api_accessibility, 'read_api_actions_only', 'namespaces_by_category', 'uncategorized'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', 'uncategorized'), data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][read_api_actions_only]"}
                   = label_tag nil, 'Read API Actions only'
                 %li
-                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_api_actions_only]"}
+                  = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', 'uncategorized') || has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access_for_api_actions_only', 'namespaces_by_category', 'uncategorized'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', 'uncategorized'), data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_api_actions_only]"}
                   = label_tag nil, 'Full access for API Actions only'
                 %li
-                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][read_external_api_connections_only]"}
+                  = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', 'uncategorized') || has_sub_access_to_specific_category?(@user.api_accessibility, 'read_external_api_connections_only', 'namespaces_by_category', 'uncategorized'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', 'uncategorized'), data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][read_external_api_connections_only]"}
                   = label_tag nil, 'Read External API Connections only'
                 %li
-                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_external_api_connections_only]"}
+                  = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', 'uncategorized') || has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access_for_external_api_connections_only', 'namespaces_by_category', 'uncategorized'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', 'uncategorized'), data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_external_api_connections_only]"}
                   = label_tag nil, 'Full access for External API Connections only'
                 %li
-                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][read_api_clients_only]"}
+                  = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', 'uncategorized') || has_sub_access_to_specific_category?(@user.api_accessibility, 'read_api_clients_only', 'namespaces_by_category', 'uncategorized'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', 'uncategorized'), data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][read_api_clients_only]"}
                   = label_tag nil, 'Read API Clients only'
                 %li
-                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_api_clients_only]"}
+                  = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', 'uncategorized') || has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access_for_api_clients_only', 'namespaces_by_category', 'uncategorized'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', 'uncategorized'), data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_api_clients_only]"}
                   = label_tag nil, 'Full access for API Clients only'
                 %li
-                  = check_box_tag nil, true, true, disabled: true, data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_api_form_only]"}
+                  = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', 'uncategorized') || has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access_for_api_form_only', 'namespaces_by_category', 'uncategorized'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', 'uncategorized'), data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][full_access_for_api_form_only]"}
                   = label_tag nil, 'Full access for API Form only'
 
 :css
@@ -176,6 +194,16 @@
     toggleContent();
     toggleCheckboxes();
     toggleFullAccessAndSubOptions();
+
+    // intialize indeterminate states for full-access checkboxes
+    $("input.full-access-option[type='checkbox']:not([disabled='disabled'])").each(function() {
+      const subOptions = $(this).parent().next().find("input[type='checkbox']");
+      const totalSubOptions = subOptions.length;
+      const totalCheckedSubOptions = $(this).parent().next().find("input[type='checkbox']:checked").length;
+
+      const shouldFullAccessBeIndeterminate = totalCheckedSubOptions > 0 && totalCheckedSubOptions < totalSubOptions;
+      $(this).prop('indeterminate', shouldFullAccessBeIndeterminate);
+    });
   });
 
   function toggleContent() {
