@@ -21,7 +21,6 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
     
     field, direction = params[:q].key?(:s) ? params[:q][:s].split(" ") : [nil, nil]
     fields_in_properties = @api_namespace.properties.keys
-    @dropdown_options = fields_in_properties
     @image_options = @api_namespace.non_primitive_properties.select { |non_primitive_property| non_primitive_property.field_type == 'file' }.pluck(:label)
     # check if we are sorting by a field inside properties jsonb column
     if field && fields_in_properties.include?(field)

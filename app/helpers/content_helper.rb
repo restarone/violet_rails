@@ -58,22 +58,6 @@ module ContentHelper
     cms_dynamic_snippet_render("#{api_namespace_slug}-show", nil, { api_resource: @api_resource, api_namespace: @api_namespace })
   end
 
-  def og_metadata(show_page)
-      if show_page && @api_resource&.api_namespace.social_share_metadata.present? 
-        { 
-          title: @api_resource.properties[@api_namespace.social_share_metadata["title"]],
-          description: @api_resource.properties[@api_namespace.social_share_metadata["description"]],
-          image: @api_resource.non_primitive_properties.find_by(field_type: "file", label: @api_namespace.social_share_metadata["image"]).file_url
-         }
-      else
-        {
-          image: og_image_url(Subdomain.current),
-          title: html_title(Subdomain.current),
-          description: site_description(Subdomain.current)
-        }
-      end
-  end
-
   private
 
   def cms_dynamic_snippet_render(identifier, cms_site = @cms_site, context = {})
