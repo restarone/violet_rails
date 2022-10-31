@@ -17,6 +17,54 @@
 
 = render 'init_editor', {read_only: true}
 
+.card.my-3
+  .card-header.font-weight-bold
+    CMS Associations
+
+  .card-body
+    - if (cms_associations = @api_namespace.cms_associations).present?
+      - page_associations = cms_associations.select { |association| association.class.to_s == 'Comfy::Cms::Page' }
+      - snippet_associations = cms_associations.select { |association| association.class.to_s == 'Comfy::Cms::Snippet' }
+      - layout_associations = cms_associations.select { |association| association.class.to_s == 'Comfy::Cms::Layout' }
+
+      .card
+        .card-body
+          .card-title.font-weight-bold
+            CMS Pages
+          - if page_associations.present?
+            %ul.list-group
+              - page_associations.each do |page|
+                %li
+                  = link_to page.label, edit_comfy_admin_cms_site_page_path(site_id: page.site.id, id: page.id), target: '_blank'
+          - else
+            No Cms::Page associations for this namespaces
+      .card
+        .card-body
+          .card-title.font-weight-bold
+            CMS Snippet
+          - if snippet_associations.present?
+            %ul.list-group
+              - snippet_associations.each do |snippet|
+                %li
+                  = link_to snippet.label, edit_comfy_admin_cms_site_snippet_path(site_id: snippet.site.id, id: snippet.id), target: '_blank'
+          - else
+            No Cms::Snippet associations for this namespaces
+      .card
+        .card-body
+          .card-title.font-weight-bold
+            CMS Layouts
+          - if layout_associations.present?
+            %ul.list-group
+              - layout_associations.each do |layout|
+                %li
+                  = link_to layout.label, edit_comfy_admin_cms_site_layout_path(site_id: layout.site.id, id: layout.id), target: '_blank'
+          - else
+            No Cms::Layout associations for this namespaces
+
+    - else
+      No CMS associations
+      
+
 %ul.nav.my-2.nav-tabs{:role => "tablist"}
   %li.nav-item
     %a#interface-tab.nav-link.active{"aria-controls" => "interface", "aria-selected" => "true", "data-toggle" => "tab", :href => "#interface", :role => "tab"} 
