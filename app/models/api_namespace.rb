@@ -296,7 +296,7 @@ class ApiNamespace < ApplicationRecord
   end
 
   def cms_associations
-    associations = Comfy::Cms::Page.joins(:fragments).where("comfy_cms_fragments.content LIKE ? OR comfy_cms_fragments.content LIKE ?", "%cms:helper render_api_namespace_resource_index '#{self.slug}'%", "%cms:helper render_api_namespace_resource '#{self.slug}'%")
+    associations = Comfy::Cms::Page.joins(:fragments).where("comfy_cms_fragments.content LIKE ? OR comfy_cms_fragments.content LIKE ? OR comfy_cms_fragments.content LIKE ? OR comfy_cms_fragments.content LIKE ?", "%cms:helper render_api_namespace_resource_index '#{self.slug}'%", "%cms:helper render_api_namespace_resource '#{self.slug}'%", "%cms:helper render_api_namespace_resource_index \"#{self.slug}\"%", "%cms:helper render_api_namespace_resource \"#{self.slug}\"%")
 
     if self.snippet.present?
       associations += Comfy::Cms::Page.joins(:fragments).where('comfy_cms_fragments.content LIKE ?', "%#{self.snippet(with_brackets: false)}%")
