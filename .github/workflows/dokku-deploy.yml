@@ -1,0 +1,147 @@
+name: Deploy to Dokku
+
+on:
+  pull_request:
+    branches: [ master, rc, dev ]
+    types: [ opened, reopened, synchronize, closed, labeled, unlabeled ]
+
+  push:
+    branches: [ master, rc, dev ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # only run when commit is pushed to master/rc/dev
+    if: github.event_name == 'push'
+    steps:
+      - name: Cloning repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Add public IP to AWS security group
+        uses: sohelamin/aws-security-group-add-ip-action@master
+        with:
+          aws-access-key-id: ${{ secrets.DOKKU_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DOKKU_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.DOKKU_AWS_REGION }}
+          aws-security-group-id: ${{ secrets.DOKKU_AWS_SECURITY_GROUP_ID }}
+          port: '22'
+          to-port: '30'
+          protocol: 'tcp'
+          description: 'GitHub Action'
+
+      - name: Push to dokku
+        uses: dokku/github-action@master
+        with:
+          git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE }}
+          ssh_private_key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
+          git_push_flags: '--force'
+
+  review_app:
+    runs-on: ubuntu-latest
+    # only run when a PR is opened/reopened/synchronize with label:deploy-review-app OR the label is added in open PR
+    if: github.event_name == 'pull_request' && github.event.pull_request.state == 'open' && (github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'synchronize' || github.event.action == 'labeled') && contains( github.event.pull_request.labels.*.name, 'deploy-review-app')
+    steps:
+      - name: Cloning repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Add public IP to AWS security group
+        uses: sohelamin/aws-security-group-add-ip-action@master
+        with:
+          aws-access-key-id: ${{ secrets.DOKKU_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DOKKU_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.DOKKU_AWS_REGION }}
+          aws-security-group-id: ${{ secrets.DOKKU_AWS_SECURITY_GROUP_ID }}
+          port: '22'
+          to-port: '30'
+          protocol: 'tcp'
+          description: 'GitHub Action'
+
+      - name: Push to dokku
+        uses: dokku/github-action@master
+        with:
+          # create a review app
+          command: review-apps:create
+          review_app_name: review-${{ github.event.pull_request.number }}
+          git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE }}
+          ssh_private_key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
+          ssh_host_key: ${{ secrets.DOKKU_SSH_HOST_KEY }}
+          git_push_flags: '--force'
+
+      - name: Add TSL/SSL certificate to the review-app
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DOKKU_HOST }}
+          key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
+          username: ubuntu
+          script: dokku letsencrypt:active review-${{ github.event.pull_request.number }} || dokku letsencrypt:enable review-${{ github.event.pull_request.number }}
+
+      - name: Add deployed review-app link in PR comment
+        uses: mshick/add-pr-comment@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          message: |
+            Deployed review-app can be viewed at [https://review-${{ github.event.pull_request.number }}.violet-test.net](https://review-${{ github.event.pull_request.number }}.violet-test.net)
+          allow-repeats: true
+
+  checklabel:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && ((github.event.pull_request.state == 'open' && github.event.action == 'unlabeled') || github.event.action == 'closed')
+    outputs:
+      deploy_review_app_removed: ${{ steps.check.outputs.deploy_review_app_removed }}
+    steps:
+      - name: Check if label:deploy-review-app was removed
+        id: check
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          pr=${{ github.event.number }}
+          label=$(gh api "repos/$GITHUB_REPOSITORY/issues/$pr/events" \
+              --jq 'map(select(.event == "unlabeled"))[-1].label.name')
+
+          if [[ $label == 'deploy-review-app' ]]; then
+              echo "deploy_review_app_removed=true" >> $GITHUB_OUTPUT
+          fi
+
+  destroy_review_app:
+    needs: checklabel
+    runs-on: ubuntu-latest
+    # only run when a pull request with label:deploy-review-app is closed OR the label is removed from open PR
+    if: github.event_name == 'pull_request' && ((github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'deploy-review-app')) || (github.event.pull_request.state == 'open' && github.event.action == 'unlabeled' && needs.checklabel.outputs.deploy_review_app_removed))
+    steps:
+      - name: Add public IP to AWS security group
+        uses: sohelamin/aws-security-group-add-ip-action@master
+        with:
+          aws-access-key-id: ${{ secrets.DOKKU_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DOKKU_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.DOKKU_AWS_REGION }}
+          aws-security-group-id: ${{ secrets.DOKKU_AWS_SECURITY_GROUP_ID }}
+          port: '22'
+          to-port: '30'
+          protocol: 'tcp'
+          description: 'GitHub Action'
+
+      - name: Destroy the review app
+        uses: dokku/github-action@master
+        with:
+          # destroy a review app
+          command: review-apps:destroy
+          review_app_name: review-${{ github.event.pull_request.number }}
+          git_remote_url: ${{ secrets.DOKKU_GIT_REMOTE }}
+          ssh_private_key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
+          ssh_host_key: ${{ secrets.DOKKU_SSH_HOST_KEY }}
+          git_push_flags: '--force'
+
+      - name: Destroy review-app-db and review-app-redis
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DOKKU_HOST }}
+          key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
+          username: ubuntu
+          script: |
+            dokku postgres:exists review-${{ github.event.pull_request.number }}-db && dokku postgres:destroy review-${{ github.event.pull_request.number }}-db --force
+            dokku redis:exists review-${{ github.event.pull_request.number }}-redis && dokku redis:destroy review-${{ github.event.pull_request.number }}-redis --force
