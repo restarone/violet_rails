@@ -95,8 +95,12 @@ module SubdomainHelper
         { 
           title: @api_resource.properties[@api_namespace.social_share_metadata["title"]],
           description: @api_resource.properties[@api_namespace.social_share_metadata["description"]],
-          image: @api_resource.non_primitive_properties.find_by(field_type: "file", label: @api_namespace.social_share_metadata["image"])&.file_url
-         }
+          image: {
+            _: @api_resource.non_primitive_properties.find_by(field_type: "file", label: @api_namespace.social_share_metadata["image"])&.file_url,
+            width: 1200,
+            height: 628,
+          }
+        }
       else
         {
           image: og_image_url(Subdomain.current),
