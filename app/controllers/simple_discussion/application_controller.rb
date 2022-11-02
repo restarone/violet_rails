@@ -4,7 +4,7 @@ class SimpleDiscussion::ApplicationController < ::ApplicationController
   before_action :redirect_if_forum_disabled
 
   before_action :redirect_if_not_logged_in, if: -> { Subdomain.current.forum_is_private }
-
+  before_action :set_users_for_tagging
   def page_number
     page = params.fetch(:page, "").gsub(/[^0-9]/, "").to_i
     page = "1" if page.zero?
@@ -57,5 +57,9 @@ class SimpleDiscussion::ApplicationController < ::ApplicationController
 
   def redirect_to_root
     redirect_to simple_discussion.root_path, alert: "You aren't allowed to do that."
+  end
+
+  def set_users_for_tagging
+    @users = User.select("id", "email", "name").all
   end
 end
