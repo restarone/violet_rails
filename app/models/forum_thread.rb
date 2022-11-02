@@ -9,7 +9,7 @@ class ForumThread < ApplicationRecord
   has_many :optin_subscribers, -> { where(forum_subscriptions: {subscription_type: :optin}) }, through: :forum_subscriptions, source: :user
   has_many :optout_subscribers, -> { where(forum_subscriptions: {subscription_type: :optout}) }, through: :forum_subscriptions, source: :user
   has_many :users, through: :forum_posts
-
+  
   accepts_nested_attributes_for :forum_posts
 
   validates :forum_category, presence: true
@@ -21,9 +21,13 @@ class ForumThread < ApplicationRecord
   scope :sorted, -> { order(updated_at: :desc) }
   scope :unpinned, -> { where.not(pinned: true) }
   scope :unsolved, -> { where.not(solved: true) }
-
+  
+  def mentioned_users
+    forum_posts.map { |forum_post| forum_post.body.body.attachments.select{ |a| a.attachable.class == User }.map(&:attachable) }.flatten.uniq
+  end
+  
   def subscribed_users
-    (users + optin_subscribers).uniq - optout_subscribers
+    (users + optin_subscribers + mentioned_users).uniq - optout_subscribers
   end
 
   def subscription_for(user)
@@ -39,16 +43,15 @@ class ForumThread < ApplicationRecord
     if subscription.present?
       subscription.subscription_type == "optin"
     else
-      forum_posts.where(user_id: user.id).any?
+      forum_posts.where(user_id: user.id).any? || mentioned_users.include?(user)
     end
   end
 
   def toggle_subscription(user)
     subscription = subscription_for(user)
-
     if subscription.present?
       subscription.toggle!
-    elsif forum_posts.where(user_id: user.id).any?
+    elsif forum_posts.where(user_id: user.id).any? || mentioned_users.include?(user)
       forum_subscriptions.create(user: user, subscription_type: "optout")
     else
       forum_subscriptions.create(user: user, subscription_type: "optin")
@@ -68,6 +71,8 @@ class ForumThread < ApplicationRecord
       end
     elsif forum_posts.where(user_id: user.id).any?
       I18n.t(".receiving_notifications_because_posted")
+    elsif mentioned_users.include?(user)
+      I18n.t(".receiving_notifications_because_mentioned")
     else
       I18n.t(".not_receiving_notifications")
     end
