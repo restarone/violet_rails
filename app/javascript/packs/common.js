@@ -1,3 +1,5 @@
+require("./direct_upload");
+
 window.previewFile = function previewFile(event, previewId) {
     var file = event.target.files[0];
     var attributeToBeChanged = 'src';
