@@ -1,9 +1,9 @@
 <% og_image = og_image_url(Subdomain.current) %>
 <% set_meta_tags      site: forum_html_title(Subdomain.current),
+                  #  og: og_metadata(@is_show_page),
                       title: html_title(Subdomain.current),
                       description: site_description(Subdomain.current),
                       keywords: site_keywords(Subdomain.current),
-                      og: og_metadata(@is_show_page),
                       twitter: {
                         title: html_title(Subdomain.current),
                         description: site_description(Subdomain.current),
@@ -15,4 +15,4 @@
                         card: 'summary_large_image',
                       } %>
 
-<%= display_meta_tags %>      
+<%= display_meta_tags og: og_metadata(@is_show_page) %>       
