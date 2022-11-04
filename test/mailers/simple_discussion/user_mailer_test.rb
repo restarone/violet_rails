@@ -50,7 +50,7 @@ class SimpleDiscussion::UserMailerTest < ActionMailer::TestCase
     @user.update(name: "Test name")
  
     # Setting email strategy to send notifications using user personal email
-    Subdomain.current.update(email_strategy: false)
+    Subdomain.current.user_email!
 
     forum_post = ForumPost.create!(forum_thread_id: @forum_thread.id, user_id: @user.id, body: action_txt_content.to_s)
 
@@ -72,7 +72,7 @@ class SimpleDiscussion::UserMailerTest < ActionMailer::TestCase
     subdomain = Subdomain.current
  
     # Setting email strategy to send notifications using user's restarone email
-    subdomain.update(email_strategy: true)
+    subdomain.system_email!
 
     forum_post = ForumPost.create!(forum_thread_id: @forum_thread.id, user_id: @user.id, body: action_txt_content.to_s)
 

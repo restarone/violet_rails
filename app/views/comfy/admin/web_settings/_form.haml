@@ -147,11 +147,11 @@
       Forum Email Notifications
   .card-body
     .form-group
-      = f.radio_button :email_strategy, false, checked: !f.object.email_strategy
+      = f.radio_button :email_notification_strategy, 'user_email', checked: f.object.user_email?
       %label
         Email Notifications via User Email
     .form-group
-      = f.radio_button :email_strategy, true, checked: f.object.email_strategy
+      = f.radio_button :email_notification_strategy, 'system_email', checked: f.object.system_email?
       %label
         Email Notifications via Subdomain Email
 

@@ -45,7 +45,7 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
       :allow_external_analytics_query,
       :email_name,
       :email_signature,
-      :email_strategy
+      :email_notification_strategy
     )
   end
 end
