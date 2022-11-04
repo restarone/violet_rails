@@ -145,7 +145,19 @@ custom_api_action_on_timesheet_request:
     end_date = Date.parse(api_resource.properties['end_date'])
     # email = current_user.email
     email = "test@restarone.solutions"
-    current_user_time_tracker_entries = time_tracker.api_resources.filter { |api_resource| api_resource.properties['email_address'] == email && api_resource.created_at.to_date >= start_date && api_resource.created_at.to_date <= end_date }
+
+    current_user_time_tracker_entries = ApiResource.where([
+      "api_namespace_id = :api_namespace_id
+        and created_at::date >= :start_date
+        and created_at::date <= :end_date
+        and properties->>'email_address' = :email",
+      {
+        api_namespace_id: time_tracker.id,
+        start_date: start_date,
+        end_date: end_date,
+        email: email
+      }
+    ])
 
     # add email of user requesting timesheet
     api_resource.update(properties: api_resource.properties.merge({ requested_by: email }))
