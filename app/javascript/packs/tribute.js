@@ -4,20 +4,18 @@ var tribute, trix
 
 $(document).on("trix-initialize", handleUserTagging)
 function handleUserTagging(e) {
-    console.log(e)
     if (tribute && trix) {
         tribute.detach(trix)
     }
-    trix = document.querySelector('trix-editor')
-    if (!trix) return
+    trix = e.target
     
-    var users = $(trix).data("user-tagging")
+    var users = $(trix).data("user-mention")
     if (!users) return
     
     var editor = trix.editor
     tribute = new Tribute({
-        values: users,
-        lookup: "name",
+        values: users.map(user => ({value: user.name || user.email, sgid: user.attachable_sgid })),
+        lookup: "value",
         allowSpaces: true,
     });
     tribute.attach(trix)
@@ -29,8 +27,8 @@ function handleUserTagging(e) {
     trix.addEventListener("tribute-replaced", function (e) {
         var user = e.detail.item.original
         var attachment = new Trix.Attachment({
-            sgid: user.attachable_sgid,
-            content: "<span class='text-primary'>"+user.name+"</span>",
+            sgid: user.sgid,
+            content: "<span class='text-primary'>"+user.value+"</span>&nbsp;",
             contentType: "text/html",
         })
         editor.insertAttachment(attachment)

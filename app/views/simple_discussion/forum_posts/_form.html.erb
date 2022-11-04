@@ -15,7 +15,7 @@
   <% end %>
 
   <div class="form-group">
-    <%= f.rich_text_area :body, placeholder: t('add_a_comment'), data: { behavior: "comment-body", user_tagging: @users } %>
+    <%= f.rich_text_area :body, placeholder: t('add_a_comment'), data: { behavior: "comment-body", user_mention: @users } %>
   </div>
 
   <div class="text-right">

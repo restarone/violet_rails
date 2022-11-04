@@ -28,7 +28,7 @@
     <%= f.fields_for :forum_posts do |p| %>
       <div class="form-group">
         <%= p.label :body, t('what_help_needed') %>
-        <%= p.rich_text_area :body, placeholder: t('add_a_comment'), data: { behavior: "comment-body", user_tagging: @users } %>
+        <%= p.rich_text_area :body, placeholder: t('add_a_comment'), data: { behavior: "comment-body", user_mention: @users } %>
       </div>
     <% end %>
   <% end %>
