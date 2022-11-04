@@ -115,6 +115,7 @@ Rails.application.routes.draw do
     resources :subdomains
   end
 
+  
   namespace 'api' do
     get '/resources', to: 'resources#index', as: :show_resources
     scope ':version' do
