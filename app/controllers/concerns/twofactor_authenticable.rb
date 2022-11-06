@@ -31,6 +31,7 @@ module TwofactorAuthenticable
       render 'users/sessions/two_factor'
      else
         sign_in(user)
+        session.delete(:otp_user_id)
      end
     end
   end
