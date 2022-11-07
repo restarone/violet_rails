@@ -26,7 +26,7 @@ module TwofactorAuthenticable
     if session[:otp_user_id]
       authenticate_user_with_otp_two_factor(user)
     elsif user&.valid_password?(user_params[:password])
-     if user&.current_sign_in_ip != user&.last_sign_in_ip  
+     if request&.remote_ip != user&.last_sign_in_ip  
       prompt_for_otp_two_factor(user)
       render 'users/sessions/two_factor'
      else
