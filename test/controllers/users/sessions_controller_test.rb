@@ -234,7 +234,7 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
 
   test 'should allow #login without otp if enable_2fa is set to false' do
     Subdomain.current.update(enable_2fa: false)
-    @user.update(global_admin: true, current_sign_in_ip: '172.18.1.0', last_sign_in_ip: '172.18.1.0')
+    @user.update(global_admin: true)
     payload = {
       user: {
         email: @user.email,
@@ -247,7 +247,6 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
 
 test 'should deny #login with wrong otp if enable_2fa is set to true' do
   Subdomain.current.update(enable_2fa: true)
-  @user.update(current_sign_in_ip: '172.18.1.0', last_sign_in_ip: '172.18.1.1')
   payload = {
     user: {
       email: @user.email,
@@ -267,29 +266,29 @@ test 'should deny #login with wrong otp if enable_2fa is set to true' do
   assert_equal flash.alert, "Invalid two-factor code."
 end
 
-test 'should allow #login without otp if enable_2fa is set to true and current_sign_in_ip is equal to last_sign_in_ip' do
+test "should allow #login without otp if enable_2fa is set to true and current_sign_in_ip is equal to user's current ip" do
   Subdomain.current.update(enable_2fa: true)
-  @user.update(global_admin: true, current_sign_in_ip: '172.18.1.0', last_sign_in_ip: '172.18.1.0')
+  @user.update(global_admin: true, current_sign_in_ip: '172.18.1.0')
   payload = {
     user: {
       email: @user.email,
       password: '123456',
     }
   }
-  post user_session_url, params: payload
+  post user_session_url, params: payload, env: { "REMOTE_ADDR": "172.18.1.0" }
   assert_redirected_to admin_subdomain_requests_url
 end
 
-test 'should deny #login without otp if enable_2fa is set to true and current_sign_in_ip is not equal to last_sign_in_ip' do
+test "should deny #login without otp if enable_2fa is set to true and current_sign_in_ip is not equal to user's current ip" do
   Subdomain.current.update(enable_2fa: true)
-  @user.update(current_sign_in_ip: '172.18.1.0', last_sign_in_ip: '172.18.2.2')
+  @user.update(current_sign_in_ip: '172.18.1.0')
   payload = {
     user: {
       email: @user.email,
       password: '123456',
     }
   }
-  post user_session_url, params: payload
+  post user_session_url, params: payload, env: { "REMOTE_ADDR": "172.20.1.1" }
   assert_template 'users/sessions/two_factor'
 
   payload = {
@@ -298,22 +297,21 @@ test 'should deny #login without otp if enable_2fa is set to true and current_si
       password: '123456',
     }
   }
-  post user_session_url, params: payload
+  post user_session_url, params: payload, env: { "REMOTE_ADDR": "172.20.1.1" }
   assert_equal flash.alert, "OTP Required."
 end
 
-test 'should allow #login with otp if enable_2fa is set to true and current_sign_in_ip is not equal to last_sign_in_ip' do
+test "should allow #login with otp if enable_2fa is set to true and current_sign_in_ip is not equal to user's current ip" do
   Subdomain.current.update(enable_2fa: true)
   # successful login and displaying 2fa page
-  @user.update(global_admin: true, current_sign_in_ip: '172.18.1.0', last_sign_in_ip: '172.18.2.2')
+  @user.update(global_admin: true, current_sign_in_ip: '172.18.1.0')
   payload = {
     user: {
       email: @user.email,
       password: '123456',
     },
-    # session: { otp_user_id: @user.id } 
   }
-  post user_session_url, params: payload
+  post user_session_url, params: payload, env: { "REMOTE_ADDR": "172.18.1.1" }
   assert_template 'users/sessions/two_factor'
 
   # valid otp and redirection to admin subdomain page
@@ -325,7 +323,7 @@ test 'should allow #login with otp if enable_2fa is set to true and current_sign
     },
     session: { otp_user_id: @user.id } 
   }
-  post user_session_url, params: payload
+  post user_session_url, params: payload, env: { "REMOTE_ADDR": "172.18.1.1" }
   assert_redirected_to admin_subdomain_requests_url
   follow_redirect!
   assert_template :index
