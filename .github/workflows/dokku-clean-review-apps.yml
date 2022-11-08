@@ -27,10 +27,10 @@ jobs:
           script: |
             dokku --quiet apps:list | grep -v "violet-rails" | while read APP_NAME;
             do {
-              dokku apps:exists $APP_NAME && dokku --force apps:destroy $APP_NAME
-              dokku postgres:exists "${APP_NAME}-db" && dokku postgres:destroy "${APP_NAME}-db" --force
-              dokku redis:exists "${APP_NAME}-redis" && dokku redis:destroy "${APP_NAME}-redis" --force
+              dokku apps:exists $APP_NAME && dokku --force apps:destroy $APP_NAME;
+              dokku postgres:exists "${APP_NAME}-db" && dokku postgres:destroy "${APP_NAME}-db" --force;
+              dokku redis:exists "${APP_NAME}-redis" && dokku redis:destroy "${APP_NAME}-redis" --force;
 
-              echo "Deletion of ${APP_NAME} app, ${APP_NAME}-db" and ${APP_NAME}-redis completed."
+              echo "Deletion of ${APP_NAME} app, ${APP_NAME}-db and ${APP_NAME}-redis completed.";
             };
             done;
