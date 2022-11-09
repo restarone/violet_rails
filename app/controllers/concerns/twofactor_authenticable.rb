@@ -1,5 +1,5 @@
 module TwofactorAuthenticable
-    extend ActiveSupport::Concern
+  extend ActiveSupport::Concern
 
  def valid_otp_attempt?(user)
     user.validate_and_consume_otp!(params[:user][:otp_attempt]) 
