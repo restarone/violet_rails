@@ -17,8 +17,4 @@ if [ "$IS_REVIEW_APP" = "true" ]; then
   dokku redis:linked $REVIEW_APP_REDIS_NAME $APP_NAME || (dokku redis:link $REVIEW_APP_REDIS_NAME $REVIEW_APP_NAME && dokku redis:promote $REVIEW_APP_REDIS_NAME $REVIEW_APP_NAME && dokku redis:unlink $MAIN_APP_REDIS_NAME $REVIEW_APP_NAME)
   "
   echo "${REVIEW_APP_REDIS_NAME} linked to review-app: ${APP_NAME}"
-
-  echo $GIT_REMOTE_URL
-  echo $GIT_PUSH_FLAGS
-  echo "$commit_sha:refs/heads/$BRANCH"
 fi
