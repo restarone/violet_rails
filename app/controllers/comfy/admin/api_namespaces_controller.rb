@@ -1,3 +1,5 @@
+require 'will_paginate/array'
+
 class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
   before_action :ensure_authority_to_manage_api
   before_action :set_api_namespace, only: %i[ show edit update destroy discard_failed_api_actions rerun_failed_api_actions export export_api_resources duplicate_with_associations duplicate_without_associations export_without_associations_as_json export_with_associations_as_json ]
@@ -10,7 +12,15 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
     else
       ApiNamespace.ransack(params[:q])
     end
-    @api_namespaces = @api_namespaces_q.result.paginate(page: params[:page], per_page: 10)
+    
+    if params.dig(:q, :s) && params[:q][:s].match(/CMS (asc|desc)/)
+      namespaces = @api_namespaces_q.result.sort_by { |namespace| namespace.cms_associations.size }
+      namespaces = namespaces.reverse if params[:q][:s].match(/CMS desc/)
+      
+      @api_namespaces = namespaces.paginate(page: params[:page], per_page: 10)
+    else
+      @api_namespaces = @api_namespaces_q.result.paginate(page: params[:page], per_page: 10)
+    end
   end
 
   # GET /api_namespaces/1 or /api_namespaces/1.json
