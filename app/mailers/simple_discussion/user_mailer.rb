@@ -19,9 +19,9 @@ class SimpleDiscussion::UserMailer < ApplicationMailer
     @forum_post = forum_post
     @forum_thread = forum_post.forum_thread
     @recipient = recipient
-    
+    mailer_address = Subdomain.current.system_email? ? Subdomain.current.mailing_address : forum_post.user.email
     mail(
-      from: "#{forum_post.user.name} <#{forum_post.user.email}>",
+      from: "#{forum_post.user.name} <#{mailer_address}>",
       to: "#{@recipient.name} <#{@recipient.email}>",
       subject: "New post in #{@forum_thread.title}"
     )
