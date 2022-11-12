@@ -6,7 +6,7 @@ class ForumCategory < ApplicationRecord
 
   validates :name, :slug, :color, presence: true
 
-  before_save :set_slug, if: -> { self.slug.blank? }
+  before_save :set_slug
 
   def color
     colour = super
@@ -15,6 +15,6 @@ class ForumCategory < ApplicationRecord
 
   private 
   def set_slug
-    self.slug = self.name&.downcase&.gsub(' ', '-')
+    self.slug = self.name&.downcase&.gsub(' ', '-') if self.slug.blank?
   end
 end

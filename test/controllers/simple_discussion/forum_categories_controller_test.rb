@@ -25,4 +25,24 @@ class ForumCategoriesTest < ActionDispatch::IntegrationTest
     assert_equal 'test-category', @controller.view_assigns['category'].slug
   end
 
+  test "create# should not assign slug automatically if slug is added by user" do
+  payload = {
+    forum_category: {
+      name: 'Test category',
+      color: '#000000',
+      slug: 'test123'
+    }
+  }
+
+  sign_in(@user)
+
+  assert_difference "ForumCategory.count", +1 do      
+    post simple_discussion.create_forum_category_forum_threads_path, params: payload
+  end
+
+  assert_response :redirect
+  assert_equal "Created!", flash[:notice] 
+  assert_equal 'test123', @controller.view_assigns['category'].slug
+end
+
 end
