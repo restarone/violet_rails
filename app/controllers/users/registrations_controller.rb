@@ -19,11 +19,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # end
 
   # GET /resource/edit
-  # def edit
-  #   super
-  # end
-
-
+  def edit
+    session.delete(:otp_user_id)
+    super
+  end
 
   # PUT /resource
   def update
@@ -76,6 +75,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       set_minimum_password_length
       render 'users/shared/error.js.erb'
     end
+    # session.delete(:otp_user_id)
   end
 
   protected
