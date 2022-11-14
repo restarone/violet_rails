@@ -16,6 +16,8 @@ class Subdomain < ApplicationRecord
   has_rich_text :email_signature
 
 
+  enum email_notification_strategy: { user_email: 'user_email', system_email: 'system_email' }
+
   # max 1GB by default storage allowance
   MAXIMUM_STORAGED_ALLOWANCE = 1073741824
   # www/domain apex maps to public schema. So to recieve email on public schema we need a subdomain. it will be www

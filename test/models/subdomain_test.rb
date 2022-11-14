@@ -163,4 +163,13 @@ class SubdomainTest < ActiveSupport::TestCase
     assert new_user.otp_required_for_login
     assert new_user.otp_secret 
   end
+
+  test "email_notification_strategy should not accept anything except user_email or system_email" do  
+    exception = assert_raises(Exception) { 
+      duplicate = Subdomain.new(
+        email_notification_strategy: 'restarone_email'
+      )
+     }
+    assert_equal( "'restarone_email' is not a valid email_notification_strategy", exception.message )
+  end
 end
