@@ -62,6 +62,7 @@
     <%= f.button 'Update' ,class: 'btn btn-success',id: 'update-btn'  %>
   </div>
 <% end %>
+<%= button_to 'Re-send OTP' ,resend_otp_path, method: :get, remote: true, class: 'btn btn-primary mt-2',id: 'resend-otp-btn', style: "visibility: hidden;display: none"  %>
 
 <h3>Cancel my account</h3>
 

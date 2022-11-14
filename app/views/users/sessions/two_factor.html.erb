@@ -5,7 +5,9 @@
       <%= f.text_field :otp_attempt, label: 'OTP' %>
       <div class="actions">
         <%= f.submit 'Verify', class: 'btn btn-primary mt-2' %>
+
       </div>
     <% end %>
+     <%= button_to 'Re-send OTP' ,resend_otp_path ,method: :get, remote: true, class: 'btn btn-primary mt-2',id: 'resend-otp-btn' %>
   </div>
 </div>

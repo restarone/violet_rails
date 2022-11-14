@@ -354,6 +354,34 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
   end
 
 
+  test 'should resend_otp to user if resend otp button clicked' do
+    Subdomain.current.update(enable_2fa: true)
+    payload = {
+      user: {
+        current_password: '123456',
+        password: '111111',
+        password_confirmation: '111111'
+      }
+    }
+    sign_in(@user)
+
+    perform_enqueued_jobs do
+      put user_registration_url, params: payload
+    end
+    assert_template 'users/shared/otp_visible.js.erb'
+    mail_otp = UserMailer.deliveries.last.body.to_s.split(":").pop.strip();
+    prev_otp = @user.reload.current_otp
+    assert_equal mail_otp, prev_otp
+
+    #resending otp
+    perform_enqueued_jobs do
+      get resend_otp_url
+    end
+    new_mail_otp = UserMailer.deliveries.last.body.to_s.split(":").pop.strip();
+    new_otp = @user.reload.current_otp
+    assert_equal new_mail_otp, new_otp
+  end
+
   test 'deny #destroy' do
     assert_no_difference "User.all.size" do
       sign_in(@user)

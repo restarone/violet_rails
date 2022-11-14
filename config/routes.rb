@@ -96,6 +96,7 @@ end
   devise_scope :user do
     get 'sign_in', to: 'users/sessions#new', as: :new_global_admin_session
     delete 'global_login', to: 'users/sessions#destroy'
+    get 'resend_otp', to: "users/registrations#resend_otp"
   end
   # system admin panel authentication (ensure public schema as well)
   get 'sysadmin', to: 'admin/subdomain_requests#index'

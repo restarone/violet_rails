@@ -20,6 +20,12 @@ module TwofactorAuthenticable
     render 'shared/redirect.js.erb'
  end
 
+ def resend_otp
+  user = find_user
+  prompt_for_otp_two_factor(user)
+  render 'users/sessions/two_factor'
+ end 
+
  include ApplicationHelper
   def authenticate_with_otp_two_factor
     user = self.resource = find_user
