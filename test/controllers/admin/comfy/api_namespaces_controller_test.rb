@@ -683,4 +683,21 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_select "a[href='#{edit_comfy_admin_cms_site_snippet_path(site_id: snippet.site.id, id: snippet.id)}']", { count: 1 }
     assert_select "a[href='#{edit_comfy_admin_cms_site_layout_path(site_id: layout.site.id, id: layout.id)}']", { count: 1 }
   end
+
+  test "#index: should show only the api-namespaces with provided properties" do
+    plugin_subdomain_events = api_namespaces(:plugin_subdomain_events)
+    namespace_with_all_types = api_namespaces(:namespace_with_all_types)
+    monitoring_target_incident = api_namespaces(:monitoring_target_incident)
+
+    sign_in(@user)
+    get api_namespaces_url, params: {q: {properties_cont: 'latency'}}
+    assert_response :success
+
+    @controller.view_assigns['api_namespaces'].each do |api_namespace|
+      assert_match 'latency', api_namespace.properties.to_s
+    end
+
+    refute_includes @controller.view_assigns['api_namespaces'], plugin_subdomain_events
+    refute_includes @controller.view_assigns['api_namespaces'], namespace_with_all_types
+  end
 end

@@ -1,7 +1,9 @@
 = search_form_for objects, url: path do |f|
   .form-group
     = f.label "Name", class: 'col-form-label'
-    = f.search_field :properties_cont, value: params[:q][:name_cont], class: 'form-control'
+    = f.search_field :properties_cont, value: params[:q][:properties_cont], class: 'form-control', placeholder: 'Enter the value of properties you want to search'
+    -# = f.search_field :name_cont, value: params[:q][:name_cont], class: 'form-control', placeholder: 'Enter the value of properties you want to search'
+    -# = f.search_field :properties_or_name_cont, value: params[:q][:properties_or_name_cont], class: 'form-control', placeholder: 'Enter the value of properties you want to search'
     .text-center
       = f.submit class: 'btn btn-primary my-2'
       = link_to "Clear Search", request.path, class:"cancel-button"
