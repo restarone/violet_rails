@@ -3,7 +3,7 @@
                       title: html_title(Subdomain.current),
                       description: site_description(Subdomain.current),
                       keywords: site_keywords(Subdomain.current),
-                      og: og_metadata(@is_show_page),
+                      og: og_metadata(@is_show_page, @api_resource_to_render),
                       twitter: {
                         title: html_title(Subdomain.current),
                         description: site_description(Subdomain.current),
