@@ -100,7 +100,11 @@ class ExternalApiClientTest < ActiveSupport::TestCase
       'eval("1 + 1")',
       'User.last.update(can_manage_users: true)',
       'User.send(:new)',
-      '#{User.destroy_all}'
+      '#{User.destroy_all}',
+      'ActiveRecord::Base.connection.execute("Select * from users")',
+      'User.find_by_sql("SELECT * from users WHERE email = \'test@restarone.com\'")',
+      'User.connection.select_all("SELECT first_name, created_at FROM customers WHERE id = \'1\'").to_a',
+      'Rails.application.url_helpers'
     ]
 
     invalid_model_definations.each do |invalid_executable|

@@ -81,22 +81,24 @@ module JsonbSearch
           term = "%#{term}%"
           operator = 'LIKE'
         end
-
-        "lower(#{query} ->> '#{key}') #{operator || '='} lower('#{term}')"
+        # A ' inside a string quoted with ' may be written as ''.
+        # https://stackoverflow.com/questions/54144340/how-to-query-jsonb-fields-and-values-containing-single-quote-in-rails#comment95120456_54144340
+        # https://dev.mysql.com/doc/refman/8.0/en/string-literals.html#character-escape-sequences
+        "lower(#{query} ->> '#{key}') #{operator || '='} lower('#{term.to_s.gsub("'", "''")}')"
       end
 
       # "column -> 'property' @> '{/"search/": /"term/"}'" 
       def hash_query(key, term, option, query)
         operator = option == QUERY_OPTION[:PARTIAL] ? '@>' : '='
-        "#{query} -> '#{key}' #{operator} '#{term.to_json}'"
+        "#{query} -> '#{key}' #{operator} '#{term.to_json.gsub("'", "''")}'"
       end
 
       # "column -> 'property' ? '['term']'" 
       def array_query(key, term, option, query, match)
         if option == QUERY_OPTION[:PARTIAL]
-          match == MATCH_OPTION[:ANY] ? term.map { |q| "#{query} -> '#{key}' ? '#{q}'" }.join(' OR ') : "#{query} -> '#{key}' @> '#{term.to_json}'"
+          match == MATCH_OPTION[:ANY] ? term.map { |q| "#{query} -> '#{key}' ? '#{q}'" }.join(' OR ') : "#{query} -> '#{key}' @> '#{term.to_json.gsub("'", "''")}'"
         else
-          "#{query} -> '#{key}' @> '#{term.to_json}' AND #{query} -> '#{key}' <@ '#{term.to_json}'"
+          "#{query} -> '#{key}' @> '#{term.to_json}' AND #{query} -> '#{key}' <@ '#{term.to_json.gsub("'", "''")}'"
         end
       end
     end

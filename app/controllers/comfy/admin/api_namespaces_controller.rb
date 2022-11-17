@@ -1,3 +1,5 @@
+require 'will_paginate/array'
+
 class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
   before_action :ensure_authority_to_manage_api
   before_action :set_api_namespace, only: %i[ show edit update destroy discard_failed_api_actions rerun_failed_api_actions export export_api_resources duplicate_with_associations duplicate_without_associations export_without_associations_as_json export_with_associations_as_json ]
@@ -10,7 +12,15 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
     else
       ApiNamespace.ransack(params[:q])
     end
-    @api_namespaces = @api_namespaces_q.result.paginate(page: params[:page], per_page: 10)
+    
+    if params.dig(:q, :s) && params[:q][:s].match(/CMS (asc|desc)/)
+      namespaces = @api_namespaces_q.result.sort_by { |namespace| namespace.cms_associations.size }
+      namespaces = namespaces.reverse if params[:q][:s].match(/CMS desc/)
+      
+      @api_namespaces = namespaces.paginate(page: params[:page], per_page: 10)
+    else
+      @api_namespaces = @api_namespaces_q.result.paginate(page: params[:page], per_page: 10)
+    end
   end
 
   # GET /api_namespaces/1 or /api_namespaces/1.json
@@ -21,6 +31,7 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
     
     field, direction = params[:q].key?(:s) ? params[:q][:s].split(" ") : [nil, nil]
     fields_in_properties = @api_namespace.properties.keys
+    @image_options = @api_namespace.non_primitive_properties.select { |non_primitive_property| non_primitive_property.field_type == 'file' }.pluck(:label)
     # check if we are sorting by a field inside properties jsonb column
     if field && fields_in_properties.include?(field)
       @api_resources = @api_resources.jsonb_order_pre({ "properties" => { "#{field}": "#{direction}" }})
@@ -188,6 +199,7 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
                                             :requires_authentication,
                                             :namespace_type,
                                             :has_form,
+                                            social_share_metadata: [:title, :description, :image],
                                             non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :allow_attachments, :_destroy],
                                             new_api_actions_attributes: api_actions_attributes,
                                             create_api_actions_attributes: api_actions_attributes,
