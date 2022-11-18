@@ -8,7 +8,7 @@ class Webhook::VerificationMethod::StripeTest < ActiveSupport::TestCase
       webhook_type: 'custom',
       external_api_client_id: @external_api_client.id,
       webhook_secret: 'secret',
-      custom_method_defination: "
+      custom_method_definition: "
       if request.headers['Authorization'] == verification_method.webhook_secret
         [true, 'Verification Success']
       else

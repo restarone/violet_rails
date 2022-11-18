@@ -7,17 +7,17 @@ class WebhookVerificationMethodTest < ActiveSupport::TestCase
 
   test 'should be invalid if users private attributes are accessed' do
     User::PRIVATE_ATTRIBUTES.each do |private_attr|
-      webhook_verification_method = WebhookVerificationMethod.new(webhook_type: 'custom', external_api_client_id: @external_api_client.id, webhook_secret: 'secret', custom_method_defination: "User.last.#{private_attr}")
+      webhook_verification_method = WebhookVerificationMethod.new(webhook_type: 'custom', external_api_client_id: @external_api_client.id, webhook_secret: 'secret', custom_method_definition: "User.last.#{private_attr}")
       refute webhook_verification_method.valid?
-      assert_includes webhook_verification_method.errors.messages[:custom_method_defination].to_s, 'contains disallowed keyword'
+      assert_includes webhook_verification_method.errors.messages[:custom_method_definition].to_s, 'contains disallowed keyword'
     end
   end
 
   test 'should be invalid if users permissions are referenced' do
     User::FULL_PERMISSIONS.keys.each do |permission_attr|
-      webhook_verification_method = WebhookVerificationMethod.new(webhook_type: 'custom', external_api_client_id: @external_api_client.id, webhook_secret: 'secret', custom_method_defination: "User.last.update(#{permission_attr} => false)")
+      webhook_verification_method = WebhookVerificationMethod.new(webhook_type: 'custom', external_api_client_id: @external_api_client.id, webhook_secret: 'secret', custom_method_definition: "User.last.update(#{permission_attr} => false)")
       refute webhook_verification_method.valid?
-      assert_includes webhook_verification_method.errors.messages[:custom_method_defination].to_s, 'contains disallowed keyword'
+      assert_includes webhook_verification_method.errors.messages[:custom_method_definition].to_s, 'contains disallowed keyword'
     end
   end
 
@@ -33,9 +33,9 @@ class WebhookVerificationMethodTest < ActiveSupport::TestCase
     ]
 
     invalid_model_definations.each do |invalid_executable|
-      webhook_verification_method = WebhookVerificationMethod.new(webhook_type: 'custom', external_api_client_id: @external_api_client.id, webhook_secret: 'secret', custom_method_defination: invalid_executable)
+      webhook_verification_method = WebhookVerificationMethod.new(webhook_type: 'custom', external_api_client_id: @external_api_client.id, webhook_secret: 'secret', custom_method_definition: invalid_executable)
       refute webhook_verification_method.valid?
-      assert_includes webhook_verification_method.errors.messages[:custom_method_defination].to_s, 'contains disallowed keyword'
+      assert_includes webhook_verification_method.errors.messages[:custom_method_definition].to_s, 'contains disallowed keyword'
     end
   end
 end

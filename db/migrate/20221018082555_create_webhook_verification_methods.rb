@@ -4,7 +4,7 @@ class CreateWebhookVerificationMethods < ActiveRecord::Migration[6.1]
       t.references :external_api_client, null: false, foreign_key: true
       t.string :webhook_type
       t.text :encrypted_webhook_secret
-      t.text :custom_method_defination, default: "[false, 'Verification failed']"
+      t.text :custom_method_definition, default: "[false, 'Verification failed']"
       t.binary :salt
 
       t.timestamps

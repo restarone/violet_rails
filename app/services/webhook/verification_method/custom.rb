@@ -11,7 +11,7 @@ module Webhook
       def call
         # TODO: validate that this method always returns array with verification status and message
         # eg: [true, 'verification success']
-        eval(@verification_method.custom_method_defination)
+        eval(@verification_method.custom_method_definition)
       end
     end
   end

@@ -1,9 +1,7 @@
 class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseController
-    before_action :ensure_authority_to_manage_api, excpet: :webhook
+    before_action :ensure_authority_to_manage_api
     before_action :set_external_api_client, only: %i[ show edit update destroy start stop clear_errors clear_state]
     before_action :set_api_namespace
-    skip_before_action :authenticate_user!,  only: :webhook
-    skip_before_action :ensure_user_belongs_to_subdomain, only: :webhook
   
     # GET /api_clients or /api_clients.json
     def index
@@ -106,7 +104,7 @@ class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseContro
             :model_definition,
             :drive_every,
             :require_webhook_verification,
-            webhook_verification_method_attributes: [:id, :webhook_type, :webhook_secret, :custom_method_defination]
+            webhook_verification_method_attributes: [:id, :webhook_type, :webhook_secret, :custom_method_definition]
           ).merge({
             api_namespace_id: @api_namespace.id,
           })

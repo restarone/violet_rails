@@ -37,13 +37,13 @@
           %div 
             = webhook_form.text_area :webhook_secret, class: "w-100"
 
-        .field#webhook_custom_method_defination
-          = webhook_form.label :custom_method_defination
+        .field#webhook_custom_method_definition
+          = webhook_form.label :custom_method_definition
           %small.text-muted
             (must return an array containing verification status and message)
             (Accessable methods: request, verification_method)
           %div 
-            = webhook_form.text_area :custom_method_defination, data: {'cms-cm-mode' => 'javascript'}, class: "w-100"
+            = webhook_form.text_area :custom_method_definition, data: {'cms-cm-mode' => 'javascript'}, class: "w-100"
 
   .field
     = f.label :drive_every
@@ -85,9 +85,9 @@
 
     $('#external_api_client_webhook_verification_method_attributes_webhook_type').change(function(event) {
     if ($(this).val() === 'custom') {
-      $('#webhook_custom_method_defination').show();
+      $('#webhook_custom_method_definition').show();
     } else {
-      $('#webhook_custom_method_defination').hide();
+      $('#webhook_custom_method_definition').hide();
     }
   }).change();
 
