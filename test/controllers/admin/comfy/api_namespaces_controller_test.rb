@@ -406,7 +406,6 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
       root: 'api_namespace',
       include: [
         :api_form,
-        :api_namespace_keys,
         :external_api_clients,
         :non_primitive_properties,
         {
@@ -425,6 +424,12 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
                 }
               }
             ]
+          }
+        },
+        {
+          api_keys: {
+            except: [:salt, :encrypted_token],
+            methods: [:token]
           }
         }
       ]
