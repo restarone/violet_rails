@@ -140,4 +140,13 @@ class SubdomainTest < ActiveSupport::TestCase
       Sidekiq::Worker.drain_all
     end
   end
+
+  test "email_notification_strategy should not accept anything except user_email or system_email" do  
+    exception = assert_raises(Exception) { 
+      duplicate = Subdomain.new(
+        email_notification_strategy: 'restarone_email'
+      )
+     }
+    assert_equal( "'restarone_email' is not a valid email_notification_strategy", exception.message )
+  end
 end
