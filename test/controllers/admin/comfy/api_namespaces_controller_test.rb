@@ -665,6 +665,19 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_response :success
   end
 
+  test "should get index if user has other access related to api-actions/api-resources/api-clients/api-form/external-api-connection for all namespaces" do
+    ['read_api_resources_only', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
+      access = {all_namespaces: {}}
+      access[:all_namespaces][access_name] = 'true'
+
+      @user.update(api_accessibility: access)
+
+      sign_in(@user)
+      get api_namespaces_url
+      assert_response :success
+    end
+  end
+
   # API access by category
   test "should get index if user has category specific full_access for one of the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
@@ -704,6 +717,36 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     sign_in(@user)
     get api_namespaces_url
     assert_response :success
+  end
+
+  test "should get index if user has other category specific access related to api-actions/api-resources/api-clients/api-form/external-api-connection for namespaces" do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+
+    ['read_api_resources_only', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
+      access = {namespaces_by_category: {}}
+      access[:namespaces_by_category][category.label] = {}
+      access[:namespaces_by_category][category.label][access_name] = 'true'
+
+      @user.update(api_accessibility: access)
+
+      sign_in(@user)
+      get api_namespaces_url
+      assert_response :success
+    end
+  end
+
+  test "should get index if user has other uncategorized access related to api-actions/api-resources/api-clients/api-form/external-api-connection for namespaces" do
+    ['read_api_resources_only', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
+      access = {namespaces_by_category: {uncategorized: {}}}
+      access[:namespaces_by_category][:uncategorized][access_name] = 'true'
+
+      @user.update(api_accessibility: access)
+
+      sign_in(@user)
+      get api_namespaces_url
+      assert_response :success
+    end
   end
 
   # NEW
@@ -927,15 +970,17 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_response :success
   end
 
-  test "should not show if user has other access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_resources_only: 'true'}})
+  test "should show if user has other access related to api-actions/api-resources/api-clients/api-form/external-api-connection for all_namespaces" do
+    ['read_api_resources_only', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
+      access = {all_namespaces: {}}
+      access[:all_namespaces][access_name] = 'true'
 
-    sign_in(@user)
-    get api_namespace_url(@api_namespace)
-    assert_response :redirect
+      @user.update(api_accessibility: access)
 
-    expected_message = "You do not have the permission to do that. Only users with full_access or full_read_access or delete_access_api_namespace_only or allow_exports or allow_duplication or full_access_api_namespace_only are allowed to perform that action."
-    assert_equal expected_message, flash[:alert]
+      sign_in(@user)
+      get api_namespace_url(@api_namespace)
+      assert_response :success
+    end
   end
 
   # API access by category
@@ -959,12 +1004,42 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_response :success
   end
 
+  test "should show if user has category specific other access related to api-actions/api-resources/api-clients/api-form/external-api-connection for the namespace" do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+
+    ['read_api_resources_only', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
+      access = {namespaces_by_category: {}}
+      access[:namespaces_by_category][category.label]= {}
+      access[:namespaces_by_category][category.label][access_name] = 'true'
+
+      @user.update(api_accessibility: access)
+
+      sign_in(@user)
+      get api_namespace_url(@api_namespace)
+      assert_response :success
+    end
+  end
+
   test "should show if user has uncategorized access for the namespace with no category" do
     @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_read_access: 'true'}}})
 
     sign_in(@user)
     get api_namespace_url(@api_namespace)
     assert_response :success
+  end
+
+  test "should show if user has uncategorized access related to api-actions/api-resources/api-clients/api-form/external-api-connection for the namespace" do
+    ['read_api_resources_only', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
+      access = {namespaces_by_category: {uncategorized: {}}}
+      access[:namespaces_by_category][:uncategorized][access_name] = 'true'
+
+      @user.update(api_accessibility: access)
+
+      sign_in(@user)
+      get api_namespace_url(@api_namespace)
+      assert_response :success
+    end
   end
 
   test "should show if user has category specific full_access_api_namespace_only for the namespace" do

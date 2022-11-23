@@ -206,6 +206,7 @@
         = f.submit "Submit", class: 'btn btn-primary'
       
 -# User can only view this page if they have atleast full_read_access. So, we don't need to guard this block by checking read_api_resources_only.
+-# Should we show this only if the user has full_access or access related to api-resources?
 .container-fluid.mt-5
   .d-flex.justify-content-between.py-2.page-header
     %h2
