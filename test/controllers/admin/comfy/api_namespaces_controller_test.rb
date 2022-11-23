@@ -658,14 +658,11 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_response :success
   end
 
-  test "should not get index if user has other access for all namespaces" do
+  test "should get index if user has other access for all namespaces" do
     sign_in(@user)
     @user.update(api_accessibility: {all_namespaces: {allow_exports: 'true'}})
     get api_namespaces_url
-    assert_response :redirect
-
-    expected_message ="You do not have the permission to do that. Only users with full_access or full_read_access or full_access_api_namespace_only are allowed to perform that action."
-    assert_equal expected_message, flash[:alert]
+    assert_response :success
   end
 
   # API access by category
@@ -699,17 +696,14 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_response :success
   end
 
-  test "should not get index if user has category specific other access for one of the namespace" do
+  test "should get index if user has category specific other access for one of the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
     @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_exports: 'true'}}})
 
     sign_in(@user)
     get api_namespaces_url
-    assert_response :redirect
-
-    expected_message ="You do not have the permission to do that. Only users with full_access or full_read_access or full_access_api_namespace_only are allowed to perform that action."
-    assert_equal expected_message, flash[:alert]
+    assert_response :success
   end
 
   # NEW
@@ -940,7 +934,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     get api_namespace_url(@api_namespace)
     assert_response :redirect
 
-    expected_message = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_api_namespace_only are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_read_access or delete_access_api_namespace_only or allow_exports or allow_duplication or full_access_api_namespace_only are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
   end
 
@@ -983,17 +977,14 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_response :success
   end
 
-  test "should not show if user has category specific other access for the namespace" do
+  test "should show if user has category specific other access for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
     @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_exports: 'true'}}})
 
     sign_in(@user)
     get api_namespace_url(@api_namespace)
-    assert_response :redirect
-
-    expected_message = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_api_namespace_only are allowed to perform that action."
-    assert_equal expected_message, flash[:alert]
+    assert_response :success
   end
 
   test "should not show if user has other category specific access for the namespace" do
@@ -1007,7 +998,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     get api_namespace_url(@api_namespace)
     assert_response :redirect
 
-    expected_message = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_api_namespace_only are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_read_access or delete_access_api_namespace_only or allow_exports or allow_duplication or full_access_api_namespace_only are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
   end
 
