@@ -90,13 +90,14 @@ module SubdomainHelper
     subdomain.keywords ? subdomain.keywords : subdomain.name
   end
 
-  def og_metadata(show_page)
-      if show_page && @api_namespace&.social_share_metadata.present? 
+  def og_metadata(show_page, api_resource)
+      if show_page && api_resource&.api_namespace&.social_share_metadata.present?
+        api_namespace = api_resource.api_namespace
         { 
-          title: @api_resource.properties[@api_namespace.social_share_metadata["title"]],
-          description: @api_resource.properties[@api_namespace.social_share_metadata["description"]],
+          title: api_resource.properties[api_namespace.social_share_metadata["title"]],
+          description: api_resource.properties[api_namespace.social_share_metadata["description"]],
           image: {
-            _: @api_resource.non_primitive_properties.find_by(field_type: "file", label: @api_namespace.social_share_metadata["image"])&.file_url,
+            _: api_resource.non_primitive_properties.find_by(field_type: "file", label: api_namespace.social_share_metadata["image"])&.file_url,
             width: 1200,
             height: 628,
           }
