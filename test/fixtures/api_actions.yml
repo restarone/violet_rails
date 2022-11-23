@@ -205,6 +205,9 @@ custom_api_action_on_timesheet_request:
     email_content = csv_string.html_safe
     subject = "Timesheet for #{email} from #{api_resource.properties['start_date']} to #{api_resource.properties['end_date']}"
     attachment = { filename: "#{subject}.csv", mime_type: "text/csv", content: email_content }
-    content = "Please find your timesheet attached to this email"
+    content = "Please find your timesheet attached to this email "
+
+    blob = ActiveStorage::Blob.create_and_upload!(io: StringIO.new(attachment[:content]), filename: attachment[:filename], content_type: attachment[:mime_type], metadata: nil)
+    content += ActionText::Content.new("<action-text-attachment sgid='#{blob.attachable_sgid}'></action-text-attachment>").to_s
 
     send_email.(email, subject, content, attachment)
