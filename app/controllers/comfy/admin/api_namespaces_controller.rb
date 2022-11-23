@@ -1,7 +1,7 @@
 require 'will_paginate/array'
 
 class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
-  before_action :set_api_namespace, only: %i[ show edit update destroy discard_failed_api_actions rerun_failed_api_actions export export_api_resources duplicate_with_associations duplicate_without_associations export_without_associations_as_json export_with_associations_as_json ]
+  before_action :set_api_namespace, only: %i[ show edit update destroy discard_failed_api_actions rerun_failed_api_actions export export_api_resources duplicate_with_associations duplicate_without_associations export_without_associations_as_json export_with_associations_as_json social_share_metadata ]
 
   before_action :ensure_authority_for_creating_api, only: %i[ new create import_as_json]
   before_action :ensure_authority_for_viewing_all_api, only: :index
@@ -11,6 +11,7 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
   before_action :ensure_authority_for_delete_access_in_api_namespace_only, only: %i[ destroy ]
   before_action :ensure_authority_for_allow_exports_in_api, only: %i[ export export_api_resources export_without_associations_as_json export_with_associations_as_json ]
   before_action :ensure_authority_for_allow_duplication_in_api, only: %i[ duplicate_with_associations duplicate_without_associations ]
+  before_action :ensure_authority_for_allow_social_share_metadata_in_api, only: %i[ social_share_metadata ]
 
   # GET /api_namespaces or /api_namespaces.json
   def index
@@ -193,6 +194,18 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
     end
   end
 
+  def social_share_metadata
+    respond_to do |format|
+      if @api_namespace.update(api_namespace_social_share_metadata_params)
+        format.html { handle_success_redirect('Social Share Metadata successfully updated.') }
+        format.json { render :show, status: :ok, location: @api_namespace }
+      else
+        format.html { handle_error_redirect }
+        format.json { render json: @api_namespace.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_api_namespace
@@ -208,7 +221,6 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
                                             :requires_authentication,
                                             :namespace_type,
                                             :has_form,
-                                            social_share_metadata: [:title, :description, :image],
                                             non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :allow_attachments, :_destroy],
                                             new_api_actions_attributes: api_actions_attributes,
                                             create_api_actions_attributes: api_actions_attributes,
@@ -220,8 +232,12 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
                                            )
     end
 
-    def handle_success_redirect
-      flash[:notice] =  "Api namespace was successfully updated."
+    def api_namespace_social_share_metadata_params
+      params.require(:api_namespace).permit(social_share_metadata: [:title, :description, :image])
+    end
+
+    def handle_success_redirect(message = nil)
+      flash[:notice] =  message || "Api namespace was successfully updated."
       redirect_to api_namespace_api_actions_path(api_namespace_id: @api_namespace.id) and return  if params[:source] == 'action_workflow'
 
       redirect_to @api_namespace

@@ -7,11 +7,12 @@ class Subdomains::BaseController < ApplicationController
   API_ACCESSIBILITIES = {
     full_access: ['full_access'],
     full_read_access: ['full_access', 'full_read_access'],
-    full_read_access_in_api_namespace: ['full_access', 'full_read_access', 'delete_access_api_namespace_only', 'allow_exports', 'allow_duplication', 'full_access_api_namespace_only', 'read_api_resources_only', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'],
+    full_read_access_in_api_namespace: ['full_access', 'full_read_access', 'delete_access_api_namespace_only', 'allow_exports', 'allow_duplication', 'allow_social_share_metadata', 'full_access_api_namespace_only', 'read_api_resources_only', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'],
     full_access_api_namespace_only: ['full_access', 'full_access_api_namespace_only'],
     delete_access_api_namespace_only: ['full_access', 'full_access_api_namespace_only', 'delete_access_api_namespace_only'],
     allow_exports: ['full_access', 'full_access_api_namespace_only', 'allow_exports'],
     allow_duplication: ['full_access', 'full_access_api_namespace_only', 'allow_duplication'],
+    allow_social_share_metadata: ['full_access', 'full_access_api_namespace_only', 'allow_social_share_metadata'],
     read_api_resources_only: ['full_access', 'full_read_access', 'full_access_for_api_resources_only', 'read_api_resources_only', 'delete_access_for_api_resources_only'],
     full_access_for_api_resources_only: ['full_access', 'full_access_for_api_resources_only'],
     delete_access_for_api_resources_only: ['full_access', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only'],
@@ -126,6 +127,13 @@ class Subdomains::BaseController < ApplicationController
   def ensure_authority_for_allow_duplication_in_api
     unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:allow_duplication])
       flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or allow_duplication are allowed to perform that action."
+      check_redirect_loop_and_redirect
+    end
+  end
+
+  def ensure_authority_for_allow_social_share_metadata_in_api
+    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:allow_social_share_metadata])
+      flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or allow_social_share_metadata are allowed to perform that action."
       check_redirect_loop_and_redirect
     end
   end

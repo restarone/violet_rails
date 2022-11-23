@@ -665,6 +665,13 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_response :success
   end
 
+  test "should get index if user has allow_social_share_metadata access for all namespaces" do
+    sign_in(@user)
+    @user.update(api_accessibility: {all_namespaces: {allow_social_share_metadata: 'true'}})
+    get api_namespaces_url
+    assert_response :success
+  end
+
   test "should get index if user has other access related to api-actions/api-resources/api-clients/api-form/external-api-connection for all namespaces" do
     ['read_api_resources_only', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
       access = {all_namespaces: {}}
@@ -726,6 +733,24 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
     @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_exports: 'true'}}})
+
+    sign_in(@user)
+    get api_namespaces_url
+    assert_response :success
+  end
+
+  test "should get index if user has category-specific allow_social_share_metadata access for one of the namespaces" do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_social_share_metadata: 'true'}}})
+
+    sign_in(@user)
+    get api_namespaces_url
+    assert_response :success
+  end
+
+  test "should get index if user has uncategorized allow_social_share_metadata access for one of the namespaces" do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {allow_social_share_metadata: 'true'}}})
 
     sign_in(@user)
     get api_namespaces_url
@@ -1082,6 +1107,18 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_response :success
   end
 
+  test "should show if user has other access related to namespace for all_namespaces" do
+    ['allow_exports', 'allow_duplication', 'allow_social_share_metadata'].each do |access_name|
+      access = {all_namespaces: {}}
+      access[:all_namespaces][access_name] = 'true'
+      @user.update(api_accessibility: access)
+  
+      sign_in(@user)
+      get api_namespace_url(@api_namespace)
+      assert_response :success
+    end
+  end
+
   test "should show if user has other access related to api-actions/api-resources/api-clients/api-form/external-api-connection for all_namespaces" do
     ['read_api_resources_only', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
       access = {all_namespaces: {}}
@@ -1133,6 +1170,22 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     end
   end
 
+  test "should show if user has category-specific other access related to namespace for the namespace" do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+
+    ['allow_exports', 'allow_duplication', 'allow_social_share_metadata'].each do |access_name|
+      access = {namespaces_by_category: {}}
+      access[:namespaces_by_category][category.label]= {}
+      access[:namespaces_by_category][category.label][access_name] = 'true'
+      @user.update(api_accessibility: access)
+  
+      sign_in(@user)
+      get api_namespace_url(@api_namespace)
+      assert_response :success
+    end
+  end
+
   test "should show if user has uncategorized access for the namespace with no category" do
     @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_read_access: 'true'}}})
 
@@ -1148,6 +1201,19 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
       @user.update(api_accessibility: access)
 
+      sign_in(@user)
+      get api_namespace_url(@api_namespace)
+      assert_response :success
+    end
+  end
+
+  test "should show if user has uncategorized other access related to namespace for the namespace" do
+    ['allow_exports', 'allow_duplication', 'allow_social_share_metadata'].each do |access_name|
+      access = {namespaces_by_category: {}}
+      access[:namespaces_by_category][:uncategorized]= {}
+      access[:namespaces_by_category][:uncategorized][access_name] = 'true'
+      @user.update(api_accessibility: access)
+  
       sign_in(@user)
       get api_namespace_url(@api_namespace)
       assert_response :success
@@ -2382,6 +2448,126 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     expected_message = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or allow_duplication are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
+  end
+
+  # SOCIAL SHARE METADATA
+  # API access for all_namespaces
+  test 'social_share_metadata# should return success when the user has full_access/full_access_for_api_namespace_only/allow_social_share_metadata for all_namespaces' do
+    ['full_access', 'full_access_api_namespace_only', 'allow_social_share_metadata'].each do |access_name|
+      access = {all_namespaces: {}}
+      access[:all_namespaces][access_name] = 'true'
+      @user.update!(api_accessibility: access)
+
+      payload = {api_namespace: {"social_share_metadata"=>{"title"=>"Array", "description"=>"String", "image"=>"picto"}}}
+
+      sign_in(@user)
+      patch social_share_metadata_api_namespace_url(@api_namespace), params: payload
+      assert_response :redirect
+
+      expected_message = 'Social Share Metadata successfully updated.'
+      assert_equal expected_message, flash[:notice]
+      assert_equal payload[:api_namespace]['social_share_metadata'], @api_namespace.reload.social_share_metadata
+    end
+  end
+
+  test 'social_share_metadata# should deny when the user has other access like full_read_access/delete_access_api_namespace_only/allow_exports/allow_duplication/full_access_for_api_resources_only/full_access_for_api_actions_only/full_access_for_external_api_connections_only/full_access_for_api_clients_only/full_access_for_api_form_only for all_namespaces' do
+    ['full_read_access', 'delete_access_api_namespace_only', 'allow_exports', 'allow_duplication', 'full_access_for_api_resources_only', 'full_access_for_api_actions_only', 'full_access_for_external_api_connections_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
+      access = {all_namespaces: {}}
+      access[:all_namespaces][access_name] = 'true'
+      @user.update!(api_accessibility: access)
+
+      payload = {api_namespace: {"social_share_metadata"=>{"title"=>"Array", "description"=>"String", "image"=>"picto"}}}
+
+      sign_in(@user)
+      patch social_share_metadata_api_namespace_url(@api_namespace), params: payload
+      assert_response :redirect
+
+      expected_message = 'You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or allow_social_share_metadata are allowed to perform that action.'
+      assert_equal expected_message, flash[:alert]
+      refute_equal payload[:api_namespace]['social_share_metadata'], @api_namespace.reload.social_share_metadata
+    end
+  end
+
+  # API access by category
+  test 'social_share_metadata# should return success when the user has category-specific full_access/full_access_for_api_namespace_only/allow_social_share_metadata for a namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+
+    ['full_access', 'full_access_api_namespace_only', 'allow_social_share_metadata'].each do |access_name|
+      access = {namespaces_by_category: {"#{category.label}": {}}}
+      access[:namespaces_by_category][:"#{category.label}"][access_name] = 'true'
+      @user.update!(api_accessibility: access)
+
+      payload = {api_namespace: {"social_share_metadata"=>{"title"=>"Array", "description"=>"String", "image"=>"picto"}}}
+
+      sign_in(@user)
+      patch social_share_metadata_api_namespace_url(@api_namespace), params: payload
+      assert_response :redirect
+
+      expected_message = 'Social Share Metadata successfully updated.'
+      assert_equal expected_message, flash[:notice]
+      assert_equal payload[:api_namespace]['social_share_metadata'], @api_namespace.reload.social_share_metadata
+    end
+  end
+
+  test 'social_share_metadata# should deny when the user has other category-specific access like full_read_access/delete_access_api_namespace_only/allow_exports/allow_duplication/full_access_for_api_resources_only/full_access_for_api_actions_only/full_access_for_external_api_connections_only/full_access_for_api_clients_only/full_access_for_api_form_only for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+
+    ['full_read_access', 'delete_access_api_namespace_only', 'allow_exports', 'allow_duplication', 'full_access_for_api_resources_only', 'full_access_for_api_actions_only', 'full_access_for_external_api_connections_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
+      access = {namespaces_by_category: {"#{category.label}": {}}}
+      access[:namespaces_by_category][:"#{category.label}"][access_name] = 'true'
+      @user.update!(api_accessibility: access)
+
+      payload = {api_namespace: {"social_share_metadata"=>{"title"=>"Array", "description"=>"String", "image"=>"picto"}}}
+
+      sign_in(@user)
+      patch social_share_metadata_api_namespace_url(@api_namespace), params: payload
+      assert_response :redirect
+
+      expected_message = 'You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or allow_social_share_metadata are allowed to perform that action.'
+      assert_equal expected_message, flash[:alert]
+      refute_equal payload[:api_namespace]['social_share_metadata'], @api_namespace.reload.social_share_metadata
+    end
+  end
+
+  test 'social_share_metadata# should return success when the user has uncategorized full_access/full_access_for_api_namespace_only/allow_social_share_metadata for a namespace' do
+    ['full_access', 'full_access_api_namespace_only', 'allow_social_share_metadata'].each do |access_name|
+      access = {namespaces_by_category: {uncategorized: {}}}
+      access[:namespaces_by_category][:uncategorized][access_name] = 'true'
+      @user.update!(api_accessibility: access)
+
+      payload = {api_namespace: {"social_share_metadata"=>{"title"=>"Array", "description"=>"String", "image"=>"picto"}}}
+
+      sign_in(@user)
+      patch social_share_metadata_api_namespace_url(@api_namespace), params: payload
+      assert_response :redirect
+
+      expected_message = 'Social Share Metadata successfully updated.'
+      assert_equal expected_message, flash[:notice]
+      assert_equal payload[:api_namespace]['social_share_metadata'], @api_namespace.reload.social_share_metadata
+    end
+  end
+
+  test 'social_share_metadata# should deny when the user has other uncategorized access like full_read_access/delete_access_api_namespace_only/allow_exports/allow_duplication/full_access_for_api_resources_only/full_access_for_api_actions_only/full_access_for_external_api_connections_only/full_access_for_api_clients_only/full_access_for_api_form_only for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+
+    ['full_read_access', 'delete_access_api_namespace_only', 'allow_exports', 'allow_duplication', 'full_access_for_api_resources_only', 'full_access_for_api_actions_only', 'full_access_for_external_api_connections_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
+      access = {namespaces_by_category: {uncategorized: {}}}
+      access[:namespaces_by_category][:uncategorized][access_name] = 'true'
+      @user.update!(api_accessibility: access)
+
+      payload = {api_namespace: {"social_share_metadata"=>{"title"=>"Array", "description"=>"String", "image"=>"picto"}}}
+
+      sign_in(@user)
+      patch social_share_metadata_api_namespace_url(@api_namespace), params: payload
+      assert_response :redirect
+
+      expected_message = 'You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or allow_social_share_metadata are allowed to perform that action.'
+      assert_equal expected_message, flash[:alert]
+      refute_equal payload[:api_namespace]['social_share_metadata'], @api_namespace.reload.social_share_metadata
+    end
   end
 
   test "show# should include the link of associated CMS entities: Page, Snippet and Layout" do

@@ -29,6 +29,9 @@
             = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'all_namespaces') || has_sub_access_to_specific_category?(@user.api_accessibility, 'allow_duplication', 'all_namespaces'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'all_namespaces'), data: {name: 'user[api_accessibility][all_namespaces][allow_duplication]'}
             = label_tag nil, 'Allow duplication'
           %li
+            = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'all_namespaces') || has_sub_access_to_specific_category?(@user.api_accessibility, 'allow_social_share_metadata', 'all_namespaces'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'all_namespaces'), data: {name: 'user[api_accessibility][all_namespaces][allow_social_share_metadata]'}
+            = label_tag nil, 'Allow social share metadata'
+          %li
             = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'all_namespaces') || has_sub_access_to_specific_category?(@user.api_accessibility, 'read_api_resources_only', 'all_namespaces'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'all_namespaces'), data: {name: 'user[api_accessibility][all_namespaces][read_api_resources_only]'}
             = label_tag nil, 'Read API Resources only'
           %li
@@ -94,6 +97,9 @@
                     = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', category.label) || has_sub_access_to_specific_category?(@user.api_accessibility, 'allow_duplication', 'namespaces_by_category', category.label), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', category.label), data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][allow_duplication]"}
                     = label_tag nil, 'Allow duplication'
                   %li
+                    = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', category.label) || has_sub_access_to_specific_category?(@user.api_accessibility, 'allow_social_share_metadata', 'namespaces_by_category', category.label), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', category.label), data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][allow_social_share_metadata]"}
+                    = label_tag nil, 'Allow social share metadata'
+                  %li
                     = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', category.label) || has_sub_access_to_specific_category?(@user.api_accessibility, 'read_api_resources_only', 'namespaces_by_category', category.label), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', category.label), data: {name: "user[api_accessibility][namespaces_by_category][#{category.label}][read_api_resources_only]"}
                     = label_tag nil, 'Read API Resources only'
                   %li
@@ -149,6 +155,9 @@
                 %li
                   = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', 'uncategorized') || has_sub_access_to_specific_category?(@user.api_accessibility, 'allow_duplication', 'namespaces_by_category', 'uncategorized'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', 'uncategorized'), data: {name: 'user[api_accessibility][namespaces_by_category][uncategorized][allow_duplication]'}
                   = label_tag nil, 'Allow duplication'
+                %li
+                  = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', 'uncategorized') || has_sub_access_to_specific_category?(@user.api_accessibility, 'allow_social_share_metadata', 'namespaces_by_category', 'uncategorized'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', 'uncategorized'), data: {name: 'user[api_accessibility][namespaces_by_category][uncategorized][allow_social_share_metadata]'}
+                  = label_tag nil, 'Allow social share metadata'
                 %li
                   = check_box_tag nil, true, has_sub_access_to_specific_category?(@user.api_accessibility, 'full_access', 'namespaces_by_category', 'uncategorized') || has_sub_access_to_specific_category?(@user.api_accessibility, 'read_api_resources_only', 'namespaces_by_category', 'uncategorized'), disabled: !has_no_sub_access_to_specific_category?(@user.api_accessibility, 'namespaces_by_category', 'uncategorized'), data: {name: "user[api_accessibility][namespaces_by_category][uncategorized][read_api_resources_only]"}
                   = label_tag nil, 'Read API Resources only'

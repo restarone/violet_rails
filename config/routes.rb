@@ -61,6 +61,7 @@ Rails.application.routes.draw do
       post 'duplicate_without_associations'
       get 'export_with_associations_as_json'
       get 'export_without_associations_as_json'
+      patch 'social_share_metadata'
     end
 
     resources :resources, except: [:index], controller: 'comfy/admin/api_resources'

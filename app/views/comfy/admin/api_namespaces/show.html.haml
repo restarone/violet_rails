@@ -192,7 +192,7 @@
           No CMS associations for this api-namespace
 
   #social.tab-pane.fade{"aria-labelledby" => "social-tab", :role => "tabpanel"} 
-    = form_with(method: :patch , url: api_namespace_path(@api_namespace))  do |f|
+    = form_with(method: :patch , url: social_share_metadata_api_namespace_path(@api_namespace))  do |f|
       .form-group
         = f.label :title
         = f.select 'api_namespace[social_share_metadata][title]', options_for_select(@api_namespace.properties.keys,(@api_namespace.social_share_metadata.present? ? @api_namespace.social_share_metadata["title"] : nil)),{include_blank: "Choose an option"}, {class: 'form-control'}
