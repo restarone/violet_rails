@@ -15,10 +15,12 @@ class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseContro
     # GET /api_clients/new
     def new
       @external_api_client = ExternalApiClient.new(api_namespace_id: @api_namespace.id)
+      @external_api_client.build_webhook_verification_method
     end
   
     # GET /api_clients/1/edit
     def edit
+      @external_api_client.build_webhook_verification_method unless @external_api_client.webhook_verification_method.present?
     end
   
     # POST /api_clients or /api_clients.json
@@ -100,7 +102,9 @@ class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseContro
             :max_requests_per_minute,
             :max_workers,
             :model_definition,
-            :drive_every
+            :drive_every,
+            :require_webhook_verification,
+            webhook_verification_method_attributes: [:id, :webhook_type, :webhook_secret, :custom_method_definition]
           ).merge({
             api_namespace_id: @api_namespace.id,
           })

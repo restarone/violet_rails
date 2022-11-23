@@ -3,6 +3,7 @@
 
 .page-header
   = link_to 'New Namespace', new_api_namespace_path, class: 'btn btn-secondary float-right'
+  = link_to 'Api Keys', api_keys_path, class: 'btn btn-secondary float-right mr-3'
   %h2 API Namespaces
 = render partial: 'search_filters', locals: { objects: @api_namespaces_q, path: api_namespaces_path }
 = render partial: 'pagination', locals: { objects: @api_namespaces }

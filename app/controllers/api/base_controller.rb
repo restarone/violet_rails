@@ -15,8 +15,8 @@ class Api::BaseController < ActionController::API
     bearer_token = request.headers['Authorization']
     if bearer_token
       token = bearer_token.split(' ')[1]
-      api_client = @api_namespace.api_clients.find_by(bearer_token: token)
-      if api_client
+      api_key = @api_namespace.api_keys.any? { |api_key| api_key.token == token }
+      if api_key
         return true
       else
         return false

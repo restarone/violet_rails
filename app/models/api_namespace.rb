@@ -45,6 +45,9 @@ class ApiNamespace < ApplicationRecord
   has_many :error_api_actions, dependent: :destroy
   accepts_nested_attributes_for :error_api_actions, allow_destroy: true
 
+  has_many :api_namespace_keys, dependent: :destroy
+  has_many :api_keys, through: :api_namespace_keys
+
   REGISTERED_PLUGINS = {
     subdomain_events: {
       slug: 'subdomain_events',
@@ -93,8 +96,9 @@ class ApiNamespace < ApplicationRecord
       ActiveRecord::Base.transaction do
         raise 'You cannot duplicate the api_namespace without associations if it has api_form' if duplicate_associations == false && self.api_form.present?
 
+        random_hex = SecureRandom.hex(4)
         new_api_namespace = self.dup
-        new_api_namespace.name = self.name + '-copy-' + SecureRandom.hex(4)
+        new_api_namespace.name = self.name + '-copy-' + random_hex
         new_api_namespace.save!
     
         if duplicate_associations
@@ -105,11 +109,11 @@ class ApiNamespace < ApplicationRecord
             new_api_form.save!
           end
     
-          # Duplicate ApiClients
-          self.api_clients.each do |api_client|
-            new_api_client = api_client.dup
-            new_api_client.api_namespace = new_api_namespace
-            new_api_client.save!
+          # Duplicate ApiKeys
+          self.api_keys.each do |api_key|
+            label = api_key.label + '-copy-' + random_hex
+            new_api_key = ApiKey.create(label: label, authentication_strategy: api_key.authentication_strategy)
+            ApiNamespaceKey.create(api_key_id: new_api_key.id, api_namespace_id: new_api_namespace.id )
           end
     
           # Duplicate ExternalApiClients
@@ -161,7 +165,6 @@ class ApiNamespace < ApplicationRecord
         root: 'api_namespace',
         include: [
           :api_form,
-          :api_clients,
           :external_api_clients,
           :non_primitive_properties,
           {
@@ -181,6 +184,12 @@ class ApiNamespace < ApplicationRecord
                 }
               ]
             }
+          },
+          {
+            api_keys: {
+              except: [:salt, :encrypted_token], # Copying salt raises error related to encoding and these are encypted data. So, we should not copy such values.
+              methods: [:token]
+            }
           }
         ]
       )
@@ -194,7 +203,7 @@ class ApiNamespace < ApplicationRecord
       ActiveRecord::Base.transaction do
         neglected_attributes = {
           api_action: ['id', 'created_at', 'updated_at', 'encrypted_bearer_token', 'salt', 'api_namespace_id', 'api_resource_id'],
-          api_client: ['id', 'created_at', 'updated_at', 'api_namespace_id', 'slug'],
+          api_key: ['id', 'created_at', 'updated_at', 'api_namespace_id', 'token'],
           api_form: ['id', 'created_at', 'updated_at', 'api_namespace_id'],
           api_namespace: ['id', 'created_at', 'updated_at', 'slug'],
           api_resource: ['id', 'created_at', 'updated_at', 'api_namespace_id'],
@@ -211,7 +220,8 @@ class ApiNamespace < ApplicationRecord
       
         # creating api_namespace
         if ApiNamespace.find_by(slug: hash['slug']).present?
-          hash['name'] = hash['name'] + '-' + SecureRandom.hex(4)
+          random_hex = SecureRandom.hex(4)
+          hash['name'] = hash['name'] + '-' + random_hex
         end
 
         api_namespace_hash = hash.except(*neglected_attributes[:api_namespace])
@@ -226,12 +236,14 @@ class ApiNamespace < ApplicationRecord
           api_form_hash = hash['api_form'].except(*neglected_attributes[:api_form]).merge({'api_namespace_id': new_api_namespace.id})
           ApiForm.create!(api_form_hash)
         end
-        
-        # Creating api_clients
-        if hash['api_clients'].present? && hash['api_clients'].is_a?(Array)
-          hash['api_clients'].each do |api_client_hash|
-            api_client_hash = api_client_hash.except(*neglected_attributes[:api_client]).merge({'api_namespace_id': new_api_namespace.id})
-            ApiClient.create!(api_client_hash)
+
+        # Creating api_keys
+        if hash['api_keys'].present? && hash['api_keys'].is_a?(Array)
+          hash['api_keys'].each do |api_key_hash|
+            api_key_hash = api_key_hash.except(*neglected_attributes[:api_key])
+            api_key_hash['label'] = api_key_hash['label'] + '_' + random_hex if random_hex.present?
+            api_key = ApiKey.create!(api_key_hash)
+            ApiNamespaceKey.create(api_key_id: api_key.id, api_namespace_id: new_api_namespace.id )
           end
         end
         

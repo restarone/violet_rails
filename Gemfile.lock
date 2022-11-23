@@ -171,6 +171,7 @@ GEM
     climate_control (0.2.0)
     cocaine (0.5.8)
       climate_control (>= 0.0.3, < 1.0)
+    coderay (1.1.3)
     comfy_bootstrap_form (4.0.9)
       rails (>= 5.0.0)
     concurrent-ruby (1.1.10)
@@ -301,6 +302,9 @@ GEM
     orm_adapter (0.5.0)
     parallel (1.20.1)
     pg (1.2.3)
+    pry (0.14.1)
+      coderay (~> 1.1)
+      method_source (~> 1.0)
     public_suffix (4.0.6)
     puma (5.6.4)
       nio4r (~> 2.0)
@@ -433,6 +437,11 @@ GEM
     sshkit (1.21.2)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
+    stripe (7.1.0)
+    stripe-rails (2.3.5)
+      rails (>= 5.1)
+      responders
+      stripe (>= 3.15.0)
     temple (0.8.2)
     thor (1.2.1)
     tilt (2.0.10)
@@ -523,6 +532,7 @@ DEPENDENCIES
   mocha
   net-ssh (>= 6.0.2)
   pg (~> 1.1)
+  pry
   puma (~> 5.6)
   rack-cors
   rack-mini-profiler (~> 2.0)
@@ -540,6 +550,7 @@ DEPENDENCIES
   sinatra
   sitemap_generator
   spring
+  stripe-rails
   turbo-rails (~> 1.1)
   turnout (~> 2.5)
   tzinfo-data

@@ -1,0 +1,20 @@
+%p#notice= notice
+
+%p
+  %b Label:
+  = @api_key.label
+%p
+  %b Authentication strategy:
+  = @api_key.authentication_strategy
+%p
+  %b Bearer token:
+  = @api_key.token
+
+%p
+  %b Accessable Api Namespaces:
+  - @api_key.api_namespaces.each do |api_namespace|
+    = link_to api_namespace.name, api_namespace_path(id: api_namespace.id), class: 'link badge badge-primary mr-2'
+
+= link_to 'Edit', edit_api_key_path(id: @api_key.id)
+\|
+= link_to 'Back', api_keys_path

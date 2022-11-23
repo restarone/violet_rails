@@ -90,6 +90,8 @@ Rails.application.routes.draw do
       get 'export_api_resources'
     end
   end
+
+  resources :api_keys, controller: 'comfy/admin/api_keys'
   resources :non_primitive_properties, controller: 'comfy/admin/non_primitive_properties', only: [:new]
   resources :api_actions, controller: 'comfy/admin/api_actions', only: [:new]
 
@@ -128,6 +130,7 @@ Rails.application.routes.draw do
         post '/', to: 'resource#create', as: :create_resource
         patch '/edit/:api_resource_id', to: 'resource#update', as: :update_resource
         delete '/destroy/:api_resource_id', to: 'resource#destroy', as: :destroy_resource
+        post '/:external_api_client/webhook', to: 'external_api_clients#webhook', as: :external_api_client_webhook
       end
     end
   end

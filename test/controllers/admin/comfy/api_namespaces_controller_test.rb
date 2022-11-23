@@ -158,7 +158,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_no_difference('ApiNamespace.count') do
       assert_no_difference('ApiResource.count') do
         assert_no_difference('ApiAction.count') do
-          assert_no_difference('ApiClient.count') do
+          assert_no_difference('ApiNamespaceKey.count') do
             assert_no_difference('ExternalApiClient.count') do
               assert_no_difference('NonPrimitiveProperty.count') do
                 post duplicate_without_associations_api_namespace_url(id: @api_namespace.id)
@@ -181,7 +181,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_difference('ApiNamespace.count', +1) do
       assert_no_difference('ApiResource.count') do
         assert_no_difference('ApiAction.count') do
-          assert_no_difference('ApiClient.count') do
+          assert_no_difference('ApiNamespaceKey.count') do
             assert_no_difference('ExternalApiClient.count') do
               assert_no_difference('NonPrimitiveProperty.count') do
                 post duplicate_without_associations_api_namespace_url(id: @api_namespace.id)
@@ -213,7 +213,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should allow duplicate_with_associations" do
     api_resources_count = @api_namespace.api_resources.count
     api_actions_count = @api_namespace.api_actions.count + @api_namespace.api_resources.map(&:api_actions).flatten.count
-    api_clients_count = @api_namespace.api_clients.count
+    api_namespace_keys_count = @api_namespace.api_namespace_keys.count
     external_api_clients_count = @api_namespace.external_api_clients.count
     non_primitive_properties_count = @api_namespace.non_primitive_properties.count
 
@@ -221,7 +221,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_difference('ApiNamespace.count', +1) do
       assert_difference('ApiResource.count', +api_resources_count) do
         assert_difference('ApiAction.count', +api_actions_count) do
-          assert_difference('ApiClient.count', +api_clients_count) do
+          assert_difference('ApiNamespaceKey.count', +api_namespace_keys_count) do
             assert_difference('ExternalApiClient.count', +external_api_clients_count) do
               assert_difference('NonPrimitiveProperty.count', +non_primitive_properties_count) do
                 post duplicate_with_associations_api_namespace_url(id: @api_namespace.id)
@@ -406,7 +406,6 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
       root: 'api_namespace',
       include: [
         :api_form,
-        :api_clients,
         :external_api_clients,
         :non_primitive_properties,
         {
@@ -425,6 +424,12 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
                 }
               }
             ]
+          }
+        },
+        {
+          api_keys: {
+            except: [:salt, :encrypted_token],
+            methods: [:token]
           }
         }
       ]
@@ -447,7 +452,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_no_difference('ApiNamespace.count') do
       assert_no_difference('ApiResource.count') do
         assert_no_difference('ApiAction.count') do
-          assert_no_difference('ApiClient.count') do
+          assert_no_difference('ApiNamespaceKey.count') do
             assert_no_difference('ExternalApiClient.count') do
               assert_no_difference('NonPrimitiveProperty.count') do
                 post import_as_json_api_namespaces_url, params: payload
@@ -473,7 +478,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_no_difference('ApiNamespace.count') do
       assert_no_difference('ApiResource.count') do
         assert_no_difference('ApiAction.count') do
-          assert_no_difference('ApiClient.count') do
+          assert_no_difference('ApiNamespaceKey.count') do
             assert_no_difference('ExternalApiClient.count') do
               assert_no_difference('NonPrimitiveProperty.count') do
                 post import_as_json_api_namespaces_url, params: payload
@@ -502,7 +507,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_difference('ApiNamespace.count', +1) do
       assert_no_difference('ApiResource.count') do
         assert_no_difference('ApiAction.count') do
-          assert_no_difference('ApiClient.count') do
+          assert_no_difference('ApiNamespaceKey.count') do
             assert_no_difference('ExternalApiClient.count') do
               assert_no_difference('NonPrimitiveProperty.count') do
                 post import_as_json_api_namespaces_url, params: payload
@@ -523,7 +528,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should allow import api_namespace provided as json with its asscociations and the newly created api_namespace should be followed by secure-random if api_namespace with such name exists" do
     api_resources_count = @api_namespace.api_resources.count
     api_actions_count = @api_namespace.api_actions.count + @api_namespace.api_resources.map(&:api_actions).flatten.count
-    api_clients_count = @api_namespace.api_clients.count
+    api_namespace_keys_count = @api_namespace.api_namespace_keys.count
     external_api_clients_count = @api_namespace.external_api_clients.count
     non_primitive_properties_count = @api_namespace.non_primitive_properties.count
 
@@ -539,7 +544,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_difference('ApiNamespace.count', +1) do
       assert_difference('ApiResource.count', +api_resources_count) do
         assert_difference('ApiAction.count', +api_actions_count) do
-          assert_difference('ApiClient.count', +api_clients_count) do
+          assert_difference('ApiNamespaceKey.count', +api_namespace_keys_count) do
             assert_difference('ExternalApiClient.count', +external_api_clients_count) do
               assert_difference('NonPrimitiveProperty.count', +non_primitive_properties_count) do
                 post import_as_json_api_namespaces_url, params: payload
@@ -560,7 +565,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should allow import api_namespace provided as json with its asscociations and the newly created api_namespace's name should be as provided if api_namespace with such name does not exist" do
     api_resources_count = @api_namespace.api_resources.count
     api_actions_count = @api_namespace.api_actions.count + @api_namespace.api_resources.map(&:api_actions).flatten.count
-    api_clients_count = @api_namespace.api_clients.count
+    api_namespace_keys_count = @api_namespace.api_namespace_keys.count
     external_api_clients_count = @api_namespace.external_api_clients.count
     non_primitive_properties_count = @api_namespace.non_primitive_properties.count
 
@@ -579,7 +584,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_difference('ApiNamespace.count', +1) do
       assert_difference('ApiResource.count', +api_resources_count) do
         assert_difference('ApiAction.count', +api_actions_count) do
-          assert_difference('ApiClient.count', +api_clients_count) do
+          assert_difference('ApiNamespaceKey.count', +api_namespace_keys_count) do
             assert_difference('ExternalApiClient.count', +external_api_clients_count) do
               assert_difference('NonPrimitiveProperty.count', +non_primitive_properties_count) do
                 post import_as_json_api_namespaces_url, params: payload
@@ -606,7 +611,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     get api_namespace_url(@api_namespace)
     assert_response :success
 
-    assert_select "table", 1, "This page must contain a api-resources table"
+    assert_select "table", 2, "This page must contain a api-resources table and external api webhook table"
     properties.keys.each do |heading|
       assert_select "thead th", {count: 1, text: heading.capitalize.gsub('_', ' ')}, "Api-resources table must contain '#{heading}' column"
     end

@@ -1,0 +1,31 @@
+- action = @api_key.persisted? ? :put : :post
+- path = @api_key.persisted? ? api_key_path(id: @api_key.id) : api_keys_path
+
+= form_for @api_key, url: path, method: action do |f|
+  - if @api_key.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@api_key.errors.count, "error")} prohibited this api_key from being saved:"
+      %ul
+        - @api_key.errors.full_messages.each do |message|
+          %li= message
+  .field.mb-3
+    = f.label :label
+    = f.text_field :label
+  .field.mb-3
+    = f.label :authentication_strategy
+    = f.select :authentication_strategy, options_for_select(ApiKey.authentication_strategies)
+  .field.mb-3
+    = f.label :api_namespace_ids
+    = f.collection_select :api_namespace_ids, ApiNamespace.all, :id, :name,  {include_blank: false, include_hidden: false}, {:multiple => true, :class=>"multi_select"}
+  .actions
+    = f.submit 'Save'
+
+:javascript
+  $(document).ready( function() {
+    $(".multi_select").select2({
+      multiple: true,
+      required: false,
+      tags: true,
+      placeholder: "Select api namespaces that can be accessed by this key"
+    })
+  })
