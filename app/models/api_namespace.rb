@@ -52,6 +52,21 @@ class ApiNamespace < ApplicationRecord
     }
   }
 
+  scope :filter_by_user_api_accessibility, ->(user) { 
+    api_accessibility = user.api_accessibility
+
+    if api_accessibility.keys.include?('all_namespaces')
+      self
+    elsif api_accessibility.keys.include?('namespaces_by_category')
+      category_specific_keys = api_accessibility['namespaces_by_category'].keys
+      if category_specific_keys.include?('uncategorized')
+        self.includes(:categories).left_outer_joins(categorizations: :category).where("comfy_cms_categories.id IS ? OR comfy_cms_categories.label IN (?)", nil, category_specific_keys)
+      else
+        self.includes(:categories).for_category(category_specific_keys)
+      end
+    end
+   }
+
   def update_api_form
     if has_form == '1'
       if api_form.present? 

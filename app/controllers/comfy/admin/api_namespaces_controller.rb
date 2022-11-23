@@ -16,11 +16,12 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
   def index
     params[:q] ||= {}
     @api_namespaces_q = if params[:categories].present?
-      ApiNamespace.includes(:categories).for_category(params[:categories]).ransack(params[:q])
+      ApiNamespace.filter_by_user_api_accessibility(current_user).for_category(params[:categories]).ransack(params[:q])
     else
-      ApiNamespace.ransack(params[:q])
+      ApiNamespace.filter_by_user_api_accessibility(current_user).ransack(params[:q])
     end
-    
+    @api_namespaces_q.sorts = 'id asc' if @api_namespaces_q.sorts.empty?
+
     if params.dig(:q, :s) && params[:q][:s].match(/CMS (asc|desc)/)
       namespaces = @api_namespaces_q.result.sort_by { |namespace| namespace.cms_associations.size }
       namespaces = namespaces.reverse if params[:q][:s].match(/CMS desc/)

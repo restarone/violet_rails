@@ -678,6 +678,19 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     end
   end
 
+  test "should get index with all namespaces if user has access for all_namespaces" do
+    sign_in(@user)
+    @user.update(api_accessibility: {all_namespaces: {allow_exports: 'true'}})
+    get api_namespaces_url
+    assert_response :success
+
+    # All the ApiNamespaces are fetched in controller.
+    all_namespaces = @controller.view_assigns['api_namespaces_q'].result
+    ApiNamespace.all.each do |namespace|
+      assert_includes all_namespaces, namespace
+    end
+  end
+
   # API access by category
   test "should get index if user has category specific full_access for one of the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
@@ -733,6 +746,105 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
       sign_in(@user)
       get api_namespaces_url
       assert_response :success
+    end
+  end
+
+  test "should get index with only the uncategorized namespaces if user has category-specific for uncategorized namespaces" do
+    category = comfy_cms_categories(:api_namespace_1)
+    api_namespace_two = api_namespaces(:two)
+
+    # Only two namespaces are uncategorized.
+    ApiNamespace.where.not(id: [@api_namespace.id, api_namespace_two.id]).each do |namespace|
+      namespace.update(category_ids: [category.id])
+    end
+    
+    sign_in(@user)
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {allow_exports: 'true'}}})
+    get api_namespaces_url
+    assert_response :success
+
+    all_namespaces = @controller.view_assigns['api_namespaces_q'].result
+    # Only the uncategorized ApiNamespaces are fetched in controller.
+    [@api_namespace, api_namespace_two].each do |namespace|
+      assert_includes all_namespaces, namespace
+    end
+    # The api-namespaces which are categorized are not fetched. 
+    ApiNamespace.where.not(id: [@api_namespace.id, api_namespace_two.id]).each do |namespace|
+      refute_includes all_namespaces, namespace
+    end
+  end
+
+  test "should get index with only the uncategorized and provided category namespaces if user has category-specific for uncategorized and some categorized namespaces" do
+    category_one = comfy_cms_categories(:api_namespace_1)
+    category_two = comfy_cms_categories(:api_namespace_2)
+
+    api_namespace_two = api_namespaces(:two)
+    api_namespace_three = api_namespaces(:three)
+    api_namespace_four = api_namespaces(:users)
+    api_namespace_five = api_namespaces(:array_namespace)
+    api_namespace_six = api_namespaces(:plugin_subdomain_events)
+
+    api_namespace_two.update(category_ids: [category_one.id])
+    api_namespace_three.update(category_ids: [category_one.id])
+    api_namespace_four.update(category_ids: [category_one.id])
+
+    expected_namespaces = [@api_namespace, api_namespace_two, api_namespace_three, api_namespace_four, api_namespace_five, api_namespace_six]
+
+    # Other namespaces are categorized to category_two.
+    ApiNamespace.where.not(id: expected_namespaces.map(&:id)).each do |namespace|
+      namespace.update(category_ids: [category_two.id])
+    end
+    
+    sign_in(@user)
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {allow_exports: 'true'}, "#{category_one.label}": {allow_exports: 'true'}}})
+    get api_namespaces_url
+    assert_response :success
+
+    all_namespaces = @controller.view_assigns['api_namespaces_q'].result
+    # Only the uncategorized & category_one ApiNamespaces are fetched in controller.
+    expected_namespaces.each do |namespace|
+      assert_includes all_namespaces, namespace
+    end
+    # The api-namespaces which are categorized are not fetched. 
+    ApiNamespace.where.not(id: expected_namespaces.map(&:id)).each do |namespace|
+      refute_includes all_namespaces, namespace
+    end
+  end
+
+  test "should get index with only provided category namespaces if user has category-specific for some categorized namespaces" do
+    category_one = comfy_cms_categories(:api_namespace_1)
+    category_two = comfy_cms_categories(:api_namespace_2)
+
+    api_namespace_two = api_namespaces(:two)
+    api_namespace_three = api_namespaces(:three)
+    api_namespace_four = api_namespaces(:users)
+    api_namespace_five = api_namespaces(:array_namespace)
+    api_namespace_six = api_namespaces(:plugin_subdomain_events)
+
+    api_namespace_two.update(category_ids: [category_one.id])
+    api_namespace_three.update(category_ids: [category_one.id])
+    api_namespace_four.update(category_ids: [category_one.id])
+
+    @api_namespace.update(category_ids: [category_two.id])
+    api_namespace_five.update(category_ids: [category_two.id])
+    api_namespace_six.update(category_ids: [category_two.id])
+    # Other namespaces are uncategorized.
+
+    expected_namespaces = [@api_namespace, api_namespace_two, api_namespace_three, api_namespace_four, api_namespace_five, api_namespace_six]
+
+    sign_in(@user)
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category_two.label}": {allow_exports: 'true'}, "#{category_one.label}": {allow_exports: 'true'}}})
+    get api_namespaces_url
+    assert_response :success
+
+    all_namespaces = @controller.view_assigns['api_namespaces_q'].result
+    # Only the category_one & category_two ApiNamespaces are fetched in controller.
+    expected_namespaces.each do |namespace|
+      assert_includes all_namespaces, namespace
+    end
+    # The api-namespaces which are uncategorized are not fetched. 
+    ApiNamespace.where.not(id: expected_namespaces.map(&:id)).each do |namespace|
+      refute_includes all_namespaces, namespace
     end
   end
 
