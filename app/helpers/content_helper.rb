@@ -46,16 +46,16 @@ module ContentHelper
     @is_show_page = true
     scope = options["scope"]
     
-    @api_namespace = ApiNamespace.find_by(slug: api_namespace_slug)
-    api_resources = @api_namespace.api_resources
+    api_namespace = ApiNamespace.find_by(slug: api_namespace_slug)
+    api_resources = api_namespace.api_resources
 
     api_resources = api_resources.where.not(user_id: nil).where(user_id: current_user&.id) if scope&.dig('current_user') == 'true'
     
     api_resources = api_resources.jsonb_search(:properties, scope["properties"], scope["match"]) if scope&.has_key?("properties")
     
-    @api_resource = api_resources.find(params[:id])
+    @api_resource_to_render = api_resources.find(params[:id])
     
-    cms_dynamic_snippet_render("#{api_namespace_slug}-show", nil, { api_resource: @api_resource, api_namespace: @api_namespace })
+    cms_dynamic_snippet_render("#{api_namespace_slug}-show", nil, { api_resource: @api_resource_to_render, api_namespace: api_namespace })
   end
 
   private
