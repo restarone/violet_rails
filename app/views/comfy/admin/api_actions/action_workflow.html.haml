@@ -4,8 +4,7 @@
     > API Actions
     > Workflow
 
-= form_for @api_namespace, html: {multipart: true} do |f|
-  = hidden_field_tag 'source', 'action_workflow'
+= form_for @api_namespace, method: :patch, url: api_action_workflow_api_namespace_path(@api_namespace), html: {multipart: true} do |f|
   - if @api_namespace.errors.any?
     #error_explanation
       %h2= "#{pluralize(@api_namespace.errors.count, "error")} prohibited this api_namespace from being saved:"

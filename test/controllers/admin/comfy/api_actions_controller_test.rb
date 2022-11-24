@@ -440,6 +440,118 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal expected_message, flash[:alert]
   end
 
+  test 'should update action_workflow if user has full_access_for_api_actions_only for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_actions_only: 'true'}})
+
+    payload = {
+      api_namespace: {
+        create_api_actions_attributes: {
+          "0": {
+            action_type: "send_email",
+            include_api_resource_data: "true",
+            email: "test@restarone.com",
+            email_subject: "Test",
+            custom_message: "<div class=\"trix-content\">Test email</div>\r\n",
+            redirect_type: "cms_page",
+            redirect_url: "", 
+            file_snippet: "",
+            request_url: "",
+            http_method: "get",
+            payload_mapping: "{}",
+            custom_headers: "{}",
+            bearer_token: "[FILTERED]",
+            method_definition: "raise StandardError",
+            "_destroy": "false",
+            position: "0"
+          },
+          "1": {
+            action_type: "send_web_request",
+            include_api_resource_data: "false",
+            email: "",
+            email_subject: "",
+            custom_message: "<div class=\"trix-content\"></div>",
+            redirect_type: "cms_page",
+            redirect_url: "",
+            file_snippet: "",
+            request_url: "https://api.spotify.com/v1/search",
+            http_method: "get",
+            payload_mapping: "{}",
+            custom_headers: "{}",
+            bearer_token: "[FILTERED]",
+            method_definition: "raise StandardError",
+            "_destroy": "false",
+            position: "1"
+          }
+        }
+      }
+    }
+
+    sign_in(@user)
+    assert_difference "@api_action.api_namespace.create_api_actions.count", 2 do
+      patch api_action_workflow_api_namespace_url(id: @api_action.api_namespace_id), params: payload
+    end
+
+    assert_response :redirect
+    expected_message = 'Action Workflow successfully updated.'
+    assert_equal expected_message, flash[:notice]
+  end
+
+  test 'should not update action_workflow if user has read_api_actions_only for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {read_api_actions_only: 'true'}})
+
+    payload = {
+      api_namespace: {
+        create_api_actions_attributes: {
+          "0": {
+            action_type: "send_email",
+            include_api_resource_data: "true",
+            email: "test@restarone.com",
+            email_subject: "Test",
+            custom_message: "<div class=\"trix-content\">Test email</div>\r\n",
+            redirect_type: "cms_page",
+            redirect_url: "", 
+            file_snippet: "",
+            request_url: "",
+            http_method: "get",
+            payload_mapping: "{}",
+            custom_headers: "{}",
+            bearer_token: "[FILTERED]",
+            method_definition: "raise StandardError",
+            "_destroy": "false",
+            position: "0"
+          },
+          "1": {
+            action_type: "send_web_request",
+            include_api_resource_data: "false",
+            email: "",
+            email_subject: "",
+            custom_message: "<div class=\"trix-content\"></div>",
+            redirect_type: "cms_page",
+            redirect_url: "",
+            file_snippet: "",
+            request_url: "https://api.spotify.com/v1/search",
+            http_method: "get",
+            payload_mapping: "{}",
+            custom_headers: "{}",
+            bearer_token: "[FILTERED]",
+            method_definition: "raise StandardError",
+            "_destroy": "false",
+            position: "1"
+          }
+        }
+      }
+    }
+
+    sign_in(@user)
+    assert_no_difference "@api_action.api_namespace.create_api_actions.count" do
+      patch api_action_workflow_api_namespace_url(id: @api_action.api_namespace_id), params: payload
+    end
+
+    assert_response :redirect
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_actions_only are allowed to perform that action."
+      assert_equal expected_message, flash[:alert]
+  end
+
   # API access by category wise
   test 'should get action_workflow if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
@@ -480,5 +592,233 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
 
     expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_actions_only are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
+  end
+
+  test 'should update action_workflow if user has category-specific full_access_for_api_actions_only for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_actions_only: 'true'}}})
+
+    payload = {
+      api_namespace: {
+        create_api_actions_attributes: {
+          "0": {
+            action_type: "send_email",
+            include_api_resource_data: "true",
+            email: "test@restarone.com",
+            email_subject: "Test",
+            custom_message: "<div class=\"trix-content\">Test email</div>\r\n",
+            redirect_type: "cms_page",
+            redirect_url: "", 
+            file_snippet: "",
+            request_url: "",
+            http_method: "get",
+            payload_mapping: "{}",
+            custom_headers: "{}",
+            bearer_token: "[FILTERED]",
+            method_definition: "raise StandardError",
+            "_destroy": "false",
+            position: "0"
+          },
+          "1": {
+            action_type: "send_web_request",
+            include_api_resource_data: "false",
+            email: "",
+            email_subject: "",
+            custom_message: "<div class=\"trix-content\"></div>",
+            redirect_type: "cms_page",
+            redirect_url: "",
+            file_snippet: "",
+            request_url: "https://api.spotify.com/v1/search",
+            http_method: "get",
+            payload_mapping: "{}",
+            custom_headers: "{}",
+            bearer_token: "[FILTERED]",
+            method_definition: "raise StandardError",
+            "_destroy": "false",
+            position: "1"
+          }
+        }
+      }
+    }
+
+    sign_in(@user)
+    assert_difference "@api_action.api_namespace.create_api_actions.count", 2 do
+      patch api_action_workflow_api_namespace_url(id: @api_action.api_namespace_id), params: payload
+    end
+
+    assert_response :redirect
+    expected_message = 'Action Workflow successfully updated.'
+    assert_equal expected_message, flash[:notice]
+  end
+
+  test 'should not update action_workflow if user has category-specific read_api_actions_only for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_actions_only: 'true'}}})
+
+    payload = {
+      api_namespace: {
+        create_api_actions_attributes: {
+          "0": {
+            action_type: "send_email",
+            include_api_resource_data: "true",
+            email: "test@restarone.com",
+            email_subject: "Test",
+            custom_message: "<div class=\"trix-content\">Test email</div>\r\n",
+            redirect_type: "cms_page",
+            redirect_url: "", 
+            file_snippet: "",
+            request_url: "",
+            http_method: "get",
+            payload_mapping: "{}",
+            custom_headers: "{}",
+            bearer_token: "[FILTERED]",
+            method_definition: "raise StandardError",
+            "_destroy": "false",
+            position: "0"
+          },
+          "1": {
+            action_type: "send_web_request",
+            include_api_resource_data: "false",
+            email: "",
+            email_subject: "",
+            custom_message: "<div class=\"trix-content\"></div>",
+            redirect_type: "cms_page",
+            redirect_url: "",
+            file_snippet: "",
+            request_url: "https://api.spotify.com/v1/search",
+            http_method: "get",
+            payload_mapping: "{}",
+            custom_headers: "{}",
+            bearer_token: "[FILTERED]",
+            method_definition: "raise StandardError",
+            "_destroy": "false",
+            position: "1"
+          }
+        }
+      }
+    }
+
+    sign_in(@user)
+    assert_no_difference "@api_action.api_namespace.create_api_actions.count" do
+      patch api_action_workflow_api_namespace_url(id: @api_action.api_namespace_id), params: payload
+    end
+
+    assert_response :redirect
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_actions_only are allowed to perform that action."
+      assert_equal expected_message, flash[:alert]
+  end
+
+  test 'should update action_workflow if user has uncategorized full_access_for_api_actions_only for the namespace' do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_api_actions_only: 'true'}}})
+
+    payload = {
+      api_namespace: {
+        create_api_actions_attributes: {
+          "0": {
+            action_type: "send_email",
+            include_api_resource_data: "true",
+            email: "test@restarone.com",
+            email_subject: "Test",
+            custom_message: "<div class=\"trix-content\">Test email</div>\r\n",
+            redirect_type: "cms_page",
+            redirect_url: "", 
+            file_snippet: "",
+            request_url: "",
+            http_method: "get",
+            payload_mapping: "{}",
+            custom_headers: "{}",
+            bearer_token: "[FILTERED]",
+            method_definition: "raise StandardError",
+            "_destroy": "false",
+            position: "0"
+          },
+          "1": {
+            action_type: "send_web_request",
+            include_api_resource_data: "false",
+            email: "",
+            email_subject: "",
+            custom_message: "<div class=\"trix-content\"></div>",
+            redirect_type: "cms_page",
+            redirect_url: "",
+            file_snippet: "",
+            request_url: "https://api.spotify.com/v1/search",
+            http_method: "get",
+            payload_mapping: "{}",
+            custom_headers: "{}",
+            bearer_token: "[FILTERED]",
+            method_definition: "raise StandardError",
+            "_destroy": "false",
+            position: "1"
+          }
+        }
+      }
+    }
+
+    sign_in(@user)
+    assert_difference "@api_action.api_namespace.create_api_actions.count", 2 do
+      patch api_action_workflow_api_namespace_url(id: @api_action.api_namespace_id), params: payload
+    end
+
+    assert_response :redirect
+    expected_message = 'Action Workflow successfully updated.'
+    assert_equal expected_message, flash[:notice]
+  end
+
+  test 'should not update action_workflow if user has uncategorized read_api_actions_only for the namespace' do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {read_api_actions_only: 'true'}}})
+
+    payload = {
+      api_namespace: {
+        create_api_actions_attributes: {
+          "0": {
+            action_type: "send_email",
+            include_api_resource_data: "true",
+            email: "test@restarone.com",
+            email_subject: "Test",
+            custom_message: "<div class=\"trix-content\">Test email</div>\r\n",
+            redirect_type: "cms_page",
+            redirect_url: "", 
+            file_snippet: "",
+            request_url: "",
+            http_method: "get",
+            payload_mapping: "{}",
+            custom_headers: "{}",
+            bearer_token: "[FILTERED]",
+            method_definition: "raise StandardError",
+            "_destroy": "false",
+            position: "0"
+          },
+          "1": {
+            action_type: "send_web_request",
+            include_api_resource_data: "false",
+            email: "",
+            email_subject: "",
+            custom_message: "<div class=\"trix-content\"></div>",
+            redirect_type: "cms_page",
+            redirect_url: "",
+            file_snippet: "",
+            request_url: "https://api.spotify.com/v1/search",
+            http_method: "get",
+            payload_mapping: "{}",
+            custom_headers: "{}",
+            bearer_token: "[FILTERED]",
+            method_definition: "raise StandardError",
+            "_destroy": "false",
+            position: "1"
+          }
+        }
+      }
+    }
+
+    sign_in(@user)
+    assert_no_difference "@api_action.api_namespace.create_api_actions.count" do
+      patch api_action_workflow_api_namespace_url(id: @api_action.api_namespace_id), params: payload
+    end
+
+    assert_response :redirect
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_actions_only are allowed to perform that action."
+      assert_equal expected_message, flash[:alert]
   end
 end
