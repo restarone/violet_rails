@@ -22,4 +22,34 @@ module ApiAccessibilityHelper
       api_accessibility.dig(top_category, category_label)&.keys.present?
     end
   end
+
+  def has_access_to_api_accessibility?(api_permissions, user, api_namespace)
+    user_api_accessibility = user.api_accessibility
+
+    return false unless user_api_accessibility.present?
+
+    is_user_authorized = false
+
+    if user_api_accessibility.keys.include?('all_namespaces')
+      is_user_authorized = api_permissions.any? do |access_name|
+        user_api_accessibility.dig('all_namespaces', access_name).present? && user_api_accessibility.dig('all_namespaces', access_name) == 'true'
+      end
+    elsif user_api_accessibility.keys.include?('namespaces_by_category')
+      categories = api_namespace.categories.pluck(:label)
+
+      if categories.blank? && user_api_accessibility.dig('namespaces_by_category', 'uncategorized').present?
+        is_user_authorized = api_permissions.any? do |access_name|
+          user_api_accessibility.dig('namespaces_by_category', 'uncategorized', access_name).present? && user_api_accessibility.dig('namespaces_by_category', 'uncategorized', access_name) == 'true'
+        end
+      else
+        categories.any? do |category|
+          is_user_authorized = api_permissions.any? do |access_name|
+            user_api_accessibility.dig('namespaces_by_category', category, access_name).present? && user_api_accessibility.dig('namespaces_by_category', category, access_name) == 'true'
+          end
+        end
+      end
+    end
+
+    is_user_authorized
+  end
 end

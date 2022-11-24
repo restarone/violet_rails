@@ -1107,6 +1107,32 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_response :success
   end
 
+  test "should show api-resources section if user has full_access or access related to api-resource for all_namespaces" do
+    ['full_access', 'full_read_access', 'full_access_for_api_resources_only', 'read_api_resources_only', 'delete_access_for_api_resources_only'].each do |access_name|
+      access = {all_namespaces: {}}
+      access[:all_namespaces][access_name] = 'true'
+      @user.update(api_accessibility: access)
+  
+      sign_in(@user)
+      get api_namespace_url(@api_namespace)
+      assert_response :success
+      assert_select 'div#api-resources-list', {count: 1}
+    end
+  end
+
+  test "should not show if user has other access for all_namespaces" do
+    ['delete_access_api_namespace_only', 'allow_exports', 'allow_duplication', 'allow_social_share_metadata', 'full_access_api_namespace_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
+      access = {all_namespaces: {}}
+      access[:all_namespaces][access_name] = 'true'
+      @user.update(api_accessibility: access)
+  
+      sign_in(@user)
+      get api_namespace_url(@api_namespace)
+      assert_response :success
+      assert_select 'div#api-resources-list', {count: 0}
+    end
+  end
+
   test "should show if user has other access related to namespace for all_namespaces" do
     ['allow_exports', 'allow_duplication', 'allow_social_share_metadata'].each do |access_name|
       access = {all_namespaces: {}}
@@ -1253,6 +1279,65 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     expected_message = "You do not have the permission to do that. Only users with full_access or full_read_access or delete_access_api_namespace_only or allow_exports or allow_duplication or full_access_api_namespace_only are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
+  end
+
+  test "should show api-resources section if user has category-specific full_access or access related to api-resource for the namespace" do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+
+    ['full_access', 'full_read_access', 'full_access_for_api_resources_only', 'read_api_resources_only', 'delete_access_for_api_resources_only'].each do |access_name|
+      access = {namespaces_by_category: {}}
+      access[:namespaces_by_category][:"#{category.label}"]= {}
+      access[:namespaces_by_category][:"#{category.label}"][access_name] = 'true'
+      @user.update(api_accessibility: access)
+  
+      sign_in(@user)
+      get api_namespace_url(@api_namespace)
+      assert_response :success
+      assert_select 'div#api-resources-list', {count: 1}
+    end
+  end
+
+  test "should not show if user has other category-specific access for the namespace" do
+    ['delete_access_api_namespace_only', 'allow_exports', 'allow_duplication', 'allow_social_share_metadata', 'full_access_api_namespace_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
+      access = {namespaces_by_category: {}}
+      access[:namespaces_by_category][:"#{category.label}"]= {}
+      access[:namespaces_by_category][:"#{category.label}"][access_name] = 'true'
+      @user.update(api_accessibility: access)
+  
+      sign_in(@user)
+      get api_namespace_url(@api_namespace)
+      assert_response :success
+      assert_select 'div#api-resources-list', {count: 0}
+    end
+  end
+
+  test "should show api-resources section if user has uncategorized full_access or access related to api-resource for the namespace" do
+    ['full_access', 'full_read_access', 'full_access_for_api_resources_only', 'read_api_resources_only', 'delete_access_for_api_resources_only'].each do |access_name|
+      access = {namespaces_by_category: {}}
+      access[:namespaces_by_category][:uncategorized]= {}
+      access[:namespaces_by_category][:uncategorized][access_name] = 'true'
+      @user.update(api_accessibility: access)
+  
+      sign_in(@user)
+      get api_namespace_url(@api_namespace)
+      assert_response :success
+      assert_select 'div#api-resources-list', {count: 1}
+    end
+  end
+
+  test "should not show if user has other uncategorized access for the namespace" do
+    ['delete_access_api_namespace_only', 'allow_exports', 'allow_duplication', 'allow_social_share_metadata', 'full_access_api_namespace_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
+      access = {namespaces_by_category: {}}
+      access[:namespaces_by_category][:uncategorized]= {}
+      access[:namespaces_by_category][:uncategorized][access_name] = 'true'
+      @user.update(api_accessibility: access)
+  
+      sign_in(@user)
+      get api_namespace_url(@api_namespace)
+      assert_response :success
+      assert_select 'div#api-resources-list', {count: 0}
+    end
   end
 
   # EDIT

@@ -4,27 +4,6 @@ class Subdomains::BaseController < ApplicationController
   before_action :ensure_user_belongs_to_subdomain
   layout "subdomains"
 
-  API_ACCESSIBILITIES = {
-    full_access: ['full_access'],
-    full_read_access: ['full_access', 'full_read_access'],
-    full_read_access_in_api_namespace: ['full_access', 'full_read_access', 'delete_access_api_namespace_only', 'allow_exports', 'allow_duplication', 'allow_social_share_metadata', 'full_access_api_namespace_only', 'read_api_resources_only', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'],
-    full_access_api_namespace_only: ['full_access', 'full_access_api_namespace_only'],
-    delete_access_api_namespace_only: ['full_access', 'full_access_api_namespace_only', 'delete_access_api_namespace_only'],
-    allow_exports: ['full_access', 'full_access_api_namespace_only', 'allow_exports'],
-    allow_duplication: ['full_access', 'full_access_api_namespace_only', 'allow_duplication'],
-    allow_social_share_metadata: ['full_access', 'full_access_api_namespace_only', 'allow_social_share_metadata'],
-    read_api_resources_only: ['full_access', 'full_read_access', 'full_access_for_api_resources_only', 'read_api_resources_only', 'delete_access_for_api_resources_only'],
-    full_access_for_api_resources_only: ['full_access', 'full_access_for_api_resources_only'],
-    delete_access_for_api_resources_only: ['full_access', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only'],
-    read_api_actions_only: ['full_access', 'full_read_access', 'full_access_for_api_actions_only', 'read_api_actions_only'],
-    full_access_for_api_actions_only: ['full_access', 'full_access_for_api_actions_only'],
-    read_external_api_connections_only: ['full_access', 'full_read_access', 'full_access_for_external_api_connections_only', 'read_external_api_connections_only'],
-    full_access_for_external_api_connections_only: ['full_access', 'full_access_for_external_api_connections_only'],
-    read_api_clients_only: ['full_access', 'full_read_access', 'full_access_for_api_clients_only', 'read_api_clients_only'],
-    full_access_for_api_clients_only: ['full_access', 'full_access_for_api_clients_only'],
-    full_access_for_api_form_only: ['full_access', 'full_access_for_api_form_only'],
-  }
-
   def ensure_user_belongs_to_subdomain
     unless User.find_by(id: current_user.id)
       flash.alert = 'You arent not authorized to visit that page'
@@ -69,126 +48,126 @@ class Subdomains::BaseController < ApplicationController
 
   # API Accessibilities
   def ensure_authority_for_full_access_in_api
-    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:full_access])
+    unless user_authorized_for_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:full_access])
       flash.alert = "You do not have the permission to do that. Only users with full_access are allowed to perform that action."
       check_redirect_loop_and_redirect
     end
   end
 
   def ensure_authority_for_full_read_access_in_api
-    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:full_read_access_in_api_namespace])
+    unless user_authorized_for_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:full_read_access_in_api_namespace])
       flash.alert = "You do not have the permission to do that. Only users with full_access or full_read_access or delete_access_api_namespace_only or allow_exports or allow_duplication or full_access_api_namespace_only are allowed to perform that action."
       check_redirect_loop_and_redirect
     end
   end
 
   def ensure_authority_for_full_access_in_api_namespace_only
-    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:full_access_api_namespace_only])
+    unless user_authorized_for_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:full_access_api_namespace_only])
       flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only are allowed to perform that action."
       check_redirect_loop_and_redirect
     end
   end
 
   def ensure_authority_for_delete_access_in_api_namespace_only
-    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:delete_access_api_namespace_only])
+    unless user_authorized_for_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:delete_access_api_namespace_only])
       flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or delete_access_api_namespace_only are allowed to perform that action."
       check_redirect_loop_and_redirect
     end
   end
 
   def ensure_authority_for_read_api_resources_only_in_api
-    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:read_api_resources_only])
+    unless user_authorized_for_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:read_api_resources_only])
       flash.alert = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_for_api_resources_only or read_api_resources_only are allowed to perform that action."
       check_redirect_loop_and_redirect
     end
   end
 
   def ensure_authority_for_full_access_for_api_resources_only_in_api
-    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:full_access_for_api_resources_only])
+    unless user_authorized_for_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:full_access_for_api_resources_only])
       flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_for_api_resources_only are allowed to perform that action."
       check_redirect_loop_and_redirect
     end
   end
 
   def ensure_authority_for_delete_access_for_api_resources_only_in_api
-    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:delete_access_for_api_resources_only])
+    unless user_authorized_for_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:delete_access_for_api_resources_only])
       flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_for_api_resources_only or delete_access_for_api_resources_only are allowed to perform that action."
       check_redirect_loop_and_redirect
     end
   end
 
   def ensure_authority_for_allow_exports_in_api
-    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:allow_exports])
+    unless user_authorized_for_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:allow_exports])
       flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or allow_exports are allowed to perform that action."
       check_redirect_loop_and_redirect
     end
   end
 
   def ensure_authority_for_allow_duplication_in_api
-    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:allow_duplication])
+    unless user_authorized_for_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:allow_duplication])
       flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or allow_duplication are allowed to perform that action."
       check_redirect_loop_and_redirect
     end
   end
 
   def ensure_authority_for_allow_social_share_metadata_in_api
-    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:allow_social_share_metadata])
+    unless user_authorized_for_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:allow_social_share_metadata])
       flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or allow_social_share_metadata are allowed to perform that action."
       check_redirect_loop_and_redirect
     end
   end
 
   def ensure_authority_for_read_api_actions_only_in_api
-    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:read_api_actions_only])
+    unless user_authorized_for_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:read_api_actions_only])
       flash.alert = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_for_api_actions_only or read_api_actions_only are allowed to perform that action."
       check_redirect_loop_and_redirect
     end
   end
 
   def ensure_authority_for_full_access_for_api_actions_only_in_api
-    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:full_access_for_api_actions_only])
+    unless user_authorized_for_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:full_access_for_api_actions_only])
       flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_for_api_actions_only are allowed to perform that action."
       check_redirect_loop_and_redirect
     end
   end
 
   def ensure_authority_for_read_external_api_connections_only_in_api
-    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:read_external_api_connections_only])
+    unless user_authorized_for_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:read_external_api_connections_only])
       flash.alert = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_for_external_api_connections_only or read_external_api_connections_only are allowed to perform that action."
       check_redirect_loop_and_redirect
     end
   end
 
   def ensure_authority_for_full_access_for_external_api_connections_only_in_api
-    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:full_access_for_external_api_connections_only])
+    unless user_authorized_for_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:full_access_for_external_api_connections_only])
       flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_for_external_api_connections_only are allowed to perform that action."
       check_redirect_loop_and_redirect
     end
   end
 
   def ensure_authority_for_read_api_clients_only_in_api
-    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:read_api_clients_only])
+    unless user_authorized_for_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:read_api_clients_only])
       flash.alert = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_for_api_clients_only or read_api_clients_only are allowed to perform that action."
       check_redirect_loop_and_redirect
     end
   end
 
   def ensure_authority_for_full_access_for_api_clients_only_in_api
-    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:full_access_for_api_clients_only])
+    unless user_authorized_for_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:full_access_for_api_clients_only])
       flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_for_api_clients_only are allowed to perform that action."
       check_redirect_loop_and_redirect
     end
   end
 
   def ensure_authority_for_full_access_for_api_form_only_in_api
-    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:full_access_for_api_form_only])
+    unless user_authorized_for_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:full_access_for_api_form_only])
       flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_for_api_form_only are allowed to perform that action."
       check_redirect_loop_and_redirect
     end
   end
 
   def ensure_authority_for_viewing_all_api
-    unless user_authorized_to_view_all_api?(API_ACCESSIBILITIES[:full_read_access_in_api_namespace])
+    unless user_authorized_to_view_all_api?(ApiNamespace::API_ACCESSIBILITIES[:full_read_access_in_api_namespace])
       flash.alert = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_api_namespace_only are allowed to perform that action."
       check_redirect_loop_and_redirect
     end
@@ -196,7 +175,7 @@ class Subdomains::BaseController < ApplicationController
 
   # For new, create action of api_namespaces_controller, we cannot use the category specicfic authorization
   def ensure_authority_for_creating_api
-    unless user_authorized_for_api_accessibility?(API_ACCESSIBILITIES[:full_access_api_namespace_only], check_categories: false)
+    unless user_authorized_for_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:full_access_api_namespace_only], check_categories: false)
       flash.alert = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only for all_namespaces are allowed to perform that action."
       check_redirect_loop_and_redirect
     end
