@@ -1,0 +1,1 @@
+Your OTP for <%= link_to Subdomain.current.name, Rails.application.routes.url_helpers.root_url(subdomain: Subdomain.current.name, host: ENV['APP_HOST']) %> is: <%= @user.current_otp %>

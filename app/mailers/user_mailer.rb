@@ -20,4 +20,13 @@ class UserMailer < ApplicationMailer
       subject: "Analytics report for #{@report[:start_date]} - #{@report[:end_date]}"
     )
   end
+
+  def send_otp(user)
+    @user = user
+  
+    mail(
+      to: [user.email],
+      subject: "OTP"
+    )
+  end
 end
