@@ -83,11 +83,17 @@
     }
   }).change();
 
-    $('#external_api_client_webhook_verification_method_attributes_webhook_type').change(function(event) {
+  $('#external_api_client_webhook_verification_method_attributes_webhook_type').change(function(event) {
     if ($(this).val() === 'custom') {
       $('#webhook_custom_method_definition').show();
     } else {
       $('#webhook_custom_method_definition').hide();
+    }
+
+    if ($(this).val() === 'stripe') {
+      $("label[for='external_api_client_webhook_verification_method_attributes_webhook_secret']").html('Webhook Signing Secret')
+    } else {
+      $("label[for='external_api_client_webhook_verification_method_attributes_webhook_secret']").html('Webhook Secret')
     }
   }).change();
 
