@@ -39,11 +39,17 @@
 
         .field#webhook_custom_method_definition
           = webhook_form.label :custom_method_definition
-          %small.text-muted
-            (must return an array containing verification status and message)
-            (Accessable methods: request, verification_method)
-          %div 
-            = webhook_form.text_area :custom_method_definition, data: {'cms-cm-mode' => 'javascript'}, class: "w-100"
+          %small.text-muted (must return an array containing verification status and message)
+          %br
+          %small.text-muted Accessable methods
+          %br
+          %small
+            %li.text-muted request: Instance of ActionDispatch::Request
+          %small
+            %li.text-muted verification_method: Instance of WebhookVerificationMethod
+          %small
+            %li.text-muted Example: request.headers['Authorization'] == verification_method.webhook_secret ? [true, 'Success'] : [false, 'Invalid Token']
+          %div= webhook_form.text_area :custom_method_definition, data: {'cms-cm-mode' => 'javascript'}, class: "w-100"
 
   .field
     = f.label :drive_every
@@ -61,6 +67,16 @@
 
   .field.mb-3
     = f.label :model_definition
+    %small
+      %li.text-muted Define your interface and connection rules in a plain Ruby class (PORO)
+    %small 
+      %li.text-muted
+        Wiki: 
+        %a{href: "https://github.com/restarone/violet_rails/wiki/API:-Entities,-Form-Rendering,-Interfaces-and-Actions#automation-connecting-and-extracting-data-from-external-systemsapis", target: '_blank'} External API Connection
+    %small
+      %li.text-muted 
+        Example: 
+        %a{href: "https://github.com/restarone/violet_rails/blob/141e942461e016991b18697211d2f44e4569cb4e/test/fixtures/external_api_clients.yml#L35", target: '_blank'} External API Connection Model definition
     = f.text_area :model_definition, data: {'cms-cm-mode' => 'javascript'}
 
   #jsoneditor
