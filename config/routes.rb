@@ -29,7 +29,7 @@ Rails.application.routes.draw do
       passwords: 'users/passwords',
       sessions: 'users/sessions',
       unlocks: 'users/unlocks',
-      invitations: 'devise/invitations'
+      invitations: 'users/invitations'
     }
   end
 
@@ -54,7 +54,6 @@ Rails.application.routes.draw do
   end
 
   # api admin
-  post 'users/sign_in', to: 'users/sessions#create'
   resources :api_namespaces, controller: 'comfy/admin/api_namespaces' do
     member do
       post 'duplicate_with_associations'
@@ -89,15 +88,15 @@ Rails.application.routes.draw do
       get 'export'
       get 'export_api_resources'
     end
-  end
+end
   resources :non_primitive_properties, controller: 'comfy/admin/non_primitive_properties', only: [:new]
   resources :api_actions, controller: 'comfy/admin/api_actions', only: [:new]
 
   # system admin panel login
   devise_scope :user do
     get 'sign_in', to: 'users/sessions#new', as: :new_global_admin_session
-    post 'users/sign_in', to: 'users/sessions#create'
     delete 'global_login', to: 'users/sessions#destroy'
+    get 'resend_otp', to: "users/registrations#resend_otp"
   end
   # system admin panel authentication (ensure public schema as well)
   get 'sysadmin', to: 'admin/subdomain_requests#index'
