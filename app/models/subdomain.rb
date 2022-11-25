@@ -167,9 +167,13 @@ class Subdomain < ApplicationRecord
 
   def change_2fa_setting 
     if self.enable_2fa 
-      User.all.map(&:enable_two_factor!)
+      Apartment::Tenant.switch(self.name) do
+        User.all.map(&:enable_two_factor!)
+      end
     else 
-      User.all.map(&:disable_two_factor!)
+      Apartment::Tenant.switch(self.name) do
+        User.all.map(&:disable_two_factor!)
+      end
     end
   end
 
