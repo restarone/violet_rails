@@ -2,6 +2,11 @@ class Users::InvitationsController < Devise::InvitationsController
  
 include TwofactorAuthenticable
 
+def edit
+  session.delete(:otp_user_id)
+  super
+end
+
 def update 
   self.resource = User.find_by_invitation_token( params[:user][:invitation_token], false)
   if  params[:user][:password].present? &&  params[:user][:password_confirmation] && params[:user][:password] == params[:user][:password_confirmation] && enable_2fa?
