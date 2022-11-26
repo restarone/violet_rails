@@ -389,4 +389,9 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
       assert_response :redirect
     end
   end
+
+  test 'should reset the otp_user_id for session in initial render' do
+    get edit_user_registration_path
+    assert_nil session[:otp_user_id]
+  end
 end

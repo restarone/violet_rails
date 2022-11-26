@@ -117,4 +117,9 @@ class Users::InvitationsControllerTest < ActionDispatch::IntegrationTest
         put user_invitation_url, params: payload
         assert_match root_url(subdomain: @public_subdomain.name), response.body
       end
+
+      test 'should reset the otp_user_id for session in initial render' do
+        get accept_user_invitation_path
+        assert_nil session[:otp_user_id]
+      end
 end

@@ -328,4 +328,9 @@ test "should allow #login with otp if enable_2fa is set to true and current_sign
   follow_redirect!
   assert_template :index
 end
+
+test 'should reset the otp_user_id for session in initial render' do
+  get new_user_session_path
+  assert_nil session[:otp_user_id]
+end
 end
