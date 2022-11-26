@@ -45,6 +45,7 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
       :allow_external_analytics_query,
       :email_name,
       :email_signature,
+      :enable_2fa,
       :email_notification_strategy
     )
   end
