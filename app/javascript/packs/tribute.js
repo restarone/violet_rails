@@ -16,7 +16,6 @@ function handleUserTagging(e) {
     tribute = new Tribute({
         values: users.map(user => ({value: user.name || user.email, sgid: user.attachable_sgid })),
         lookup: "value",
-        allowSpaces: true,
     });
     tribute.attach(trix)
     tribute.range.pasteHtml = function (html, startPos, endPos) {
