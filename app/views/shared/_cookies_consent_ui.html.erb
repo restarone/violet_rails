@@ -6,7 +6,7 @@
 $(document).ready( function() {
   $('.cookie-consent-button').on('click', function() {
     $.ajax('/cookies', {
-      data: { cookies: $(this).attr('data-value') },
+      data: { cookies: $(this).data('value') },
       success: function() {
         $('#cookie-consent-wrapper').remove();
       }
