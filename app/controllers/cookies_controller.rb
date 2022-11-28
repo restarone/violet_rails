@@ -18,8 +18,7 @@ class CookiesController < ApplicationController
       }
     else
       render json: {
-        message: 'Cookies has not been accepted.',
-        cookies_accepted: 'false'
+        message: 'Cookies were rejected or has not been accepted.'
       }
     end
   end
