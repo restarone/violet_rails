@@ -20,14 +20,17 @@
 %ul.nav.my-2.nav-tabs{:role => "tablist"}
   %li.nav-item
     %a#interface-tab.nav-link.active{"aria-controls" => "interface", "aria-selected" => "true", "data-toggle" => "tab", :href => "#interface", :role => "tab"} 
-      View Interface
+      Interface
   %li.nav-item
     %a#connections-tab.nav-link{"aria-controls" => "connections", "aria-selected" => "false", "data-toggle" => "tab", :href => "#connections", :role => "tab"} 
-      View Connections
+      Connections
   - if @api_namespace.api_form.present?
     %li.nav-item
       %a#form-tab.nav-link{"aria-controls" => "form", "aria-selected" => "false", "data-toggle" => "tab", :href => "#form", :role => "tab"} 
-        View Form
+        Rendering
+  %li.nav-item
+    %a#actions-tab.nav-link{:href => api_namespace_api_actions_path(api_namespace_id: @api_namespace.id)}
+      Actions
   %li.nav-item
     %a#settings-tab.nav-link{"aria-controls" => "settings", "aria-selected" => "false", "data-toggle" => "tab", :href => "#settings", :role => "tab"} 
       Settings
@@ -44,8 +47,6 @@
 .tab-content
   #interface.tab-pane.fade.show.active{"aria-labelledby" => "interface-tab", :role => "tabpanel"} 
     .card.p-3
-      .card-title
-        = link_to 'API Actions', api_namespace_api_actions_path(api_namespace_id: @api_namespace.id), class: 'btn btn-primary'
       %p
         %b Requires authentication:
         = @api_namespace.requires_authentication
@@ -122,7 +123,16 @@
           .my-3
             = link_to "Create new key for client", new_api_namespace_api_client_path(api_namespace_id: @api_namespace.id)
   - if @api_namespace.api_form.present?
-    #form.tab-pane.fade{"aria-labelledby" => "form-tab", :role => "tabpanel"} 
+    #form.tab-pane.fade{"aria-labelledby" => "form-tab", :role => "tabpanel"}
+      %p
+        %b Form rendering snippet:  
+      %pre= @api_namespace.snippet
+      %p
+        %b API HTML Renderer index snippet:
+      %pre= "{{ cms:helper api_namespace_resource_index '#{@api_namespace.slug}', scope: { properties:  { property: value } } }}"
+      %p
+        %b API HTML Renderer show snippet:
+      %pre= "{{ cms:helper api_namespace_resource '#{@api_namespace.slug}', scope: { properties:  { property: value } } }}"
       %p
         .d-flex.justify-content-between
           %b Preview (outer border is present in preview only):
