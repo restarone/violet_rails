@@ -60,6 +60,6 @@ class SimpleDiscussion::ApplicationController < ::ApplicationController
   end
 
   def set_users_for_mention
-    @users = User.all.as_json(only: [:id, :name, :email])
+    @users = (User.all - [current_user]).as_json(only: [:id, :name, :email])
   end
 end
