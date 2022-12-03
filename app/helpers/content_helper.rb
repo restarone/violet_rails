@@ -37,7 +37,9 @@ module ContentHelper
 
     response = response.limit(options["limit"]) if options["limit"]
 
-    cms_dynamic_snippet_render(slug, nil, { api_resources: response, api_namespace: api_namespace })
+    snippet_identifier = options["snippet"] ? options["snippet"] : slug
+
+    cms_dynamic_snippet_render(snippet_identifier, nil, { api_resources: response, api_namespace: api_namespace })
   end
 
   # render resource show
@@ -54,8 +56,10 @@ module ContentHelper
     api_resources = api_resources.jsonb_search(:properties, scope["properties"], scope["match"]) if scope&.has_key?("properties")
     
     @api_resource_to_render = api_resources.find(params[:id])
+
+    snippet_name = options["snippet"] ? options["snippet"] : api_namespace_slug
     
-    cms_dynamic_snippet_render("#{api_namespace_slug}-show", nil, { api_resource: @api_resource_to_render, api_namespace: api_namespace })
+    cms_dynamic_snippet_render("#{snippet_name}-show", nil, { api_resource: @api_resource_to_render, api_namespace: api_namespace })
   end
 
   private
