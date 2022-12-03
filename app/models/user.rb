@@ -2,6 +2,7 @@ class User < ApplicationRecord
   include JsonbFieldsParsable
   include SimpleDiscussion::ForumUser
   include Comfy::Cms::WithCategories
+  include ActionText::Attachable
   # Include default devise modules. Others available are:
   #  and :omniauthable
   devise :invitable, :registerable,
