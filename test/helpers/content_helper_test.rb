@@ -509,6 +509,48 @@ class ContentHelperTest < ActionView::TestCase
     assert_equal excepted_response, response
   end
 
+  test 'render_api_namespace_resource_index - render default snippet if snippet option is not provided' do
+    Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: "#{@api_namespace.slug}-staging", position: 0, content: "staging<% @api_resources.each do |res| %><%= res.properties['name'] %><% end %>")
+    Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<% @api_resources.each do |res| %><%= res.properties['name'] %><% end %>")
+    response = render_api_namespace_resource_index(@api_namespace.slug, { 'order' => { 'created_at': 'DESC' } })
+    expected_response = "#{@api_resource_2.properties['name']}#{@api_resource_1.properties['name']}#{@api_resource.properties['name']}"
+
+    assert_equal expected_response, response
+  end
+
+  test 'render_api_namespace_resource_index - render an alternative snippet' do
+    Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: "#{@api_namespace.slug}-staging", position: 0, content: "staging<% @api_resources.each do |res| %><%= res.properties['name'] %><% end %>")
+    Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<% @api_resources.each do |res| %><%= res.properties['name'] %><% end %>")
+    response = render_api_namespace_resource_index(@api_namespace.slug, { 'snippet' => "#{@api_namespace.slug}-staging", 'order' => { 'created_at': 'DESC' } })
+    expected_response = "staging#{@api_resource_2.properties['name']}#{@api_resource_1.properties['name']}#{@api_resource.properties['name']}"
+
+    assert_equal expected_response, response
+  end
+
+  test 'render_api_namespace_resource - render default snippet if snippet option is not provided' do
+    params[:id] = @api_resource.id
+
+    Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: "#{@api_namespace.slug}-staging-show", position: 0, content: "staging<%= @api_resource.properties['name'] %>")
+    Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: "#{@api_namespace.slug}-show", position: 0, content: "<%= @api_resource.properties['name'] %>")
+
+    response = render_api_namespace_resource(@api_namespace.slug)
+    expected_response = @api_resource.properties['name']
+
+    assert_equal expected_response, response
+  end
+
+  test 'render_api_namespace_resource - render an alternative snippet' do
+    params[:id] = @api_resource.id
+
+    Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: "#{@api_namespace.slug}-staging-show", position: 0, content: "staging<%= @api_resource.properties['name'] %>")
+    Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: "#{@api_namespace.slug}-show", position: 0, content: "<%= @api_resource.properties['name'] %>")
+
+    response = render_api_namespace_resource(@api_namespace.slug, { 'snippet' => "#{@api_namespace.slug}-staging" })
+    expected_response = "staging#{@api_resource.properties['name']}"
+
+    assert_equal expected_response, response
+  end
+
   def current_user
     @current_user
   end
