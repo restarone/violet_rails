@@ -31,3 +31,4 @@
 
 en:
   hello: "Hello world"
+  receiving_notifications_because_mentioned: "You're receiving notifications because you've been mentioned in this thread."
