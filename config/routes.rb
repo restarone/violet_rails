@@ -8,7 +8,8 @@ class SubdomainConstraint
 end
 
 Rails.application.routes.draw do
-  get 'cookies', to: 'cookies#index' 
+  get 'cookies', to: 'cookies#index'
+  get 'cookies/fetch', to: 'cookies#fetch'
   # analytics dashboard
   get 'dashboard', controller: 'comfy/admin/dashboard'
   get 'dashboard/sessions/:ahoy_visit_id', to: 'comfy/admin/dashboard#visit', as: :dashboard_visits
