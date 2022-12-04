@@ -10,6 +10,6 @@ module AhoyControllerPatch
 	end
 
 	def tracking_enabled?
-		Subdomain.current.tracking_enabled && cookies[:cookies_accepted] == 'true'
+		Subdomain.current.tracking_enabled && request.cookies['cookies_accepted'] == 'true'
 	end
 end
