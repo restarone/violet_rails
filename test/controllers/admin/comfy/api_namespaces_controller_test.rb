@@ -1639,8 +1639,8 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     end
   end
 
-  test "should discard_failed_api_actions if user has full_access_api_namespace_only for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+  test "should discard_failed_api_actions if user has full_access_for_api_actions_only for all_namespaces" do
+    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_actions_only: 'true'}})
 
     failed_action = api_actions(:two)
     failed_action.update(lifecycle_stage: 'failed')
@@ -1652,6 +1652,26 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
         post discard_failed_api_actions_api_namespace_url(@api_namespace)
       end
     end
+  end
+
+  test "should not discard_failed_api_actions if user has full_access_api_namespace_only for all_namespaces" do
+    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+
+    failed_action = api_actions(:two)
+    failed_action.update(lifecycle_stage: 'failed')
+    failed_action_counts = @api_namespace.executed_api_actions.where(lifecycle_stage: 'failed').size
+
+    sign_in(@user)
+    assert_no_difference "@api_namespace.reload.executed_api_actions.where(lifecycle_stage: 'failed').size" do
+      assert_no_difference "@api_namespace.reload.executed_api_actions.where(lifecycle_stage: 'discarded').size" do
+        post discard_failed_api_actions_api_namespace_url(@api_namespace)
+      end
+    end
+
+    assert_response :redirect
+
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_actions_only are allowed to perform that action."
+    assert_equal expected_message, flash[:alert]
   end
 
   test "should not discard_failed_api_actions if user has other access for all_namespaces" do
@@ -1670,7 +1690,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     assert_response :redirect
 
-    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_actions_only are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
   end
 
@@ -1692,10 +1712,10 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     end
   end
 
-  test "should discard_failed_api_actions if user has category specific full_access_api_namespace_only for the namespace" do
+  test "should discard_failed_api_actions if user has category specific full_access_for_api_actions_only for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}})
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_actions_only: 'true'}}})
 
     failed_action = api_actions(:two)
     failed_action.update(lifecycle_stage: 'failed')
@@ -1707,6 +1727,28 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
         post discard_failed_api_actions_api_namespace_url(@api_namespace)
       end
     end
+  end
+
+  test "should not discard_failed_api_actions if user has category specific full_access_api_namespace_only for the namespace" do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}})
+
+    failed_action = api_actions(:two)
+    failed_action.update(lifecycle_stage: 'failed')
+    failed_action_counts = @api_namespace.executed_api_actions.where(lifecycle_stage: 'failed').size
+
+    sign_in(@user)
+    assert_no_difference "@api_namespace.reload.executed_api_actions.where(lifecycle_stage: 'failed').size" do
+      assert_no_difference "@api_namespace.reload.executed_api_actions.where(lifecycle_stage: 'discarded').size" do
+        post discard_failed_api_actions_api_namespace_url(@api_namespace)
+      end
+    end
+
+    assert_response :redirect
+
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_actions_only are allowed to perform that action."
+    assert_equal expected_message, flash[:alert]
   end
 
   test "should not discard_failed_api_actions if user has category specific other access for the namespace" do
@@ -1727,7 +1769,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     assert_response :redirect
 
-    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_actions_only are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
   end
 
@@ -1751,7 +1793,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     assert_response :redirect
 
-    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_actions_only are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
   end
 
@@ -1771,8 +1813,8 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     end
   end
 
-  test "should rerun_failed_api_actions if user has full_access_api_namespace_only for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+  test "should rerun_failed_api_actions if user has full_access_for_api_actions_only for all_namespaces" do
+    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_actions_only: 'true'}})
 
     failed_action = api_actions(:two)
     failed_action.update(lifecycle_stage: 'failed')
@@ -1783,6 +1825,24 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
       post rerun_failed_api_actions_api_namespace_url(@api_namespace)
       assert_response :redirect
     end
+  end
+
+  test "should not rerun_failed_api_actions if user has full_access_api_namespace_only for all_namespaces" do
+    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+
+    failed_action = api_actions(:two)
+    failed_action.update(lifecycle_stage: 'failed')
+    failed_action_counts = @api_namespace.executed_api_actions.where(lifecycle_stage: 'failed').size
+
+    sign_in(@user)
+    assert_no_difference "@api_namespace.reload.executed_api_actions.where(lifecycle_stage: 'failed').size" do
+      post rerun_failed_api_actions_api_namespace_url(@api_namespace)
+    end
+
+    assert_response :redirect
+
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_actions_only are allowed to perform that action."
+    assert_equal expected_message, flash[:alert]
   end
 
   test "should not rerun_failed_api_actions if user has other access for all_namespaces" do
@@ -1799,7 +1859,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     assert_response :redirect
 
-    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_actions_only are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
   end
 
@@ -1820,10 +1880,10 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     end
   end
 
-  test "should rerun_failed_api_actions if user has category specific full_access_api_namespace_only for the namespace" do
+  test "should rerun_failed_api_actions if user has category specific full_access_for_api_actions_only for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}})
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_actions_only: 'true'}}})
 
     failed_action = api_actions(:two)
     failed_action.update(lifecycle_stage: 'failed')
@@ -1834,6 +1894,26 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
       post rerun_failed_api_actions_api_namespace_url(@api_namespace)
       assert_response :redirect
     end
+  end
+
+  test "should not rerun_failed_api_actions if user has category specific full_access_api_namespace_only for the namespace" do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}})
+
+    failed_action = api_actions(:two)
+    failed_action.update(lifecycle_stage: 'failed')
+    failed_action_counts = @api_namespace.executed_api_actions.where(lifecycle_stage: 'failed').size
+
+    sign_in(@user)
+    assert_no_difference "@api_namespace.reload.executed_api_actions.where(lifecycle_stage: 'failed').size" do
+      post rerun_failed_api_actions_api_namespace_url(@api_namespace)
+    end
+
+    assert_response :redirect
+
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_actions_only are allowed to perform that action."
+    assert_equal expected_message, flash[:alert]
   end
 
   test "should not rerun_failed_api_actions if user has category specific other access for the namespace" do
@@ -1852,7 +1932,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     assert_response :redirect
 
-    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_actions_only are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
   end
 
@@ -1874,7 +1954,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     assert_response :redirect
 
-    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_actions_only are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
   end
 
