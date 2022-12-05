@@ -1,0 +1,13 @@
+<div class="card">
+  <div class="card-header">2 Factor Authentication</div>
+  <div class="card-body">
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name), method: :post, data: { turbo: false }) do |f| %>
+      <%= f.text_field :otp_attempt, label: 'OTP' %>
+      <div class="actions">
+        <%= f.submit 'Verify', class: 'btn btn-primary mt-2' %>
+
+      </div>
+    <% end %>
+     <%= button_to 'Re-send OTP' ,resend_otp_path ,method: :get, remote: true, class: 'btn btn-primary mt-2',id: 'resend-otp-btn' %>
+  </div>
+</div>

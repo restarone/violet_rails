@@ -717,4 +717,21 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     refute_includes @controller.view_assigns['api_namespaces'], namespace_with_all_types
     refute_includes @controller.view_assigns['api_namespaces'], monitoring_target_incident
   end
+
+  test "#index: Rendering tab should include documentation on form snippet and API HTML renderer snippets" do
+    sign_in(@user)
+    @api_namespace.has_form = "1"
+
+    get api_namespace_url(@api_namespace)
+    assert_response :success
+
+    assert_select "b", {count: 1, text: "Form rendering snippet:"}
+    assert_select "pre", {count: 1, text: @api_namespace.snippet}
+
+    assert_select "b", {count: 1, text: "API HTML Renderer index snippet:"}
+    assert_select "pre", {count: 1, text: "{{ cms:helper api_namespace_resource_index '#{@api_namespace.slug}', scope: { properties:  { property: value } } }}"}
+
+    assert_select "b", {count: 1, text: "API HTML Renderer show snippet:"}
+    assert_select "pre", {count: 1, text: "{{ cms:helper api_namespace_resource '#{@api_namespace.slug}', scope: { properties:  { property: value } } }}"}
+  end
 end
