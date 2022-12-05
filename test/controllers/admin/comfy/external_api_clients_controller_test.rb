@@ -356,6 +356,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
     expected_message = "You need to sign in or sign up before continuing."
 
     assert_response :redirect
+    assert_redirected_to new_user_session_path
     assert_match expected_message, flash[:alert]
   end
 
@@ -370,6 +371,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
     expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_external_api_connections_only are allowed to perform that action."
 
     assert_response :redirect
+    assert_redirected_to root_path
     assert_match expected_message, flash[:alert]
   end
 
@@ -383,6 +385,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
     expected_message = "Api client was successfully destroyed."
 
     assert_response :redirect
+    assert_redirected_to api_namespace_external_api_clients_path
     assert_match expected_message, flash[:notice]
   end
 
