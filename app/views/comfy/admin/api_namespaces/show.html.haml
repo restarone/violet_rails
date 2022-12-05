@@ -20,14 +20,17 @@
 %ul.nav.my-2.nav-tabs{:role => "tablist"}
   %li.nav-item
     %a#interface-tab.nav-link.active{"aria-controls" => "interface", "aria-selected" => "true", "data-toggle" => "tab", :href => "#interface", :role => "tab"} 
-      View Interface
+      Interface
   %li.nav-item
     %a#connections-tab.nav-link{"aria-controls" => "connections", "aria-selected" => "false", "data-toggle" => "tab", :href => "#connections", :role => "tab"} 
-      View Connections
+      Connections
   - if @api_namespace.api_form.present?
     %li.nav-item
       %a#form-tab.nav-link{"aria-controls" => "form", "aria-selected" => "false", "data-toggle" => "tab", :href => "#form", :role => "tab"} 
-        View Form
+        Rendering
+  %li.nav-item
+    %a#actions-tab.nav-link{:href => api_namespace_api_actions_path(api_namespace_id: @api_namespace.id)}
+      Actions
   %li.nav-item
     %a#settings-tab.nav-link{"aria-controls" => "settings", "aria-selected" => "false", "data-toggle" => "tab", :href => "#settings", :role => "tab"} 
       Settings
@@ -35,14 +38,15 @@
     %a#export-tab.nav-link{"aria-controls" => "export", "aria-selected" => "false", "data-toggle" => "tab", :href => "#export", :role => "tab"} 
       Export
   %li.nav-item
+    %a#cms-associations-tab.nav-link{"aria-controls" => "export", "aria-selected" => "false", "data-toggle" => "tab", :href => "#cms-associations", :role => "tab"} 
+      CMS Associations
+  %li.nav-item
     %a#social-tab.nav-link{"aria-controls" => "social", "aria-selected" => "false", "data-toggle" => "tab", :href => "#social", :role => "tab"} 
       Social Share Mapping
 
 .tab-content
   #interface.tab-pane.fade.show.active{"aria-labelledby" => "interface-tab", :role => "tabpanel"} 
     .card.p-3
-      .card-title
-        = link_to 'API Actions', api_namespace_api_actions_path(api_namespace_id: @api_namespace.id), class: 'btn btn-primary'
       %p
         %b Requires authentication:
         = @api_namespace.requires_authentication
@@ -119,7 +123,16 @@
           .my-3
             = link_to "Create new key for client", new_api_namespace_api_client_path(api_namespace_id: @api_namespace.id)
   - if @api_namespace.api_form.present?
-    #form.tab-pane.fade{"aria-labelledby" => "form-tab", :role => "tabpanel"} 
+    #form.tab-pane.fade{"aria-labelledby" => "form-tab", :role => "tabpanel"}
+      %p
+        %b Form rendering snippet:  
+      %pre= @api_namespace.snippet
+      %p
+        %b API HTML Renderer index snippet:
+      %pre= "{{ cms:helper api_namespace_resource_index '#{@api_namespace.slug}', scope: { properties:  { property: value } } }}"
+      %p
+        %b API HTML Renderer show snippet:
+      %pre= "{{ cms:helper api_namespace_resource '#{@api_namespace.slug}', scope: { properties:  { property: value } } }}"
       %p
         .d-flex.justify-content-between
           %b Preview (outer border is present in preview only):
@@ -143,6 +156,51 @@
       = link_to 'Export JSON with associations', export_with_associations_as_json_api_namespace_path(id: @api_namespace.id), method: :get, class: 'btn btn-info'
     .my-3
       = link_to 'Export JSON without associations', export_without_associations_as_json_api_namespace_path(id: @api_namespace.id), method: :get, class: 'btn btn-info'
+  #cms-associations.tab-pane.fade{"aria-labelledby" => "cms-associations-tab", :role => "tabpanel"} 
+    - if (cms_associations = @api_namespace.cms_associations).present?
+      - page_associations = cms_associations.select { |association| association.class.to_s == 'Comfy::Cms::Page' }
+      - snippet_associations = cms_associations.select { |association| association.class.to_s == 'Comfy::Cms::Snippet' }
+      - layout_associations = cms_associations.select { |association| association.class.to_s == 'Comfy::Cms::Layout' }
+
+      .card.my-1
+        .card-body
+          .card-title.font-weight-bold
+            CMS Pages
+          - if page_associations.present?
+            %ul.list-group.ml-3
+              - page_associations.each do |page|
+                %li
+                  = link_to page.label, edit_comfy_admin_cms_site_page_path(site_id: page.site.id, id: page.id), target: '_blank'
+          - else
+            No Cms::Page associations for this api-namespace
+      .card.my-1
+        .card-body
+          .card-title.font-weight-bold
+            CMS Snippet
+          - if snippet_associations.present?
+            %ul.list-group.ml-3
+              - snippet_associations.each do |snippet|
+                %li
+                  = link_to snippet.label, edit_comfy_admin_cms_site_snippet_path(site_id: snippet.site.id, id: snippet.id), target: '_blank'
+          - else
+            No Cms::Snippet associations for this api-namespace
+      .card.my-1
+        .card-body
+          .card-title.font-weight-bold
+            CMS Layouts
+          - if layout_associations.present?
+            %ul.list-group.ml-3
+              - layout_associations.each do |layout|
+                %li
+                  = link_to layout.label, edit_comfy_admin_cms_site_layout_path(site_id: layout.site.id, id: layout.id), target: '_blank'
+          - else
+            No Cms::Layout associations for this api-namespace
+
+    - else
+      .card.my-1
+        .card-body
+          No CMS associations for this api-namespace
+
   #social.tab-pane.fade{"aria-labelledby" => "social-tab", :role => "tabpanel"} 
     = form_with(method: :patch , url: api_namespace_path(@api_namespace))  do |f|
       .form-group
