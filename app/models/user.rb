@@ -2,11 +2,18 @@ class User < ApplicationRecord
   include JsonbFieldsParsable
   include SimpleDiscussion::ForumUser
   include Comfy::Cms::WithCategories
+  include ActionText::Attachable
   # Include default devise modules. Others available are:
   #  and :omniauthable
-  devise :invitable, :database_authenticatable, :registerable,
+  devise :invitable, :registerable,
          :recoverable, :rememberable, :validatable,
-         :confirmable, :lockable, :timeoutable, :trackable
+         :confirmable, :lockable, :timeoutable, :trackable,  :two_factor_authenticatable,
+         :otp_secret_encryption_key => Rails.application.secrets.secret_key_base
+
+         devise :registerable,
+         :recoverable, :rememberable, :validatable
+  after_create :enable_two_factor!, if: -> { Subdomain.current.enable_2fa }
+
 
   attr_accessor :canonical_subdomain
 
@@ -124,6 +131,27 @@ class User < ApplicationRecord
   def is_last_admin?
     User.all.size == 1 || (self.can_manage_users && User.where(can_manage_users: true).size == 1)
   end
+
+    # Generate an OTP secret it it does not already exist
+    def generate_two_factor_secret_if_missing!
+      return unless otp_secret.nil?
+      update!(otp_secret: User.generate_otp_secret)
+    end
+  
+    # Ensure that the user is prompted for their OTP when they login
+    def enable_two_factor!
+      generate_two_factor_secret_if_missing!
+      update!(otp_required_for_login: true)
+    end
+  
+    # Disable the use of OTP-based two-factor.
+    def disable_two_factor!
+      update!(
+          otp_required_for_login: false,
+          otp_secret: nil
+         )
+    end
+  
   
   private
 

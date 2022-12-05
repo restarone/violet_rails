@@ -92,7 +92,7 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
         password: '123456'
       }
     }
-    post users_sign_in_url, params: payload
+    post user_session_url, params: payload
     assert_response :success
     assert_template :new
     assert_equal flash.alert, "Invalid Email or password."
@@ -106,7 +106,7 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
         password: '123456'
       }
     }
-    post users_sign_in_url, params: payload
+    post user_session_url, params: payload
     assert_redirected_to admin_subdomain_requests_url
     follow_redirect!
     assert_template :index
@@ -119,7 +119,7 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
         password: ''
       }
     }
-    post users_sign_in_url, params: payload
+    post user_session_url, params: payload
     
     assert_template :new
     assert_match "Invalid Email or password.", flash[:alert]
@@ -231,4 +231,106 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
       assert_redirected_to root_url(subdomain: @restarone_subdomain.name)
     end
   end
+
+  test 'should allow #login without otp if enable_2fa is set to false' do
+    Subdomain.current.update(enable_2fa: false)
+    @user.update(global_admin: true)
+    payload = {
+      user: {
+        email: @user.email,
+        password: '123456'
+      }
+    }
+    post user_session_url, params: payload
+    assert_redirected_to admin_subdomain_requests_url
+  end
+
+test 'should deny #login with wrong otp if enable_2fa is set to true' do
+  Subdomain.current.update(enable_2fa: true)
+  payload = {
+    user: {
+      email: @user.email,
+      password: '123456',
+    }
+  }
+  post user_session_url, params: payload
+  assert_template 'users/sessions/two_factor'
+  payload = {
+    user: {
+      email: @user.email,
+      password: '123456',
+      otp_attempt: 'sdfsdf'
+    }
+  }
+  post user_session_url, params: payload
+  assert_equal flash.alert, "Invalid two-factor code."
+end
+
+test "should allow #login without otp if enable_2fa is set to true and current_sign_in_ip is equal to user's current ip" do
+  Subdomain.current.update(enable_2fa: true)
+  @user.update(global_admin: true, current_sign_in_ip: '172.18.1.0')
+  payload = {
+    user: {
+      email: @user.email,
+      password: '123456',
+    }
+  }
+  post user_session_url, params: payload, env: { "REMOTE_ADDR": "172.18.1.0" }
+  assert_redirected_to admin_subdomain_requests_url
+end
+
+test "should deny #login without otp if enable_2fa is set to true and current_sign_in_ip is not equal to user's current ip" do
+  Subdomain.current.update(enable_2fa: true)
+  @user.update(current_sign_in_ip: '172.18.1.0')
+  payload = {
+    user: {
+      email: @user.email,
+      password: '123456',
+    }
+  }
+  post user_session_url, params: payload, env: { "REMOTE_ADDR": "172.20.1.1" }
+  assert_template 'users/sessions/two_factor'
+
+  payload = {
+    user: {
+      email: @user.email,
+      password: '123456',
+    }
+  }
+  post user_session_url, params: payload, env: { "REMOTE_ADDR": "172.20.1.1" }
+  assert_equal flash.alert, "OTP Required."
+end
+
+test "should allow #login with otp if enable_2fa is set to true and current_sign_in_ip is not equal to user's current ip" do
+  Subdomain.current.update(enable_2fa: true)
+  # successful login and displaying 2fa page
+  @user.update(global_admin: true, current_sign_in_ip: '172.18.1.0')
+  payload = {
+    user: {
+      email: @user.email,
+      password: '123456',
+    },
+  }
+  post user_session_url, params: payload, env: { "REMOTE_ADDR": "172.18.1.1" }
+  assert_template 'users/sessions/two_factor'
+
+  # valid otp and redirection to admin subdomain page
+  payload = {
+    user: {
+      email: @user.email,
+      password: '123456',
+      otp_attempt: @user.reload.current_otp,
+    },
+    session: { otp_user_id: @user.id } 
+  }
+  post user_session_url, params: payload, env: { "REMOTE_ADDR": "172.18.1.1" }
+  assert_redirected_to admin_subdomain_requests_url
+  follow_redirect!
+  assert_template :index
+end
+
+test 'should reset the otp_user_id for session in initial render' do
+  get new_user_session_path
+  assert_nil session[:otp_user_id]
+end
 end

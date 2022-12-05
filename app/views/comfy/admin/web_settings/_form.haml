@@ -90,6 +90,19 @@
       .form-group.consent-text
         = f.label :cookies_consent_ui
         = f.text_area :cookies_consent_ui, data: {'cms-cm-mode' => 'text/html'}
+
+        .mt-3{ style: "font-size: small;"}
+          .note-wrapper
+            %span.text-info.text-bold.font-weight-bold
+              Note: 
+            API endpoint to view the cookie consent information.
+          %li
+            API endpoint: 
+            = link_to cookies_fetch_url, cookies_fetch_url, target: '_blank'
+          %li
+            Request Type: GET
+
+          
       
       :css
         .consent-text { display: none;}
@@ -140,6 +153,18 @@
       = f.check_box :forum_is_private
       %label
         Private forum (unchecked: Public forum)
+    .card
+      .card-header
+        %strong
+          2 Factor Authentication
+        .card-body
+          .card
+            .card-header
+              .d-inline
+                = f.check_box :enable_2fa
+              %label
+                %strong
+                  Email
 
 .card.mt-5
   .card-header

@@ -34,3 +34,28 @@
     }
   }
 }
+
+.tribute-container {
+  border-radius: 0.25rem;
+  border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 0 0.25rem rgba(0,0,0,0.1), 0 0.25rem 1rem rgba(0,0,0,0.05);
+  ul {
+    border-radius: 0.25rem;
+    background-color: white;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    max-height: 5rem;
+    overflow: scroll;
+  }
+  li {
+    padding: 0.25rem 1rem;
+  }
+  .highlight {
+    background-color: #0062cc;
+    color: white;
+    span {
+      font-weight: bold;
+    }
+  }
+}
