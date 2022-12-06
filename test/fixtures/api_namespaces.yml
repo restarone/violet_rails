@@ -160,3 +160,69 @@ namespace_with_slash:
   name: slash/namespace
   slug: slash-namespace
   version: 1
+
+compliance_visitor_data_request:
+  name: compliance/visitor/request
+  slug: compliance-visitor-request
+  version: 1
+  properties: {
+    'name': '',
+    'email': '',
+    'compliance_message_sent': false
+  }
+  requires_authentication: false
+  namespace_type: create-read-update-delete
+
+namespace_with_email_one:
+  name: namespace_with_email_one
+  slug: namespace_with_email_one
+  version: 1
+  properties: {
+    'post': '',
+    'email': '',
+  }
+  requires_authentication: false
+  namespace_type: create-read-update-delete
+
+namespace_with_email_two:
+  name: namespace_with_email_two
+  slug: namespace_with_email_two
+  version: 1
+  properties: {
+    'email': '',
+    'name': '',
+  }
+  requires_authentication: false
+  namespace_type: create-read-update-delete
+
+movies:
+  name: movies
+  slug: movies
+  version: 1
+  properties: {
+                "title": "",
+                "tags": []
+              }
+  requires_authentication: false
+  namespace_type: create-read-update-delete
+
+movie_tags:
+  name: movie_tags
+  slug: movie_tags
+  version: 1
+  properties: {
+                "tags": "",
+                "representation": ""
+              }
+  requires_authentication: false
+  namespace_type: create-read-update-delete
+
+namespace_with_transcript:
+  name: namespace_with_transcript
+  slug: namespace_with_transcript
+  version: 1
+  properties: {
+    "raw_transcript": "",
+    "transcript": "",
+    "transcript_parsed": false
+  }

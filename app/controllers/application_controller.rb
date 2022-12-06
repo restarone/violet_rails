@@ -2,6 +2,7 @@ class ApplicationController < ActionController::Base
 
   before_action :prepare_exception_notifier
   before_action :store_user_location!, if: :storable_location?
+  before_action :set_current_user
 
   def after_sign_in_path_for(resource)
     if session[:user_return_to] then return session[:user_return_to] end
@@ -48,17 +49,7 @@ class ApplicationController < ActionController::Base
     store_location_for(:user, request.fullpath)
   end
 
-  def set_ahoy_cookies
-    if Ahoy.cookies && tracking_enabled?
-      ahoy.set_visitor_cookie
-      ahoy.set_visit_cookie
-    else
-      # delete cookies if exist
-      ahoy.reset
-    end
-  end
-
-  def tracking_enabled?
-    Subdomain.current.tracking_enabled && cookies[:cookies_accepted] == 'true'
+  def set_current_user
+    Current.user = current_user
   end
 end

@@ -112,3 +112,5 @@ gem "turnout", "~> 2.5"
 gem "turbo-rails", "~> 1.1"
 
 gem "redis-namespace", "~> 1.8"
+
+gem 'devise-two-factor', "4.0.2"

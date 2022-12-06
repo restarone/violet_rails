@@ -243,7 +243,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,#{api_namespace.social_share_metadata}\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -259,9 +259,9 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     DateTime.stubs(:now).returns(stubbed_date)
 
     get export_api_resources_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,api_namespace_id,null,array,number,object,string,boolean,created_at,updated_at\n" \
-    "#{resource_one.id},#{api_namespace.id},#{resource_one.properties['null']},#{resource_one.properties['array']},#{resource_one.properties['number']},\"{\"\"a\"\"=>\"\"apple\"\"}\",#{resource_one.properties['string']},\"\",#{resource_one.created_at},#{resource_one.updated_at}\n" \
-    "#{resource_two.id},#{api_namespace.id},#{resource_two.properties['null']},#{resource_two.properties['array']},#{resource_two.properties['number']},\"{\"\"b\"\"=>\"\"ball\"\"}\",#{resource_two.properties['string']},\"\",#{resource_two.created_at},#{resource_two.updated_at}\n"
+    expected_csv = "id,api_namespace_id,null,array,number,object,string,boolean,created_at,updated_at,user_id\n" \
+    "#{resource_one.id},#{api_namespace.id},#{resource_one.properties['null']},#{resource_one.properties['array']},#{resource_one.properties['number']},\"{\"\"a\"\"=>\"\"apple\"\"}\",#{resource_one.properties['string']},\"\",#{resource_one.created_at},#{resource_one.updated_at},#{resource_one.user_id}\n" \
+    "#{resource_two.id},#{api_namespace.id},#{resource_two.properties['null']},#{resource_two.properties['array']},#{resource_two.properties['number']},\"{\"\"b\"\"=>\"\"ball\"\"}\",#{resource_two.properties['string']},\"\",#{resource_two.created_at},#{resource_two.updated_at},#{resource_one.user_id}\n"
 
     assert_response :success
     assert_equal expected_csv, response.body
@@ -316,9 +316,9 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     "  <div>Hello World</div>\n" \
     "</div>\n\""
 
-    expected_csv = "id,api_namespace_id,null,array,number,object,string,boolean,created_at,updated_at,file_upload_one,richtext_field,file_upload_two\n" \
-    "#{resource_one.id},#{api_namespace.id},#{resource_one.properties['null']},#{resource_one.properties['array']},#{resource_one.properties['number']},\"{\"\"a\"\"=>\"\"apple\"\"}\",#{resource_one.properties['string']},\"\",#{resource_one.created_at},#{resource_one.updated_at},#{rails_blob_url(file_upload_one, subdomain: Apartment::Tenant.current)},#{richtext_field},#{rails_blob_url(file_upload_two, subdomain: Apartment::Tenant.current)}\n" \
-    "#{resource_two.id},#{api_namespace.id},#{resource_two.properties['null']},#{resource_two.properties['array']},#{resource_two.properties['number']},\"{\"\"b\"\"=>\"\"ball\"\"}\",#{resource_two.properties['string']},\"\",#{resource_two.created_at},#{resource_two.updated_at},\"\",\"\",\"\"\n"
+    expected_csv = "id,api_namespace_id,null,array,number,object,string,boolean,created_at,updated_at,user_id,file_upload_one,richtext_field,file_upload_two\n" \
+    "#{resource_one.id},#{api_namespace.id},#{resource_one.properties['null']},#{resource_one.properties['array']},#{resource_one.properties['number']},\"{\"\"a\"\"=>\"\"apple\"\"}\",#{resource_one.properties['string']},\"\",#{resource_one.created_at},#{resource_one.updated_at},#{resource_one.user_id},#{rails_blob_url(file_upload_one, subdomain: Apartment::Tenant.current)},#{richtext_field},#{rails_blob_url(file_upload_two, subdomain: Apartment::Tenant.current)}\n" \
+    "#{resource_two.id},#{api_namespace.id},#{resource_two.properties['null']},#{resource_two.properties['array']},#{resource_two.properties['number']},\"{\"\"b\"\"=>\"\"ball\"\"}\",#{resource_two.properties['string']},\"\",#{resource_two.created_at},#{resource_two.updated_at},#{resource_two.user_id},\"\",\"\",\"\"\n"
 
     assert_response :success
     assert_equal expected_csv, response.body
@@ -354,9 +354,9 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     get export_api_resources_api_namespace_url(api_namespace, format: :csv)
 
-    expected_csv = "id,api_namespace_id,null,array,number,object,string,boolean,created_at,updated_at\n" \
-    "#{resource_one.id},#{api_namespace.id},#{resource_one.properties['null']},#{resource_one.properties['array']},#{resource_one.properties['number']},\"{\"\"a\"\"=>\"\"apple\"\"}\",#{resource_one.properties['string']},\"\",#{resource_one.created_at},#{resource_one.updated_at}\n" \
-    "#{resource_two.id},#{api_namespace.id},#{resource_two.properties['null']},#{resource_two.properties['array']},#{resource_two.properties['number']},\"{\"\"b\"\"=>\"\"ball\"\"}\",#{resource_two.properties['string']},\"\",#{resource_two.created_at},#{resource_two.updated_at}\n"
+    expected_csv = "id,api_namespace_id,null,array,number,object,string,boolean,created_at,updated_at,user_id\n" \
+    "#{resource_one.id},#{api_namespace.id},#{resource_one.properties['null']},#{resource_one.properties['array']},#{resource_one.properties['number']},\"{\"\"a\"\"=>\"\"apple\"\"}\",#{resource_one.properties['string']},\"\",#{resource_one.created_at},#{resource_one.updated_at},#{resource_one.user_id}\n" \
+    "#{resource_two.id},#{api_namespace.id},#{resource_two.properties['null']},#{resource_two.properties['array']},#{resource_two.properties['number']},\"{\"\"b\"\"=>\"\"ball\"\"}\",#{resource_two.properties['string']},\"\",#{resource_two.created_at},#{resource_two.updated_at},#{resource_two.user_id}\n"
 
     assert_response :success
     assert_equal expected_csv, response.body
@@ -608,7 +608,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     assert_select "table", 1, "This page must contain a api-resources table"
     properties.keys.each do |heading|
-      assert_select "thead th", {count: 1, text: heading}, "Api-resources table must contain '#{heading}' column"
+      assert_select "thead th", {count: 1, text: heading.capitalize.gsub('_', ' ')}, "Api-resources table must contain '#{heading}' column"
     end
   end
 
@@ -680,5 +680,106 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
         assert_select "+ pre", { count: 1, text: "query: { apiNamespaces { id } }" }
       end
     end
+  end
+
+  test "#show: should allow sorting by dynamic columns" do 
+    sign_in(@user)
+    api_namespace = api_namespaces(:users)
+    api_namespace.update(properties: {
+      last_name: "",
+      first_name: ""
+    })
+    api_namespace.api_resources.create!({
+      properties: {
+        last_name: "Doe",
+        first_name: "John",
+      }
+    })
+
+    assert_equal api_namespace.api_resources.length, 2
+    assert_equal api_namespace.api_resources[0].properties['first_name'], "Don"
+    assert_equal api_namespace.api_resources[1].properties['first_name'], "John"
+
+    get api_namespace_url(api_namespace), params: {q: { s: "first_name desc" }}
+    assert_response :success
+
+    assert_select "tbody tr" do |rows|
+      assert_includes rows[0].to_s, "John"
+      assert_includes rows[1].to_s, "Don"
+    end
+  end
+
+  test "show# should include the link of associated CMS entities: Page, Snippet and Layout" do
+    api_form = api_forms(:one)
+    api_form.update!(api_namespace: @api_namespace)
+
+    layout = comfy_cms_layouts(:default)
+    page = comfy_cms_pages(:root)
+    snippet = comfy_cms_snippets(:public)
+
+    namespace_snippet = @api_namespace.snippet
+
+    layout.update!(content: namespace_snippet)
+    snippet.update!(content: namespace_snippet)
+    page.fragments.create!(content: namespace_snippet, identifier: 'content')
+
+    sign_in(@user)
+    get api_namespace_url(@api_namespace)
+
+    assert_response :success
+    assert_select "a[href='#{edit_comfy_admin_cms_site_page_path(site_id: page.site.id, id: page.id)}']", { count: 1 }
+    assert_select "a[href='#{edit_comfy_admin_cms_site_snippet_path(site_id: snippet.site.id, id: snippet.id)}']", { count: 1 }
+    assert_select "a[href='#{edit_comfy_admin_cms_site_layout_path(site_id: layout.site.id, id: layout.id)}']", { count: 1 }
+  end
+
+  test "#index: should show only the api-namespaces with provided properties" do
+    plugin_subdomain_events = api_namespaces(:plugin_subdomain_events)
+    namespace_with_all_types = api_namespaces(:namespace_with_all_types)
+    monitoring_target_incident = api_namespaces(:monitoring_target_incident)
+
+    sign_in(@user)
+    get api_namespaces_url, params: {q: {properties_or_name_cont: 'latency'}}
+    assert_response :success
+
+    @controller.view_assigns['api_namespaces'].each do |api_namespace|
+      assert_match 'latency', api_namespace.properties.to_s
+    end
+
+    refute_includes @controller.view_assigns['api_namespaces'], plugin_subdomain_events
+    refute_includes @controller.view_assigns['api_namespaces'], namespace_with_all_types
+  end
+
+  test "#index: should show only the api-namespaces with provided name" do
+    plugin_subdomain_events = api_namespaces(:plugin_subdomain_events)
+    namespace_with_all_types = api_namespaces(:namespace_with_all_types)
+    monitoring_target_incident = api_namespaces(:monitoring_target_incident)
+
+    sign_in(@user)
+    get api_namespaces_url, params: {q: {properties_or_name_cont: 'subdomain_events'}}
+    assert_response :success
+
+    @controller.view_assigns['api_namespaces'].each do |api_namespace|
+      assert_match 'subdomain_events', api_namespace.name
+    end
+  
+    refute_includes @controller.view_assigns['api_namespaces'], namespace_with_all_types
+    refute_includes @controller.view_assigns['api_namespaces'], monitoring_target_incident
+  end
+
+  test "#index: Rendering tab should include documentation on form snippet and API HTML renderer snippets" do
+    sign_in(@user)
+    @api_namespace.has_form = "1"
+
+    get api_namespace_url(@api_namespace)
+    assert_response :success
+
+    assert_select "b", {count: 1, text: "Form rendering snippet:"}
+    assert_select "pre", {count: 1, text: @api_namespace.snippet}
+
+    assert_select "b", {count: 1, text: "API HTML Renderer index snippet:"}
+    assert_select "pre", {count: 1, text: "{{ cms:helper api_namespace_resource_index '#{@api_namespace.slug}', scope: { properties:  { property: value } } }}"}
+
+    assert_select "b", {count: 1, text: "API HTML Renderer show snippet:"}
+    assert_select "pre", {count: 1, text: "{{ cms:helper api_namespace_resource '#{@api_namespace.slug}', scope: { properties:  { property: value } } }}"}
   end
 end

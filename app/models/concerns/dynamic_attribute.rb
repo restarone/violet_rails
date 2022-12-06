@@ -7,9 +7,14 @@
 module DynamicAttribute
     extend ActiveSupport::Concern
     include Rails.application.routes.url_helpers
+    include ActionView::Helpers::DateHelper
+    include ActionView::Helpers::TranslationHelper
+    include ActionView::Helpers::NumberHelper
+    include ActionView::Helpers::TextHelper
 
     included do
-      def parse_dynamic_attribute(value)
+      def parse_dynamic_attribute(value, context = {})
+        bind_context(context)
         return unless value.present?
 
         raise ActiveRecord::RecordInvalid.new(self) unless self.valid?
@@ -33,6 +38,11 @@ module DynamicAttribute
         value.is_a?(Enumerable) ? JSON.generate(value) : value.to_s.dup
       end
 
+      # add extra contexts as instance variables
+      def bind_context(context)
+        context.each { |k, v| instance_variable_set("@#{k}", v) }
+      end
+
       # Fetching session specific data should be defined here.
       def current_user
         Current.user
@@ -49,8 +59,8 @@ module DynamicAttribute
           # all dynamic attributes should be safe
           validates attribute.to_sym, safe_executable: true
 
-          define_method("#{attribute}_evaluated") do
-            parse_dynamic_attribute(attribute_value_string(attribute))
+          define_method("#{attribute}_evaluated") do |context = {}|
+            parse_dynamic_attribute(attribute_value_string(attribute), context)
           end
         end
       end

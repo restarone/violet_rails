@@ -1,6 +1,7 @@
 class ApiResource < ApplicationRecord
   include JsonbFieldsParsable
   include JsonbSearch::Searchable
+  include JsonbSearch::Sortable
 
   after_initialize :inherit_properties_from_parent
   
@@ -8,9 +9,14 @@ class ApiResource < ApplicationRecord
     api_namespace.api_form.api_resource = self unless api_namespace&.api_form.nil?
   end
 
+  # Need to convert and then parse again in order to preserve keys as strings
+  scope :jsonb_order_pre, -> (query_obj) { jsonb_order(JSON.parse(query_obj.to_json)) }
+
+  belongs_to :user, optional: true
+
   belongs_to :api_namespace
 
-  before_create :inject_inherited_properties
+  before_create :inject_inherited_properties, :set_creator
 
   after_commit :execute_create_api_actions, on: :create
   after_commit :execute_update_api_actions, on: :update
@@ -44,8 +50,10 @@ class ApiResource < ApplicationRecord
     end
   end
 
-  def properties_object
-    JSON.parse(properties.to_json, object_class: OpenStruct)
+  # access both primitive and non-primitive properties as hash
+  def props
+    non_primitive_properties = self.non_primitive_properties.map { |prop| [prop.label, prop] }.to_h
+    properties.merge(non_primitive_properties)
   end
 
   def presence_of_required_properties
@@ -106,6 +114,10 @@ class ApiResource < ApplicationRecord
         self.properties[key] =  api_namespace.properties[key]
       end
     end
+  end
+
+  def set_creator
+    self.user_id = Current.user&.id
   end
 
   def execute_create_api_actions
