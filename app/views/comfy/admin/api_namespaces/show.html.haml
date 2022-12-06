@@ -202,7 +202,7 @@
           No CMS associations for this api-namespace
 
   #social.tab-pane.fade{"aria-labelledby" => "social-tab", :role => "tabpanel"} 
-    = form_with(method: :patch , url: api_namespace_path(@api_namespace))  do |f|
+    = form_with(method: :patch , url: social_share_metadata_api_namespace_path(@api_namespace))  do |f|
       .form-group
         = f.label :title
         = f.select 'api_namespace[social_share_metadata][title]', options_for_select(@api_namespace.properties.keys,(@api_namespace.social_share_metadata.present? ? @api_namespace.social_share_metadata["title"] : nil)),{include_blank: "Choose an option"}, {class: 'form-control'}
@@ -215,38 +215,40 @@
       .form-group
         = f.submit "Submit", class: 'btn btn-primary'
       
-.container-fluid.mt-5
-  .d-flex.justify-content-between.py-2.page-header
-    %h2
-      Listing
-      =  @api_namespace.name.pluralize
-    %div
-      = link_to "Create new #{@api_namespace.name.singularize}", new_api_namespace_resource_path(api_namespace_id: @api_namespace.id), class: 'btn btn-primary'
+-# We show this only if the user has full_access or access related to api-resources
+- if has_access_to_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:read_api_resources_only], current_user, @api_namespace)
+  #api-resources-list.container-fluid.mt-5
+    .d-flex.justify-content-between.py-2.page-header
+      %h2
+        Listing
+        =  @api_namespace.name.pluralize
+      %div
+        = link_to "Create new #{@api_namespace.name.singularize}", new_api_namespace_resource_path(api_namespace_id: @api_namespace.id), class: 'btn btn-primary'
 
-  = render partial: 'comfy/admin/api_resources/search_filters', locals: { objects: @api_resources_q, path: api_namespace_path(@api_namespace) }
-  = render partial: 'pagination', locals: { objects: @api_resources }
-  .table-responsive
-    %table
-      %thead
-        %tr
-          %th.px-3= sort_link @api_resources_q, :id
-          %th.px-3= sort_link @api_resources_q, :created_at
-          %th.px-3= sort_link @api_resources_q, :updated_at
-          - dynamic_columns = @api_namespace.properties.keys
-          - dynamic_columns.each do |dynamic_column|
-            %th.px-3= sort_link @api_resources_q, dynamic_column
-          %th.px-3
-          %th.px-3
-      %tbody
-        - @api_resources.each do |api_resource|
+    = render partial: 'comfy/admin/api_resources/search_filters', locals: { objects: @api_resources_q, path: api_namespace_path(@api_namespace) }
+    = render partial: 'pagination', locals: { objects: @api_resources }
+    .table-responsive
+      %table
+        %thead
           %tr
-            %td.px-3.py-2= link_to api_resource.id, api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id)
-            %td.px-3= api_resource.created_at.strftime('%F %T')
-            %td.px-3= api_resource.updated_at.strftime('%F %T')
+            %th.px-3= sort_link @api_resources_q, :id
+            %th.px-3= sort_link @api_resources_q, :created_at
+            %th.px-3= sort_link @api_resources_q, :updated_at
+            - dynamic_columns = @api_namespace.properties.keys
             - dynamic_columns.each do |dynamic_column|
-              %td.px-3= api_resource.properties[dynamic_column]
-            %td.px-3= link_to 'Edit', edit_api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id)
-            %td.px-3= link_to 'Destroy', api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), method: :delete, data: { confirm: 'Are you sure?' }
+              %th.px-3= sort_link @api_resources_q, dynamic_column
+            %th.px-3
+            %th.px-3
+        %tbody
+          - @api_resources.each do |api_resource|
+            %tr
+              %td.px-3.py-2= link_to api_resource.id, api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id)
+              %td.px-3= api_resource.created_at.strftime('%F %T')
+              %td.px-3= api_resource.updated_at.strftime('%F %T')
+              - dynamic_columns.each do |dynamic_column|
+                %td.px-3= api_resource.properties[dynamic_column]
+              %td.px-3= link_to 'Edit', edit_api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id)
+              %td.px-3= link_to 'Destroy', api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), method: :delete, data: { confirm: 'Are you sure?' }
 
   %br
 
