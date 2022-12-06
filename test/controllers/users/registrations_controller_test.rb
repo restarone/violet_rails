@@ -203,7 +203,6 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
       patch user_registration_url, params: payload
     end
 
-    assert_select "div#error_explanation", { count: 0 }
     refute @controller.view_assigns['user'].errors.present?
   end
 
@@ -218,7 +217,6 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
       patch user_registration_url, params: payload
     end
 
-    assert_select "div#error_explanation"
     assert @controller.view_assigns['user'].errors.present?
   end
 
@@ -236,8 +234,152 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
       patch user_registration_url, params: payload
     end
 
-    assert_select "div#error_explanation"
     assert @controller.view_assigns['user'].errors.present?
+  end
+
+  test 'should allow #update_password without otp if enable_2fa is set to false' do
+    Subdomain.current.update(enable_2fa: false)
+    payload = {
+      user: {
+        current_password: '123456',
+        password: '111111',
+        password_confirmation: '111111'
+      }
+    }
+    assert_changes "@user.reload.encrypted_password" do
+      sign_in(@user)
+      put user_registration_url, params: payload
+    end
+    
+    assert_template 'shared/redirect.js.erb'
+    refute @controller.view_assigns['user'].errors.present?
+
+  end
+
+  test 'should deny #update_password without otp if enable_2fa is set to true' do
+    Subdomain.current.update(enable_2fa: true)
+    payload = {
+      user: {
+        current_password: '123456',
+        password: '111111',
+        password_confirmation: '111111'
+      }
+    }
+    sign_in(@user)
+    put user_registration_url, params: payload
+    assert_template 'users/shared/otp_visible.js.erb'
+    payload = {
+      user: {
+        current_password: '123456',
+        password: '111111',
+        password_confirmation: '111111'
+      }
+    } 
+    #shouldn't update password without otp
+    assert_no_changes "@user.reload.encrypted_password" do
+      put user_registration_url, params: payload
+    end
+    assert_match 'OTP Required', response.body
+  end
+
+  test 'should deny #update_password with invalid otp if enable_2fa is set to true' do
+    Subdomain.current.update(enable_2fa: true)
+    payload = {
+      user: {
+        current_password: '123456',
+        password: '111111',
+        password_confirmation: '111111'
+      }
+    }
+    sign_in(@user)
+    put user_registration_url, params: payload
+    assert_template 'users/shared/otp_visible.js.erb'
+    payload = {
+      user: {
+        current_password: '123456',
+        password: '111111',
+        password_confirmation: '111111',
+        otp_attempt: '123123',
+      }
+    } 
+    #shouldn't update password without otp
+    assert_no_changes "@user.reload.encrypted_password" do
+      put user_registration_url, params: payload
+    end
+    assert_match 'Invalid two-factor code.', response.body
+  end
+
+  test "shouldn't allow #update with invalid password" do
+    Subdomain.current.update(enable_2fa: true)
+    payload = {
+      user: {
+        current_password: '123123',
+        password: '111111',
+        password_confirmation: '111111'
+      }
+    }
+    sign_in(@user)
+    put user_registration_url, params: payload
+    assert_template 'users/shared/error.js.erb'
+  end
+
+
+  test 'should allow #update with otp if enable_2fa is set to true' do
+    Subdomain.current.update(enable_2fa: true)
+    payload = {
+      user: {
+        current_password: '123456',
+        password: '111111',
+        password_confirmation: '111111'
+      }
+    }
+    sign_in(@user)
+    put user_registration_url, params: payload
+    assert_template 'users/shared/otp_visible.js.erb'
+    payload = {
+      user: {
+        current_password: '123456',
+        password: '111111',
+        password_confirmation: '111111',
+        otp_attempt: @user.reload.current_otp
+      }
+    }
+    assert_changes "@user.reload.encrypted_password" do
+      put user_registration_url, params: payload
+    end
+    assert_template 'shared/redirect.js.erb'
+
+    refute @controller.view_assigns['user'].errors.present?
+
+  end
+
+
+  test 'should resend_otp to user if resend otp button clicked' do
+    Subdomain.current.update(enable_2fa: true)
+    payload = {
+      user: {
+        current_password: '123456',
+        password: '111111',
+        password_confirmation: '111111'
+      }
+    }
+    sign_in(@user)
+
+    perform_enqueued_jobs do
+      put user_registration_url, params: payload
+    end
+    assert_template 'users/shared/otp_visible.js.erb'
+    mail_otp = UserMailer.deliveries.last.body.to_s.split(":").pop.strip();
+    prev_otp = @user.reload.current_otp
+    assert_equal mail_otp, prev_otp
+
+    #resending otp
+    perform_enqueued_jobs do
+      get resend_otp_url
+    end
+    new_mail_otp = UserMailer.deliveries.last.body.to_s.split(":").pop.strip();
+    new_otp = @user.reload.current_otp
+    assert_equal new_mail_otp, new_otp
   end
 
   test 'deny #destroy' do
@@ -246,5 +388,10 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
       delete user_registration_url
       assert_response :redirect
     end
+  end
+
+  test 'should reset the otp_user_id for session in initial render' do
+    get edit_user_registration_path
+    assert_nil session[:otp_user_id]
   end
 end

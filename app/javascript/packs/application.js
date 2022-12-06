@@ -16,6 +16,7 @@ Rails.start()
 
 require("jquery")
 require("./trix")
+require("./tribute")
 require("./select2")
 require("./common")
 require("./turbo")

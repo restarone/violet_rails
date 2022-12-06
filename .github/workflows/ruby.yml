@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RUBY_BUILD: ${{ matrix.ruby_version }}
+      SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
     services:
       db:
         image: postgres:12.3-alpine
@@ -68,6 +69,7 @@ jobs:
     - name: Comparing schema.rb to db/migrations
       run: |
         if ! diff -q tmpfile ./db/schema.rb &>/dev/null; then
+          echo diff -q tmpfile ./db/schema.rb
           rm tmpfile
           >&2 echo "Migration changes have not been committed."
           # Exits the github workflow

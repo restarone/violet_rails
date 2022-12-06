@@ -1,10 +1,13 @@
-<h2><%= t "devise.invitations.edit.header" %></h2>
+<h2 id="invite_header"><%= t "devise.invitations.edit.header" %></h2>
 
-<%= form_for(resource, as: resource_name, url: invitation_path(resource_name), html: { method: :put }) do |f| %>
-  <%= render "users/shared/error_messages", resource: resource %>
+<%= form_for(resource, as: resource_name, url: invitation_path(resource_name), html: { method: :put ,  id: 'edit_user'  } , data: { turbo: false ,  remote: true }) do |f| %>
+ <div id="error_msg"> 
+ 
+ </div>
   <%= f.hidden_field :invitation_token, readonly: true %>
 
   <% if f.object.class.require_password_on_accepting %>
+   <div id="main-div">
     <div class="field">
       <%= f.label :password %><br />
       <%= f.password_field :password %>
@@ -14,9 +17,18 @@
       <%= f.label :password_confirmation %><br />
       <%= f.password_field :password_confirmation %>
     </div>
+  </div>
+
+    <div id="otp" class="form-group border p-2 " style="visibility: hidden;display: none">
+    <%= f.label :otp_attempt %><br />
+    <%= f.text_field :otp_attempt %>
+    </div>
+
   <% end %>
 
-  <div class="actions">
-    <%= f.submit t("devise.invitations.edit.submit_button") %>
+
+   <div class="actions" >
+    <%= f.button t("devise.invitations.edit.submit_button"), id: 'update-btn', class: 'btn btn-success'  %>
   </div>
 <% end %>
+<%= button_to 'Re-send OTP' ,resend_otp_path, method: :get, remote: true, class: 'btn btn-primary mt-2',id: 'resend-otp-btn', style: "visibility: hidden;display: none"  %>

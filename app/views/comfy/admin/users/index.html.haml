@@ -27,7 +27,7 @@
         %th{:scope => "col"}
           = sort_link @users_q, :can_manage_blog
         %th{:scope => "col"}
-          = sort_link @users_q, :can_manage_api
+          = sort_link @users_q, :api_accessibility
         %th{:scope => "col"}
           = sort_link @users_q, :can_manage_subdomain_settings, 'Can manage app settings'
         %th{:scope => "col"}
@@ -51,7 +51,7 @@
         %td= user.can_manage_email
         %td= user.can_manage_users
         %td= user.can_manage_blog
-        %td= user.can_manage_api
+        %td= user.api_accessibility.to_json
         %td= user.can_manage_subdomain_settings
         %td= user.can_view_restricted_pages
         %td= user.moderator
