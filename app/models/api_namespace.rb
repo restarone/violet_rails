@@ -45,6 +45,10 @@ class ApiNamespace < ApplicationRecord
   has_many :error_api_actions, dependent: :destroy
   accepts_nested_attributes_for :error_api_actions, allow_destroy: true
 
+  ransacker :properties do |_parent|
+    Arel.sql("api_namespaces.properties::text") 
+  end
+
   REGISTERED_PLUGINS = {
     subdomain_events: {
       slug: 'subdomain_events',
