@@ -1,7 +1,8 @@
 class Comfy::Admin::ApiClientsController < Comfy::Admin::Cms::BaseController
-  before_action :ensure_authority_to_manage_api
   before_action :set_api_client, only: %i[ show edit update destroy ]
   before_action :set_api_namespace
+  before_action :ensure_authority_for_read_api_clients_only_in_api, only: %i[ show index ]
+  before_action :ensure_authority_for_full_access_for_api_clients_only_in_api, only: %i[ new edit create update destroy ]
 
   # GET /api_clients or /api_clients.json
   def index

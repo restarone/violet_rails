@@ -4,8 +4,7 @@
     > API Actions
     > Workflow
 
-= form_for @api_namespace, html: {multipart: true} do |f|
-  = hidden_field_tag 'source', 'action_workflow'
+= form_for @api_namespace, method: :patch, url: api_action_workflow_api_namespace_path(@api_namespace), html: {multipart: true} do |f|
   - if @api_namespace.errors.any?
     #error_explanation
       %h2= "#{pluralize(@api_namespace.errors.count, "error")} prohibited this api_namespace from being saved:"
@@ -71,7 +70,7 @@
 
   function appendApiActionForm(type) {
     var index = $("#" + `${type}_forms > .form-container`).length
-    var url = "#{new_api_action_path()}" + `?index=${index}&type=${type}`
+    var url = "#{new_api_namespace_api_action_path(api_namespace_id: @api_namespace.id)}" + `?index=${index}&type=${type}`
     $.ajax({
       url: url ,
       type: 'GET',
