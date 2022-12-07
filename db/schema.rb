@@ -525,13 +525,13 @@ ActiveRecord::Schema.define(version: 2022_11_28_055836) do
     t.boolean "moderator"
     t.boolean "can_view_restricted_pages"
     t.boolean "deliver_analytics_report", default: false
-    t.boolean "can_manage_api", default: false
     t.boolean "can_manage_subdomain_settings", default: false
     t.string "session_timeoutable_in", default: "1-hour"
     t.boolean "can_access_admin", default: false
     t.boolean "deliver_error_notifications", default: false
     t.boolean "can_manage_analytics", default: false
     t.boolean "can_manage_files", default: false
+    t.jsonb "api_accessibility", default: {}
     t.string "encrypted_otp_secret"
     t.string "encrypted_otp_secret_iv"
     t.string "encrypted_otp_secret_salt"
