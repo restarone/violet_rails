@@ -635,6 +635,157 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     end
   end
 
+  test "#show: should properly show documentation of urls for REST and Graph interface" do
+    sign_in(@user)
+    get api_namespace_url(@api_namespace)
+    assert_response :success
+
+    # REST Interface
+    assert_select ".tab-content #interface .card .card-body:nth-child(1)" do
+      assert_select "h4", { count: 1, text: "REST Interface" }
+
+      assert_select "strong", { count: 1, text: "Request description endpoint:" } do
+        assert_select "+ p + pre", { count: 1, text: "#{ApplicationController.helpers.api_base_url(Subdomain.current, @api_namespace)}/describe" }
+      end
+
+      assert_select "strong", { count: 1, text: "Request index endpoint:" } do
+        assert_select "+ p + pre", { count: 1, text: ApplicationController.helpers.api_base_url(Subdomain.current, @api_namespace) }
+      end
+
+      assert_select "strong", { count: 1, text: "Request query endpoint:" } do
+        assert_select "+ p + pre", { count: 1, text: "#{ApplicationController.helpers.api_base_url(Subdomain.current, @api_namespace)}/query" }
+      end
+    end
+
+    # Graph Interface
+    assert_select ".tab-content #interface .card .card-body:nth-child(2)" do
+      assert_select "h4", { count: 1, text: "Graph Interface" }
+
+      assert_select "strong", { count: 1, text: "Request description endpoint:" } do
+        assert_select "+ p + pre", { count: 1, text: "#{ApplicationController.helpers.graphql_base_url(Subdomain.current, @api_namespace)}/describe" }
+      end
+
+      assert_select "strong", { count: 1, text: "Request query endpoint:" } do
+        assert_select "+ p + pre", { count: 1, text: ApplicationController.helpers.graphql_base_url(Subdomain.current, @api_namespace) }
+      end
+
+      assert_select "p", { count: 1, text: "Payload (this)" } do
+        assert_select "+ pre", { count: 1, text: "query: { apiNamespaces(slug: \"#{@api_namespace.slug}\") { id } }" }
+      end
+
+      assert_select "p", { count: 1, text: "Payload (this + children)" } do
+        assert_select "+ pre", { count: 1, text: "query: { apiNamespaces(slug: \"#{@api_namespace.slug}\") { id apiResources { id } } }" }
+      end
+
+      assert_select "p", { count: 1, text: "Payload (global)" } do
+        assert_select "+ pre", { count: 1, text: "query: { apiNamespaces { id } }" }
+      end
+    end
+  end
+
+  test "#show: should allow sorting by dynamic columns" do 
+    sign_in(@user)
+    api_namespace = api_namespaces(:users)
+    api_namespace.update(properties: {
+      last_name: "",
+      first_name: ""
+    })
+    api_namespace.api_resources.create!({
+      properties: {
+        last_name: "Doe",
+        first_name: "John",
+      }
+    })
+
+    assert_equal api_namespace.api_resources.length, 2
+    assert_equal api_namespace.api_resources[0].properties['first_name'], "Don"
+    assert_equal api_namespace.api_resources[1].properties['first_name'], "John"
+
+    get api_namespace_url(api_namespace), params: {q: { s: "first_name desc" }}
+    assert_response :success
+
+    assert_select "tbody tr" do |rows|
+      assert_includes rows[0].to_s, "John"
+      assert_includes rows[1].to_s, "Don"
+    end
+  end
+
+  test "show# should include the link of associated CMS entities: Page, Snippet and Layout" do
+    api_form = api_forms(:one)
+    api_form.update!(api_namespace: @api_namespace)
+
+    layout = comfy_cms_layouts(:default)
+    page = comfy_cms_pages(:root)
+    snippet = comfy_cms_snippets(:public)
+
+    namespace_snippet = @api_namespace.snippet
+
+    layout.update!(content: namespace_snippet)
+    snippet.update!(content: namespace_snippet)
+    page.fragments.create!(content: namespace_snippet, identifier: 'content')
+
+    sign_in(@user)
+    get api_namespace_url(@api_namespace)
+
+    assert_response :success
+    assert_select "a[href='#{edit_comfy_admin_cms_site_page_path(site_id: page.site.id, id: page.id)}']", { count: 1 }
+    assert_select "a[href='#{edit_comfy_admin_cms_site_snippet_path(site_id: snippet.site.id, id: snippet.id)}']", { count: 1 }
+    assert_select "a[href='#{edit_comfy_admin_cms_site_layout_path(site_id: layout.site.id, id: layout.id)}']", { count: 1 }
+  end
+
+  test "#index: should show only the api-namespaces with provided properties" do
+    plugin_subdomain_events = api_namespaces(:plugin_subdomain_events)
+    namespace_with_all_types = api_namespaces(:namespace_with_all_types)
+    monitoring_target_incident = api_namespaces(:monitoring_target_incident)
+
+    sign_in(@user)
+    get api_namespaces_url, params: {q: {properties_or_name_cont: 'latency'}}
+    assert_response :success
+
+    @controller.view_assigns['api_namespaces'].each do |api_namespace|
+      assert_match 'latency', api_namespace.properties.to_s
+    end
+
+    refute_includes @controller.view_assigns['api_namespaces'], plugin_subdomain_events
+    refute_includes @controller.view_assigns['api_namespaces'], namespace_with_all_types
+  end
+
+  test "#index: should show only the api-namespaces with provided name" do
+    plugin_subdomain_events = api_namespaces(:plugin_subdomain_events)
+    namespace_with_all_types = api_namespaces(:namespace_with_all_types)
+    monitoring_target_incident = api_namespaces(:monitoring_target_incident)
+
+    sign_in(@user)
+    get api_namespaces_url, params: {q: {properties_or_name_cont: 'subdomain_events'}}
+    assert_response :success
+
+    @controller.view_assigns['api_namespaces'].each do |api_namespace|
+      assert_match 'subdomain_events', api_namespace.name
+    end
+  
+    refute_includes @controller.view_assigns['api_namespaces'], namespace_with_all_types
+    refute_includes @controller.view_assigns['api_namespaces'], monitoring_target_incident
+  end
+
+  test "#index: Rendering tab should include documentation on form snippet and API HTML renderer snippets" do
+    sign_in(@user)
+    @api_namespace.has_form = "1"
+
+    get api_namespace_url(@api_namespace)
+    assert_response :success
+
+    assert_select "b", {count: 1, text: "Form rendering snippet:"}
+    assert_select "pre", {count: 1, text: @api_namespace.snippet}
+
+    assert_select "b", {count: 1, text: "API HTML Renderer index snippet:"}
+    assert_select "pre", {count: 1, text: "{{ cms:helper api_namespace_resource_index '#{@api_namespace.slug}', scope: { properties:  { property: value } } }}"}
+
+    assert_select "b", {count: 1, text: "API HTML Renderer show snippet:"}
+    assert_select "pre", {count: 1, text: "{{ cms:helper api_namespace_resource '#{@api_namespace.slug}', scope: { properties:  { property: value } } }}"}
+  end
+
+  ######## API Accessibility Tests - START #########
+
   # INDEX
   # API access for all_namespaces
   test "should get index if user has full_access for all namespaces" do
@@ -2196,33 +2347,6 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_equal expected_message, flash[:alert]
   end
 
-  test "#show: should allow sorting by dynamic columns" do 
-    sign_in(@user)
-    api_namespace = api_namespaces(:users)
-    api_namespace.update(properties: {
-      last_name: "",
-      first_name: ""
-    })
-    api_namespace.api_resources.create!({
-      properties: {
-        last_name: "Doe",
-        first_name: "John",
-      }
-    })
-
-    assert_equal api_namespace.api_resources.length, 2
-    assert_equal api_namespace.api_resources[0].properties['first_name'], "Don"
-    assert_equal api_namespace.api_resources[1].properties['first_name'], "John"
-
-    get api_namespace_url(api_namespace), params: {q: { s: "first_name desc" }}
-    assert_response :success
-
-    assert_select "tbody tr" do |rows|
-      assert_includes rows[0].to_s, "John"
-      assert_includes rows[1].to_s, "Don"
-    end
-  end
-
   # API access by category
   test "should export_api_resources if user has category specific full_access for the namespace" do
     api_namespace = api_namespaces(:namespace_with_all_types)
@@ -2738,77 +2862,5 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     end
   end
 
-  test "show# should include the link of associated CMS entities: Page, Snippet and Layout" do
-    api_form = api_forms(:one)
-    api_form.update!(api_namespace: @api_namespace)
-
-    layout = comfy_cms_layouts(:default)
-    page = comfy_cms_pages(:root)
-    snippet = comfy_cms_snippets(:public)
-
-    namespace_snippet = @api_namespace.snippet
-
-    layout.update!(content: namespace_snippet)
-    snippet.update!(content: namespace_snippet)
-    page.fragments.create!(content: namespace_snippet, identifier: 'content')
-
-    sign_in(@user)
-    get api_namespace_url(@api_namespace)
-
-    assert_response :success
-    assert_select "a[href='#{edit_comfy_admin_cms_site_page_path(site_id: page.site.id, id: page.id)}']", { count: 1 }
-    assert_select "a[href='#{edit_comfy_admin_cms_site_snippet_path(site_id: snippet.site.id, id: snippet.id)}']", { count: 1 }
-    assert_select "a[href='#{edit_comfy_admin_cms_site_layout_path(site_id: layout.site.id, id: layout.id)}']", { count: 1 }
-  end
-
-  test "#index: should show only the api-namespaces with provided properties" do
-    plugin_subdomain_events = api_namespaces(:plugin_subdomain_events)
-    namespace_with_all_types = api_namespaces(:namespace_with_all_types)
-    monitoring_target_incident = api_namespaces(:monitoring_target_incident)
-
-    sign_in(@user)
-    get api_namespaces_url, params: {q: {properties_or_name_cont: 'latency'}}
-    assert_response :success
-
-    @controller.view_assigns['api_namespaces'].each do |api_namespace|
-      assert_match 'latency', api_namespace.properties.to_s
-    end
-
-    refute_includes @controller.view_assigns['api_namespaces'], plugin_subdomain_events
-    refute_includes @controller.view_assigns['api_namespaces'], namespace_with_all_types
-  end
-
-  test "#index: should show only the api-namespaces with provided name" do
-    plugin_subdomain_events = api_namespaces(:plugin_subdomain_events)
-    namespace_with_all_types = api_namespaces(:namespace_with_all_types)
-    monitoring_target_incident = api_namespaces(:monitoring_target_incident)
-
-    sign_in(@user)
-    get api_namespaces_url, params: {q: {properties_or_name_cont: 'subdomain_events'}}
-    assert_response :success
-
-    @controller.view_assigns['api_namespaces'].each do |api_namespace|
-      assert_match 'subdomain_events', api_namespace.name
-    end
-  
-    refute_includes @controller.view_assigns['api_namespaces'], namespace_with_all_types
-    refute_includes @controller.view_assigns['api_namespaces'], monitoring_target_incident
-  end
-
-  test "#index: Rendering tab should include documentation on form snippet and API HTML renderer snippets" do
-    sign_in(@user)
-    @api_namespace.has_form = "1"
-
-    get api_namespace_url(@api_namespace)
-    assert_response :success
-
-    assert_select "b", {count: 1, text: "Form rendering snippet:"}
-    assert_select "pre", {count: 1, text: @api_namespace.snippet}
-
-    assert_select "b", {count: 1, text: "API HTML Renderer index snippet:"}
-    assert_select "pre", {count: 1, text: "{{ cms:helper api_namespace_resource_index '#{@api_namespace.slug}', scope: { properties:  { property: value } } }}"}
-
-    assert_select "b", {count: 1, text: "API HTML Renderer show snippet:"}
-    assert_select "pre", {count: 1, text: "{{ cms:helper api_namespace_resource '#{@api_namespace.slug}', scope: { properties:  { property: value } } }}"}
-  end
+  ######## API Accessibility Tests - END #########
 end
