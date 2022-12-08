@@ -10,6 +10,9 @@ class NonPrimitiveProperty < ApplicationRecord
   validates_presence_of :label
 
   def file_url
-    Rails.application.routes.url_helpers.rails_blob_url(self.attachment, host: Subdomain.current.hostname, expires_in: 5.hours) if self.file? && self.attachment.attached?
+    if self.file? && self.attachment.attached?
+      ActiveStorage::Current.host = Rails.application.routes.url_helpers.root_url(host: Subdomain.current.hostname) if ActiveStorage::Current.host.blank?
+      self.attachment.blob.url(expires_in: 5.hours)
+    end
   end
 end
