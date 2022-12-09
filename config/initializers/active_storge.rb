@@ -12,5 +12,3 @@ if Rails.env == 'production' || Rails.env == 'test'
     end
   end
 end
-
-# Rails.application.config.active_storage.service_urls_expire_in = 5.hour

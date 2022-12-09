@@ -31,9 +31,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def tracking_enabled?
-    Subdomain.current.tracking_enabled && cookies[:cookies_accepted] == 'true'
-  end
 
   private
 
