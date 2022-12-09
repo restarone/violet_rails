@@ -14,7 +14,7 @@ class NonPrimitiveProperty < ApplicationRecord
       if Current.is_api_html_renderer_request
         # ActiveStorage::Current.host is only set in controller's context
         ActiveStorage::Current.host = Rails.application.routes.url_helpers.root_url(host: Subdomain.current.hostname) if ActiveStorage::Current.host.blank?
-        self.attachment.blob.url(expires_in: 5.years)
+        self.attachment.blob.url(expires_in: 1.week)
       else
         Rails.application.routes.url_helpers.rails_blob_url(self.attachment, host: Subdomain.current.hostname)
       end
