@@ -115,3 +115,5 @@ gem "turbo-rails", "~> 1.1"
 gem "redis-namespace", "~> 1.8"
 
 gem 'stripe-rails'
+
+gem 'devise-two-factor', "4.0.2"

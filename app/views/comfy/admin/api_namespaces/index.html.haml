@@ -21,8 +21,6 @@
       %th 
         = sort_link @api_namespaces_q, :namespace_type
       %th 
-        = 'Snippet'
-      %th 
         = sort_link @api_namespaces_q, 'CMS Associations'
       %th
       %th
@@ -39,7 +37,6 @@
         %td= api_namespace.properties
         %td= api_namespace.requires_authentication
         %td= api_namespace.namespace_type
-        %td= api_namespace.snippet
         %td= api_namespace.cms_associations.present? ? '<i class="fa fa-solid fa-check text-success" style="width: 30px; height: 30px;"></i>'.html_safe : '<i class="fa fa-solid fa-times text-danger" style="width: 30px; height: 30px;"></i>'.html_safe
         %td= link_to 'Edit', edit_api_namespace_path(api_namespace)
         %td= link_to 'Destroy', api_namespace, method: :delete, data: { confirm: 'Are you sure?' }

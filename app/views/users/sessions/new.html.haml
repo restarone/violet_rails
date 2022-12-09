@@ -2,7 +2,7 @@
   .text-center
     %h3.font-weight-bold Log In
   .form-group
-    = form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
+    = form_for(resource, as: resource_name, url: session_path(resource_name), data: { turbo: false}) do |f|
       .form-group
         = f.label :email
         %br/
