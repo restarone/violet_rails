@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  include ActiveStorage::SetCurrent
 
   before_action :prepare_exception_notifier
   before_action :store_user_location!, if: :storable_location?
