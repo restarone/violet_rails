@@ -551,6 +551,23 @@ class ContentHelperTest < ActionView::TestCase
     assert_equal expected_response, response
   end
 
+  test "should render 404 when the renderer ID is invalid or not provided and not raise error" do
+    Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: "#{@api_namespace.slug}-show", position: 0, content: "<%= @api_resource.properties['name'] %>")
+
+    # When no ID is provided
+    assert_nothing_raised do
+      page_response = render_api_namespace_resource(@api_namespace.slug)
+      assert_match "<h1 class=\"main-title\">404</h1>", page_response
+    end
+
+    # When invalid ID is provided
+    params[:id] = 0
+    assert_nothing_raised do
+      page_response = render_api_namespace_resource(@api_namespace.slug)
+      assert_match "<h1 class=\"main-title\">404</h1>", page_response
+    end
+  end
+
   def current_user
     @current_user
   end
