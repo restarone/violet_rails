@@ -63,9 +63,7 @@ module ContentHelper
     
     cms_dynamic_snippet_render("#{snippet_name}-show", nil, { api_resource: @api_resource_to_render, api_namespace: api_namespace })
   rescue ActiveRecord::RecordNotFound
-    # byebug
-    # render body: Rails.root.join('public', '404.html').read.html_safe, status: :not_found, layout: false
-    raise ApiHtmlRenderer::InvalidId
+    render body: Rails.root.join('public', '404.html').read.html_safe, status: :not_found, layout: false
   end
 
   private
@@ -80,10 +78,5 @@ module ContentHelper
 
   def set_api_html_render_flag
     Current.is_api_html_renderer_request = true
-  end
-end
-
-module ApiHtmlRenderer
-  class InvalidId < StandardError
   end
 end
