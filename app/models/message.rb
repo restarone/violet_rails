@@ -10,9 +10,16 @@ class Message < ApplicationRecord
 
   default_scope { order(created_at: 'DESC') }
 
+  before_save :generate_message_id
   after_create_commit :deliver
 
   private
+
+  def generate_message_id
+    if self.email_message_id.blank?
+      self.email_message_id = "#{Digest::SHA2.hexdigest(Time.now.to_i.to_s)}@#{Apartment::Tenant.current}@#{ENV['APP_HOST']}"
+    end
+  end
 
   def deliver
     if !self.from

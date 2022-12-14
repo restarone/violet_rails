@@ -3,16 +3,39 @@ class EMailbox < ApplicationMailbox
   def process
     subject = mail.subject
     recipients = mail.to.map{|email| Mail::Address.new(email)}
+    # recipients =[mail.to]
     recipients.each do |address|
+      # domain = address.split('@').first
+      # schema_domain = domain == Subdomain::ROOT_DOMAIN_EMAIL_NAME ? 'public' : domain
       schema_domain = address.local == Subdomain::ROOT_DOMAIN_EMAIL_NAME ? 'public' : address.local
       next if !Subdomain.find_by(name: schema_domain)
       Apartment::Tenant.switch schema_domain do
         mailbox = Mailbox.first_or_create
+        # if mailbox
+        #   message_thread = MessageThread.find_or_create_by(
+        #     current_email_message_id: mail.in_reply_to
+        #   )
+        #   message_thread.update(recipients: mail.from, subject: subject)
+        #   message = Message.create!(
+        #     email_message_id: mail.message_id,
+        #     message_thread: message_thread,
+        #     content: body,
+        #     from: mail.from.join(', '),
+        #     attachments: (attachments + multipart_attached).map{ |a| a[:blob] }
+        #   )
+        #   ApiNamespace::Plugin::V1::SubdomainEventsService.new(message).track_event
+        # end
+
         if mailbox
-          message_thread = MessageThread.find_or_create_by(
-            current_email_message_id: mail.in_reply_to
-          )
-          message_thread.update(recipients: mail.from, subject: subject)
+          if mail.in_reply_to && in_reply_to_message = Message.find_by(email_message_id: mail.in_reply_to)
+            message_thread = in_reply_to_message.message_thread
+          else
+            message_thread = MessageThread.create!(
+              recipients: mail.from,
+              subject: subject
+            )
+          end
+
           message = Message.create!(
             email_message_id: mail.message_id,
             message_thread: message_thread,
