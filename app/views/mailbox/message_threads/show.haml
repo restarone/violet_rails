@@ -12,10 +12,6 @@
     .card-body 
       .card-subtitle.mb-2.text-muted
         = message.from
-      %h5
-        = message.id
-      %h6
-        = message.email_message_id
       .card-text.bg-light.px-2.py-3
         = message.content
       - if message.attachments.any?
