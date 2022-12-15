@@ -62,6 +62,8 @@ module ContentHelper
     snippet_name = options["snippet"] ? options["snippet"] : api_namespace_slug
     
     cms_dynamic_snippet_render("#{snippet_name}-show", nil, { api_resource: @api_resource_to_render, api_namespace: api_namespace })
+  rescue ActiveRecord::RecordNotFound
+    render body: Rails.root.join('public', '404.html').read.html_safe, status: :not_found, layout: false
   end
 
   private
