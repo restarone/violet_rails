@@ -58,7 +58,7 @@ class EMailer < ApplicationMailer
   end
 
   def messages_in_thread
-    @message_thread.messages.where.not(id: @message.id).order(created_at: :asc)
+    @message_thread.messages.where.not(id: @message.id).reorder(created_at: :asc)
   end
 
   def email_headers

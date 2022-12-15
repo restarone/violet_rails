@@ -17,7 +17,7 @@ class Message < ApplicationRecord
 
   def generate_message_id
     if self.email_message_id.blank?
-      self.email_message_id = "#{Digest::SHA2.hexdigest(Time.now.to_i.to_s)}@#{Apartment::Tenant.current}@#{ENV['APP_HOST']}"
+      self.email_message_id = "#{Digest::SHA2.hexdigest(Time.now.to_i.to_s)}.#{Apartment::Tenant.current}@#{ENV['APP_HOST']}"
     end
   end
 
