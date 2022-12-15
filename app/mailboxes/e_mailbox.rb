@@ -8,8 +8,7 @@ class EMailbox < ApplicationMailbox
       # domain = address.split('@').first
       # schema_domain = domain == Subdomain::ROOT_DOMAIN_EMAIL_NAME ? 'public' : domain
       schema_domain = address.local == Subdomain::ROOT_DOMAIN_EMAIL_NAME ? 'public' : address.local
-      subdomain_name = schema_domain == 'public' ? Subdomain::ROOT_DOMAIN_NAME : schema_domain
-      next if !Subdomain.find_by(name: subdomain_name)
+      next if !Subdomain.find_by(name: schema_domain)
       Apartment::Tenant.switch schema_domain do
         mailbox = Mailbox.first_or_create
         # if mailbox
