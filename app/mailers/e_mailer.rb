@@ -18,7 +18,7 @@ class EMailer < ApplicationMailer
         }
       end
     end
-      
+
     mail_settings = {
       # This will make the mail addresses visible to all (no Blank Carbon Copy)
       to: @message_thread.recipients, 

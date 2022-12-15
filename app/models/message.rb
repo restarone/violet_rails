@@ -18,6 +18,8 @@ class Message < ApplicationRecord
 
   def generate_message_id
     if self.email_message_id.blank?
+      # RFC format for message-id: local-part@domain
+      # '@' is a identifier to separate local part and the domain part. So, it cannot be used multiple times.
       self.email_message_id = "#{Digest::SHA2.hexdigest(Time.now.to_i.to_s)}.#{Apartment::Tenant.current}@#{ENV['APP_HOST']}"
     end
   end
