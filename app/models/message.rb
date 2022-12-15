@@ -11,6 +11,7 @@ class Message < ApplicationRecord
   default_scope { order(created_at: 'DESC') }
 
   before_save :generate_message_id
+  after_create :update_message_thread_current_email_message_id
   after_create_commit :deliver
 
   private
@@ -18,6 +19,12 @@ class Message < ApplicationRecord
   def generate_message_id
     if self.email_message_id.blank?
       self.email_message_id = "#{Digest::SHA2.hexdigest(Time.now.to_i.to_s)}.#{Apartment::Tenant.current}@#{ENV['APP_HOST']}"
+    end
+  end
+
+  def update_message_thread_current_email_message_id
+    if self.message_thread
+      self.message_thread.update(current_email_message_id: self.email_message_id)
     end
   end
 
