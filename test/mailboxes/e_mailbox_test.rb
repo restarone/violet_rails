@@ -126,19 +126,22 @@ class EMailboxTest < ActionMailbox::TestCase
     end
   end
 
-  test 'message threads' do
+  test 'emails are mapped into different threads even if the subject is same but the in-reply-to header is not present' do
     Apartment::Tenant.switch @restarone_subdomain do      
       perform_enqueued_jobs do
-        assert_difference "MessageThread.all.reload.size" , +1 do        
+        assert_difference "MessageThread.all.reload.size" , +2 do        
           assert_difference "Message.all.reload.size", +2 do          
             subject_line = "Hello world!"
             receive_inbound_email_from_mail \
-            to: '"Don Restarone" <restarone@restarone.solutions>',
-            from: '"else" <else@example.com>',
-            subject: subject_line,
-            body: "Hello?"
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"else" <else@example.com>',
+              subject: subject_line,
+              body: "Hello?"
+
             assert MessageThread.all.last.subject
             assert Message.last.from
+
+
             receive_inbound_email_from_mail \
               to: '"Don Restarone" <restarone@restarone.solutions>',
               from: '"else" <else@example.com>',
@@ -146,20 +149,48 @@ class EMailboxTest < ActionMailbox::TestCase
               body: "Hello?"
           end
         end
+      end
+    end
+  end
+
+  test 'emails are mapped into same threads the in-reply-to header refers to one of the email from the same thread' do
+    Apartment::Tenant.switch @restarone_subdomain do      
+      perform_enqueued_jobs do
+        assert_difference "MessageThread.all.reload.size" , +1 do        
+          assert_difference "Message.all.reload.size", +2 do          
+            subject_line = "Hello world!"
+            receive_inbound_email_from_mail \
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"else" <else@example.com>',
+              subject: subject_line,
+              body: "Hello?"
+            assert MessageThread.all.last.subject
+            assert Message.last.from
+
+            receive_inbound_email_from_mail \
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"else" <else@example.com>',
+              subject: subject_line,
+              body: "Hello?",
+              'in-reply-to': "<#{Message.last.email_message_id}>"
+          end
+        end
     
         assert_no_difference "MessageThread.all.reload.size" do        
           assert_difference "Message.all.reload.size", +2 do
             receive_inbound_email_from_mail \
-            to: '"Don Restarone" <restarone@restarone.solutions>',
-            from: '"else" <else@example.com>',
-            subject: 'subject_line',
-            body: "Hello?"
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"else" <else@example.com>',
+              subject: 'subject_line',
+              body: "Hello?",
+              'in-reply-to': "<#{Message.last.email_message_id}>"
 
             receive_inbound_email_from_mail \
               to: '"Don Restarone" <restarone@restarone.solutions>',
               from: '"else" <else@example.com>',
               subject: 'subject_line 22',
-              body: "Hello?"
+              body: "Hello?",
+              'in-reply-to': "<#{Message.last.email_message_id}>"
           end
         end
       end
