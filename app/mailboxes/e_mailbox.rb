@@ -1,7 +1,7 @@
 class EMailbox < ApplicationMailbox
 
   def process
-    subject = mail.subject
+    subject = sanitize_email_subject_prefixes(mail.subject)
     recipients = mail.to.map{|email| Mail::Address.new(email)}
     recipients.each do |address|
       schema_domain = address.local == Subdomain::ROOT_DOMAIN_EMAIL_NAME ? 'public' : address.local
@@ -9,10 +9,15 @@ class EMailbox < ApplicationMailbox
       Apartment::Tenant.switch schema_domain do
         mailbox = Mailbox.first_or_create
         if mailbox
-          message_thread = MessageThread.find_or_create_by(
-            current_email_message_id: mail.in_reply_to
-          )
-          message_thread.update(recipients: mail.from, subject: subject)
+          if mail.in_reply_to && in_reply_to_message = Message.find_by(email_message_id: mail.in_reply_to)
+            message_thread = in_reply_to_message.message_thread
+          else
+            message_thread = MessageThread.find_or_create_by(
+              recipients: mail.from,
+              subject: subject
+            )
+          end
+
           message = Message.create!(
             email_message_id: mail.message_id,
             message_thread: message_thread,
@@ -54,7 +59,6 @@ class EMailbox < ApplicationMailbox
     return blobs
   end
 
-
   def body
     if mail.multipart? && mail.html_part
       document = Nokogiri::HTML(mail.html_part.body.decoded)
@@ -76,5 +80,14 @@ class EMailbox < ApplicationMailbox
     else
       mail.decoded
     end
+  end
+
+  private
+  def sanitize_email_subject_prefixes(subject)
+    return subject if subject.blank?
+
+    # There are some standard email subject prefixes which gets prepended in the email's subject.
+    # examples: 'Re: ', 're: ', 'FWD: ', 'Fwd: ', 'Fw: '
+    subject.gsub(/^((re|fw(d)?): )/i, '')
   end
 end
