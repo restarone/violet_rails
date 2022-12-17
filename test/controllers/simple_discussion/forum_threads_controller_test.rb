@@ -501,4 +501,47 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
 
     assert_equal payload[:forum_thread][:title], forum_thread.reload.title
   end
+
+  test 'send notification to mentioned users in thread/post body' do
+    sign_in(@other_user)
+    payload = {
+      forum_thread: {
+        forum_category_id: @forum_category.id,
+        title: 'Test Mentioned User',
+        forum_posts_attributes: {
+          "0": {
+            body: ActionText::TrixAttachment.from_attributes({ "sgid" => @user.attachable_sgid})
+          }
+        }
+      }
+    }
+    assert_difference "ForumThread.all.size", +1 do
+      perform_enqueued_jobs do
+        assert_changes "SimpleDiscussion::UserMailer.deliveries.size", +1 do
+          post simple_discussion.forum_threads_url, params: payload
+          Sidekiq::Worker.drain_all
+        end
+      end
+    end
+    assert_equal SimpleDiscussion::UserMailer.deliveries.last.to, [@user.email]
+    assert_equal SimpleDiscussion::UserMailer.deliveries.last.subject, payload[:forum_thread][:title]
+
+    assert_response :redirect
+    assert_redirected_to simple_discussion.forum_thread_path(id: ForumThread.last.slug)
+
+    assert_difference "ForumPost.count", +1 do
+      perform_enqueued_jobs do
+        assert_changes "SimpleDiscussion::UserMailer.deliveries.size", +1 do
+          post simple_discussion.forum_thread_forum_posts_path(ForumThread.last), params: {
+            forum_post: {
+              body: ActionText::TrixAttachment.from_attributes({ "sgid" => @user.attachable_sgid })
+            }
+          }
+          Sidekiq::Worker.drain_all
+        end
+      end
+    end
+    assert_equal SimpleDiscussion::UserMailer.deliveries.last.to, [@user.email]
+    assert_equal SimpleDiscussion::UserMailer.deliveries.last.subject, "New post in #{payload[:forum_thread][:title]}"
+  end
 end

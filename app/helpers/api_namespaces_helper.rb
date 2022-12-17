@@ -1,6 +1,6 @@
 module ApiNamespacesHelper
   def api_base_url(subdomain, namespace)
-    "#{subdomain.hostname}/api/#{namespace.version}/#{namespace.name}"
+    "#{subdomain.hostname}/api/#{namespace.version}/#{namespace.slug}"
   end
 
   def graphql_base_url(subdomain, namespace)

@@ -9,12 +9,14 @@ class Subdomain < ApplicationRecord
   before_destroy :purge_stored_files, :drop_tenant
 
   after_save :send_analytics_report, if: -> { self.saved_change_to_analytics_report_frequency? && self.analytics_report_frequency != REPORT_FREQUENCY_MAPPING[:never] }
-
+  after_save :change_2fa_setting, if: -> { self.saved_change_to_enable_2fa? }
   has_one_attached :logo
   has_one_attached :favicon
   has_one_attached :og_image
   has_rich_text :email_signature
 
+
+  enum email_notification_strategy: { user_email: 'user_email', system_email: 'system_email' }
 
   # max 1GB by default storage allowance
   MAXIMUM_STORAGED_ALLOWANCE = 1073741824
@@ -162,6 +164,18 @@ class Subdomain < ApplicationRecord
   end
 
   private
+
+  def change_2fa_setting 
+    if self.enable_2fa 
+      Apartment::Tenant.switch(self.name) do
+        User.all.map(&:enable_two_factor!)
+      end
+    else 
+      Apartment::Tenant.switch(self.name) do
+        User.all.map(&:disable_two_factor!)
+      end
+    end
+  end
 
   def purge_stored_files
     Apartment::Tenant.switch(self.name) do
