@@ -152,6 +152,7 @@ module ApiActionable
 
   def render_fallback_to_recaptcha_v2_with_error_message(error_message)
     @flash = { error: error_message }
+    @form_id = params[:form_id]
     render 'shared/fallback_to_recaptcha_v2.js.erb'
   end
 

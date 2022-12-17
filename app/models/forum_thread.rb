@@ -22,6 +22,7 @@ class ForumThread < ApplicationRecord
   scope :unpinned, -> { where.not(pinned: true) }
   scope :unsolved, -> { where.not(solved: true) }
   
+
   scope :search_forum_threads_content_body_or_title,->(value) {
     value = "%#{value}%"
   
@@ -30,8 +31,13 @@ class ForumThread < ApplicationRecord
     .distinct
   }
 
+
+  def mentioned_users
+    forum_posts.map { |forum_post| forum_post.body.body.attachments.select{ |a| a.attachable.class == User }.map(&:attachable) }.flatten.uniq
+  end
+  
   def subscribed_users
-    (users + optin_subscribers).uniq - optout_subscribers
+    (users + optin_subscribers + mentioned_users).uniq - optout_subscribers
   end
 
   def subscription_for(user)
@@ -47,16 +53,15 @@ class ForumThread < ApplicationRecord
     if subscription.present?
       subscription.subscription_type == "optin"
     else
-      forum_posts.where(user_id: user.id).any?
+      forum_posts.where(user_id: user.id).any? || mentioned_users.include?(user)
     end
   end
 
   def toggle_subscription(user)
     subscription = subscription_for(user)
-
     if subscription.present?
       subscription.toggle!
-    elsif forum_posts.where(user_id: user.id).any?
+    elsif forum_posts.where(user_id: user.id).any? || mentioned_users.include?(user)
       forum_subscriptions.create(user: user, subscription_type: "optout")
     else
       forum_subscriptions.create(user: user, subscription_type: "optin")
@@ -76,17 +81,16 @@ class ForumThread < ApplicationRecord
       end
     elsif forum_posts.where(user_id: user.id).any?
       I18n.t(".receiving_notifications_because_posted")
+    elsif mentioned_users.include?(user)
+      I18n.t(".receiving_notifications_because_mentioned")
     else
       I18n.t(".not_receiving_notifications")
     end
   end
 
-  # These are the users to notify on a new thread. Currently this does nothing,
-  # but you can override this to provide whatever functionality you like here.
-  #
-  # For example: You might use this to send all moderators an email of new threads.
+  # These are the users to notify on a new thread.
   def notify_users
-    []
+    mentioned_users - User.forum_mods - [user]
   end
 
   private

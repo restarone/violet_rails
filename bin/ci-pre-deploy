@@ -1,0 +1,20 @@
+#!/bin/sh -l
+if [ "$IS_REVIEW_APP" = "true" ]; then
+  REVIEW_APP_DB_NAME="${APP_NAME}-db"
+  MAIN_APP_DB_NAME="violet-rails-db"
+
+  ssh "ubuntu@$(parse-ssh-host)" "
+  dokku postgres:exists $REVIEW_APP_DB_NAME || dokku postgres:clone $MAIN_APP_DB_NAME $REVIEW_APP_DB_NAME
+  dokku postgres:linked $REVIEW_APP_DB_NAME $APP_NAME || (dokku postgres:link $REVIEW_APP_DB_NAME $REVIEW_APP_NAME && dokku postgres:promote $REVIEW_APP_DB_NAME $REVIEW_APP_NAME && dokku postgres:unlink $MAIN_APP_DB_NAME $REVIEW_APP_NAME)
+  "
+  echo "${REVIEW_APP_DB_NAME} linked to review-app: ${APP_NAME}"
+
+  REVIEW_APP_REDIS_NAME="${APP_NAME}-redis"
+  MAIN_APP_REDIS_NAME="violet-rails-redis"
+
+  ssh "ubuntu@$(parse-ssh-host)" "
+  dokku redis:exists $REVIEW_APP_REDIS_NAME || dokku redis:clone $MAIN_APP_REDIS_NAME $REVIEW_APP_REDIS_NAME
+  dokku redis:linked $REVIEW_APP_REDIS_NAME $APP_NAME || (dokku redis:link $REVIEW_APP_REDIS_NAME $REVIEW_APP_NAME && dokku redis:promote $REVIEW_APP_REDIS_NAME $REVIEW_APP_NAME && dokku redis:unlink $MAIN_APP_REDIS_NAME $REVIEW_APP_NAME)
+  "
+  echo "${REVIEW_APP_REDIS_NAME} linked to review-app: ${APP_NAME}"
+fi

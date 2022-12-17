@@ -10,9 +10,25 @@ class Message < ApplicationRecord
 
   default_scope { order(created_at: 'DESC') }
 
+  before_save :generate_message_id
+  after_create :update_message_thread_current_email_message_id
   after_create_commit :deliver
 
   private
+
+  def generate_message_id
+    if self.email_message_id.blank?
+      # RFC format for message-id: local-part@domain
+      # '@' is a identifier to separate local part and the domain part. So, it cannot be used multiple times.
+      self.email_message_id = "#{Digest::SHA2.hexdigest(Time.now.to_i.to_s)}.#{Apartment::Tenant.current}@#{ENV['APP_HOST']}"
+    end
+  end
+
+  def update_message_thread_current_email_message_id
+    if self.message_thread
+      self.message_thread.update(current_email_message_id: self.email_message_id)
+    end
+  end
 
   def deliver
     if !self.from

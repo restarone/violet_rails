@@ -1,0 +1,9 @@
+$("#otp").css({ visibility: 'visible', display: 'block' }) 
+$("#resend-otp-btn").css({ visibility: 'visible', display: 'block' }) 
+$("#main-div").css({ visibility: 'hidden', display: 'none' }) 
+$('#update-btn').text("Verify");
+$("#error_msg").html("<%= render "users/shared/error_messages", resource: resource  %>")
+$("#update-btn").addClass('btn-primary p-2');
+$("#update-btn").removeClass('btn-success');
+$('#invite_header').text("2 Factor Authentication");
+$('#register_header').text("2 Factor Authentication");
