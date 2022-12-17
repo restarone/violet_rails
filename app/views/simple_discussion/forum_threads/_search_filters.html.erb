@@ -1,0 +1,14 @@
+<%= search_form_for @forums_threads_q, url: request.path do |form| %> 
+
+<div class = 'form-group'>
+    <div class='form-wrap'>
+        <div class='form-field'>
+            <%= form.search_field :title_or_forum_posts_action_text_rich_text_body_cont, value: params[:q][:title_or_forum_posts_action_text_rich_text_body_cont], class: 'form-control', placeholder: 'search by title or post body' %>
+        </div>
+        <div class='form-btn'>
+            <%= form.submit class: 'btn btn-primary my-2 sd-btn' %>
+            <%= link_to "X", request.path, class:"cancel-btn" %>
+        </div>
+    </div>
+</div>
+<% end %>
