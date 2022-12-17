@@ -172,4 +172,27 @@ class ApiResourceTest < ActiveSupport::TestCase
       assert_equal updated_at, ApiAction.find(id).updated_at
     end
   end
+
+  test 'props' do
+    api_namespace = api_namespaces(:one)
+    api_resource = ApiResource.create!(api_namespace_id: api_namespace.id, properties: {'name': 'John Doe'})
+
+    test_image = Rails.root.join("test/fixtures/files/fixture_image.png")
+    file = Rack::Test::UploadedFile.new(test_image, "image/png")
+
+    prop_1 = NonPrimitiveProperty.create!(label: "image", field_type: "file", attachment: file, api_resource_id: api_resource.id)
+    prop_2 = NonPrimitiveProperty.create!(label: "text", field_type: "richtext", content: "<div>test</div>", api_resource_id: api_resource.id)
+
+    # should be a hash containing both primitive and non-primitive properties
+    assert_equal ['name', 'image', 'text'].sort, api_resource.props.keys.sort
+
+    # should be able to access primitive properties
+    assert_equal 'John Doe', api_resource.props['name']
+
+    # should be able to access non-primitive properties through label
+    # file type
+    assert_equal prop_1.file_url, api_resource.props['image'].file_url
+    # rich text
+    assert_equal prop_2.content, api_resource.props['text'].content
+  end
 end
