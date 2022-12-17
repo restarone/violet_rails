@@ -1,4 +1,3 @@
-
 test:
   api_namespace: two
   slug: test-second
@@ -225,7 +224,7 @@ vacuum_job:
 
         api_resources_to_be_deleted = ApiResource.where(api_namespace_id: api_namespace_id).where("(EXTRACT (EPOCH FROM  now() - #{dimension} )::int/60) > ?", older_than).order("#{dimension} #{order}").limit(batch_size)
 
-        ActiveRecord::Base.transaction do
+        ApiResource.transaction do
           api_resources_to_be_deleted.each do |api_resource|
             api_resource.destroy!
           end
@@ -360,3 +359,236 @@ sync_attribute_to_api_namespace_plugin:
     end
     # at the end of the file we have to implicitly return the class 
     SyncAttributeToApiNamespace
+
+compliance_visitor_data_request_plugin:
+  api_namespace: compliance_visitor_data_request
+  slug: compliance-visitor-request
+  label: ComplianceVisitorDataRequest
+  enabled: true
+  metadata:
+    {
+      "EXCLUDE_API_NAMESPACES":
+        ["subdomain_events", "compliance-visitor-request"],
+      "MESSAGE": "This is your data request, please see it below",
+    }
+  model_definition: |
+    class ComplianceVisitorDataRequest
+      def initialize(parameters)
+        @external_api_client = parameters[:external_api_client]
+        @visitor_api_namespace = @external_api_client.api_namespace
+        @visitor_api_resources_with_no_message_sent = @visitor_api_namespace.api_resources.where("properties @> ?", {compliance_message_sent: false}.to_json)
+        @connection_service = Violet::Connection.new
+      end
+
+      def start
+        excluded_api_namespaces = @external_api_client.metadata["EXCLUDE_API_NAMESPACES"].nil? ? [] : @external_api_client.metadata["EXCLUDE_API_NAMESPACES"]
+        should_scan_all_namespaces = excluded_api_namespaces.length > 0 ? false : @external_api_client.metadata["SCAN_ALL_NAMESPACES"]
+        message = @external_api_client.metadata["MESSAGE"]
+
+        @visitor_api_resources_with_no_message_sent.each do |visitor_api_resource|
+          visitor_email = visitor_api_resource.properties["email"]
+          attachments = []
+
+          raise "Permission to scan all api namespaces is not given" if excluded_api_namespaces.length == 0 && !should_scan_all_namespaces
+          
+          # determine which api namespaces need to be scanned
+          included_api_namespaces = ApiNamespace.where.not(slug: excluded_api_namespaces)
+
+          included_api_namespaces.each do |api_namespace|
+            # api resources that the visitor submitted
+            api_resources = api_namespace.api_resources.where("properties @> ?", {email: visitor_email}.to_json)
+
+            # if there are no api resources for this api namespace, then no need to attach a CSV file
+            if api_resources.length > 0
+              attachment = {
+                filename: "api_namespace_#{api_namespace.slug}_#{DateTime.now.to_i}.csv",
+                mime_type: "text/csv",
+                content: generate_csv_with_api_resources(api_namespace, api_resources)
+              }
+              attachments << attachment
+            end
+          end
+
+          if (attachments.length > 0)
+            email_thread = MessageThread.create(subject: "#{visitor_email} compliance: visitor submitted data request", recipients: [visitor_email])
+            email_message = email_thread.messages.create(content: "<p>#{message}</p>#{get_action_text_content(attachments)}", from: @connection_service.get_subdomain_email_address)
+            EMailer.with(message: email_message, message_thread: email_thread, attachments: attachments).ship.deliver_later
+            # Currently sending emails asynchronously and not checking if they got sent successfully before setting compliance_message_sent to true
+            visitor_api_resource.properties["compliance_message_sent"] = true
+            visitor_api_resource.save
+          end
+        end
+      end
+
+      def get_action_text_content(attachments)
+        action_text_content = ""
+        attachments.each do |attachment|
+          blob = ActiveStorage::Blob.create_and_upload!(io: StringIO.new(attachment[:content]), filename: attachment[:filename], content_type: attachment[:mime_type], metadata: nil)
+          action_text_content += "<action-text-attachment sgid='#{blob.attachable_sgid}'></action-text-attachment>"
+        end
+        ActionText::Content.new(action_text_content).to_s
+      end
+
+      def generate_csv_with_api_resources(api_namespace, api_resources)
+        main_headers = ApiResource.column_names.reject {|header| header == "user_id"}
+        top_level_attributes = api_namespace.properties.keys
+        property_column_index = main_headers.index('properties')
+        effective_headers = main_headers.dup.insert(property_column_index, *top_level_attributes)
+        effective_headers.delete('properties')
+        non_primitive_columns = api_namespace.non_primitive_properties.pluck(:label)
+        effective_headers += non_primitive_columns
+
+        csv_content = CSV.generate do |csv|
+          # adding column headers
+          csv << effective_headers
+
+          api_resources.each do |api_resource|
+            row_data = []
+            # Populating primitive columns
+            main_headers.each do |header|
+              data = api_resource[header]
+              if header == "properties"
+                propsData = data
+                top_level_attributes.each do |attribute|
+                  row_data << (propsData[attribute].nil? ? "" : propsData[attribute])
+                end
+              else
+                row_data << data
+              end
+            end
+
+            # Populating non-primitive columns
+            non_primitive_columns.each do |label|
+              non_primitive_property = api_resource.non_primitive_properties.find_by(label: label)
+              if non_primitive_property.present? && non_primitive_property.richtext?
+                row_data << non_primitive_property.content.to_s
+              elsif non_primitive_property.present? && non_primitive_property.file?
+                blob_url = non_primitive_property.attachment.attached? ? @connection_service.get_blob_url(non_primitive_property.attachment) : ''
+                row_data << blob_url
+              else
+                row_data << ''
+              end
+            end
+
+            csv << row_data
+          end
+        end
+        csv_content.html_safe
+      end
+    end
+    # at the end of the file we have to implicitly return the class 
+    ComplianceVisitorDataRequest
+
+unique_string_aggregator_plugin:
+  api_namespace: movies
+  slug: unique-string-aggregator
+  label: UniqueStringAggregator
+  enabled: true
+  metadata: {
+    'INPUT_PROPERTY': 'tags',
+    'OUTPUT_API_NAMESPACE': 'movie_tags',
+    'PRISTINE': true
+  }
+  model_definition: |
+    class UniqueStringAggregator
+      def initialize(parameters)
+        @external_api_client = parameters[:external_api_client]
+        @api_namespace = @external_api_client.api_namespace
+      end
+
+      def start
+        output_api_namespace_slug = @external_api_client.metadata["OUTPUT_API_NAMESPACE"]
+        pristine = @external_api_client.metadata["PRISTINE"]
+        input_property_name = @external_api_client.metadata["INPUT_PROPERTY"]
+
+        raise "API Namespace resource pollution detected. OUTPUT_API_NAMESPACE slug and the slug of the current API namespace cannot be the same." if output_api_namespace_slug == @api_namespace.slug
+        raise "Input property does not exist on the current API namespace" unless @api_namespace.properties.key?(input_property_name)
+
+        output_api_namespace = ApiNamespace.where(slug: output_api_namespace_slug).first
+
+        raise "An API namespace with the provided output API namespace slug does not exist" if output_api_namespace.nil?
+        raise "Input property does not exist on the output API namespace" unless output_api_namespace.properties.key?(input_property_name)
+
+        ids_of_existing_api_resources = []
+        unique_strings_hash = {}
+        existing_unique_strings_hash = {}
+
+        # if pristine is true, collect ID's of all existing API Resources in the target API Namespace and delete them after successful connection execution
+        # if pristine is false, collect existing unique strings so that they can be used to only add new ones
+        output_api_namespace.api_resources.each do |api_resource|
+            if pristine
+              ids_of_existing_api_resources << api_resource.id
+            else
+              unique_string = api_resource.properties[input_property_name]
+              existing_unique_strings_hash[unique_string] = true
+            end  
+        end
+
+        @api_namespace.api_resources.each do |api_resource|
+          Array.wrap(api_resource.properties[input_property_name]).each do |str|
+            processed_str = str.downcase.strip
+            unique_strings_hash[processed_str] = [] unless unique_strings_hash.key?(processed_str)
+            unique_strings_hash[processed_str] << api_resource.id
+          end
+        end
+
+        unique_strings_hash.keys.each do |key|
+          representation_text = key.split.map(&:capitalize).join(" ")
+          propertiesObj = {input_property_name => key, "representation" => representation_text}
+          if pristine || (!pristine && !existing_unique_strings_hash.key?(key))
+            ApiResource.create(api_namespace_id: output_api_namespace.id, properties: propertiesObj)
+          end
+        end
+
+        unless ids_of_existing_api_resources.empty?
+          api_resources_to_be_deleted = ApiResource.where(api_namespace_id: output_api_namespace.id, id: ids_of_existing_api_resources)
+          ApiResource.transaction do
+            api_resources_to_be_deleted.each do |api_resource|
+              api_resource.destroy!
+            end
+          end
+        end
+      end
+    end
+    # at the end of the file we have to implicitly return the class 
+    UniqueStringAggregator
+
+transcript_parser_plugin:
+  api_namespace: namespace_with_transcript
+  slug: transcript-parser
+  label: TranscriptParser
+  enabled: true
+  metadata: {
+            'INPUT_STRING_PROPERTY': 'raw_transcript',
+            'OUTPUT_STRING_PROPERTY': 'transcript',
+          }
+  model_definition: |
+    class TranscriptParser
+      def initialize(parameters)
+        @external_api_client = parameters[:external_api_client]
+        @api_namespace = @external_api_client.api_namespace
+        @api_resources_with_no_parsed_transcript = @api_namespace.api_resources.where("properties @> ?", {transcript_parsed: false}.to_json)
+      end
+
+      def start
+        input_string_property = @external_api_client.metadata["INPUT_STRING_PROPERTY"]
+        output_string_property = @external_api_client.metadata["OUTPUT_STRING_PROPERTY"]
+
+        raise "Input and output string properties cannot be the same (no overwriting allowed)" if input_string_property == output_string_property 
+        raise "The specified input string property does not exist" unless @api_namespace.properties.key?(input_string_property)
+        raise "The specified output string property does not exist" unless @api_namespace.properties.key?(output_string_property)
+
+        @api_resources_with_no_parsed_transcript.each do |api_resource|
+          raw_transcript = api_resource.properties[input_string_property]
+          # ^([\d\n][0-9:,->\s]*\n) matches numbers and timestamps at the beginning or newline characters at the beginning or end of a line
+          # ^(\[\w*\]:\s) matches names within [], e.g. [sally], [sally32]
+          # gsub(/\n/, " ") is used to add whitespace between lines of text
+          parsed_transcript = raw_transcript.strip.gsub(/^([\d\n][0-9:,->\s]*\n)|^(\[\w*\]:\s)/i, "").gsub(/\n/, " ")
+          api_resource.properties[output_string_property] = parsed_transcript
+          api_resource.properties["transcript_parsed"] = true unless parsed_transcript.blank?
+          api_resource.save
+        end
+      end
+    end
+    # at the end of the file we have to implicitly return the class
+    TranscriptParser

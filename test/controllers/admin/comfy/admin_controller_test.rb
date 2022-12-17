@@ -31,10 +31,18 @@ class Comfy::Admin::Cms::BaseControllerTest < ActionDispatch::IntegrationTest
   end
 
 
-  test "should get admin index" do
+  test "should redirect to layouts#new while accessing layouts#index if there are no layouts" do
+    Comfy::Cms::Layout.delete_all
     get comfy_admin_cms_site_layouts_url(subdomain: @user_subdomain, site_id: Comfy::Cms::Site.first.id)
     assert_response :redirect
     assert_redirected_to new_comfy_admin_cms_site_layout_url(subdomain: @user_subdomain, site_id: Comfy::Cms::Site.first.id)
+    assert_redirected_to action: :new
+  end
+
+  test "should get admin index" do
+    get comfy_admin_cms_site_layouts_url(subdomain: @user_subdomain, site_id: Comfy::Cms::Site.first.id)
+    assert_template :index
+    assert_response :success
   end
 
 
