@@ -31,6 +31,13 @@ jobs:
               dokku postgres:exists "${APP_NAME}-db" && dokku postgres:destroy "${APP_NAME}-db" --force;
               dokku redis:exists "${APP_NAME}-redis" && dokku redis:destroy "${APP_NAME}-redis" --force;
 
+              if [ -d /home/dokku/$APP_NAME ]; then
+                echo "Folder of ${APP_NAME} still exists.\nDeleting it manually.";
+                sudo rm -rf /home/dokku/$APP_NAME;
+
+                [ -d /home/dokku/$APP_NAME ] && echo "Could not delete ${APP_NAME}." || echo "${APP_NAME} deleted successfully.";
+              fi
+
               echo "Deletion of ${APP_NAME} app, ${APP_NAME}-db and ${APP_NAME}-redis completed.";
             };
             done;

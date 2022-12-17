@@ -3,7 +3,7 @@ require "test_helper"
 class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
-    @user.update(can_manage_api: true)
+    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
     @api_client = api_clients(:one)
     @api_namespace = api_namespaces(:one)
   end
@@ -15,7 +15,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
 
   test "should not get #index, #new if signed in but not allowed to manage web" do
     sign_in(@user)
-    @user.update(can_manage_api: false)
+    @user.update(api_accessibility: {})
     get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
     assert_response :redirect
     get new_api_namespace_api_client_url(api_namespace_id: @api_namespace.id)
@@ -93,4 +93,630 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
   end
+
+  # SHOW
+  # API access for all namespaces
+  test 'should get show if user has full_access for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+
+    sign_in(@user)
+    get api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    assert_response :success
+    assert_template :show
+  end
+
+  test 'should get show if user has full_read_access for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {full_read_access: 'true'}})
+
+    sign_in(@user)
+    get api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    assert_response :success
+    assert_template :show
+  end
+
+  test 'should get show if user has full_access_for_api_clients_only for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_clients_only: 'true'}})
+
+    sign_in(@user)
+    get api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    assert_response :success
+    assert_template :show
+  end
+
+  test 'should get show if user has read_api_clients_only for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {read_api_clients_only: 'true'}})
+
+    sign_in(@user)
+    get api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    assert_response :success
+    assert_template :show
+  end
+
+  test 'should not get show if user has other access for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {allow_duplication: 'true'}})
+
+    sign_in(@user)
+    get api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    assert_response :redirect
+
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_for_api_clients_only or read_api_clients_only are allowed to perform that action."
+    assert_equal expected_message, flash[:alert]
+  end
+
+  # API access by category wise
+  test 'should get show if user has full_access for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+
+    sign_in(@user)
+    get api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    assert_response :success
+    assert_template :show
+  end
+
+  test 'should get show if user has full_read_access for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}})
+
+    sign_in(@user)
+    get api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    assert_response :success
+    assert_template :show
+  end
+
+  test 'should get show if user has full_access_for_api_clients_only for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_clients_only: 'true'}}})
+
+    sign_in(@user)
+    get api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    assert_response :success
+    assert_template :show
+  end
+
+  test 'should get show if user has read_api_clients_only for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_clients_only: 'true'}}})
+
+    sign_in(@user)
+    get api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    assert_response :success
+    assert_template :show
+  end
+
+  test 'should get show if user has read_api_clients_only for the uncategorized namespace' do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {read_api_clients_only: 'true'}}})
+
+    sign_in(@user)
+    get api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    assert_response :success
+    assert_template :show
+  end
+
+  test 'should not get show if user has other access for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_duplication: 'true'}}})
+
+    sign_in(@user)
+    get api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    assert_response :redirect
+
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_for_api_clients_only or read_api_clients_only are allowed to perform that action."
+    assert_equal expected_message, flash[:alert]
+  end
+
+  # INDEX
+  # API access for all namespaces
+  test 'should get index if user has full_access for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+
+    sign_in(@user)
+    get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
+    assert_response :success
+  end
+
+  test 'should get index if user has full_read_access for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {full_read_access: 'true'}})
+
+    sign_in(@user)
+    get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
+    assert_response :success
+  end
+
+  test 'should get index if user has full_access_for_api_clients_only for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_clients_only: 'true'}})
+
+    sign_in(@user)
+    get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
+    assert_response :success
+  end
+
+  test 'should get index if user has read_api_clients_only for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {read_api_clients_only: 'true'}})
+
+    sign_in(@user)
+    get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
+    assert_response :success
+  end
+
+  test 'should not get index if user has other access for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {allow_duplication: 'true'}})
+
+    sign_in(@user)
+    get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
+    assert_response :redirect
+
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_for_api_clients_only or read_api_clients_only are allowed to perform that action."
+    assert_equal expected_message, flash[:alert]
+  end
+
+  # API access by category wise
+  test 'should get index if user has full_access for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+
+    sign_in(@user)
+    get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
+    assert_response :success
+  end
+
+  test 'should get index if user has full_read_access for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}})
+
+    sign_in(@user)
+    get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
+    assert_response :success
+  end
+
+  test 'should get index if user has full_access_for_api_clients_only for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_clients_only: 'true'}}})
+
+    sign_in(@user)
+    get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
+    assert_response :success
+  end
+
+  test 'should get index if user has read_api_clients_only for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_clients_only: 'true'}}})
+
+    sign_in(@user)
+    get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
+    assert_response :success
+  end
+
+  test 'should get index if user has read_api_clients_only for the uncategorized namespace' do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {read_api_clients_only: 'true'}}})
+
+    sign_in(@user)
+    get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
+    assert_response :success
+  end
+
+  test 'should not get index if user has other access for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_duplication: 'true'}}})
+
+    sign_in(@user)
+    get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
+    assert_response :redirect
+
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_for_api_clients_only or read_api_clients_only are allowed to perform that action."
+    assert_equal expected_message, flash[:alert]
+  end
+
+  # NEW
+  # API access for all_namespaces
+  test 'should get new if user has full_access for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+
+    sign_in(@user)
+    get new_api_namespace_api_client_url(api_namespace_id: @api_namespace.id)
+    assert_response :success
+  end
+
+  test 'should get new if user has full_access_for_api_clients_only for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_clients_only: 'true'}})
+
+    sign_in(@user)
+    get new_api_namespace_api_client_url(api_namespace_id: @api_namespace.id)
+    assert_response :success
+  end
+
+  test 'should not get new if user has other access for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {read_api_clients_only: 'true'}})
+
+    sign_in(@user)
+    get new_api_namespace_api_client_url(api_namespace_id: @api_namespace.id)
+    assert_response :redirect
+
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_clients_only are allowed to perform that action."
+    assert_equal expected_message, flash[:alert]
+  end
+
+  # API access by category wise
+  test 'should get new if user has full_access for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+
+    sign_in(@user)
+    get new_api_namespace_api_client_url(api_namespace_id: @api_namespace.id)
+    assert_response :success
+  end
+
+  test 'should get new if user has full_access_for_api_clients_only for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_clients_only: 'true'}}})
+
+    sign_in(@user)
+    get new_api_namespace_api_client_url(api_namespace_id: @api_namespace.id)
+    assert_response :success
+  end
+
+  test 'should get new if user has read_api_clients_only for the uncategorized namespace' do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_api_clients_only: 'true'}}})
+
+    sign_in(@user)
+    get new_api_namespace_api_client_url(api_namespace_id: @api_namespace.id)
+    assert_response :success
+  end
+
+  test 'should not get new if user has other access for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_clients_only: 'true'}}})
+
+    sign_in(@user)
+    get new_api_namespace_api_client_url(api_namespace_id: @api_namespace.id)
+    assert_response :redirect
+
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_clients_only are allowed to perform that action."
+    assert_equal expected_message, flash[:alert]
+  end
+
+  # EDIT
+  # API access for all_namespaces
+  test 'should get edit if user has full_access for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+
+    sign_in(@user)
+    get edit_api_namespace_api_client_path(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    assert_response :success
+    assert_template :edit
+  end
+
+  test 'should get edit if user has full_access_for_api_clients_only for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_clients_only: 'true'}})
+
+    sign_in(@user)
+    get edit_api_namespace_api_client_path(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    assert_response :success
+    assert_template :edit
+  end
+
+  test 'should not get edit if user has other access for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {read_api_clients_only: 'true'}})
+
+    sign_in(@user)
+    get edit_api_namespace_api_client_path(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    assert_response :redirect
+
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_clients_only are allowed to perform that action."
+    assert_equal expected_message, flash[:alert]
+  end
+
+  # API access by category wise
+  test 'should get edit if user has full_access for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+
+    sign_in(@user)
+    get edit_api_namespace_api_client_path(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    assert_response :success
+    assert_template :edit
+  end
+
+  test 'should get edit if user has full_access_for_api_clients_only for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_clients_only: 'true'}}})
+
+    sign_in(@user)
+    get edit_api_namespace_api_client_path(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    assert_response :success
+    assert_template :edit
+  end
+
+  test 'should get edit if user has read_api_clients_only for the uncategorized namespace' do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_api_clients_only: 'true'}}})
+
+    sign_in(@user)
+    get edit_api_namespace_api_client_path(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    assert_response :success
+    assert_template :edit
+  end
+
+  test 'should not get edit if user has other access for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_clients_only: 'true'}}})
+
+    sign_in(@user)
+    get edit_api_namespace_api_client_path(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    assert_response :redirect
+
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_clients_only are allowed to perform that action."
+    assert_equal expected_message, flash[:alert]
+  end
+
+  # CREATE
+  # API access for all_namespaces
+  test 'should get create if user has full_access for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+
+    sign_in(@user)
+    assert_difference('ApiClient.count') do
+      post api_namespace_api_clients_url(api_namespace_id: @api_namespace.id), params: { api_client: {  authentication_strategy: @api_client.authentication_strategy, label: "foobar" } }
+    end
+    api_client = ApiClient.last
+    assert_redirected_to api_namespace_api_client_path(api_namespace_id: api_client.api_namespace.id, id: api_client.id)
+  end
+
+  test 'should get create if user has full_access_for_api_clients_only for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_clients_only: 'true'}})
+
+    sign_in(@user)
+    assert_difference('ApiClient.count') do
+      post api_namespace_api_clients_url(api_namespace_id: @api_namespace.id), params: { api_client: {  authentication_strategy: @api_client.authentication_strategy, label: "foobar" } }
+    end
+    api_client = ApiClient.last
+    assert_redirected_to api_namespace_api_client_path(api_namespace_id: api_client.api_namespace.id, id: api_client.id)
+  end
+
+  test 'should not get create if user has other access for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {read_api_clients_only: 'true'}})
+
+    sign_in(@user)
+    assert_no_difference('ApiClient.count') do
+      post api_namespace_api_clients_url(api_namespace_id: @api_namespace.id), params: { api_client: {  authentication_strategy: @api_client.authentication_strategy, label: "foobar" } }
+    end
+    api_client = ApiClient.last
+    assert_response :redirect
+
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_clients_only are allowed to perform that action."
+    assert_equal expected_message, flash[:alert]
+  end
+
+  # API access by category wise
+  test 'should get create if user has full_access for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+
+    sign_in(@user)
+    assert_difference('ApiClient.count') do
+      post api_namespace_api_clients_url(api_namespace_id: @api_namespace.id), params: { api_client: {  authentication_strategy: @api_client.authentication_strategy, label: "foobar" } }
+    end
+    api_client = ApiClient.last
+    assert_redirected_to api_namespace_api_client_path(api_namespace_id: api_client.api_namespace.id, id: api_client.id)
+  end
+
+  test 'should get create if user has full_access_for_api_clients_only for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_clients_only: 'true'}}})
+
+    sign_in(@user)
+    assert_difference('ApiClient.count') do
+      post api_namespace_api_clients_url(api_namespace_id: @api_namespace.id), params: { api_client: {  authentication_strategy: @api_client.authentication_strategy, label: "foobar" } }
+    end
+    api_client = ApiClient.last
+    assert_redirected_to api_namespace_api_client_path(api_namespace_id: api_client.api_namespace.id, id: api_client.id)
+  end
+
+  test 'should get create if user has read_api_clients_only for the uncategorized namespace' do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_api_clients_only: 'true'}}})
+
+    sign_in(@user)
+    assert_difference('ApiClient.count') do
+      post api_namespace_api_clients_url(api_namespace_id: @api_namespace.id), params: { api_client: {  authentication_strategy: @api_client.authentication_strategy, label: "foobar" } }
+    end
+    api_client = ApiClient.last
+    assert_redirected_to api_namespace_api_client_path(api_namespace_id: api_client.api_namespace.id, id: api_client.id)
+  end
+
+  test 'should not get create if user has other access for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_clients_only: 'true'}}})
+
+    sign_in(@user)
+    assert_no_difference('ApiClient.count') do
+      post api_namespace_api_clients_url(api_namespace_id: @api_namespace.id), params: { api_client: {  authentication_strategy: @api_client.authentication_strategy, label: "foobar" } }
+    end
+    assert_response :redirect
+
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_clients_only are allowed to perform that action."
+    assert_equal expected_message, flash[:alert]
+  end
+
+  # UPDATE
+  # API access for all_namespaces
+  test 'should get update if user has full_access for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+
+    sign_in(@user)
+    patch api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id), params: { api_client: { authentication_strategy: @api_client.authentication_strategy, bearer_token: @api_client.bearer_token, label: @api_client.label } }
+    assert_redirected_to api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+  end
+
+  test 'should get update if user has full_access_for_api_clients_only for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_clients_only: 'true'}})
+
+    sign_in(@user)
+    patch api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id), params: { api_client: { authentication_strategy: @api_client.authentication_strategy, bearer_token: @api_client.bearer_token, label: @api_client.label } }
+    assert_redirected_to api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+  end
+
+  test 'should not get update if user has other access for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {read_api_clients_only: 'true'}})
+
+    sign_in(@user)
+    patch api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id), params: { api_client: { authentication_strategy: @api_client.authentication_strategy, bearer_token: @api_client.bearer_token, label: @api_client.label } }
+    assert_response :redirect
+
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_clients_only are allowed to perform that action."
+    assert_equal expected_message, flash[:alert]
+  end
+
+  # API access by category wise
+  test 'should get update if user has full_access for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+
+    sign_in(@user)
+    patch api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id), params: { api_client: { authentication_strategy: @api_client.authentication_strategy, bearer_token: @api_client.bearer_token, label: @api_client.label } }
+    assert_redirected_to api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+  end
+
+  test 'should get update if user has full_access_for_api_clients_only for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_clients_only: 'true'}}})
+
+    sign_in(@user)
+    patch api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id), params: { api_client: { authentication_strategy: @api_client.authentication_strategy, bearer_token: @api_client.bearer_token, label: @api_client.label } }
+    assert_redirected_to api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+  end
+
+  test 'should get update if user has read_api_clients_only for the uncategorized namespace' do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_api_clients_only: 'true'}}})
+
+    sign_in(@user)
+    patch api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id), params: { api_client: { authentication_strategy: @api_client.authentication_strategy, bearer_token: @api_client.bearer_token, label: @api_client.label } }
+    assert_redirected_to api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+  end
+
+  test 'should not get update if user has other access for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_clients_only: 'true'}}})
+
+    sign_in(@user)
+    patch api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id), params: { api_client: { authentication_strategy: @api_client.authentication_strategy, bearer_token: @api_client.bearer_token, label: @api_client.label } }
+    assert_response :redirect
+
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_clients_only are allowed to perform that action."
+    assert_equal expected_message, flash[:alert]
+  end
+
+  # DESTROY
+  # API access for all_namespaces
+  test 'should destroy if user has full_access for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+
+    sign_in(@user)
+    assert_difference('ApiClient.count', -1) do
+      delete api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    end
+
+    assert_redirected_to api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
+  end
+
+  test 'should destroy if user has full_access_for_api_clients_only for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_clients_only: 'true'}})
+
+    sign_in(@user)
+    assert_difference('ApiClient.count', -1) do
+      delete api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    end
+
+    assert_redirected_to api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
+  end
+
+  test 'should not destroy if user has other access for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {read_api_clients_only: 'true'}})
+
+    sign_in(@user)
+    assert_no_difference('ApiClient.count') do
+      delete api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    end
+
+    assert_response :redirect
+
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_clients_only are allowed to perform that action."
+    assert_equal expected_message, flash[:alert]
+  end
+
+  # API access by category wise
+  test 'should destroy if user has full_access for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+
+    sign_in(@user)
+    assert_difference('ApiClient.count', -1) do
+      delete api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    end
+
+    assert_redirected_to api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
+  end
+
+  test 'should destroy if user has full_access_for_api_clients_only for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_clients_only: 'true'}}})
+
+    sign_in(@user)
+    assert_difference('ApiClient.count', -1) do
+      delete api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    end
+
+    assert_redirected_to api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
+  end
+
+  test 'should destroy if user has read_api_clients_only for the uncategorized namespace' do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_api_clients_only: 'true'}}})
+
+    sign_in(@user)
+    assert_difference('ApiClient.count', -1) do
+      delete api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    end
+
+    assert_redirected_to api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
+  end
+
+  test 'should not destroy if user has other access for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_clients_only: 'true'}}})
+
+    sign_in(@user)
+    assert_no_difference('ApiClient.count') do
+      delete api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
+    end
+
+    assert_response :redirect
+
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_clients_only are allowed to perform that action."
+    assert_equal expected_message, flash[:alert]
+  end
+
+
 end

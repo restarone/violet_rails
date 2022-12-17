@@ -45,12 +45,52 @@ class ApiNamespace < ApplicationRecord
   has_many :error_api_actions, dependent: :destroy
   accepts_nested_attributes_for :error_api_actions, allow_destroy: true
 
+  ransacker :properties do |_parent|
+    Arel.sql("api_namespaces.properties::text") 
+  end
+
   REGISTERED_PLUGINS = {
     subdomain_events: {
       slug: 'subdomain_events',
       version: 1,
     }
   }
+
+  API_ACCESSIBILITIES = {
+    full_access: ['full_access'],
+    full_read_access: ['full_access', 'full_read_access'],
+    full_read_access_in_api_namespace: ['full_access', 'full_read_access', 'delete_access_api_namespace_only', 'allow_exports', 'allow_duplication', 'allow_social_share_metadata', 'full_access_api_namespace_only', 'read_api_resources_only', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'],
+    full_access_api_namespace_only: ['full_access', 'full_access_api_namespace_only'],
+    delete_access_api_namespace_only: ['full_access', 'full_access_api_namespace_only', 'delete_access_api_namespace_only'],
+    allow_exports: ['full_access', 'full_access_api_namespace_only', 'allow_exports'],
+    allow_duplication: ['full_access', 'full_access_api_namespace_only', 'allow_duplication'],
+    allow_social_share_metadata: ['full_access', 'full_access_api_namespace_only', 'allow_social_share_metadata'],
+    read_api_resources_only: ['full_access', 'full_read_access', 'full_access_for_api_resources_only', 'read_api_resources_only', 'delete_access_for_api_resources_only'],
+    full_access_for_api_resources_only: ['full_access', 'full_access_for_api_resources_only'],
+    delete_access_for_api_resources_only: ['full_access', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only'],
+    read_api_actions_only: ['full_access', 'full_read_access', 'full_access_for_api_actions_only', 'read_api_actions_only'],
+    full_access_for_api_actions_only: ['full_access', 'full_access_for_api_actions_only'],
+    read_external_api_connections_only: ['full_access', 'full_read_access', 'full_access_for_external_api_connections_only', 'read_external_api_connections_only'],
+    full_access_for_external_api_connections_only: ['full_access', 'full_access_for_external_api_connections_only'],
+    read_api_clients_only: ['full_access', 'full_read_access', 'full_access_for_api_clients_only', 'read_api_clients_only'],
+    full_access_for_api_clients_only: ['full_access', 'full_access_for_api_clients_only'],
+    full_access_for_api_form_only: ['full_access', 'full_access_for_api_form_only'],
+  }
+
+  scope :filter_by_user_api_accessibility, ->(user) { 
+    api_accessibility = user.api_accessibility
+
+    if api_accessibility.keys.include?('all_namespaces')
+      self
+    elsif api_accessibility.keys.include?('namespaces_by_category')
+      category_specific_keys = api_accessibility['namespaces_by_category'].keys
+      if category_specific_keys.include?('uncategorized')
+        self.includes(:categories).left_outer_joins(categorizations: :category).where("comfy_cms_categories.id IS ? OR comfy_cms_categories.label IN (?)", nil, category_specific_keys)
+      else
+        self.includes(:categories).for_category(category_specific_keys)
+      end
+    end
+   }
 
   def update_api_form
     if has_form == '1'
