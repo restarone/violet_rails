@@ -226,3 +226,28 @@ namespace_with_transcript:
     "transcript": "",
     "transcript_parsed": false
   }
+
+time_tracker:
+  name: time_tracker
+  slug: time-tracker
+  version: 1
+  properties:
+    {
+      "notes": "",
+      "for_what_client": "",
+      "what_task_did_you_work_on": "",
+      "how_much_time_in_hours_spent": 0,
+      "i_certify_information_accurate": false,
+    }
+
+consultant:
+  name: consultant
+  slug: consultant
+  version: 1
+  properties: { "active": false, "name": "", "rate": 0, "email": "" }
+
+timesheet_request:
+  name: consultant/timesheet_request
+  slug: consultant-timesheet_request
+  version: 1
+  properties: { "start_date": "", "end_date": "", "current_month": true }
