@@ -20,6 +20,7 @@ module ContentHelper
   # render resource index
   # available variables on view: @api_resources, @api_namespace
   def render_api_namespace_resource_index(slug, options = {})
+    set_api_html_render_flag
     scope = options["scope"] || {}
 
     api_namespace = ApiNamespace.find_by(slug: slug)
@@ -45,6 +46,7 @@ module ContentHelper
   # render resource show
   # available variables on view: @api_resource , @api_namespace
   def render_api_namespace_resource(api_namespace_slug, options = {})
+    set_api_html_render_flag
     @is_show_page = true
     scope = options["scope"]
     
@@ -60,6 +62,8 @@ module ContentHelper
     snippet_name = options["snippet"] ? options["snippet"] : api_namespace_slug
     
     cms_dynamic_snippet_render("#{snippet_name}-show", nil, { api_resource: @api_resource_to_render, api_namespace: api_namespace })
+  rescue ActiveRecord::RecordNotFound
+    render body: Rails.root.join('public', '404.html').read.html_safe, status: :not_found, layout: false
   end
 
   private
@@ -70,5 +74,9 @@ module ContentHelper
     return "" unless snippet
     r = ComfortableMexicanSofa::Content::Renderer.new(snippet)
     render inline: r.render(r.nodes(r.tokenize(snippet.content_evaluated(context))))
+  end
+
+  def set_api_html_render_flag
+    Current.is_api_html_renderer_request = true
   end
 end

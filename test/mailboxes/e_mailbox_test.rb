@@ -126,19 +126,22 @@ class EMailboxTest < ActionMailbox::TestCase
     end
   end
 
-  test 'message threads' do
+  test 'emails are mapped into same threads if the subjects are same, recipients are same and the in-reply-to header is not present' do
     Apartment::Tenant.switch @restarone_subdomain do      
       perform_enqueued_jobs do
         assert_difference "MessageThread.all.reload.size" , +1 do        
           assert_difference "Message.all.reload.size", +2 do          
             subject_line = "Hello world!"
             receive_inbound_email_from_mail \
-            to: '"Don Restarone" <restarone@restarone.solutions>',
-            from: '"else" <else@example.com>',
-            subject: subject_line,
-            body: "Hello?"
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"else" <else@example.com>',
+              subject: subject_line,
+              body: "Hello?"
+
             assert MessageThread.all.last.subject
             assert Message.last.from
+
+
             receive_inbound_email_from_mail \
               to: '"Don Restarone" <restarone@restarone.solutions>',
               from: '"else" <else@example.com>',
@@ -146,20 +149,226 @@ class EMailboxTest < ActionMailbox::TestCase
               body: "Hello?"
           end
         end
+      end
+    end
+  end
+
+  test 'emails are mapped into same threads if the subjects differ by standard prefixes for replies and email forwarding, recipients are same and the in-reply-to header is not present' do
+    Apartment::Tenant.switch @restarone_subdomain do      
+      perform_enqueued_jobs do
+        assert_difference "MessageThread.all.reload.size" , +1 do        
+          assert_difference "Message.all.reload.size", +2 do          
+            subject_line = "Hello world!"
+            receive_inbound_email_from_mail \
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"else" <else@example.com>',
+              subject: subject_line,
+              body: "Hello?"
+
+            assert MessageThread.all.last.subject
+            assert Message.last.from
+
+
+            receive_inbound_email_from_mail \
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"else" <else@example.com>',
+              subject: 'Fw: ' + subject_line,
+              body: "Hello?"
+          end
+        end
+      end
+    end
+  end
+
+  test 'emails are mapped into different threads if the subjects differ by standard prefixed for replies and email forwarding but recipients are different and the in-reply-to header is not present' do
+    Apartment::Tenant.switch @restarone_subdomain do      
+      perform_enqueued_jobs do
+        assert_difference "MessageThread.all.reload.size" , +2 do        
+          assert_difference "Message.all.reload.size", +2 do          
+            subject_line = "Hello world!"
+            receive_inbound_email_from_mail \
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"else" <else@example.com>',
+              subject: subject_line,
+              body: "Hello?"
+
+            assert MessageThread.all.last.subject
+            assert Message.last.from
+
+
+            receive_inbound_email_from_mail \
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"if.else" <if.else@example.com>',
+              subject: subject_line,
+              body: "Hello?"
+          end
+        end
+      end
+    end
+  end
+
+  test 'emails are mapped into different threads if the subjects are same but recipients are different and the in-reply-to header is not present' do
+    Apartment::Tenant.switch @restarone_subdomain do      
+      perform_enqueued_jobs do
+        assert_difference "MessageThread.all.reload.size" , +2 do        
+          assert_difference "Message.all.reload.size", +2 do          
+            subject_line = "Hello world!"
+            receive_inbound_email_from_mail \
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"else" <else@example.com>',
+              subject: subject_line,
+              body: "Hello?"
+
+            assert MessageThread.all.last.subject
+            assert Message.last.from
+
+
+            receive_inbound_email_from_mail \
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"if.else" <if.else@example.com>',
+              subject: subject_line,
+              body: "Hello?"
+          end
+        end
+      end
+    end
+  end
+
+  test 'emails are mapped into same threads when the in-reply-to header refers to one of the email from the same thread' do
+    Apartment::Tenant.switch @restarone_subdomain do      
+      perform_enqueued_jobs do
+        assert_difference "MessageThread.all.reload.size" , +1 do        
+          assert_difference "Message.all.reload.size", +2 do          
+            subject_line = "Hello world!"
+            receive_inbound_email_from_mail \
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"else" <else@example.com>',
+              subject: subject_line,
+              body: "Hello?"
+            assert MessageThread.all.last.subject
+            assert Message.last.from
+
+            receive_inbound_email_from_mail \
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"else" <else@example.com>',
+              subject: subject_line,
+              body: "Hello?",
+              'in-reply-to': "<#{Message.last.email_message_id}>"
+          end
+        end
     
         assert_no_difference "MessageThread.all.reload.size" do        
           assert_difference "Message.all.reload.size", +2 do
             receive_inbound_email_from_mail \
-            to: '"Don Restarone" <restarone@restarone.solutions>',
-            from: '"else" <else@example.com>',
-            subject: 'subject_line',
-            body: "Hello?"
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"else" <else@example.com>',
+              subject: 'subject_line',
+              body: "Hello?",
+              'in-reply-to': "<#{Message.last.email_message_id}>"
 
             receive_inbound_email_from_mail \
               to: '"Don Restarone" <restarone@restarone.solutions>',
               from: '"else" <else@example.com>',
               subject: 'subject_line 22',
+              body: "Hello?",
+              'in-reply-to': "<#{Message.last.email_message_id}>"
+          end
+        end
+      end
+    end
+  end
+
+  test 'emails are mapped into same threads when the in-reply-to header refers to one of the email from the same thread even if the subject and recipients are different' do
+    Apartment::Tenant.switch @restarone_subdomain do      
+      perform_enqueued_jobs do
+        assert_difference "MessageThread.all.reload.size" , +1 do        
+          assert_difference "Message.all.reload.size", +2 do          
+            subject_line = "Hello world!"
+            receive_inbound_email_from_mail \
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"else" <else@example.com>',
+              subject: subject_line,
               body: "Hello?"
+            assert MessageThread.all.last.subject
+            assert Message.last.from
+
+            receive_inbound_email_from_mail \
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"if.else" <if.else@example.com>',
+              subject: 'Test: ' + subject_line,
+              body: "Hello?",
+              'in-reply-to': "<#{Message.last.email_message_id}>"
+          end
+        end
+    
+        assert_no_difference "MessageThread.all.reload.size" do        
+          assert_difference "Message.all.reload.size", +2 do
+            receive_inbound_email_from_mail \
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"else" <else@example.com>',
+              subject: 'subject_line',
+              body: "Hello?",
+              'in-reply-to': "<#{Message.last.email_message_id}>"
+
+            receive_inbound_email_from_mail \
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"when.else" <when.else@example.com>',
+              subject: 'subject_line 22',
+              body: "Hello?",
+              'in-reply-to': "<#{Message.last.email_message_id}>"
+          end
+        end
+      end
+    end
+  end
+
+  # This is how github sends email notifications.
+  test 'emails are mapped into same threads when the in-reply-to header refers to a different non-existent email message-id but the subject and recipients are same' do
+    in_reply_to = "<restarone/violet_rails/test_email/123@github.com>"
+    subject_line = "Hello world!"
+
+    Apartment::Tenant.switch @restarone_subdomain do      
+      perform_enqueued_jobs do
+        assert_difference "MessageThread.all.reload.size" , +1 do        
+          assert_difference "Message.all.reload.size", +2 do          
+            receive_inbound_email_from_mail \
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"Violet Rails" <notifications@github.com>',
+              subject: subject_line,
+              body: "Hello?",
+              'in-reply-to': in_reply_to,
+              references: in_reply_to
+
+            assert MessageThread.all.last.subject
+            assert Message.last.from
+
+            receive_inbound_email_from_mail \
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"Violet Rails" <notifications@github.com>',
+              subject: 'Re: ' + subject_line,
+              body: "Hello?",
+              'in-reply-to': in_reply_to,
+              references: in_reply_to
+          end
+        end
+    
+        assert_no_difference "MessageThread.all.reload.size" do        
+          assert_difference "Message.all.reload.size", +2 do
+            receive_inbound_email_from_mail \
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"Violet Rails" <notifications@github.com>',
+              subject: 'FWD: ' + subject_line,
+              body: "Hello?",
+              'in-reply-to': in_reply_to,
+              references: in_reply_to
+
+            receive_inbound_email_from_mail \
+              to: '"Don Restarone" <restarone@restarone.solutions>',
+              from: '"Violet Rails" <notifications@github.com>',
+              subject: 're: ' + subject_line,
+              body: "Hello?",
+              'in-reply-to': in_reply_to,
+              references: in_reply_to
           end
         end
       end

@@ -164,14 +164,20 @@ class ContentHelperTest < ActionView::TestCase
     assert_equal @api_resource.properties['name'], response
   end
 
-  test 'render_api_namespace_resource - no scope - 404' do
-    params[:id] = 'not a id'
+  test "render_api_namespace_resource - no scope: should render 404 when the renderer ID is invalid or not provided and not raise error" do
+    Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: "#{@api_namespace.slug}-show", position: 0, content: "<%= @api_resource.properties['name'] %>")
 
-    snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: "#{@api_namespace.slug}-show", position: 0, content: "<%= @api_resource.properties['name'] %>")
+    # When no ID is provided
+    assert_nothing_raised do
+      page_response = render_api_namespace_resource(@api_namespace.slug)
+      assert_match "<h1 class=\"main-title\">404</h1>", page_response
+    end
 
-    # should raise 404 if record not found 
-    assert_raises ActiveRecord::RecordNotFound do
-      response = render_api_namespace_resource(@api_namespace.slug)
+    # When invalid ID is provided
+    params[:id] = 0
+    assert_nothing_raised do
+      page_response = render_api_namespace_resource(@api_namespace.slug)
+      assert_match "<h1 class=\"main-title\">404</h1>", page_response
     end
   end
 
@@ -192,9 +198,10 @@ class ContentHelperTest < ActionView::TestCase
 
     snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: "#{@api_namespace.slug}-show", position: 0, content: "<%= @api_resource.properties['name'] %>")
 
-    # should not be able to find records blocked by scope
-    assert_raises ActiveRecord::RecordNotFound do
+    # should not be able to find records blocked by scope and show 404
+    assert_nothing_raised do
       response = render_api_namespace_resource(@api_namespace.slug, { 'scope' => { 'current_user' => 'true' } })
+      assert_match "<h1 class=\"main-title\">404</h1>", response
     end
   end
 
