@@ -1,8 +1,10 @@
-<h2>Edit <%= resource_name.to_s.humanize %></h2>
+<h2 id="register_header">Edit <%= resource_name.to_s.humanize %></h2>
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
-  <%= render "users/shared/error_messages", resource: resource %>
-
+<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put , id: 'edit_user' }, data: { turbo: false , remote: true}) do |f| %>
+ <div id="error_msg"> 
+ 
+ </div>
+  <div id="main-div">
   <div class="form-group">
     <%= f.label :name %><br />
     <%= f.text_field :name, autofocus: true, autocomplete: false %>
@@ -27,7 +29,6 @@
     <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
   </div>
 
-
   <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
     <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
   <% end %>
@@ -51,10 +52,17 @@
     <%= f.password_field :current_password, autocomplete: "current-password" %>
   </div>
 
-  <div class="actions">
-    <%= f.submit "Update", class: 'btn btn-success' %>
+ </div>
+    <div id="otp" class="form-group border p-2 " style="visibility: hidden;display: none">
+    <%= f.label :otp_attempt %><br />
+    <%= f.text_field :otp_attempt %>
+  </div>
+
+   <div class="actions" >
+    <%= f.button 'Update' ,class: 'btn btn-success',id: 'update-btn'  %>
   </div>
 <% end %>
+<%= button_to 'Re-send OTP' ,resend_otp_path, method: :get, remote: true, class: 'btn btn-primary mt-2',id: 'resend-otp-btn', style: "visibility: hidden;display: none"  %>
 
 <h3>Cancel my account</h3>
 
