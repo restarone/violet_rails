@@ -6,8 +6,12 @@ class TimesheetRequestPluginTest < ActiveSupport::TestCase
         @timesheet_request = api_namespaces(:timesheet_request)
         @api_action = api_actions(:custom_api_action_on_timesheet_request)
 
-        @api_resource_date_range = api_resources(:timesheet_request_date_range)
+        @api_resource_date_range = api_resources(:timesheet_request_date_range_previous_month)
         @api_resource_current_month = api_resources(:timesheet_request_current_month)
+
+        # Setting current_user for custom_api_action
+        Current.user = users(:one) # test@restarone.solutions
+
         Sidekiq::Testing::fake!
     end
 
@@ -81,7 +85,7 @@ class TimesheetRequestPluginTest < ActiveSupport::TestCase
         rate = @consultant.properties["rate"]
         assert_equal rate, parsed_csv[0][2].to_d
 
-        entry_one = api_resources(:tracker_entry_two)
+        entry_one = api_resources(:previous_month_tracker_entry_two)
         assert_equal entry_one.properties["how_much_time_in_hours_spent"], parsed_csv[1][2].to_d
         assert_equal entry_one.properties["for_what_client"], parsed_csv[5][3]
         assert_equal entry_one.properties["notes"], parsed_csv[5][5]

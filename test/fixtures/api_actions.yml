@@ -143,8 +143,7 @@ custom_api_action_on_timesheet_request:
     # get time tracker entries for the current user within the specified time
     start_date = Date.parse(api_resource.properties['start_date'])
     end_date = Date.parse(api_resource.properties['end_date'])
-    # email = current_user.email
-    email = "test@restarone.solutions"
+    email = current_user.email
 
     current_user_time_tracker_entries = ApiResource.where([
       "api_namespace_id = :api_namespace_id

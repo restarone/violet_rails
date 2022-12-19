@@ -108,7 +108,6 @@ consultant_one:
 
 tracker_entry_one:
   api_namespace: time_tracker
-  created_at: "2022-11-12 16:27:30.010005000 +0000"
   properties:
     {
       "notes": "http://link-to-backlog-task-1",
@@ -119,9 +118,9 @@ tracker_entry_one:
       "email_address": "test@restarone.solutions",
     }
 
-tracker_entry_two:
+previous_month_tracker_entry_two:
   api_namespace: time_tracker
-  created_at: "2022-10-30 16:27:30.010005000 +0000"
+  created_at: <%= 1.month.ago %>
   properties:
     {
       "notes": "http://link-to-backlog-task-2",
@@ -134,7 +133,6 @@ tracker_entry_two:
 
 tracker_entry_three:
   api_namespace: time_tracker
-  created_at: "2022-11-01 16:27:30.010005000 +0000"
   properties:
     {
       "notes": "http://link-to-backlog-task-3",
@@ -145,12 +143,12 @@ tracker_entry_three:
       "email_address": "test@restarone.solutions",
     }
 
-timesheet_request_date_range:
+timesheet_request_date_range_previous_month:
   api_namespace: timesheet_request
   properties:
     {
-      "start_date": "2022-10-15",
-      "end_date": "2022-10-30",
+      "start_date": <%= 1.month.ago.beginning_of_month %>,
+      "end_date": <%= 1.month.ago.end_of_month %>,
       "current_month": "false",
     }
 
