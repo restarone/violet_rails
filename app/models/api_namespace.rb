@@ -78,6 +78,9 @@ class ApiNamespace < ApplicationRecord
     read_api_clients_only: ['full_access', 'full_read_access', 'full_access_for_api_clients_only', 'read_api_clients_only'],
     full_access_for_api_clients_only: ['full_access', 'full_access_for_api_clients_only'],
     full_access_for_api_form_only: ['full_access', 'full_access_for_api_form_only'],
+    read_api_keys_only: ['full_access', 'delete_access', 'read_access'],
+    full_access_for_api_keys_only: ['full_access'],
+    delete_access_for_api_keys_only: ['full_access', 'delete_access'],
   }
 
   scope :filter_by_user_api_accessibility, ->(user) { 
@@ -92,6 +95,8 @@ class ApiNamespace < ApplicationRecord
       else
         self.includes(:categories).for_category(category_specific_keys)
       end
+    else
+      self.none
     end
    }
 

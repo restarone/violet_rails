@@ -52,4 +52,8 @@ module ApiAccessibilityHelper
 
     is_user_authorized
   end
+  
+  def has_access_to_api_keys?(api_accessibility, access_name)
+    api_accessibility.dig('api_keys', access_name).present? && api_accessibility.dig('api_keys', access_name) == 'true'
+  end
 end

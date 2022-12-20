@@ -166,9 +166,30 @@ class Subdomains::BaseController < ApplicationController
     end
   end
 
+  def ensure_authority_for_read_api_keys_only_in_api
+    unless user_authorized_for_api_keys_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:read_api_keys_only])
+      flash.alert = "You do not have the permission to do that. Only users with full_access or read_access or delete_acess for ApiKeys are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
+    end
+  end
+
+  def ensure_authority_for_full_access_for_api_keys_only_in_api
+    unless user_authorized_for_api_keys_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:full_access_for_api_keys_only])
+      flash.alert = "You do not have the permission to do that. Only users with full_access for ApiKeys are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
+    end
+  end
+
+  def ensure_authority_for_delete_access_for_api_keys_only_in_api
+    unless user_authorized_for_api_keys_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:delete_access_for_api_keys_only])
+      flash.alert = "You do not have the permission to do that. Only users with full_access or delete_access for ApiKeys are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
+    end
+  end
+
   def ensure_authority_for_viewing_all_api
     unless user_authorized_to_view_all_api?(ApiNamespace::API_ACCESSIBILITIES[:full_read_access_in_api_namespace])
-      flash.alert = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_api_namespace_only are allowed to perform that action."
+      flash.alert = "You do not have the permission to do that. Only users with access in ApiNamespaces or access in ApiKeys are allowed to perform that action."
       redirect_back(fallback_location: root_url)
     end
   end
@@ -231,6 +252,23 @@ class Subdomains::BaseController < ApplicationController
           user_api_accessibility.dig('namespaces_by_category', category, access_name).present? && user_api_accessibility.dig('namespaces_by_category', category, access_name) == 'true'
         end
       end
+    elsif user_api_accessibility.keys.include?('api_keys')
+      api_keys_accessibility = user_api_accessibility['api_keys']
+
+      is_user_authorized = ApiNamespace::API_ACCESSIBILITIES[:read_api_keys_only].any? do |access_name|
+        api_keys_accessibility.dig(access_name).present? && api_keys_accessibility.dig(access_name) == 'true'
+      end
+    end
+
+    is_user_authorized
+  end
+
+  def user_authorized_for_api_keys_accessibility?(api_permissions)
+    return false unless current_user.api_accessibility['api_keys'].present?
+
+    api_keys_accessibility = current_user.api_accessibility['api_keys']
+    is_user_authorized = api_permissions.any? do |access_name|
+      api_keys_accessibility[access_name].present? && api_keys_accessibility[access_name] == 'true'
     end
 
     is_user_authorized
