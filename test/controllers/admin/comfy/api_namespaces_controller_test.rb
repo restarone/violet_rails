@@ -3,7 +3,7 @@ require "test_helper"
 class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
     @api_namespace = api_namespaces(:one)
   end
 
@@ -795,43 +795,43 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   # API access for all_namespaces
   test "should get index if user has full_access for all namespaces" do
     sign_in(@user)
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
     get api_namespaces_url
     assert_response :success
   end
 
   test "should get index if user has full_read_access for all namespaces" do
     sign_in(@user)
-    @user.update(api_accessibility: {all_namespaces: {full_read_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_read_access: 'true'}}})
     get api_namespaces_url
     assert_response :success
   end
 
   test "should get index if user has full_access_api_namespace_only for all namespaces" do
     sign_in(@user)
-    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_api_namespace_only: 'true'}}})
     get api_namespaces_url
     assert_response :success
   end
 
   test "should get index if user has other access for all namespaces" do
     sign_in(@user)
-    @user.update(api_accessibility: {all_namespaces: {allow_exports: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {allow_exports: 'true'}}})
     get api_namespaces_url
     assert_response :success
   end
 
   test "should get index if user has allow_social_share_metadata access for all namespaces" do
     sign_in(@user)
-    @user.update(api_accessibility: {all_namespaces: {allow_social_share_metadata: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {allow_social_share_metadata: 'true'}}})
     get api_namespaces_url
     assert_response :success
   end
 
   test "should get index if user has other access related to api-actions/api-resources/api-clients/api-form/external-api-connection for all namespaces" do
     ['read_api_resources_only', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
-      access = {all_namespaces: {}}
-      access[:all_namespaces][access_name] = 'true'
+      access = {api_namespaces: {all_namespaces: {}}}
+      access[:api_namespaces][:all_namespaces][access_name] = 'true'
 
       @user.update(api_accessibility: access)
 
@@ -856,7 +856,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
   test "should get index with all namespaces if user has access for all_namespaces" do
     sign_in(@user)
-    @user.update(api_accessibility: {all_namespaces: {allow_exports: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {allow_exports: 'true'}}})
     get api_namespaces_url
     assert_response :success
 
@@ -871,7 +871,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should get index if user has category specific full_access for one of the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     get api_namespaces_url
@@ -881,7 +881,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should get index if user has category specific full_read_access for one of the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}}})
 
     sign_in(@user)
     get api_namespaces_url
@@ -891,7 +891,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should get index if user has category specific full_access_api_namespace_only for one of the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}}})
 
     sign_in(@user)
     get api_namespaces_url
@@ -901,7 +901,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should get index if user has category specific other access for one of the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_exports: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {allow_exports: 'true'}}}})
 
     sign_in(@user)
     get api_namespaces_url
@@ -911,7 +911,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should get index if user has category-specific allow_social_share_metadata access for one of the namespaces" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_social_share_metadata: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {allow_social_share_metadata: 'true'}}}})
 
     sign_in(@user)
     get api_namespaces_url
@@ -919,7 +919,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should get index if user has uncategorized allow_social_share_metadata access for one of the namespaces" do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {allow_social_share_metadata: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {allow_social_share_metadata: 'true'}}}})
 
     sign_in(@user)
     get api_namespaces_url
@@ -931,9 +931,9 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     @api_namespace.update(category_ids: [category.id])
 
     ['read_api_resources_only', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
-      access = {namespaces_by_category: {}}
-      access[:namespaces_by_category][category.label] = {}
-      access[:namespaces_by_category][category.label][access_name] = 'true'
+      access = {api_namespaces: {namespaces_by_category: {}}}
+      access[:api_namespaces][:namespaces_by_category][category.label] = {}
+      access[:api_namespaces][:namespaces_by_category][category.label][access_name] = 'true'
 
       @user.update(api_accessibility: access)
 
@@ -953,7 +953,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     end
     
     sign_in(@user)
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {allow_exports: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {allow_exports: 'true'}}}})
     get api_namespaces_url
     assert_response :success
 
@@ -990,7 +990,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     end
     
     sign_in(@user)
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {allow_exports: 'true'}, "#{category_one.label}": {allow_exports: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {allow_exports: 'true'}, "#{category_one.label}": {allow_exports: 'true'}}}})
     get api_namespaces_url
     assert_response :success
 
@@ -1027,7 +1027,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     expected_namespaces = [@api_namespace, api_namespace_two, api_namespace_three, api_namespace_four, api_namespace_five, api_namespace_six]
 
     sign_in(@user)
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category_two.label}": {allow_exports: 'true'}, "#{category_one.label}": {allow_exports: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category_two.label}": {allow_exports: 'true'}, "#{category_one.label}": {allow_exports: 'true'}}}})
     get api_namespaces_url
     assert_response :success
 
@@ -1044,8 +1044,8 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
   test "should get index if user has other uncategorized access related to api-actions/api-resources/api-clients/api-form/external-api-connection for namespaces" do
     ['read_api_resources_only', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
-      access = {namespaces_by_category: {uncategorized: {}}}
-      access[:namespaces_by_category][:uncategorized][access_name] = 'true'
+      access = {api_namespaces: {namespaces_by_category: {uncategorized: {}}}}
+      access[:api_namespaces][:namespaces_by_category][:uncategorized][access_name] = 'true'
 
       @user.update(api_accessibility: access)
 
@@ -1058,7 +1058,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   # NEW
   # API access for all_namespace
   test "should get new if user has full_access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     get new_api_namespace_url
@@ -1066,7 +1066,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should get new if user has full_access_api_namespace_only for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_api_namespace_only: 'true'}}})
 
     sign_in(@user)
     get new_api_namespace_url
@@ -1074,7 +1074,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should not get new if user has other access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_read_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_read_access: 'true'}}})
 
     sign_in(@user)
     get new_api_namespace_url
@@ -1088,7 +1088,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should not get new if user has access by category wise" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     get new_api_namespace_url
@@ -1101,7 +1101,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   # CREATE
   # API access for all_namespace
   test "should create if user has full_access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     assert_difference('ApiNamespace.count') do
@@ -1113,7 +1113,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should create if user has full_access_api_namespace_only for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_api_namespace_only: 'true'}}})
 
     sign_in(@user)
     assert_difference('ApiNamespace.count') do
@@ -1125,7 +1125,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should not create if user has other access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_read_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_read_access: 'true'}}})
 
     sign_in(@user)
     assert_no_difference('ApiNamespace.count') do
@@ -1143,7 +1143,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should not create if user has access by category wise" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     assert_no_difference('ApiNamespace.count') do
@@ -1160,7 +1160,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   # IMPORT_AS_JSON
   # API access for all_namespace
   test "should import_as_json if user has full_access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     json_file = Tempfile.new(['api_namespace.json', '.json'])
     json_file.write(@api_namespace.export_as_json(include_associations: false))
@@ -1183,7 +1183,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should import_as_json if user has full_access_api_namespace_only for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_api_namespace_only: 'true'}}})
 
     json_file = Tempfile.new(['api_namespace.json', '.json'])
     json_file.write(@api_namespace.export_as_json(include_associations: false))
@@ -1206,7 +1206,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should not import_as_json if user has other access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_read_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_read_access: 'true'}}})
 
     json_file = Tempfile.new(['api_namespace.json', '.json'])
     json_file.write(@api_namespace.export_as_json(include_associations: false))
@@ -1230,7 +1230,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should not import_as_json if user has access by category wise" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     json_file = Tempfile.new(['api_namespace.json', '.json'])
     json_file.write(@api_namespace.export_as_json(include_associations: false))
@@ -1253,7 +1253,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   # SHOW
   # API access for all_namespace
   test "should show if user has full_access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     get api_namespace_url(@api_namespace)
@@ -1261,7 +1261,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should show if user has full_access_api_namespace_only for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_api_namespace_only: 'true'}}})
 
     sign_in(@user)
     get api_namespace_url(@api_namespace)
@@ -1269,7 +1269,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should show if user has full_read_access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_read_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_read_access: 'true'}}})
 
     sign_in(@user)
     get api_namespace_url(@api_namespace)
@@ -1278,8 +1278,8 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
   test "should show api-resources section if user has full_access or access related to api-resource for all_namespaces" do
     ['full_access', 'full_read_access', 'full_access_for_api_resources_only', 'read_api_resources_only', 'delete_access_for_api_resources_only'].each do |access_name|
-      access = {all_namespaces: {}}
-      access[:all_namespaces][access_name] = 'true'
+      access = {api_namespaces: {all_namespaces: {}}}
+      access[:api_namespaces][:all_namespaces][access_name] = 'true'
       @user.update(api_accessibility: access)
   
       sign_in(@user)
@@ -1291,8 +1291,8 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
   test "should not show if user has other access for all_namespaces" do
     ['delete_access_api_namespace_only', 'allow_exports', 'allow_duplication', 'allow_social_share_metadata', 'full_access_api_namespace_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
-      access = {all_namespaces: {}}
-      access[:all_namespaces][access_name] = 'true'
+      access = {api_namespaces: {all_namespaces: {}}}
+      access[:api_namespaces][:all_namespaces][access_name] = 'true'
       @user.update(api_accessibility: access)
   
       sign_in(@user)
@@ -1304,8 +1304,8 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
   test "should show if user has other access related to namespace for all_namespaces" do
     ['allow_exports', 'allow_duplication', 'allow_social_share_metadata'].each do |access_name|
-      access = {all_namespaces: {}}
-      access[:all_namespaces][access_name] = 'true'
+      access = {api_namespaces: {all_namespaces: {}}}
+      access[:api_namespaces][:all_namespaces][access_name] = 'true'
       @user.update(api_accessibility: access)
   
       sign_in(@user)
@@ -1316,8 +1316,8 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
   test "should show if user has other access related to api-actions/api-resources/api-clients/api-form/external-api-connection for all_namespaces" do
     ['read_api_resources_only', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
-      access = {all_namespaces: {}}
-      access[:all_namespaces][access_name] = 'true'
+      access = {api_namespaces: {all_namespaces: {}}}
+      access[:api_namespaces][:all_namespaces][access_name] = 'true'
 
       @user.update(api_accessibility: access)
 
@@ -1331,7 +1331,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should show if user has category specific full_access for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_url(@api_namespace)
@@ -1341,7 +1341,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should show if user has category specific full_read_access for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_url(@api_namespace)
@@ -1353,9 +1353,9 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     @api_namespace.update(category_ids: [category.id])
 
     ['read_api_resources_only', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
-      access = {namespaces_by_category: {}}
-      access[:namespaces_by_category][category.label]= {}
-      access[:namespaces_by_category][category.label][access_name] = 'true'
+      access = {api_namespaces: {namespaces_by_category: {}}}
+      access[:api_namespaces][:namespaces_by_category][category.label]= {}
+      access[:api_namespaces][:namespaces_by_category][category.label][access_name] = 'true'
 
       @user.update(api_accessibility: access)
 
@@ -1370,9 +1370,9 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     @api_namespace.update(category_ids: [category.id])
 
     ['allow_exports', 'allow_duplication', 'allow_social_share_metadata'].each do |access_name|
-      access = {namespaces_by_category: {}}
-      access[:namespaces_by_category][category.label]= {}
-      access[:namespaces_by_category][category.label][access_name] = 'true'
+      access = {api_namespaces: {namespaces_by_category: {}}}
+      access[:api_namespaces][:namespaces_by_category][category.label]= {}
+      access[:api_namespaces][:namespaces_by_category][category.label][access_name] = 'true'
       @user.update(api_accessibility: access)
   
       sign_in(@user)
@@ -1382,7 +1382,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should show if user has uncategorized access for the namespace with no category" do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_read_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_read_access: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_url(@api_namespace)
@@ -1391,8 +1391,8 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
   test "should show if user has uncategorized access related to api-actions/api-resources/api-clients/api-form/external-api-connection for the namespace" do
     ['read_api_resources_only', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
-      access = {namespaces_by_category: {uncategorized: {}}}
-      access[:namespaces_by_category][:uncategorized][access_name] = 'true'
+      access = {api_namespaces: {namespaces_by_category: {uncategorized: {}}}}
+      access[:api_namespaces][:namespaces_by_category][:uncategorized][access_name] = 'true'
 
       @user.update(api_accessibility: access)
 
@@ -1404,9 +1404,9 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
   test "should show if user has uncategorized other access related to namespace for the namespace" do
     ['allow_exports', 'allow_duplication', 'allow_social_share_metadata'].each do |access_name|
-      access = {namespaces_by_category: {}}
-      access[:namespaces_by_category][:uncategorized]= {}
-      access[:namespaces_by_category][:uncategorized][access_name] = 'true'
+      access = {api_namespaces: {namespaces_by_category: {}}}
+      access[:api_namespaces][:namespaces_by_category][:uncategorized]= {}
+      access[:api_namespaces][:namespaces_by_category][:uncategorized][access_name] = 'true'
       @user.update(api_accessibility: access)
   
       sign_in(@user)
@@ -1418,7 +1418,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should show if user has category specific full_access_api_namespace_only for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_url(@api_namespace)
@@ -1428,7 +1428,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should show if user has category specific other access for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_exports: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {allow_exports: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_url(@api_namespace)
@@ -1440,7 +1440,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     @api_namespace.update(category_ids: [category.id])
 
     category_2 = comfy_cms_categories(:api_namespace_2)
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category_2.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category_2.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_url(@api_namespace)
@@ -1455,9 +1455,9 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     @api_namespace.update(category_ids: [category.id])
 
     ['full_access', 'full_read_access', 'full_access_for_api_resources_only', 'read_api_resources_only', 'delete_access_for_api_resources_only'].each do |access_name|
-      access = {namespaces_by_category: {}}
-      access[:namespaces_by_category][:"#{category.label}"]= {}
-      access[:namespaces_by_category][:"#{category.label}"][access_name] = 'true'
+      access = {api_namespaces: {namespaces_by_category: {}}}
+      access[:api_namespaces][:namespaces_by_category][:"#{category.label}"]= {}
+      access[:api_namespaces][:namespaces_by_category][:"#{category.label}"][access_name] = 'true'
       @user.update(api_accessibility: access)
   
       sign_in(@user)
@@ -1472,9 +1472,9 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     @api_namespace.update(category_ids: [category.id])
 
     ['delete_access_api_namespace_only', 'allow_exports', 'allow_duplication', 'allow_social_share_metadata', 'full_access_api_namespace_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
-      access = {namespaces_by_category: {}}
-      access[:namespaces_by_category][:"#{category.label}"]= {}
-      access[:namespaces_by_category][:"#{category.label}"][access_name] = 'true'
+      access = {api_namespaces: {namespaces_by_category: {}}}
+      access[:api_namespaces][:namespaces_by_category][:"#{category.label}"]= {}
+      access[:api_namespaces][:namespaces_by_category][:"#{category.label}"][access_name] = 'true'
       @user.update(api_accessibility: access)
   
       sign_in(@user)
@@ -1486,9 +1486,9 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
   test "should show api-resources section if user has uncategorized full_access or access related to api-resource for the namespace" do
     ['full_access', 'full_read_access', 'full_access_for_api_resources_only', 'read_api_resources_only', 'delete_access_for_api_resources_only'].each do |access_name|
-      access = {namespaces_by_category: {}}
-      access[:namespaces_by_category][:uncategorized]= {}
-      access[:namespaces_by_category][:uncategorized][access_name] = 'true'
+      access = {api_namespaces: {namespaces_by_category: {}}}
+      access[:api_namespaces][:namespaces_by_category][:uncategorized]= {}
+      access[:api_namespaces][:namespaces_by_category][:uncategorized][access_name] = 'true'
       @user.update(api_accessibility: access)
   
       sign_in(@user)
@@ -1500,9 +1500,9 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
   test "should not show if user has other uncategorized access for the namespace" do
     ['delete_access_api_namespace_only', 'allow_exports', 'allow_duplication', 'allow_social_share_metadata', 'full_access_api_namespace_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
-      access = {namespaces_by_category: {}}
-      access[:namespaces_by_category][:uncategorized]= {}
-      access[:namespaces_by_category][:uncategorized][access_name] = 'true'
+      access = {api_namespaces: {namespaces_by_category: {}}}
+      access[:api_namespaces][:namespaces_by_category][:uncategorized]= {}
+      access[:api_namespaces][:namespaces_by_category][:uncategorized][access_name] = 'true'
       @user.update(api_accessibility: access)
   
       sign_in(@user)
@@ -1515,7 +1515,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   # EDIT
   # API access for all_namespace
   test "should edit if user has full_access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     get edit_api_namespace_url(@api_namespace)
@@ -1523,7 +1523,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should edit if user has full_access_api_namespace_only for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_api_namespace_only: 'true'}}})
 
     sign_in(@user)
     get edit_api_namespace_url(@api_namespace)
@@ -1531,7 +1531,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should not edit if user has other access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_resources_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_resources_only: 'true'}}})
 
     sign_in(@user)
     get edit_api_namespace_url(@api_namespace)
@@ -1545,7 +1545,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should edit if user has category specific full_access for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     get edit_api_namespace_url(@api_namespace)
@@ -1555,7 +1555,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should edit if user has category specific full_access_api_namespace_only for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}}})
 
     sign_in(@user)
     get edit_api_namespace_url(@api_namespace)
@@ -1565,7 +1565,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should not edit if user has category specific other access for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_exports: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {allow_exports: 'true'}}}})
 
     sign_in(@user)
     get edit_api_namespace_url(@api_namespace)
@@ -1580,7 +1580,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     @api_namespace.update(category_ids: [category.id])
 
     category_2 = comfy_cms_categories(:api_namespace_2)
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category_2.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category_2.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     get edit_api_namespace_url(@api_namespace)
@@ -1593,7 +1593,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   # UPDATE
   # API access for all_namespace
   test "should update if user has full_access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     patch api_namespace_url(@api_namespace), params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, properties: @api_namespace.properties.to_json, requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
@@ -1601,7 +1601,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should update if user has full_access_api_namespace_only for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_api_namespace_only: 'true'}}})
 
     sign_in(@user)
     patch api_namespace_url(@api_namespace), params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, properties: @api_namespace.properties.to_json, requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
@@ -1609,7 +1609,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should not update if user has other access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_resources_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_resources_only: 'true'}}})
 
     sign_in(@user)
     patch api_namespace_url(@api_namespace), params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, properties: @api_namespace.properties.to_json, requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
@@ -1623,7 +1623,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should update if user has category specific full_access for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     patch api_namespace_url(@api_namespace), params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, properties: @api_namespace.properties.to_json, requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
@@ -1633,7 +1633,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should update if user has category specific full_access_api_namespace_only for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}}})
 
     sign_in(@user)
     patch api_namespace_url(@api_namespace), params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, properties: @api_namespace.properties.to_json, requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
@@ -1643,7 +1643,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should not update if user has category specific other access for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_exports: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {allow_exports: 'true'}}}})
 
     sign_in(@user)
     patch api_namespace_url(@api_namespace), params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, properties: @api_namespace.properties.to_json, requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
@@ -1658,7 +1658,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     @api_namespace.update(category_ids: [category.id])
 
     category_2 = comfy_cms_categories(:api_namespace_2)
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category_2.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category_2.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     patch api_namespace_url(@api_namespace), params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, properties: @api_namespace.properties.to_json, requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
@@ -1671,7 +1671,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   # DESTROY
   # API access for all_namespace
   test "should destroy if user has full_access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     assert_difference('ApiNamespace.count', -1) do
@@ -1682,7 +1682,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should destroy if user has full_access_api_namespace_only for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_api_namespace_only: 'true'}}})
 
     sign_in(@user)
     assert_difference('ApiNamespace.count', -1) do
@@ -1693,7 +1693,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should destroy if user has delete_access_api_namespace_only for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {delete_access_api_namespace_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {delete_access_api_namespace_only: 'true'}}})
 
     sign_in(@user)
     assert_difference('ApiNamespace.count', -1) do
@@ -1704,7 +1704,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should not destroy if user has other access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_resources_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_resources_only: 'true'}}})
 
     sign_in(@user)
     assert_no_difference('ApiNamespace.count') do
@@ -1721,7 +1721,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should destroy if user has category specific full_access for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     assert_difference('ApiNamespace.count', -1) do
@@ -1734,7 +1734,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should destroy if user has category specific full_access_api_namespace_only for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}}})
 
     sign_in(@user)
     assert_difference('ApiNamespace.count', -1) do
@@ -1747,7 +1747,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should destroy if user has category specific delete_access_api_namespace_only for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {delete_access_api_namespace_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {delete_access_api_namespace_only: 'true'}}}})
 
     sign_in(@user)
     assert_difference('ApiNamespace.count', -1) do
@@ -1760,7 +1760,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should not destroy if user has category specific other access for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_exports: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {allow_exports: 'true'}}}})
 
     sign_in(@user)
     assert_no_difference('ApiNamespace.count') do
@@ -1778,7 +1778,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     @api_namespace.update(category_ids: [category.id])
 
     category_2 = comfy_cms_categories(:api_namespace_2)
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category_2.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category_2.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     assert_no_difference('ApiNamespace.count') do
@@ -1794,7 +1794,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   # DISCARD_FAILED_API_ACTIONS
   # API access for all_namespace
   test "should discard_failed_api_actions if user has full_access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     failed_action = api_actions(:two)
     failed_action.update(lifecycle_stage: 'failed')
@@ -1809,7 +1809,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should discard_failed_api_actions if user has full_access_for_api_actions_only for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_actions_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_actions_only: 'true'}}})
 
     failed_action = api_actions(:two)
     failed_action.update(lifecycle_stage: 'failed')
@@ -1824,7 +1824,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should not discard_failed_api_actions if user has full_access_api_namespace_only for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_api_namespace_only: 'true'}}})
 
     failed_action = api_actions(:two)
     failed_action.update(lifecycle_stage: 'failed')
@@ -1844,7 +1844,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should not discard_failed_api_actions if user has other access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_resources_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_resources_only: 'true'}}})
 
     failed_action = api_actions(:two)
     failed_action.update(lifecycle_stage: 'failed')
@@ -1867,7 +1867,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should discard_failed_api_actions if user has category specific full_access for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     failed_action = api_actions(:two)
     failed_action.update(lifecycle_stage: 'failed')
@@ -1884,7 +1884,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should discard_failed_api_actions if user has category specific full_access_for_api_actions_only for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_api_actions_only: 'true'}}}})
 
     failed_action = api_actions(:two)
     failed_action.update(lifecycle_stage: 'failed')
@@ -1901,7 +1901,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should not discard_failed_api_actions if user has category specific full_access_api_namespace_only for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}}})
 
     failed_action = api_actions(:two)
     failed_action.update(lifecycle_stage: 'failed')
@@ -1923,7 +1923,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should not discard_failed_api_actions if user has category specific other access for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_exports: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {allow_exports: 'true'}}}})
 
     failed_action = api_actions(:two)
     failed_action.update(lifecycle_stage: 'failed')
@@ -1947,7 +1947,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     @api_namespace.update(category_ids: [category.id])
 
     category_2 = comfy_cms_categories(:api_namespace_2)
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category_2.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category_2.label}": {full_access: 'true'}}}})
 
     failed_action = api_actions(:two)
     failed_action.update(lifecycle_stage: 'failed')
@@ -1969,7 +1969,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   # RERUN_FAILED_API_ACTIONS
   # API access for all_namespace
   test "should rerun_failed_api_actions if user has full_access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     failed_action = api_actions(:two)
     failed_action.update(lifecycle_stage: 'failed')
@@ -1983,7 +1983,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should rerun_failed_api_actions if user has full_access_for_api_actions_only for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_actions_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_actions_only: 'true'}}})
 
     failed_action = api_actions(:two)
     failed_action.update(lifecycle_stage: 'failed')
@@ -1997,7 +1997,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should not rerun_failed_api_actions if user has full_access_api_namespace_only for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_api_namespace_only: 'true'}}})
 
     failed_action = api_actions(:two)
     failed_action.update(lifecycle_stage: 'failed')
@@ -2015,7 +2015,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should not rerun_failed_api_actions if user has other access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_resources_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_resources_only: 'true'}}})
 
     failed_action = api_actions(:two)
     failed_action.update(lifecycle_stage: 'failed')
@@ -2036,7 +2036,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should rerun_failed_api_actions if user has category specific full_access for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     failed_action = api_actions(:two)
     failed_action.update(lifecycle_stage: 'failed')
@@ -2052,7 +2052,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should rerun_failed_api_actions if user has category specific full_access_for_api_actions_only for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_api_actions_only: 'true'}}}})
 
     failed_action = api_actions(:two)
     failed_action.update(lifecycle_stage: 'failed')
@@ -2068,7 +2068,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should not rerun_failed_api_actions if user has category specific full_access_api_namespace_only for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}}})
 
     failed_action = api_actions(:two)
     failed_action.update(lifecycle_stage: 'failed')
@@ -2088,7 +2088,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should not rerun_failed_api_actions if user has category specific other access for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_exports: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {allow_exports: 'true'}}}})
 
     failed_action = api_actions(:two)
     failed_action.update(lifecycle_stage: 'failed')
@@ -2110,7 +2110,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     @api_namespace.update(category_ids: [category.id])
 
     category_2 = comfy_cms_categories(:api_namespace_2)
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category_2.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category_2.label}": {full_access: 'true'}}}})
 
     failed_action = api_actions(:two)
     failed_action.update(lifecycle_stage: 'failed')
@@ -2130,7 +2130,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   # EXPORT
   # API access for all_namespace
   test "should export if user has full_access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     api_namespace = api_namespaces(:namespace_with_all_types)
@@ -2144,7 +2144,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should export if user has full_access_api_namespace_only for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_api_namespace_only: 'true'}}})
 
     sign_in(@user)
     api_namespace = api_namespaces(:namespace_with_all_types)
@@ -2158,7 +2158,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should export if user has allow_exports for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {allow_exports: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {allow_exports: 'true'}}})
 
     sign_in(@user)
     api_namespace = api_namespaces(:namespace_with_all_types)
@@ -2172,7 +2172,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should not export if user has other access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_resources_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_resources_only: 'true'}}})
 
     sign_in(@user)
     api_namespace = api_namespaces(:namespace_with_all_types)
@@ -2190,7 +2190,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     api_namespace = api_namespaces(:namespace_with_all_types)
     category = comfy_cms_categories(:api_namespace_1)
     api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     stubbed_date = DateTime.new(2022, 1, 1)
@@ -2206,7 +2206,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     api_namespace = api_namespaces(:namespace_with_all_types)
     category = comfy_cms_categories(:api_namespace_1)
     api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}}})
 
     sign_in(@user)
     stubbed_date = DateTime.new(2022, 1, 1)
@@ -2222,7 +2222,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     api_namespace = api_namespaces(:namespace_with_all_types)
     category = comfy_cms_categories(:api_namespace_1)
     api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_exports: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {allow_exports: 'true'}}}})
 
     sign_in(@user)
     stubbed_date = DateTime.new(2022, 1, 1)
@@ -2236,7 +2236,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
   test "should export if user has uncategorized access for the namespace with no category" do
     api_namespace = api_namespaces(:namespace_with_all_types)
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {allow_exports: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {allow_exports: 'true'}}}})
 
     sign_in(@user)
     stubbed_date = DateTime.new(2022, 1, 1)
@@ -2252,7 +2252,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     api_namespace = api_namespaces(:namespace_with_all_types)
     category = comfy_cms_categories(:api_namespace_1)
     api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}}})
 
     sign_in(@user)
     stubbed_date = DateTime.new(2022, 1, 1)
@@ -2270,7 +2270,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     api_namespace.update(category_ids: [category.id])
 
     category_2 = comfy_cms_categories(:api_namespace_2)
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category_2.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category_2.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     stubbed_date = DateTime.new(2022, 1, 1)
@@ -2285,7 +2285,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   # EXPORT_API_RESOURCES
   # API access for all_namespace
   test "should export_api_resources if user has full_access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     api_namespace = api_namespaces(:namespace_with_all_types)
@@ -2306,7 +2306,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should export_api_resources if user has full_access_api_namespace_only for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_api_namespace_only: 'true'}}})
 
     sign_in(@user)
     api_namespace = api_namespaces(:namespace_with_all_types)
@@ -2327,7 +2327,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should export_api_resources if user has allow_exports for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {allow_exports: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {allow_exports: 'true'}}})
 
     sign_in(@user)
     api_namespace = api_namespaces(:namespace_with_all_types)
@@ -2348,7 +2348,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should not export_api_resources if user has other access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_resources_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_resources_only: 'true'}}})
 
     sign_in(@user)
     api_namespace = api_namespaces(:namespace_with_all_types)
@@ -2370,7 +2370,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     api_namespace = api_namespaces(:namespace_with_all_types)
     category = comfy_cms_categories(:api_namespace_1)
     api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     resource_one = api_resources(:resource_with_all_types_one)
@@ -2393,7 +2393,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     api_namespace = api_namespaces(:namespace_with_all_types)
     category = comfy_cms_categories(:api_namespace_1)
     api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}}})
 
     sign_in(@user)
     resource_one = api_resources(:resource_with_all_types_one)
@@ -2416,7 +2416,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     api_namespace = api_namespaces(:namespace_with_all_types)
     category = comfy_cms_categories(:api_namespace_1)
     api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_exports: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {allow_exports: 'true'}}}})
 
     sign_in(@user)
     resource_one = api_resources(:resource_with_all_types_one)
@@ -2437,7 +2437,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
   test "should export_api_resources if user has uncategorized access for the namespace with no category" do
     api_namespace = api_namespaces(:namespace_with_all_types)
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {allow_exports: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {allow_exports: 'true'}}}})
 
     sign_in(@user)
     resource_one = api_resources(:resource_with_all_types_one)
@@ -2460,7 +2460,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     api_namespace = api_namespaces(:namespace_with_all_types)
     category = comfy_cms_categories(:api_namespace_1)
     api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}}})
 
     sign_in(@user)
     resource_one = api_resources(:resource_with_all_types_one)
@@ -2482,7 +2482,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     api_namespace.update(category_ids: [category.id])
 
     category_2 = comfy_cms_categories(:api_namespace_2)
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category_2.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category_2.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     resource_one = api_resources(:resource_with_all_types_one)
@@ -2501,7 +2501,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   # DUPLICATE_WITHOUT_ASSOCIATIONS
   # API access for all_namespace
   test "should duplicate_without_associations if user has full_access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
     @api_namespace.api_form.destroy
 
     sign_in(@user)
@@ -2525,7 +2525,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should duplicate_without_associations if user has full_access_api_namespace_only for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_api_namespace_only: 'true'}}})
     @api_namespace.api_form.destroy
 
     sign_in(@user)
@@ -2549,7 +2549,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should duplicate_without_associations if user has allow_exports for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {allow_duplication: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {allow_duplication: 'true'}}})
     @api_namespace.api_form.destroy
 
     sign_in(@user)
@@ -2573,7 +2573,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should not duplicate_without_associations if user has other access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_resources_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_resources_only: 'true'}}})
     @api_namespace.api_form.destroy
 
     sign_in(@user)
@@ -2600,7 +2600,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should duplicate_without_associations if user has category specific full_access for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     @api_namespace.api_form.destroy
 
@@ -2627,7 +2627,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should duplicate_without_associations if user has category specific full_access_api_namespace_only for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_api_namespace_only: 'true'}}}})
 
     @api_namespace.api_form.destroy
 
@@ -2654,7 +2654,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should duplicate_without_associations if user has category specific allow_exports for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_duplication: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {allow_duplication: 'true'}}}})
 
     @api_namespace.api_form.destroy
 
@@ -2680,7 +2680,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
   test "should duplicate_without_associations if user has uncategorized access for the namespace with no category" do
     api_namespace = api_namespaces(:namespace_with_all_types)
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {allow_duplication: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {allow_duplication: 'true'}}}})
 
     @api_namespace.api_form.destroy
 
@@ -2707,7 +2707,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should not duplicate_without_associations if user has category specific other access for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}}})
 
     @api_namespace.api_form.destroy
 
@@ -2736,7 +2736,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     @api_namespace.update(category_ids: [category.id])
 
     category_2 = comfy_cms_categories(:api_namespace_2)
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category_2.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category_2.label}": {full_access: 'true'}}}})
 
     @api_namespace.api_form.destroy
 
@@ -2764,8 +2764,8 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   # API access for all_namespaces
   test 'social_share_metadata# should return success when the user has full_access/full_access_for_api_namespace_only/allow_social_share_metadata for all_namespaces' do
     ['full_access', 'full_access_api_namespace_only', 'allow_social_share_metadata'].each do |access_name|
-      access = {all_namespaces: {}}
-      access[:all_namespaces][access_name] = 'true'
+      access = {api_namespaces: {all_namespaces: {}}}
+      access[:api_namespaces][:all_namespaces][access_name] = 'true'
       @user.update!(api_accessibility: access)
 
       payload = {api_namespace: {"social_share_metadata"=>{"title"=>"Array", "description"=>"String", "image"=>"picto"}}}
@@ -2782,8 +2782,8 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
   test 'social_share_metadata# should deny when the user has other access like full_read_access/delete_access_api_namespace_only/allow_exports/allow_duplication/full_access_for_api_resources_only/full_access_for_api_actions_only/full_access_for_external_api_connections_only/full_access_for_api_clients_only/full_access_for_api_form_only for all_namespaces' do
     ['full_read_access', 'delete_access_api_namespace_only', 'allow_exports', 'allow_duplication', 'full_access_for_api_resources_only', 'full_access_for_api_actions_only', 'full_access_for_external_api_connections_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
-      access = {all_namespaces: {}}
-      access[:all_namespaces][access_name] = 'true'
+      access = {api_namespaces: {all_namespaces: {}}}
+      access[:api_namespaces][:all_namespaces][access_name] = 'true'
       @user.update!(api_accessibility: access)
 
       payload = {api_namespace: {"social_share_metadata"=>{"title"=>"Array", "description"=>"String", "image"=>"picto"}}}
@@ -2804,8 +2804,8 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     @api_namespace.update(category_ids: [category.id])
 
     ['full_access', 'full_access_api_namespace_only', 'allow_social_share_metadata'].each do |access_name|
-      access = {namespaces_by_category: {"#{category.label}": {}}}
-      access[:namespaces_by_category][:"#{category.label}"][access_name] = 'true'
+      access = {api_namespaces: {namespaces_by_category: {"#{category.label}": {}}}}
+      access[:api_namespaces][:namespaces_by_category][:"#{category.label}"][access_name] = 'true'
       @user.update!(api_accessibility: access)
 
       payload = {api_namespace: {"social_share_metadata"=>{"title"=>"Array", "description"=>"String", "image"=>"picto"}}}
@@ -2825,8 +2825,8 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     @api_namespace.update(category_ids: [category.id])
 
     ['full_read_access', 'delete_access_api_namespace_only', 'allow_exports', 'allow_duplication', 'full_access_for_api_resources_only', 'full_access_for_api_actions_only', 'full_access_for_external_api_connections_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
-      access = {namespaces_by_category: {"#{category.label}": {}}}
-      access[:namespaces_by_category][:"#{category.label}"][access_name] = 'true'
+      access = {api_namespaces: {namespaces_by_category: {"#{category.label}": {}}}}
+      access[:api_namespaces][:namespaces_by_category][:"#{category.label}"][access_name] = 'true'
       @user.update!(api_accessibility: access)
 
       payload = {api_namespace: {"social_share_metadata"=>{"title"=>"Array", "description"=>"String", "image"=>"picto"}}}
@@ -2843,8 +2843,8 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
   test 'social_share_metadata# should return success when the user has uncategorized full_access/full_access_for_api_namespace_only/allow_social_share_metadata for a namespace' do
     ['full_access', 'full_access_api_namespace_only', 'allow_social_share_metadata'].each do |access_name|
-      access = {namespaces_by_category: {uncategorized: {}}}
-      access[:namespaces_by_category][:uncategorized][access_name] = 'true'
+      access = {api_namespaces: {namespaces_by_category: {uncategorized: {}}}}
+      access[:api_namespaces][:namespaces_by_category][:uncategorized][access_name] = 'true'
       @user.update!(api_accessibility: access)
 
       payload = {api_namespace: {"social_share_metadata"=>{"title"=>"Array", "description"=>"String", "image"=>"picto"}}}
@@ -2864,8 +2864,8 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     @api_namespace.update(category_ids: [category.id])
 
     ['full_read_access', 'delete_access_api_namespace_only', 'allow_exports', 'allow_duplication', 'full_access_for_api_resources_only', 'full_access_for_api_actions_only', 'full_access_for_external_api_connections_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
-      access = {namespaces_by_category: {uncategorized: {}}}
-      access[:namespaces_by_category][:uncategorized][access_name] = 'true'
+      access = {api_namespaces: {namespaces_by_category: {uncategorized: {}}}}
+      access[:api_namespaces][:namespaces_by_category][:uncategorized][access_name] = 'true'
       @user.update!(api_accessibility: access)
 
       payload = {api_namespace: {"social_share_metadata"=>{"title"=>"Array", "description"=>"String", "image"=>"picto"}}}

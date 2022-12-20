@@ -84,11 +84,11 @@ class ApiNamespace < ApplicationRecord
   }
 
   scope :filter_by_user_api_accessibility, ->(user) { 
-    api_accessibility = user.api_accessibility
+    api_accessibility = user.api_accessibility['api_namespaces']
 
-    if api_accessibility.keys.include?('all_namespaces')
+    if api_accessibility.present? && api_accessibility.keys.include?('all_namespaces')
       self
-    elsif api_accessibility.keys.include?('namespaces_by_category')
+    elsif api_accessibility.present? && api_accessibility.keys.include?('namespaces_by_category')
       category_specific_keys = api_accessibility['namespaces_by_category'].keys
       if category_specific_keys.include?('uncategorized')
         self.includes(:categories).left_outer_joins(categorizations: :category).where("comfy_cms_categories.id IS ? OR comfy_cms_categories.label IN (?)", nil, category_specific_keys)
