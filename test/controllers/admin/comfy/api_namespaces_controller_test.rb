@@ -841,6 +841,19 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     end
   end
 
+  test "should get index if user has access only related to api-keys" do
+    ['full_access', 'delete_access', 'read_access'].each do |access_name|
+      access = {api_keys: {}}
+      access[:api_keys][access_name] = 'true'
+
+      @user.update(api_accessibility: access)
+
+      sign_in(@user)
+      get api_namespaces_url
+      assert_response :success
+    end
+  end
+
   test "should get index with all namespaces if user has access for all_namespaces" do
     sign_in(@user)
     @user.update(api_accessibility: {all_namespaces: {allow_exports: 'true'}})
