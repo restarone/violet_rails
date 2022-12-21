@@ -40,13 +40,10 @@
                 %label 
                   Can manage emailbox
               .form-group
-                = f.check_box :can_manage_api
-                %label 
-                  Can manage API
-              .form-group
                 = f.check_box :can_manage_blog
                 %label 
                   Can manage Blog
+              = render partial: 'api_accessibility'
           .card.my-5
             .card-header 
               %strong

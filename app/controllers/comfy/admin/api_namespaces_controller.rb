@@ -1,16 +1,37 @@
+require 'will_paginate/array'
+
 class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
-  before_action :ensure_authority_to_manage_api
-  before_action :set_api_namespace, only: %i[ show edit update destroy discard_failed_api_actions rerun_failed_api_actions export export_api_resources duplicate_with_associations duplicate_without_associations export_without_associations_as_json export_with_associations_as_json ]
+  before_action :set_api_namespace, only: %i[ show edit update destroy discard_failed_api_actions rerun_failed_api_actions export export_api_resources duplicate_with_associations duplicate_without_associations export_without_associations_as_json export_with_associations_as_json social_share_metadata api_action_workflow ]
+
+  before_action :ensure_authority_for_creating_api, only: %i[ new create import_as_json]
+  before_action :ensure_authority_for_viewing_all_api, only: :index
+  
+  before_action :ensure_authority_for_full_read_access_in_api, only: [:show]
+  before_action :ensure_authority_for_full_access_in_api_namespace_only, only: %i[ edit update ]
+  before_action :ensure_authority_for_delete_access_in_api_namespace_only, only: %i[ destroy ]
+  before_action :ensure_authority_for_allow_exports_in_api, only: %i[ export export_api_resources export_without_associations_as_json export_with_associations_as_json ]
+  before_action :ensure_authority_for_allow_duplication_in_api, only: %i[ duplicate_with_associations duplicate_without_associations ]
+  before_action :ensure_authority_for_allow_social_share_metadata_in_api, only: %i[ social_share_metadata ]
+  before_action :ensure_authority_for_full_access_for_api_actions_only_in_api, only: %i[ api_action_workflow discard_failed_api_actions rerun_failed_api_actions ]
 
   # GET /api_namespaces or /api_namespaces.json
   def index
     params[:q] ||= {}
     @api_namespaces_q = if params[:categories].present?
-      ApiNamespace.includes(:categories).for_category(params[:categories]).ransack(params[:q])
+      ApiNamespace.filter_by_user_api_accessibility(current_user).for_category(params[:categories]).ransack(params[:q])
     else
-      ApiNamespace.ransack(params[:q])
+      ApiNamespace.filter_by_user_api_accessibility(current_user).ransack(params[:q])
     end
-    @api_namespaces = @api_namespaces_q.result.paginate(page: params[:page], per_page: 10)
+    @api_namespaces_q.sorts = 'id asc' if @api_namespaces_q.sorts.empty?
+
+    if params.dig(:q, :s) && params[:q][:s].match(/CMS (asc|desc)/)
+      namespaces = @api_namespaces_q.result.sort_by { |namespace| namespace.cms_associations.size }
+      namespaces = namespaces.reverse if params[:q][:s].match(/CMS desc/)
+      
+      @api_namespaces = namespaces.paginate(page: params[:page], per_page: 10)
+    else
+      @api_namespaces = @api_namespaces_q.result.paginate(page: params[:page], per_page: 10)
+    end
   end
 
   # GET /api_namespaces/1 or /api_namespaces/1.json
@@ -56,10 +77,16 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
   def update
     respond_to do |format|
       if @api_namespace.update(api_namespace_params)
-        format.html { handle_success_redirect }
+        format.html do
+          flash[:notice] = 'Api namespace was successfully updated.'
+          redirect_to @api_namespace
+        end
         format.json { render :show, status: :ok, location: @api_namespace }
       else
-        format.html { handle_error_redirect }
+        format.html do
+          flash[:error] = @api_namespace.errors.full_messages
+          render :edit, status: :unprocessable_entity
+        end
         format.json { render json: @api_namespace.errors, status: :unprocessable_entity }
       end
     end
@@ -174,6 +201,42 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
     end
   end
 
+  def social_share_metadata
+    respond_to do |format|
+      if @api_namespace.update(api_namespace_social_share_metadata_params)
+        format.html do
+          flash[:notice] = 'Social Share Metadata successfully updated.'
+          redirect_to @api_namespace
+        end
+        format.json { render :show, status: :ok, location: @api_namespace }
+      else
+        format.html do
+          flash[:error] = @api_namespace.errors.full_messages
+          render :edit, status: :unprocessable_entity
+        end
+        format.json { render json: @api_namespace.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def api_action_workflow
+    respond_to do |format|
+      if @api_namespace.update(api_action_workflow_params)
+        format.html do
+          flash[:notice] = 'Action Workflow successfully updated.'
+          redirect_to api_namespace_api_actions_path(api_namespace_id: @api_namespace.id)
+        end
+        format.json { render :show, status: :ok, location: @api_namespace }
+      else
+        format.html do
+          flash[:error] = @api_namespace.errors.full_messages
+          redirect_to action_workflow_api_namespace_api_actions_path(api_namespace_id: @api_namespace.id)
+        end
+        format.json { render json: @api_namespace.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_api_namespace
@@ -182,36 +245,28 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
 
     # Only allow a list of trusted parameters through.
     def api_namespace_params
-      api_actions_attributes =  [:id, :trigger, :action_type, :properties, :include_api_resource_data, :email, :email_subject, :custom_message, :payload_mapping, :request_url, :redirect_url, :redirect_type, :bearer_token, :file_snippet, :position, :custom_headers, :http_method, :method_definition, :_destroy]
       params.require(:api_namespace).permit(:name,
                                             :version,
                                             :properties,
                                             :requires_authentication,
                                             :namespace_type,
                                             :has_form,
-                                            social_share_metadata: [:title, :description, :image],
                                             non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :allow_attachments, :_destroy],
-                                            new_api_actions_attributes: api_actions_attributes,
-                                            create_api_actions_attributes: api_actions_attributes,
-                                            show_api_actions_attributes: api_actions_attributes,
-                                            update_api_actions_attributes: api_actions_attributes,
-                                            destroy_api_actions_attributes: api_actions_attributes,
-                                            error_api_actions_attributes: api_actions_attributes,
                                             category_ids: []
                                            )
     end
 
-    def handle_success_redirect
-      flash[:notice] =  "Api namespace was successfully updated."
-      redirect_to api_namespace_api_actions_path(api_namespace_id: @api_namespace.id) and return  if params[:source] == 'action_workflow'
-
-      redirect_to @api_namespace
+    def api_action_workflow_params
+      api_actions_attributes =  [:id, :trigger, :action_type, :properties, :include_api_resource_data, :email, :email_subject, :custom_message, :payload_mapping, :request_url, :redirect_url, :redirect_type, :bearer_token, :file_snippet, :position, :custom_headers, :http_method, :method_definition, :_destroy]
+      params.require(:api_namespace).permit(new_api_actions_attributes: api_actions_attributes,
+                                            create_api_actions_attributes: api_actions_attributes,
+                                            show_api_actions_attributes: api_actions_attributes,
+                                            update_api_actions_attributes: api_actions_attributes,
+                                            destroy_api_actions_attributes: api_actions_attributes,
+                                            error_api_actions_attributes: api_actions_attributes)
     end
 
-    def handle_error_redirect
-      flash[:error] = @api_namespace.errors.full_messages
-      redirect_to action_workflow_api_namespace_api_actions_path(api_namespace_id: @api_namespace.id) and return  if params[:source] == 'action_workflow'
-
-      render :edit, status: :unprocessable_entity
+    def api_namespace_social_share_metadata_params
+      params.require(:api_namespace).permit(social_share_metadata: [:title, :description, :image])
     end
 end

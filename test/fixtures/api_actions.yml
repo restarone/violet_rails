@@ -126,3 +126,89 @@ create_api_action_plugin_bishop_monitoring_email:
   include_api_resource_data: true
   email: test@restarone.com
   api_namespace: monitoring_target_incident
+
+custom_api_action_on_timesheet_request:
+  type: CreateApiAction
+  action_type: custom_action
+  include_api_resource_data: true
+  payload_mapping:
+  api_namespace: timesheet_request
+  method_definition: |
+    # get time tracker namespace
+    time_tracker = ApiNamespace.find_by(name: 'time_tracker')
+    
+    format = "%Y-%m-%d"
+    if api_resource.properties['current_month'] == "true"
+      api_resource.update(properties: api_resource.properties.merge({ start_date: Date.today.beginning_of_month.strftime(format), end_date: Date.today.end_of_month.strftime(format) }))
+    end
+    
+    # get time tracker entries for the current user within the specified time
+    start_date = Date.parse(api_resource.properties['start_date'])
+    end_date = Date.parse(api_resource.properties['end_date'])
+    email = current_user.email
+
+    current_user_time_tracker_entries = ApiResource.where([
+      "api_namespace_id = :api_namespace_id
+        and created_at::date >= :start_date
+        and created_at::date <= :end_date
+        and properties->>'email_address' = :email",
+      {
+        api_namespace_id: time_tracker.id,
+        start_date: start_date,
+        end_date: end_date,
+        email: email
+      }
+    ])
+
+    # add email of user requesting timesheet
+    api_resource.update(properties: api_resource.properties.merge({ requested_by: email }))
+    
+    # get the consultant rate and check if they are active
+    consultant = ApiNamespace.includes(:api_resources).find_by(name: 'consultant').api_resources.find { |consultant| consultant.properties['email'] == email }
+
+    send_email = ->(email, subject, content, attachment) {
+      email_thread = MessageThread.create(recipients: [email], subject: subject)
+      email_message = email_thread.messages.create(content: content, from: "noreply@#{ENV["APP_HOST"]}")
+      attachments = !attachment ? [] : [attachment]
+    
+      EMailer.with(message: email_message, message_thread: email_thread, attachments: attachments).ship.deliver_later    
+    }
+
+    if consultant.nil?
+      send_email.(email, "Unable to generate timesheet", "Please register as a consultant and add your work hours to request timesheet.", nil)
+      return
+    end
+    
+    if consultant.properties['active'].to_s.downcase == "false"
+      send_email.(email, "Unable to generate timesheet", "Inactive consultants cannot request timesheet. Please contact administrator.", nil)
+      return
+    end
+    
+    rate = Float(consultant.properties['rate'].to_s, exception: false)
+    if rate == nil || rate <= 0
+      send_email.(email, "Unable to generate timesheet", "Invalid hourly rate for consultant.", nil)
+      return
+    end
+
+    total_hours = current_user_time_tracker_entries.sum { |entry| entry.properties['how_much_time_in_hours_spent'].to_d }
+    
+    # construct the csv file
+    csv_string = CSV.generate do |csv|
+      csv << ['', 'Rate', rate]
+      csv << ['', 'Total Hours', total_hours]
+      csv << ['', 'Grand Total', total_hours * rate]
+      csv << ['', '', '']
+      csv << ['Date', 'Hours', 'User', 'Client', 'Task', 'Notes']
+      current_user_time_tracker_entries.map { |entry| csv << [entry.created_at.to_s, entry.properties['how_much_time_in_hours_spent'], entry.properties['email_address'], entry.properties['for_what_client'], entry.properties['what_task_did_you_work_on'], entry.properties['notes']] }
+    end
+    
+    # email the created csv file as an attachment
+    email_content = csv_string.html_safe
+    subject = "Timesheet for #{email} from #{api_resource.properties['start_date']} to #{api_resource.properties['end_date']}"
+    attachment = { filename: "#{subject}.csv", mime_type: "text/csv", content: email_content }
+    content = "Please find your timesheet attached to this email "
+
+    blob = ActiveStorage::Blob.create_and_upload!(io: StringIO.new(attachment[:content]), filename: attachment[:filename], content_type: attachment[:mime_type], metadata: nil)
+    content += ActionText::Content.new("<action-text-attachment sgid='#{blob.attachable_sgid}'></action-text-attachment>").to_s
+
+    send_email.(email, subject, content, attachment)

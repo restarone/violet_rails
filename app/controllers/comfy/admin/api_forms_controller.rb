@@ -1,6 +1,6 @@
 class Comfy::Admin::ApiFormsController < Comfy::Admin::Cms::BaseController
-  before_action :ensure_authority_to_manage_api
   before_action :set_api_namespace
+  before_action :ensure_authority_for_full_access_for_api_form_only_in_api, only: %i[ edit update ]
 
   before_action :set_api_form, only: %i[show edit update]
 
