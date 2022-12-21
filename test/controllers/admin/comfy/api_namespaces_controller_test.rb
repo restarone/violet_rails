@@ -1055,6 +1055,20 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_response :success
   end
 
+  test "#new: should show categories when user has proper access for all_namespaces" do
+    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+
+    sign_in(@user)
+    get new_api_namespace_url
+    assert_response :success
+    assert_select ".categories-form-partial", {count: 1 }, 'Shows checkboxes to assign categories' do
+      # Allows all available categories as options
+      Comfy::Cms::Category.of_type('ApiNamespace').each do |category|
+        assert_select "label", {count: 1, text: category.label}
+      end
+    end
+  end
+
   test "should not get new if user has other access for all_namespaces" do
     @user.update(api_accessibility: {all_namespaces: {full_read_access: 'true'}})
 
@@ -1094,6 +1108,23 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     sign_in(@user)
     get new_api_namespace_url
     assert_response :success
+  end
+
+  test "#new: should show categories when user has proper access for namespaces_by_category" do
+    api_namespace_1 = comfy_cms_categories(:api_namespace_1)
+    api_namespace_2 = comfy_cms_categories(:api_namespace_2)
+    api_namespace_3 = comfy_cms_categories(:api_namespace_3)
+    @user.update(api_accessibility: {namespaces_by_category: {"#{api_namespace_1.label}": {full_access: 'true'}, "#{api_namespace_2.label}": {full_access: 'true'}, uncategorized: {full_access: 'true'}}})
+
+    sign_in(@user)
+    get new_api_namespace_url
+    assert_response :success
+    assert_select ".categories-form-partial", {count: 1 }, 'Shows checkboxes to assign categories' do
+      # Shows only the categories as option for which the user has access to.
+      assert_select "label", {count: 1, text: api_namespace_1.label}
+      assert_select "label", {count: 1, text: api_namespace_2.label}
+      assert_select "label", {count: 0, text: api_namespace_3.label}
+    end
   end
 
   # CREATE
@@ -1609,6 +1640,20 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_equal expected_message, flash[:alert]
   end
 
+  test "#edit: should show all categories when user has proper access for all_namespaces" do
+    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+
+    sign_in(@user)
+    get edit_api_namespace_url(@api_namespace)
+    assert_response :success
+    assert_select ".categories-form-partial", {count: 1 }, 'Shows checkboxes to assign categories' do
+      # Allows all available categories as options
+      Comfy::Cms::Category.of_type('ApiNamespace').each do |category|
+        assert_select "label", {count: 1, text: category.label}
+      end
+    end
+  end
+
   # API access by category
   test "should edit if user has category specific full_access for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
@@ -1656,6 +1701,23 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     expected_message = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
+  end
+
+  test "#edit: should show categories when user has proper access for namespaces_by_category" do
+    api_namespace_1 = comfy_cms_categories(:api_namespace_1)
+    api_namespace_2 = comfy_cms_categories(:api_namespace_2)
+    api_namespace_3 = comfy_cms_categories(:api_namespace_3)
+    @user.update(api_accessibility: {namespaces_by_category: {"#{api_namespace_1.label}": {full_access: 'true'}, "#{api_namespace_2.label}": {full_access: 'true'}, uncategorized: {full_access: 'true'}}})
+
+    sign_in(@user)
+    get edit_api_namespace_url(@api_namespace)
+    assert_response :success
+    assert_select ".categories-form-partial", {count: 1 }, 'Shows checkboxes to assign categories' do
+      # Shows only the categories as option for which the user has access to.
+      assert_select "label", {count: 1, text: api_namespace_1.label}
+      assert_select "label", {count: 1, text: api_namespace_2.label}
+      assert_select "label", {count: 0, text: api_namespace_3.label}
+    end
   end
 
   # UPDATE
