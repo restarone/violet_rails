@@ -1,7 +1,7 @@
 class SanitizeUserAccessibilityInUsers < ActiveRecord::Migration[6.1]
   def up
     User.all.each do |user|
-      if user.api_accessibility['api_namespaces'].present?
+      unless user.api_accessibility['api_namespaces'].present?
         old_api_accessibility = user.api_accessibility
         new_api_accessibility = {'api_namespaces' => old_api_accessibility}
 
