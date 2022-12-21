@@ -1080,6 +1080,22 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_equal expected_message, flash[:alert]
   end
 
+  test "should get new if user has full_access for uncategorized api-namespaces" do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access: 'true'}}})
+
+    sign_in(@user)
+    get new_api_namespace_url
+    assert_response :success
+  end
+
+  test "should get new if user has full_access_api_namespace_only for uncategorized api-namespaces" do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_api_namespace_only: 'true'}}})
+
+    sign_in(@user)
+    get new_api_namespace_url
+    assert_response :success
+  end
+
   # CREATE
   # API access for all_namespace
   test "should create if user has full_access for all_namespaces" do
@@ -1137,6 +1153,30 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     expected_message = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only for all_namespaces are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
+  end
+
+  test "should create if user has full_access for uncategorized api-namespaces" do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access: 'true'}}})
+
+    sign_in(@user)
+    assert_difference('ApiNamespace.count') do
+      post api_namespaces_url, params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, properties: @api_namespace.properties, requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
+    end
+    api_namespace = ApiNamespace.last
+    assert api_namespace.slug
+    assert_redirected_to api_namespace_url(api_namespace)
+  end
+
+  test "should create if user has full_access_api_namespace_only for uncategorized api-namespaces" do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_api_namespace_only: 'true'}}})
+
+    sign_in(@user)
+    assert_difference('ApiNamespace.count') do
+      post api_namespaces_url, params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, properties: @api_namespace.properties, requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
+    end
+    api_namespace = ApiNamespace.last
+    assert api_namespace.slug
+    assert_redirected_to api_namespace_url(api_namespace)
   end
 
   # IMPORT_AS_JSON
@@ -1230,6 +1270,52 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     expected_message = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only for all_namespaces are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
+  end
+
+  test "should import_as_json if user has full_access for uncategorized api-namespaces" do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access: 'true'}}})
+
+    json_file = Tempfile.new(['api_namespace.json', '.json'])
+    json_file.write(@api_namespace.export_as_json(include_associations: false))
+    json_file.rewind
+
+    payload = {
+      file: fixture_file_upload(json_file.path, 'application/json')
+    }
+
+    sign_in(@user)
+    assert_difference('ApiNamespace.count', +1) do
+      post import_as_json_api_namespaces_url, params: payload
+      assert_response :redirect
+    end
+
+    success_message = "Api namespace was successfully imported."
+    assert_match success_message, request.flash[:notice]
+    assert_not_equal @api_namespace.name, ApiNamespace.last.name
+    assert_match @api_namespace.name, ApiNamespace.last.name
+  end
+
+  test "should import_as_json if user has full_access_api_namespace_only for uncategorized api-namespaces" do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_api_namespace_only: 'true'}}})
+
+    json_file = Tempfile.new(['api_namespace.json', '.json'])
+    json_file.write(@api_namespace.export_as_json(include_associations: false))
+    json_file.rewind
+
+    payload = {
+      file: fixture_file_upload(json_file.path, 'application/json')
+    }
+
+    sign_in(@user)
+    assert_difference('ApiNamespace.count', +1) do
+      post import_as_json_api_namespaces_url, params: payload
+      assert_response :redirect
+    end
+
+    success_message = "Api namespace was successfully imported."
+    assert_match success_message, request.flash[:notice]
+    assert_not_equal @api_namespace.name, ApiNamespace.last.name
+    assert_match @api_namespace.name, ApiNamespace.last.name
   end
 
   # SHOW
