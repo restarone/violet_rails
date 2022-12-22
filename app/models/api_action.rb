@@ -50,11 +50,11 @@ class ApiAction < ApplicationRecord
       if ApiAction.action_types[action_type] == ApiAction.action_types[:custom_action]
         custom_actions = api_actions.where(action_type: 'custom_action')
         custom_actions.each do |custom_action|
-          FireApiActionsJob.perform_async(custom_action.id, Current.user&.id, Current.visit&.id)
+          FireApiActionsJob.perform_async(custom_action.id, Current.user&.id, Current.visit&.id, Current.is_api_html_renderer_request)
         end
       elsif [ApiAction.action_types[:send_email], ApiAction.action_types[:send_web_request]].include?(ApiAction.action_types[action_type])
         api_actions.where(action_type: ApiAction.action_types[action_type]).each do |api_action|
-          FireApiActionsJob.perform_async(api_action.id, Current.user&.id, Current.visit&.id)
+          FireApiActionsJob.perform_async(api_action.id, Current.user&.id, Current.visit&.id, Current.is_api_html_renderer_request)
         end
       end
     end if api_actions.present?
