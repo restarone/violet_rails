@@ -3,8 +3,6 @@ class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseContro
     before_action :set_api_namespace
     before_action :ensure_authority_for_read_external_api_connections_only_in_api, only: %i[ show index ]
     before_action :ensure_authority_for_full_access_for_external_api_connections_only_in_api, only: %i[ new edit create update destroy start stop clear_errors clear_state ]
-    skip_before_action :authenticate_user!,  only: :webhook
-    skip_before_action :ensure_user_belongs_to_subdomain, only: :webhook
   
     # GET /external_api_clients or /external_api_clients.json
     def index
