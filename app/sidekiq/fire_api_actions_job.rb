@@ -3,7 +3,7 @@ class FireApiActionsJob
 
   # run error actions only after final retries
   sidekiq_retries_exhausted do |msg, exception|
-    set_current_visit(msg['args'][1], msg['args'][2]) do
+    set_current_visit(msg['args'][1], msg['args'][2], msg['args'][3]) do
       ApiAction.find(msg['args'][0]).execute_error_actions(exception.message)
     end
   end
