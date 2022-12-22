@@ -30,7 +30,7 @@ class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseContro
       respond_to do |format|
         if @external_api_client.save
           format.html { redirect_to api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id, id: @external_api_client.id), notice: "Api client was successfully created." }
-          format.json { render :show, status: :created, location: @api_client }
+          format.json { render :show, status: :created, location: @external_api_client }
         else
           format.html { render :new, status: :unprocessable_entity }
           format.json { render json: @external_api_client.errors, status: :unprocessable_entity }
@@ -46,7 +46,7 @@ class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseContro
           format.json { render :show, status: :ok, location: @external_api_client }
         else
           format.html { render :edit, status: :unprocessable_entity }
-          format.json { render json: @api_client.errors, status: :unprocessable_entity }
+          format.json { render json: @external_api_client.errors, status: :unprocessable_entity }
         end
       end
     end

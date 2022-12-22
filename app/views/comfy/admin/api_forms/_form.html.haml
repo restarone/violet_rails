@@ -1,5 +1,5 @@
 - action = @api_form.persisted? ? :put : :post
-- path = @api_form.persisted? ? api_namespace_api_form_path(api_namespace_id: @api_form.api_namespace.id, id: @api_form.id) : api_namespace_api_forms_path(api_namespace_id: @api_client.api_namespace.id)
+- path = @api_form.persisted? ? api_namespace_api_form_path(api_namespace_id: @api_form.api_namespace.id, id: @api_form.id) : api_namespace_api_forms_path(api_namespace_id: @api_form.api_namespace.id)
 - properties = @api_form.properties
 
 = form_for @api_form, url: path, method: action do |f|
