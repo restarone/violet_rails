@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_12_21_073259) do
+ActiveRecord::Schema.define(version: 2022_10_20_164459) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -559,7 +559,10 @@ ActiveRecord::Schema.define(version: 2022_12_21_073259) do
     t.bigint "external_api_client_id", null: false
     t.string "webhook_type"
     t.text "encrypted_webhook_secret"
+<<<<<<< HEAD
+=======
     t.text "custom_method_definition", default: "[false, 'Verification failed']"
+>>>>>>> 753a138dd1f825e39a62192f93bba9eff23bf478
     t.binary "salt"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
