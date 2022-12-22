@@ -134,13 +134,6 @@
           = link_to "External API connections", api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)
         .my-3
           = link_to "Create new external API Client", new_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id)
-      %hr
-      - if @api_namespace.requires_authentication
-        .card-body
-          %h4
-            = link_to "API Clients", api_namespace_api_clients_path(api_namespace_id: @api_namespace.id)
-          .my-3
-            = link_to "Create new key for client", new_api_namespace_api_client_path(api_namespace_id: @api_namespace.id)
   - if @api_namespace.api_form.present?
     #form.tab-pane.fade{"aria-labelledby" => "form-tab", :role => "tabpanel"}
       %p
