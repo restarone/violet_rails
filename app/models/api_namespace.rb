@@ -72,8 +72,6 @@ class ApiNamespace < ApplicationRecord
     full_access_for_api_actions_only: ['full_access', 'full_access_for_api_actions_only'],
     read_external_api_connections_only: ['full_access', 'full_read_access', 'full_access_for_external_api_connections_only', 'read_external_api_connections_only'],
     full_access_for_external_api_connections_only: ['full_access', 'full_access_for_external_api_connections_only'],
-    read_api_clients_only: ['full_access', 'full_read_access', 'full_access_for_api_clients_only', 'read_api_clients_only'],
-    full_access_for_api_clients_only: ['full_access', 'full_access_for_api_clients_only'],
     full_access_for_api_form_only: ['full_access', 'full_access_for_api_form_only'],
     read_api_keys_only: ['full_access', 'delete_access', 'read_access'],
     full_access_for_api_keys_only: ['full_access'],

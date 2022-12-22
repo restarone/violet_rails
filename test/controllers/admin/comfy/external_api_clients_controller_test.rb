@@ -5,7 +5,6 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   setup do
     @user = users(:public)
     @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
-    @api_client = api_clients(:one)
     @api_namespace = api_namespaces(:one)
     @external_api_client = external_api_clients(:test)
     
