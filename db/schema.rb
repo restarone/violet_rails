@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_12_21_073259) do
+ActiveRecord::Schema.define(version: 2022_12_22_155625) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -129,18 +129,6 @@ ActiveRecord::Schema.define(version: 2022_12_21_073259) do
     t.integer "redirect_type", default: 0
     t.index ["api_namespace_id"], name: "index_api_actions_on_api_namespace_id"
     t.index ["api_resource_id"], name: "index_api_actions_on_api_resource_id"
-  end
-
-  create_table "api_clients", force: :cascade do |t|
-    t.bigint "api_namespace_id", null: false
-    t.string "slug", null: false
-    t.string "label", default: "customer_identifier_here", null: false
-    t.string "authentication_strategy", default: "bearer_token", null: false
-    t.string "bearer_token"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["api_namespace_id"], name: "index_api_clients_on_api_namespace_id"
-    t.index ["bearer_token"], name: "index_api_clients_on_bearer_token"
   end
 
   create_table "api_forms", force: :cascade do |t|
@@ -581,7 +569,6 @@ ActiveRecord::Schema.define(version: 2022_12_21_073259) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "api_actions", "api_namespaces"
   add_foreign_key "api_actions", "api_resources"
-  add_foreign_key "api_clients", "api_namespaces"
   add_foreign_key "api_forms", "api_namespaces"
   add_foreign_key "api_namespace_keys", "api_keys"
   add_foreign_key "api_namespace_keys", "api_namespaces"
