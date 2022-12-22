@@ -1,18 +1,19 @@
 module Webhook
   class Verification
-    attr_accessor :request, :webhook_type, :secret_key
+    attr_accessor :request, :verification_method
 
     def initialize(request, verification_method)
       @request = request
-      @webhook_type = verification_method.webhook_type
-      @secret_key = verification_method.webhook_secret
+      @verification_method = verification_method
     end
 
     def call
-      case webhook_type
+      case @verification_method.webhook_type
 
       when WebhookVerificationMethod.webhook_types[:stripe]
-        Webhook::VerificationMethod::Stripe.new(request, secret_key).call
+        Webhook::VerificationMethod::Stripe.new(request, @verification_method.webhook_secret).call
+      when WebhookVerificationMethod.webhook_types[:custom]
+        Webhook::VerificationMethod::Custom.new(request, @verification_method).call
       else
         [false, 'Webhook verification method not defined']
       end

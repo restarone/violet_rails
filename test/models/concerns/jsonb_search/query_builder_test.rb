@@ -8,6 +8,20 @@ class JsonbSearch::QueryBuilderTest < ActiveSupport::TestCase
     assert_equal "lower(properties ->> 'name') = lower('violet')", jsonb_query
   end
 
+  test 'query string containing single quote \'' do
+    query = { name: "violet's rails" } 
+    jsonb_query = JsonbSearch::QueryBuilder.build_jsonb_query(:properties, query)
+
+    assert_equal "lower(properties ->> 'name') = lower('violet''s rails')", jsonb_query
+  end
+
+  test 'query string containing double quote "' do
+    query = { name: '"violet rails"' } 
+    jsonb_query = JsonbSearch::QueryBuilder.build_jsonb_query(:properties, query)
+
+    assert_equal "lower(properties ->> 'name') = lower('\"violet rails\"')", jsonb_query
+  end
+
   test 'query string - extended format' do
     query = { name: { value: 'violet', option: 'EXACT' } } 
     jsonb_query = JsonbSearch::QueryBuilder.build_jsonb_query(:properties, query)

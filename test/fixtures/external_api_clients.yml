@@ -224,7 +224,7 @@ vacuum_job:
 
         api_resources_to_be_deleted = ApiResource.where(api_namespace_id: api_namespace_id).where("(EXTRACT (EPOCH FROM  now() - #{dimension} )::int/60) > ?", older_than).order("#{dimension} #{order}").limit(batch_size)
 
-        ActiveRecord::Base.transaction do
+        ApiResource.transaction do
           api_resources_to_be_deleted.each do |api_resource|
             api_resource.destroy!
           end
@@ -542,7 +542,7 @@ unique_string_aggregator_plugin:
 
         unless ids_of_existing_api_resources.empty?
           api_resources_to_be_deleted = ApiResource.where(api_namespace_id: output_api_namespace.id, id: ids_of_existing_api_resources)
-          ActiveRecord::Base.transaction do
+          ApiResource.transaction do
             api_resources_to_be_deleted.each do |api_resource|
               api_resource.destroy!
             end

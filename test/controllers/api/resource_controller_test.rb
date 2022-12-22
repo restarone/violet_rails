@@ -2,6 +2,7 @@ require "test_helper"
 
 class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
   setup do
+    @subdomain = Subdomain.current
     @api_namespace = api_namespaces(:one)
     @users_namespace = api_namespaces(:users)
 
@@ -27,8 +28,27 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
       })
   end
 
-  test 'describe resource name and version: get #index as json' do
-    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), as: :json
+  test 'describe resource name and version: get #index as json with no ahoy-visit being tracked when tracking is disabled' do
+    @subdomain.update(tracking_enabled: false)
+    assert_no_difference "Ahoy::Visit.count" do
+      get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), as: :json
+    end
+    assert_response :success
+  end
+
+  test 'describe resource name and version: get #index with no ahoy-visit being tracked when tracking is enabled but cookie consent is rejected' do
+    @subdomain.update(tracking_enabled: true)
+    assert_no_difference "Ahoy::Visit.count" do
+      get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), headers: {"HTTP_COOKIE" => "cookies_accepted=false;"}
+    end
+    assert_response :success
+  end
+
+  test 'describe resource name and version: get #index with ahoy-visit being tracked when tracking is enabled and cookie consent is accepted' do
+    @subdomain.update(tracking_enabled: true)
+    assert_difference "Ahoy::Visit.count", +1 do
+      get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
+    end
     assert_response :success
   end
 

@@ -3,7 +3,7 @@ require "test_helper"
 class BishopTlsMonitoringPluginTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
-    @user.update(can_manage_api: true)
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
     WebMock.allow_net_connect!(net_http_connect_on_start: true)
   end
 

@@ -8,7 +8,8 @@ class SubdomainConstraint
 end
 
 Rails.application.routes.draw do
-  get 'cookies', to: 'cookies#index' 
+  get 'cookies', to: 'cookies#index'
+  get 'cookies/fetch', to: 'cookies#fetch'
   # analytics dashboard
   get 'dashboard', controller: 'comfy/admin/dashboard'
   get 'dashboard/sessions/:ahoy_visit_id', to: 'comfy/admin/dashboard#visit', as: :dashboard_visits
@@ -29,7 +30,7 @@ Rails.application.routes.draw do
       passwords: 'users/passwords',
       sessions: 'users/sessions',
       unlocks: 'users/unlocks',
-      invitations: 'devise/invitations'
+      invitations: 'users/invitations'
     }
   end
 
@@ -54,13 +55,14 @@ Rails.application.routes.draw do
   end
 
   # api admin
-  post 'users/sign_in', to: 'users/sessions#create'
   resources :api_namespaces, controller: 'comfy/admin/api_namespaces' do
     member do
       post 'duplicate_with_associations'
       post 'duplicate_without_associations'
       get 'export_with_associations_as_json'
       get 'export_without_associations_as_json'
+      patch 'social_share_metadata'
+      patch 'api_action_workflow'
     end
 
     resources :resources, except: [:index], controller: 'comfy/admin/api_resources'
@@ -76,7 +78,7 @@ Rails.application.routes.draw do
 
     resources :resource, controller: 'resource', only: [:create]
 
-    resources :api_actions, controller: 'comfy/admin/api_actions', only: [:index, :show] do
+    resources :api_actions, controller: 'comfy/admin/api_actions', only: [:index, :show, :new] do
       collection do
         get 'action_workflow'
       end
@@ -92,13 +94,12 @@ Rails.application.routes.draw do
 
   resources :api_keys, controller: 'comfy/admin/api_keys'
   resources :non_primitive_properties, controller: 'comfy/admin/non_primitive_properties', only: [:new]
-  resources :api_actions, controller: 'comfy/admin/api_actions', only: [:new]
 
   # system admin panel login
   devise_scope :user do
     get 'sign_in', to: 'users/sessions#new', as: :new_global_admin_session
-    post 'users/sign_in', to: 'users/sessions#create'
     delete 'global_login', to: 'users/sessions#destroy'
+    get 'resend_otp', to: "users/registrations#resend_otp"
   end
   # system admin panel authentication (ensure public schema as well)
   get 'sysadmin', to: 'admin/subdomain_requests#index'
@@ -117,6 +118,7 @@ Rails.application.routes.draw do
     resources :subdomains
   end
 
+  
   namespace 'api' do
     get '/resources', to: 'resources#index', as: :show_resources
     scope ':version' do

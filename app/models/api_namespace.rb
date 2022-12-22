@@ -45,12 +45,57 @@ class ApiNamespace < ApplicationRecord
   has_many :api_namespace_keys, dependent: :destroy
   has_many :api_keys, through: :api_namespace_keys
 
+  ransacker :properties do |_parent|
+    Arel.sql("api_namespaces.properties::text") 
+  end
+
   REGISTERED_PLUGINS = {
     subdomain_events: {
       slug: 'subdomain_events',
       version: 1,
     }
   }
+
+  API_ACCESSIBILITIES = {
+    full_access: ['full_access'],
+    full_read_access: ['full_access', 'full_read_access'],
+    full_read_access_in_api_namespace: ['full_access', 'full_read_access', 'delete_access_api_namespace_only', 'allow_exports', 'allow_duplication', 'allow_social_share_metadata', 'full_access_api_namespace_only', 'read_api_resources_only', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'],
+    full_access_api_namespace_only: ['full_access', 'full_access_api_namespace_only'],
+    delete_access_api_namespace_only: ['full_access', 'full_access_api_namespace_only', 'delete_access_api_namespace_only'],
+    allow_exports: ['full_access', 'full_access_api_namespace_only', 'allow_exports'],
+    allow_duplication: ['full_access', 'full_access_api_namespace_only', 'allow_duplication'],
+    allow_social_share_metadata: ['full_access', 'full_access_api_namespace_only', 'allow_social_share_metadata'],
+    read_api_resources_only: ['full_access', 'full_read_access', 'full_access_for_api_resources_only', 'read_api_resources_only', 'delete_access_for_api_resources_only'],
+    full_access_for_api_resources_only: ['full_access', 'full_access_for_api_resources_only'],
+    delete_access_for_api_resources_only: ['full_access', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only'],
+    read_api_actions_only: ['full_access', 'full_read_access', 'full_access_for_api_actions_only', 'read_api_actions_only'],
+    full_access_for_api_actions_only: ['full_access', 'full_access_for_api_actions_only'],
+    read_external_api_connections_only: ['full_access', 'full_read_access', 'full_access_for_external_api_connections_only', 'read_external_api_connections_only'],
+    full_access_for_external_api_connections_only: ['full_access', 'full_access_for_external_api_connections_only'],
+    read_api_clients_only: ['full_access', 'full_read_access', 'full_access_for_api_clients_only', 'read_api_clients_only'],
+    full_access_for_api_clients_only: ['full_access', 'full_access_for_api_clients_only'],
+    full_access_for_api_form_only: ['full_access', 'full_access_for_api_form_only'],
+    read_api_keys_only: ['full_access', 'delete_access', 'read_access'],
+    full_access_for_api_keys_only: ['full_access'],
+    delete_access_for_api_keys_only: ['full_access', 'delete_access'],
+  }
+
+  scope :filter_by_user_api_accessibility, ->(user) { 
+    api_accessibility = user.api_accessibility['api_namespaces']
+
+    if api_accessibility.present? && api_accessibility.keys.include?('all_namespaces')
+      self
+    elsif api_accessibility.present? && api_accessibility.keys.include?('namespaces_by_category')
+      category_specific_keys = api_accessibility['namespaces_by_category'].keys
+      if category_specific_keys.include?('uncategorized')
+        self.includes(:categories).left_outer_joins(categorizations: :category).where("comfy_cms_categories.id IS ? OR comfy_cms_categories.label IN (?)", nil, category_specific_keys)
+      else
+        self.includes(:categories).for_category(category_specific_keys)
+      end
+    else
+      self.none
+    end
+   }
 
   def update_api_form
     if has_form == '1'
@@ -93,8 +138,9 @@ class ApiNamespace < ApplicationRecord
       ActiveRecord::Base.transaction do
         raise 'You cannot duplicate the api_namespace without associations if it has api_form' if duplicate_associations == false && self.api_form.present?
 
+        random_hex = SecureRandom.hex(4)
         new_api_namespace = self.dup
-        new_api_namespace.name = self.name + '-copy-' + SecureRandom.hex(4)
+        new_api_namespace.name = self.name + '-copy-' + random_hex
         new_api_namespace.save!
     
         if duplicate_associations
@@ -105,11 +151,11 @@ class ApiNamespace < ApplicationRecord
             new_api_form.save!
           end
     
-          # Duplicate ApiNamespaceKeys
-          self.api_namespace_keys.each do |api_namespace_key|
-            new_api_namespace_key = api_namespace_key.dup
-            new_api_namespace_key.api_namespace = new_api_namespace
-            new_api_namespace_key.save!
+          # Duplicate ApiKeys
+          self.api_keys.each do |api_key|
+            label = api_key.label + '-copy-' + random_hex
+            new_api_key = ApiKey.create(label: label, authentication_strategy: api_key.authentication_strategy)
+            ApiNamespaceKey.create(api_key_id: new_api_key.id, api_namespace_id: new_api_namespace.id )
           end
     
           # Duplicate ExternalApiClients
@@ -161,7 +207,6 @@ class ApiNamespace < ApplicationRecord
         root: 'api_namespace',
         include: [
           :api_form,
-          :api_namespace_keys,
           :external_api_clients,
           :non_primitive_properties,
           {
@@ -181,6 +226,12 @@ class ApiNamespace < ApplicationRecord
                 }
               ]
             }
+          },
+          {
+            api_keys: {
+              except: [:salt, :encrypted_token], # Copying salt raises error related to encoding and these are encypted data. So, we should not copy such values.
+              methods: [:token]
+            }
           }
         ]
       )
@@ -194,7 +245,7 @@ class ApiNamespace < ApplicationRecord
       ActiveRecord::Base.transaction do
         neglected_attributes = {
           api_action: ['id', 'created_at', 'updated_at', 'encrypted_bearer_token', 'salt', 'api_namespace_id', 'api_resource_id'],
-          api_namespace_key: ['id', 'created_at', 'updated_at', 'api_namespace_id'],
+          api_key: ['id', 'created_at', 'updated_at', 'api_namespace_id', 'token'],
           api_form: ['id', 'created_at', 'updated_at', 'api_namespace_id'],
           api_namespace: ['id', 'created_at', 'updated_at', 'slug'],
           api_resource: ['id', 'created_at', 'updated_at', 'api_namespace_id'],
@@ -211,7 +262,8 @@ class ApiNamespace < ApplicationRecord
       
         # creating api_namespace
         if ApiNamespace.find_by(slug: hash['slug']).present?
-          hash['name'] = hash['name'] + '-' + SecureRandom.hex(4)
+          random_hex = SecureRandom.hex(4)
+          hash['name'] = hash['name'] + '-' + random_hex
         end
 
         api_namespace_hash = hash.except(*neglected_attributes[:api_namespace])
@@ -227,11 +279,13 @@ class ApiNamespace < ApplicationRecord
           ApiForm.create!(api_form_hash)
         end
 
-        # Creating api_namespace_keys
-        if hash['api_namespace_keys'].present? && hash['api_namespace_keys'].is_a?(Array)
-          hash['api_namespace_keys'].each do |api_namespace_key_hash|
-            api_namespace_key_hash = api_namespace_key_hash.except(*neglected_attributes[:api_namespace_key]).merge({'api_namespace_id': new_api_namespace.id})
-            ApiNamespaceKey.create!(api_namespace_key_hash)
+        # Creating api_keys
+        if hash['api_keys'].present? && hash['api_keys'].is_a?(Array)
+          hash['api_keys'].each do |api_key_hash|
+            api_key_hash = api_key_hash.except(*neglected_attributes[:api_key])
+            api_key_hash['label'] = api_key_hash['label'] + '_' + random_hex if random_hex.present?
+            api_key = ApiKey.create!(api_key_hash)
+            ApiNamespaceKey.create(api_key_id: api_key.id, api_namespace_id: new_api_namespace.id )
           end
         end
         
@@ -284,5 +338,34 @@ class ApiNamespace < ApplicationRecord
     rescue => e
       { success: false, message: e.message }
     end
+  end
+
+  def snippet(with_brackets: true)
+    return unless self.api_form.present?
+
+    cms_snippet = "cms:helper render_form, #{self.api_form.id}"
+    cms_snippet = "{{ #{cms_snippet} }}" if with_brackets
+
+    cms_snippet
+  end
+
+  def cms_associations
+    # We will need to refactor this query.
+    # regex did not work in SQL query. /cms:helper render_api_namespace_resource(_index)? ('|")#{self.slug}('|")/
+    associations = Comfy::Cms::Page
+                    .joins(:fragments)
+                    .where('comfy_cms_fragments.identifier': 'content')
+                    .where("comfy_cms_fragments.content ~ ? AND comfy_cms_fragments.content LIKE ?", "render_api_namespace_resource(_index)?", "%#{self.slug}%")
+                    .select { |page| page.fragments.where(identifier: 'content').first.content.match(/cms:helper render_api_namespace_resource(_index)? ('|")#{self.slug}('|")/)}
+
+    associations += Comfy::Cms::Snippet.where('comfy_cms_snippets.identifier = ? OR comfy_cms_snippets.identifier = ?', self.slug, "#{self.slug}-show")
+
+    if self.snippet.present?
+      associations += Comfy::Cms::Page.joins(:fragments).where('comfy_cms_fragments.content LIKE ?', "%#{self.snippet(with_brackets: false)}%")
+      associations += Comfy::Cms::Layout.where('comfy_cms_layouts.content LIKE ?', "%#{self.snippet(with_brackets: false)}%")
+      associations += Comfy::Cms::Snippet.where('comfy_cms_snippets.content LIKE ?', "%#{self.snippet(with_brackets: false)}%")
+    end
+
+    associations.uniq
   end
 end

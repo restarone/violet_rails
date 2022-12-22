@@ -164,14 +164,20 @@ class ContentHelperTest < ActionView::TestCase
     assert_equal @api_resource.properties['name'], response
   end
 
-  test 'render_api_namespace_resource - no scope - 404' do
-    params[:id] = 'not a id'
+  test "render_api_namespace_resource - no scope: should render 404 when the renderer ID is invalid or not provided and not raise error" do
+    Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: "#{@api_namespace.slug}-show", position: 0, content: "<%= @api_resource.properties['name'] %>")
 
-    snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: "#{@api_namespace.slug}-show", position: 0, content: "<%= @api_resource.properties['name'] %>")
+    # When no ID is provided
+    assert_nothing_raised do
+      page_response = render_api_namespace_resource(@api_namespace.slug)
+      assert_match "<h1 class=\"main-title\">404</h1>", page_response
+    end
 
-    # should raise 404 if record not found 
-    assert_raises ActiveRecord::RecordNotFound do
-      response = render_api_namespace_resource(@api_namespace.slug)
+    # When invalid ID is provided
+    params[:id] = 0
+    assert_nothing_raised do
+      page_response = render_api_namespace_resource(@api_namespace.slug)
+      assert_match "<h1 class=\"main-title\">404</h1>", page_response
     end
   end
 
@@ -192,9 +198,10 @@ class ContentHelperTest < ActionView::TestCase
 
     snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: "#{@api_namespace.slug}-show", position: 0, content: "<%= @api_resource.properties['name'] %>")
 
-    # should not be able to find records blocked by scope
-    assert_raises ActiveRecord::RecordNotFound do
+    # should not be able to find records blocked by scope and show 404
+    assert_nothing_raised do
       response = render_api_namespace_resource(@api_namespace.slug, { 'scope' => { 'current_user' => 'true' } })
+      assert_match "<h1 class=\"main-title\">404</h1>", response
     end
   end
 
@@ -494,6 +501,60 @@ class ContentHelperTest < ActionView::TestCase
     
     response = render_api_namespace_resource_index(@api_namespace.slug, { 'scope' => { 'current_user' => 'true' } })
     expected_response = "<span>EST</span>"
+    assert_equal expected_response, response
+  end
+
+  test 'render_api_namespace_resource_index - filter by params - containing quotes' do
+    @api_resource_1.update(properties: { name: "test's user", tags: ["'action'", "\"superhero\""], json: {"bar": '\'baz'} })
+
+    params[:properties] = {name: "test's user", tags: { value: ["\"superhero\""], option: 'PARTIAL', match: 'ANY'}, json: {value: {"bar": '\'baz' }}  }.to_json
+
+    snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<% @api_resources.each do |res| %><%= res.properties['name'] %><% end %>")
+    
+    response = render_api_namespace_resource_index(@api_namespace.slug)
+    excepted_response = "#{@api_resource_1.properties['name']}"
+    assert_equal excepted_response, response
+  end
+
+  test 'render_api_namespace_resource_index - render default snippet if snippet option is not provided' do
+    Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: "#{@api_namespace.slug}-staging", position: 0, content: "staging<% @api_resources.each do |res| %><%= res.properties['name'] %><% end %>")
+    Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<% @api_resources.each do |res| %><%= res.properties['name'] %><% end %>")
+    response = render_api_namespace_resource_index(@api_namespace.slug, { 'order' => { 'created_at': 'DESC' } })
+    expected_response = "#{@api_resource_2.properties['name']}#{@api_resource_1.properties['name']}#{@api_resource.properties['name']}"
+
+    assert_equal expected_response, response
+  end
+
+  test 'render_api_namespace_resource_index - render an alternative snippet' do
+    Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: "#{@api_namespace.slug}-staging", position: 0, content: "staging<% @api_resources.each do |res| %><%= res.properties['name'] %><% end %>")
+    Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<% @api_resources.each do |res| %><%= res.properties['name'] %><% end %>")
+    response = render_api_namespace_resource_index(@api_namespace.slug, { 'snippet' => "#{@api_namespace.slug}-staging", 'order' => { 'created_at': 'DESC' } })
+    expected_response = "staging#{@api_resource_2.properties['name']}#{@api_resource_1.properties['name']}#{@api_resource.properties['name']}"
+
+    assert_equal expected_response, response
+  end
+
+  test 'render_api_namespace_resource - render default snippet if snippet option is not provided' do
+    params[:id] = @api_resource.id
+
+    Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: "#{@api_namespace.slug}-staging-show", position: 0, content: "staging<%= @api_resource.properties['name'] %>")
+    Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: "#{@api_namespace.slug}-show", position: 0, content: "<%= @api_resource.properties['name'] %>")
+
+    response = render_api_namespace_resource(@api_namespace.slug)
+    expected_response = @api_resource.properties['name']
+
+    assert_equal expected_response, response
+  end
+
+  test 'render_api_namespace_resource - render an alternative snippet' do
+    params[:id] = @api_resource.id
+
+    Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: "#{@api_namespace.slug}-staging-show", position: 0, content: "staging<%= @api_resource.properties['name'] %>")
+    Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: "#{@api_namespace.slug}-show", position: 0, content: "<%= @api_resource.properties['name'] %>")
+
+    response = render_api_namespace_resource(@api_namespace.slug, { 'snippet' => "#{@api_namespace.slug}-staging" })
+    expected_response = "staging#{@api_resource.properties['name']}"
+
     assert_equal expected_response, response
   end
 

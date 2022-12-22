@@ -1,31 +1,32 @@
 class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseController
-    before_action :ensure_authority_to_manage_api, excpet: :webhook
     before_action :set_external_api_client, only: %i[ show edit update destroy start stop clear_errors clear_state]
     before_action :set_api_namespace
+    before_action :ensure_authority_for_read_external_api_connections_only_in_api, only: %i[ show index ]
+    before_action :ensure_authority_for_full_access_for_external_api_connections_only_in_api, only: %i[ new edit create update destroy start stop clear_errors clear_state ]
     skip_before_action :authenticate_user!,  only: :webhook
     skip_before_action :ensure_user_belongs_to_subdomain, only: :webhook
   
-    # GET /api_clients or /api_clients.json
+    # GET /external_api_clients or /external_api_clients.json
     def index
       @external_api_clients = @api_namespace.external_api_clients
     end
   
-    # GET /api_clients/1 or /api_clients/1.json
+    # GET /external_api_clients/1 or /external_api_clients/1.json
     def show
     end
   
-    # GET /api_clients/new
+    # GET /external_api_clients/new
     def new
       @external_api_client = ExternalApiClient.new(api_namespace_id: @api_namespace.id)
       @external_api_client.build_webhook_verification_method
     end
   
-    # GET /api_clients/1/edit
+    # GET /external_api_clients/1/edit
     def edit
       @external_api_client.build_webhook_verification_method unless @external_api_client.webhook_verification_method.present?
     end
   
-    # POST /api_clients or /api_clients.json
+    # POST /external_api_clients or /external_api_clients.json
     def create
       @external_api_client = ExternalApiClient.new(external_api_client_params)
       respond_to do |format|
@@ -39,7 +40,7 @@ class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseContro
       end
     end
   
-    # PATCH/PUT /api_clients/1 or /api_clients/1.json
+    # PATCH/PUT /external_api_clients/1 or /external_api_clients/1.json
     def update
       respond_to do |format|
         if @external_api_client.update(external_api_client_params)
@@ -52,7 +53,7 @@ class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseContro
       end
     end
   
-    # DELETE /api_clients/1 or /api_clients/1.json
+    # DELETE /external_api_clients/1 or /external_api_clients/1.json
     def destroy
       @external_api_client.destroy
       respond_to do |format|
@@ -61,29 +62,34 @@ class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseContro
       end
     end
 
+    # GET /external_api_clients/1/start
     def start
       @external_api_client.run
       redirect_back(fallback_location: api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id))
     end
 
+    # GET /external_api_clients/1/stop
     def stop
       @external_api_client.stop
       redirect_back(fallback_location: api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id))
     end
 
+    # GET /external_api_clients/1/clear_errors
     def clear_errors
       @external_api_client.clear_error_data
       redirect_back(fallback_location: api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id))
     end
 
+    # GET /external_api_clients/1/clear_state
     def clear_state
       @external_api_client.clear_state_data
       redirect_back(fallback_location: api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id))
     end
+
     private
       # Use callbacks to share common setup or constraints between actions.
       def set_api_namespace
-        @api_namespace = ApiNamespace.find_by(id: params[:api_namespace_id])
+        @api_namespace = ApiNamespace.friendly.find(params[:api_namespace_id]) rescue nil
       end
   
   
@@ -106,7 +112,7 @@ class Comfy::Admin::ExternalApiClientsController < Comfy::Admin::Cms::BaseContro
             :model_definition,
             :drive_every,
             :require_webhook_verification,
-            webhook_verification_method_attributes: [:id, :webhook_type, :webhook_secret]
+            webhook_verification_method_attributes: [:id, :webhook_type, :webhook_secret, :custom_method_definition]
           ).merge({
             api_namespace_id: @api_namespace.id,
           })
