@@ -32,7 +32,8 @@
     = f.label :has_form
     = f.check_box :has_form, checked: @api_namespace.api_form.present?
 
-  = render "comfy/admin/cms/categories/form", form: f
+  - unless has_only_uncategorized_access?(current_user.api_accessibility) 
+    = render "comfy/admin/cms/categories/form", form: f
 
   .actions
     = f.submit 'Save'

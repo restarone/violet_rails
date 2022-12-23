@@ -1055,6 +1055,20 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_response :success
   end
 
+  test "#new: should show categories when user has proper access for all_namespaces" do
+    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+
+    sign_in(@user)
+    get new_api_namespace_url
+    assert_response :success
+    assert_select ".categories-form-partial", {count: 1 }, 'Shows checkboxes to assign categories' do
+      # Allows all available categories as options
+      Comfy::Cms::Category.of_type('ApiNamespace').each do |category|
+        assert_select "label", {count: 1, text: category.label}
+      end
+    end
+  end
+
   test "should not get new if user has other access for all_namespaces" do
     @user.update(api_accessibility: {all_namespaces: {full_read_access: 'true'}})
 
@@ -1078,6 +1092,39 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     expected_message = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only for all_namespaces are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
+  end
+
+  test "should get new if user has full_access for uncategorized api-namespaces" do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access: 'true'}}})
+
+    sign_in(@user)
+    get new_api_namespace_url
+    assert_response :success
+  end
+
+  test "should get new if user has full_access_api_namespace_only for uncategorized api-namespaces" do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_api_namespace_only: 'true'}}})
+
+    sign_in(@user)
+    get new_api_namespace_url
+    assert_response :success
+  end
+
+  test "#new: should show categories when user has proper access for namespaces_by_category" do
+    api_namespace_1 = comfy_cms_categories(:api_namespace_1)
+    api_namespace_2 = comfy_cms_categories(:api_namespace_2)
+    api_namespace_3 = comfy_cms_categories(:api_namespace_3)
+    @user.update(api_accessibility: {namespaces_by_category: {"#{api_namespace_1.label}": {full_access: 'true'}, "#{api_namespace_2.label}": {full_access: 'true'}, uncategorized: {full_access: 'true'}}})
+
+    sign_in(@user)
+    get new_api_namespace_url
+    assert_response :success
+    assert_select ".categories-form-partial", {count: 1 }, 'Shows checkboxes to assign categories' do
+      # Shows only the categories as option for which the user has access to.
+      assert_select "label", {count: 1, text: api_namespace_1.label}
+      assert_select "label", {count: 1, text: api_namespace_2.label}
+      assert_select "label", {count: 0, text: api_namespace_3.label}
+    end
   end
 
   # CREATE
@@ -1137,6 +1184,30 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     expected_message = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only for all_namespaces are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
+  end
+
+  test "should create if user has full_access for uncategorized api-namespaces" do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access: 'true'}}})
+
+    sign_in(@user)
+    assert_difference('ApiNamespace.count') do
+      post api_namespaces_url, params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, properties: @api_namespace.properties, requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
+    end
+    api_namespace = ApiNamespace.last
+    assert api_namespace.slug
+    assert_redirected_to api_namespace_url(api_namespace)
+  end
+
+  test "should create if user has full_access_api_namespace_only for uncategorized api-namespaces" do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_api_namespace_only: 'true'}}})
+
+    sign_in(@user)
+    assert_difference('ApiNamespace.count') do
+      post api_namespaces_url, params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, properties: @api_namespace.properties, requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
+    end
+    api_namespace = ApiNamespace.last
+    assert api_namespace.slug
+    assert_redirected_to api_namespace_url(api_namespace)
   end
 
   # IMPORT_AS_JSON
@@ -1230,6 +1301,52 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     expected_message = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only for all_namespaces are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
+  end
+
+  test "should import_as_json if user has full_access for uncategorized api-namespaces" do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access: 'true'}}})
+
+    json_file = Tempfile.new(['api_namespace.json', '.json'])
+    json_file.write(@api_namespace.export_as_json(include_associations: false))
+    json_file.rewind
+
+    payload = {
+      file: fixture_file_upload(json_file.path, 'application/json')
+    }
+
+    sign_in(@user)
+    assert_difference('ApiNamespace.count', +1) do
+      post import_as_json_api_namespaces_url, params: payload
+      assert_response :redirect
+    end
+
+    success_message = "Api namespace was successfully imported."
+    assert_match success_message, request.flash[:notice]
+    assert_not_equal @api_namespace.name, ApiNamespace.last.name
+    assert_match @api_namespace.name, ApiNamespace.last.name
+  end
+
+  test "should import_as_json if user has full_access_api_namespace_only for uncategorized api-namespaces" do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_api_namespace_only: 'true'}}})
+
+    json_file = Tempfile.new(['api_namespace.json', '.json'])
+    json_file.write(@api_namespace.export_as_json(include_associations: false))
+    json_file.rewind
+
+    payload = {
+      file: fixture_file_upload(json_file.path, 'application/json')
+    }
+
+    sign_in(@user)
+    assert_difference('ApiNamespace.count', +1) do
+      post import_as_json_api_namespaces_url, params: payload
+      assert_response :redirect
+    end
+
+    success_message = "Api namespace was successfully imported."
+    assert_match success_message, request.flash[:notice]
+    assert_not_equal @api_namespace.name, ApiNamespace.last.name
+    assert_match @api_namespace.name, ApiNamespace.last.name
   end
 
   # SHOW
@@ -1523,6 +1640,20 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_equal expected_message, flash[:alert]
   end
 
+  test "#edit: should show all categories when user has proper access for all_namespaces" do
+    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+
+    sign_in(@user)
+    get edit_api_namespace_url(@api_namespace)
+    assert_response :success
+    assert_select ".categories-form-partial", {count: 1 }, 'Shows checkboxes to assign categories' do
+      # Allows all available categories as options
+      Comfy::Cms::Category.of_type('ApiNamespace').each do |category|
+        assert_select "label", {count: 1, text: category.label}
+      end
+    end
+  end
+
   # API access by category
   test "should edit if user has category specific full_access for the namespace" do
     category = comfy_cms_categories(:api_namespace_1)
@@ -1570,6 +1701,23 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
     expected_message = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
+  end
+
+  test "#edit: should show categories when user has proper access for namespaces_by_category" do
+    api_namespace_1 = comfy_cms_categories(:api_namespace_1)
+    api_namespace_2 = comfy_cms_categories(:api_namespace_2)
+    api_namespace_3 = comfy_cms_categories(:api_namespace_3)
+    @user.update(api_accessibility: {namespaces_by_category: {"#{api_namespace_1.label}": {full_access: 'true'}, "#{api_namespace_2.label}": {full_access: 'true'}, uncategorized: {full_access: 'true'}}})
+
+    sign_in(@user)
+    get edit_api_namespace_url(@api_namespace)
+    assert_response :success
+    assert_select ".categories-form-partial", {count: 1 }, 'Shows checkboxes to assign categories' do
+      # Shows only the categories as option for which the user has access to.
+      assert_select "label", {count: 1, text: api_namespace_1.label}
+      assert_select "label", {count: 1, text: api_namespace_2.label}
+      assert_select "label", {count: 0, text: api_namespace_3.label}
+    end
   end
 
   # UPDATE
