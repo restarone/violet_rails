@@ -106,4 +106,9 @@ class DynamicAttributeTest < ActiveSupport::TestCase
     safe_instance = @dummy_class.new(test_column: { test_key: "<%= 1 + 1 %> and \#{2 + 2}" })
     assert_equal safe_instance.test_column_evaluated, { test_key: "2 and 4" }.to_json
   end
+
+  test 'should unescape html and decode uri-encoded characters' do
+    safe_instance = @dummy_class.new(test_column: { test_key: "&lt;%= 1 + 1 %&gt;%20and%20\#{2 + 2}" })
+    assert_equal safe_instance.test_column_evaluated, { test_key: "2 and 4" }.to_json
+  end
 end
