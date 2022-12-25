@@ -419,6 +419,10 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
     sign_in(@user)
     get action_workflow_api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
     assert_response :success
+    # '+' button should be shown to add new api-action form
+    assert_select "a[data-action-workflow='add-new-api-action-form']"
+    # 'x' button should be shown to remove existing api-action
+    assert_select "a[data-action-workflow='remove-api-action']"
   end
 
   test 'should get action_workflow if user has full_access_for_api_actions_only for all namespace' do
@@ -427,16 +431,32 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
     sign_in(@user)
     get action_workflow_api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
     assert_response :success
+    # '+' button should be shown to add new api-action form
+    assert_select "a[data-action-workflow='add-new-api-action-form']"
+    # 'x' button should be shown to remove existing api-action
+    assert_select "a[data-action-workflow='remove-api-action']"
+  end
+
+  test 'should get action_workflow if user has read_api_actions_only for all namespace' do
+    @user.update(api_accessibility: {all_namespaces: {read_api_actions_only: 'true'}})
+
+    sign_in(@user)
+    get action_workflow_api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
+    assert_response :success
+    # '+' button should not be shown to add new api-action form
+    assert_select "a[data-action-workflow='add-new-api-action-form']", {count: 0}
+    # 'x' button should not be shown to remove existing api-action
+    assert_select "a[data-action-workflow='remove-api-action']", {count: 0}
   end
 
   test 'should not get action_workflow if user has other access for all namespace' do
-    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {all_namespaces: {read_api_resources_only: 'true'}})
 
     sign_in(@user)
     get action_workflow_api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
     assert_response :redirect
 
-    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_actions_only are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_for_api_actions_only or read_api_actions_only are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
   end
 
@@ -561,6 +581,10 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
     sign_in(@user)
     get action_workflow_api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
     assert_response :success
+    # '+' button should be shown to add new api-action form
+    assert_select "a[data-action-workflow='add-new-api-action-form']"
+    # 'x' button should be shown to remove existing api-action
+    assert_select "a[data-action-workflow='remove-api-action']"
   end
 
   test 'should get action_workflow if user has full_access_for_api_actions_only for the namespace' do
@@ -571,26 +595,48 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
     sign_in(@user)
     get action_workflow_api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
     assert_response :success
+    # '+' button should be shown to add new api-action form
+    assert_select "a[data-action-workflow='add-new-api-action-form']"
+    # 'x' button should be shown to remove existing api-action
+    assert_select "a[data-action-workflow='remove-api-action']"
   end
 
-  test 'should get action_workflow if user has read_api_actions_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_for_api_actions_only: 'true'}}}})
+  test 'should get action_workflow if user has full_access_for_api_actions_only for the uncategorized namespace' do
+    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_api_actions_only: 'true'}}})
 
     sign_in(@user)
     get action_workflow_api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
     assert_response :success
+    # '+' button should be shown to add new api-action form
+    assert_select "a[data-action-workflow='add-new-api-action-form']"
+    # 'x' button should be shown to remove existing api-action
+    assert_select "a[data-action-workflow='remove-api-action']"
   end
 
-  test 'should not get action_workflow if user has other access for the namespace' do
+  test 'should get action_workflow if user has read_api_actions_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
     @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_api_actions_only: 'true'}}}})
 
     sign_in(@user)
     get action_workflow_api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
+    assert_response :success
+    # '+' button should not be shown to add new api-action form
+    assert_select "a[data-action-workflow='add-new-api-action-form']", {count: 0}
+    # 'x' button should not be shown to remove existing api-action
+    assert_select "a[data-action-workflow='remove-api-action']", {count: 0}
+  end
+
+  test 'should not get action_workflow if user has other access for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_resources_only: 'true'}}})
+
+    sign_in(@user)
+    get action_workflow_api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
     assert_response :redirect
 
-    expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_actions_only are allowed to perform that action."
+    expected_message = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_for_api_actions_only or read_api_actions_only are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
   end
 

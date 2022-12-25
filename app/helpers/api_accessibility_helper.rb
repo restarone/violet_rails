@@ -56,4 +56,27 @@ module ApiAccessibilityHelper
   def has_access_to_api_keys?(api_accessibility, access_name)
     api_accessibility.dig('api_keys', access_name).present? && api_accessibility.dig('api_keys', access_name) == 'true'
   end
+
+  def has_only_uncategorized_access?(api_accessibility)
+    api_namespaces_accessibility = api_accessibility['api_namespaces']
+
+    return false if api_namespaces_accessibility.keys.include?('all_namespaces')
+
+    if api_namespaces_accessibility.keys.include?('namespaces_by_category')
+      categories = api_namespaces_accessibility['namespaces_by_category'].keys
+      return true if categories.size == 1 && categories[0] == 'uncategorized'
+    end
+
+    false
+  end
+
+  def filter_categories_by_api_accessibility(api_accessibility, categories)
+    if api_accessibility.keys.include?('all_namespaces')
+      categories
+    elsif api_accessibility.keys.include?('namespaces_by_category')
+      accessible_categories = api_accessibility['namespaces_by_category'].keys - ['uncategorized']
+
+      categories.where(label: accessible_categories)
+    end
+  end
 end
