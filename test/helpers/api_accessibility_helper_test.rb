@@ -34,21 +34,21 @@ class ApiAccessibilityHelperTest < ActionView::TestCase
   end
 
   test 'should return true/false accordingly if the user has only uncategorized access or not' do
-    @user.update(api_accessibility: {namespaces_by_category: {test_1: {full_access: 'true'}, test_2: {}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {test_1: {full_access: 'true'}, test_2: {}}}})
     refute has_only_uncategorized_access?(@user.api_accessibility)
 
-    @user.update(api_accessibility: {namespaces_by_category: {test_1: {full_access: 'true'}, uncategorized: {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {test_1: {full_access: 'true'}, uncategorized: {full_access: 'true'}}}})
     refute has_only_uncategorized_access?(@user.api_accessibility)
 
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
     refute has_only_uncategorized_access?(@user.api_accessibility)
 
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access: 'true'}}}})
     assert has_only_uncategorized_access?(@user.api_accessibility)
   end
 
   test 'should return all categories if the user has access all_namespaces' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     api_namespace_1 = comfy_cms_categories(:api_namespace_1)
     api_namespace_2 = comfy_cms_categories(:api_namespace_2)
@@ -65,7 +65,7 @@ class ApiAccessibilityHelperTest < ActionView::TestCase
     api_namespace_1 = comfy_cms_categories(:api_namespace_1)
     api_namespace_2 = comfy_cms_categories(:api_namespace_2)
     api_namespace_3 = comfy_cms_categories(:api_namespace_3)
-    @user.update(api_accessibility: {namespaces_by_category: {"#{api_namespace_1.label}": {full_access: 'true'}, "#{api_namespace_2.label}": {full_access: 'true'}, uncategorized: {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{api_namespace_1.label}": {full_access: 'true'}, "#{api_namespace_2.label}": {full_access: 'true'}, uncategorized: {full_access: 'true'}}}})
 
 
     filtered_categories = filter_categories_by_api_accessibility(@user.api_accessibility, Comfy::Cms::Category.of_type('ApiNamespace'))

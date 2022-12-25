@@ -1074,7 +1074,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "#new: should show categories when user has proper access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_api_namespace_only: 'true'}}})
 
     sign_in(@user)
     get new_api_namespace_url
@@ -1113,7 +1113,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should get new if user has full_access for uncategorized api-namespaces" do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access: 'true'}}}})
 
     sign_in(@user)
     get new_api_namespace_url
@@ -1121,7 +1121,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should get new if user has full_access_api_namespace_only for uncategorized api-namespaces" do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_api_namespace_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_api_namespace_only: 'true'}}}})
 
     sign_in(@user)
     get new_api_namespace_url
@@ -1132,7 +1132,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     api_namespace_1 = comfy_cms_categories(:api_namespace_1)
     api_namespace_2 = comfy_cms_categories(:api_namespace_2)
     api_namespace_3 = comfy_cms_categories(:api_namespace_3)
-    @user.update(api_accessibility: {namespaces_by_category: {"#{api_namespace_1.label}": {full_access: 'true'}, "#{api_namespace_2.label}": {full_access: 'true'}, uncategorized: {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{api_namespace_1.label}": {full_access: 'true'}, "#{api_namespace_2.label}": {full_access: 'true'}, uncategorized: {full_access: 'true'}}}})
 
     sign_in(@user)
     get new_api_namespace_url
@@ -1205,7 +1205,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should create if user has full_access for uncategorized api-namespaces" do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access: 'true'}}}})
 
     sign_in(@user)
     assert_difference('ApiNamespace.count') do
@@ -1217,7 +1217,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should create if user has full_access_api_namespace_only for uncategorized api-namespaces" do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_api_namespace_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_api_namespace_only: 'true'}}}})
 
     sign_in(@user)
     assert_difference('ApiNamespace.count') do
@@ -1322,7 +1322,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should import_as_json if user has full_access for uncategorized api-namespaces" do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access: 'true'}}}})
 
     json_file = Tempfile.new(['api_namespace.json', '.json'])
     json_file.write(@api_namespace.export_as_json(include_associations: false))
@@ -1345,7 +1345,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should import_as_json if user has full_access_api_namespace_only for uncategorized api-namespaces" do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_api_namespace_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_api_namespace_only: 'true'}}}})
 
     json_file = Tempfile.new(['api_namespace.json', '.json'])
     json_file.write(@api_namespace.export_as_json(include_associations: false))
@@ -1659,7 +1659,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "#edit: should show all categories when user has proper access for all_namespaces" do
-    @user.update(api_accessibility: {all_namespaces: {full_access_api_namespace_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_api_namespace_only: 'true'}}})
 
     sign_in(@user)
     get edit_api_namespace_url(@api_namespace)
@@ -1725,7 +1725,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     api_namespace_1 = comfy_cms_categories(:api_namespace_1)
     api_namespace_2 = comfy_cms_categories(:api_namespace_2)
     api_namespace_3 = comfy_cms_categories(:api_namespace_3)
-    @user.update(api_accessibility: {namespaces_by_category: {"#{api_namespace_1.label}": {full_access: 'true'}, "#{api_namespace_2.label}": {full_access: 'true'}, uncategorized: {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{api_namespace_1.label}": {full_access: 'true'}, "#{api_namespace_2.label}": {full_access: 'true'}, uncategorized: {full_access: 'true'}}}})
 
     sign_in(@user)
     get edit_api_namespace_url(@api_namespace)
