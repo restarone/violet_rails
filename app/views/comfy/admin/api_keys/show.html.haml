@@ -18,3 +18,5 @@
 = link_to 'Edit', edit_api_key_path(id: @api_key.id)
 \|
 = link_to 'Back', api_keys_path
+.my-3
+  = link_to 'Destroy', api_key_path(id: @api_key.id), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'

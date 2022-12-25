@@ -1,5 +1,6 @@
 class Comfy::Admin::ApiKeysController < Comfy::Admin::Cms::BaseController
-  before_action :ensure_authority_for_read_api_keys_only_in_api, only: %i[ show index ]
+  before_action :ensure_authority_for_read_api_keys_only_in_api, only: %i[ index ]
+  before_action :ensure_authority_for_view_api_keys_details_only_in_api, only: %i[ show ]
   before_action :ensure_authority_for_delete_access_for_api_keys_only_in_api, only: %i[ destroy ]
   before_action :ensure_authority_for_full_access_for_api_keys_only_in_api, only: %i[ new edit create update ]
 

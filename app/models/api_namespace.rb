@@ -79,6 +79,7 @@ class ApiNamespace < ApplicationRecord
     full_access_for_api_clients_only: ['full_access', 'full_access_for_api_clients_only'],
     full_access_for_api_form_only: ['full_access', 'full_access_for_api_form_only'],
     read_api_keys_only: ['full_access', 'delete_access', 'read_access'],
+    view_api_keys_details_only: ['full_access', 'read_access'],
     full_access_for_api_keys_only: ['full_access'],
     delete_access_for_api_keys_only: ['full_access', 'delete_access'],
   }
