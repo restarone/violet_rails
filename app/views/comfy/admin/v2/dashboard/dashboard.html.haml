@@ -1,0 +1,23 @@
+= javascript_include_tag "//www.google.com/jsapi"
+.page-header
+  .d-flex.my-2.justify-content-between.align-items-center
+    .h2.mb-0
+      Dashboard
+
+    .d-flex
+      %div
+        %a#pages.nav-link.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
+          All Pages
+        .dropdown-menu{"aria-labelledby" => "pages"}
+          = link_to "All Pages", '/', class: 'dropdown-item'
+          - Subdomain.current.pages.each do |page|
+            = link_to page.label, page.slug, class: 'dropdown-item'
+      %div
+        %a#intervals.nav-link.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
+          November 2022
+        .dropdown-menu{"aria-labelledby" => "intervals"}
+          = link_to "November 2022", '/', class: 'dropdown-item'
+
+%main{class: 'my-5'}
+  .d-flex.justify-content-center.align-items-center
+    = column_chart @page_visit_data
