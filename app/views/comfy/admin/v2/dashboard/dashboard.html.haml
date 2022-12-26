@@ -19,5 +19,14 @@
           = link_to "November 2022", '/', class: 'dropdown-item'
 
 %main{class: 'my-5'}
-  .d-flex.justify-content-center.align-items-center
-    = column_chart @page_visit_data
+  .row
+    .bar-chart.col.col-10
+      .d-flex.justify-content-between
+        .d-flex.justify-content-between
+          %h5.sub-heading.mr-3
+            Website Visits
+          .count
+            = @page_visit_events.count 
+            total visits
+      = column_chart @page_visit_data, colors: ["#88DAE3", "#D785E3", "#F7C85C"]
+    .pie-chart 
