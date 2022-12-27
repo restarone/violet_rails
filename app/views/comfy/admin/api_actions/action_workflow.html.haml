@@ -20,8 +20,9 @@
         .form-group{id: "#{subclass}_forms", class: "js-sortable"}
           = f.fields_for subclass, @api_namespace.send(subclass) do |ff|
             = render partial: 'comfy/admin/api_actions/form', locals: {index: ff.index, resource: ff.object, type: subclass }
-        %a.btn.btn-primary.text-white{onclick: "appendApiActionForm('#{subclass}')"}
-          %i.fa.fa-plus
+        - if has_access_to_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:full_access_for_api_actions_only], current_user, @api_namespace)
+          %a.btn.btn-primary.text-white{onclick: "appendApiActionForm('#{subclass}')", 'data-action-workflow': 'add-new-api-action-form'}
+            %i.fa.fa-plus
 
   .actions
     = f.submit 'Save'

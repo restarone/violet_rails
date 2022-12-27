@@ -29,6 +29,10 @@ api_namespace_2:
   label: api_namespace-2
   categorized_type: ApiNamespace
 
+api_namespace_3:
+  label: api_namespace-3
+  categorized_type: ApiNamespace
+
 message_thread_1:
   label: message_thread-1
   categorized_type: MessageThread

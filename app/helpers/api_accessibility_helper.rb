@@ -52,4 +52,24 @@ module ApiAccessibilityHelper
 
     is_user_authorized
   end
+
+  def has_only_uncategorized_access?(api_accessibility)
+    return false if api_accessibility.keys.include?('all_namespaces')
+    if api_accessibility.keys.include?('namespaces_by_category')
+      categories = api_accessibility['namespaces_by_category'].keys
+      return true if categories.size == 1 && categories[0] == 'uncategorized'
+    end
+
+    false
+  end
+
+  def filter_categories_by_api_accessibility(api_accessibility, categories)
+    if api_accessibility.keys.include?('all_namespaces')
+      categories
+    elsif api_accessibility.keys.include?('namespaces_by_category')
+      accessible_categories = api_accessibility['namespaces_by_category'].keys - ['uncategorized']
+
+      categories.where(label: accessible_categories)
+    end
+  end
 end
