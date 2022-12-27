@@ -261,14 +261,14 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
         }
       }
     }
-    post simple_discussion.forum_threads_url, params: payload
+
     assert_difference "ApiResource.count", +2 do
+      post simple_discussion.forum_threads_url, params: payload
       post simple_discussion.forum_thread_forum_posts_path(ForumThread.last), params: {
         forum_post: {
           body: "Reply"
         }
       }
-      Sidekiq::Worker.drain_all
     end
   end
 
