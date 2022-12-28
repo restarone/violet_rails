@@ -4,11 +4,13 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
   setup do
     @user = users(:public)
     @other_user = User.create!(email: 'contact1@restarone.com', password: '123456', password_confirmation: '123456', confirmed_at: Time.now)
+    @other_user.update(can_manage_forum: true)
 
-    @user.update(global_admin: true)
+    @user.update(global_admin: true, can_manage_forum: true)
     @restarone_subdomain = Subdomain.find_by(name: 'restarone')
     Apartment::Tenant.switch @restarone_subdomain.name do
       @restarone_user = User.find_by(email: 'contact@restarone.com')
+      @restarone_user.update(can_manage_forum: true)
     end
     @forum_category = ForumCategory.create!(name: 'test', slug: 'test')
     Sidekiq::Testing.fake!

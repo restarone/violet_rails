@@ -6,12 +6,13 @@ class SimpleDiscussion::ForumPostsControllerTest < ActionDispatch::IntegrationTe
   setup do
     @user = users(:public)
     @current_subdomain_name = 'public'
-    @user.update(global_admin: true)
+    @user.update(global_admin: true, can_manage_forum: true)
 
 		@restarone_subdomain = Subdomain.find_by(name: 'restarone')
 
     Apartment::Tenant.switch @restarone_subdomain.name do
       @restarone_user = User.find_by(email: 'contact@restarone.com')
+      @restarone_user.update(can_manage_forum: true)
       @forum_category = ForumCategory.create!(name: 'test', slug: 'test')
       @forum_thread = @restarone_user.forum_threads.new(title: 'Test Thread', forum_category_id: @forum_category.id)
       @forum_thread.save!

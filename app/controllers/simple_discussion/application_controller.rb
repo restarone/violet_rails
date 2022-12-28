@@ -39,6 +39,13 @@ class SimpleDiscussion::ApplicationController < ::ApplicationController
     end
   end
 
+  def ensure_authority_to_manage_forum
+    unless current_user&.can_manage_forum
+      flash.alert = "You do not have the permission to do that. Only users who can-manage-forum  are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
+    end
+  end
+
   private
 
   def redirect_if_not_logged_in
