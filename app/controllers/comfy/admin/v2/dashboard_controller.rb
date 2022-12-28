@@ -4,11 +4,13 @@ class Comfy::Admin::V2::DashboardController < Comfy::Admin::Cms::BaseController
   before_action :ensure_authority_to_manage_analytics
 
   def dashboard
-    @page_visit_events_q = Ahoy::Event.where(name: 'comfy-cms-page-visit').joins(:visit).ransack(params[:q])
-    @page_visit_events = @page_visit_events_q.result
-    @page_visit_events = @page_visit_events.jsonb_search(:properties, JSON.parse(params[:properties]).to_hash, params[:match]) if params[:properties]
-    @page_visit_data = @page_visit_events.where.not('ahoy_visits.device_type': nil).group_by { |u| u.visit.device_type }.map do |key, value|
-      { name: key, data: Ahoy::Event.where(id: value.pluck(:id)).group_by_week(:time).count }
-    end
+    @page_visit_events = Ahoy::Event.where(name: 'comfy-cms-page-visit').joins(:visit)
+    @page_visit_events = @page_visit_events.jsonb_search(:properties, { page_id: params[:page] }) if params[:page].present?
+
+    @start_date = params[:start_date]&.to_date || Date.today.beginning_of_month
+    @end_date = params[:end_date]&.to_date || Date.today.end_of_month
+    @page_visit_events = @page_visit_events.where(time: @start_date..@end_date)
+
+    @visits = Ahoy::Visit.where(started_at: @start_date..@end_date)
   end
 end
