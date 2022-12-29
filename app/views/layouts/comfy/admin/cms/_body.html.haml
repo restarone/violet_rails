@@ -3,11 +3,12 @@
     .row
       #cms-left.col-lg-2.bg-dark
         = render "layouts/comfy/admin/cms/left"
-      #cms-main.col-lg-8.m-auto
+      #cms-main{class: "col-lg-#{controller_name == 'dashboard' ? '10 ml-auto' : '8 m-auto'}"}
         = render "layouts/comfy/admin/cms/flash"
         = yield
         = render 'comfy/admin/cms/files/modal' if @site && !@site.new_record?
-      #cms-right.col-lg-2
-        = render 'layouts/comfy/admin/cms/right'
+      - unless controller_name == 'dashboard'
+        #cms-right.col-lg-2
+          = render 'layouts/comfy/admin/cms/right'
 
   = render "layouts/comfy/admin/cms/footer_js"

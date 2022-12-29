@@ -9,7 +9,7 @@
         = f.select :page, options_for_select(Subdomain.current.pages.map {|page| [page.label, page.id] }, params[:page]), { prompt: "All pages"}, { onchange: "$(this).closest('form').submit()" }
         = f.hidden_field :start_date, value: params[:start_date]
         = f.hidden_field :end_date, value: params[:end_date]
-        = f.hidden_field :label, id: 'label', value: params[:label]
+        = f.hidden_field :interval, value: params[:interval]
         
         #reportrange
           %span
@@ -25,20 +25,21 @@
           .count
             = @page_visit_events.count 
             total visits
-      = column_chart page_visit_chart_data(@page_visit_events, @start_date, @end_date), colors: ["#88DAE3", "#D785E3", "#F7C85C"]
+      = column_chart page_visit_chart_data(@page_visit_events, @start_date, @end_date), colors: ["#88DAE3FF", "#D785E3FF", "#F7C85CFF"], code: true, library: { plugins: { legend: { position: "top", align: "end", labels: { padding: 24, boxWidth: 8, usePointStyle: true, font: { size: 16 } } } }  }
     .col.col-3
       .donut-chart
-        = pie_chart visitors_chart_data(@visits), donut: true, legend: "bottom", library: { cutout: 90 }, code: true
+        %h5 Website visitors
+        = pie_chart visitors_chart_data(@visits), colors: ['#F7A47B', '#B5E69A'], donut: true, library: { cutout: 85, plugins: { legend: { position: "bottom",  align: 'start', labels: {boxWidth: 8, usePointStyle: true, font: { size: 16 } } } } }
 
 :javascript
   $(function() {
     function cb() {
       if (!$('#start_date').val() && !$('#end_date').val()) {
         $('#reportrange span').html(moment().format('MMMM YYYY'));
-      } else if ($('#label').val() == 'Custom Range') {
+      } else if ($('#interval').val() == 'Custom Range') {
         $('#reportrange span').html(moment($("#start_date").val()).format('MMMM D, YYYY') + ' - ' + moment($("#end_date").val()).format('MMMM D, YYYY'));
       } else {
-        $('#reportrange span').html($('#label').val());
+        $('#reportrange span').html($('#interval').val());
       }
     }
 
@@ -58,7 +59,7 @@
     }, function(start, end, label) {
       $('#start_date').val(start.format('YYYY-MM-DD'));
       $('#end_date').val(end.format('YYYY-MM-DD'));
-      $('#label').val(label);
+      $('#interval').val(label);
       cb();
       $("#analytics_filter").submit();
     });
