@@ -20,20 +20,46 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     assert_response :redirect
   end
 
-  test 'denies #index if forum is by registration' do
+  test 'denies #index if forum is private for visitors' do
     @restarone_subdomain.update(forum_is_private: true)
     get simple_discussion.root_url(subdomain: @restarone_subdomain.name)
     assert_response :redirect
   end
 
-  test 'allows #index if forum is by registration' do
-    sign_in(@restarone_user)
+  test 'allows #index if forum is private and the user has can-access-forum permission' do
     @restarone_subdomain.update(forum_is_private: true)
+    @restarone_user.update!(can_access_forum: true)
+
+    sign_in(@restarone_user)
     get simple_discussion.root_url(subdomain: @restarone_subdomain.name)
     assert_response :success
   end
 
-  test 'allows #index if not logged in' do
+  test 'allows #index if forum is private and the user is moderator though user does not have can-access-forum permission' do
+    @restarone_subdomain.update(forum_is_private: true)
+    @restarone_user.update!(moderator: true)
+
+    sign_in(@restarone_user)
+    get simple_discussion.root_url(subdomain: @restarone_subdomain.name)
+    assert_response :success
+  end
+
+  test 'deny #index if forum is private and the user does not have can-access-forum permission' do
+    @restarone_subdomain.update(forum_is_private: true)
+
+    sign_in(@restarone_user)
+    get simple_discussion.root_url(subdomain: @restarone_subdomain.name)
+    assert_response :redirect
+    assert_redirected_to root_path
+  end
+
+  test 'allows #index if not logged in for public-forum' do
+    get simple_discussion.root_url(subdomain: @restarone_subdomain.name)
+    assert_response :success
+  end
+
+  test 'allows #index for public-forum though user does not have can-access-forum or moderator permission' do
+    sign_in(@restarone_user)
     get simple_discussion.root_url(subdomain: @restarone_subdomain.name)
     assert_response :success
   end
