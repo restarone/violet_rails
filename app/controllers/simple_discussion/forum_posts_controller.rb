@@ -1,6 +1,5 @@
 class SimpleDiscussion::ForumPostsController < SimpleDiscussion::ApplicationController
   before_action :authenticate_user!
-  before_action :ensure_authority_to_manage_forum
   before_action :set_forum_thread
   before_action :set_users_for_mention
   before_action :set_forum_post, only: [:edit, :update, :destroy]

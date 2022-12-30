@@ -1,6 +1,5 @@
 class SimpleDiscussion::ForumThreadsController < SimpleDiscussion::ApplicationController
   before_action :authenticate_user!, only: [:mine, :participating, :new, :create]
-  before_action :ensure_authority_to_manage_forum
   before_action :set_forum_thread, only: [:show, :edit, :update, :destroy]
   before_action :require_mod_or_author_for_thread!, only: [:edit, :update, :destroy]
   before_action :set_users_for_mention

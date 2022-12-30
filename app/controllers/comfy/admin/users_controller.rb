@@ -80,7 +80,6 @@ class Comfy::Admin::UsersController < Comfy::Admin::Cms::BaseController
       :can_manage_users,
       :can_manage_analytics,
       :can_manage_files,
-      :can_manage_forum,
       :moderator,
       :name,
       :can_view_restricted_pages,
