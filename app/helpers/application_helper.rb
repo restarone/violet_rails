@@ -54,7 +54,6 @@ module ApplicationHelper
 
   def render_cookies_consent_ui
     if show_cookies_consent_banner?
-      byebug
       if @cms_page.present?
         context = @cms_page
       else
