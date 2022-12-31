@@ -53,6 +53,21 @@ module ApplicationHelper
   end
 
   def render_cookies_consent_ui
-    render partial: 'shared/cookies_consent_ui'
+    if show_cookies_consent_banner?
+      byebug
+      if @cms_page.present?
+        context = @cms_page
+      else
+        cms_site = @site || cms_site_detect
+        [:pages, :blog_posts, :snippets, :layouts].any? do |association|
+          cms_site.send(association).present? && (context = cms_site.send(association).first)
+        end
+      end
+
+      r = ComfortableMexicanSofa::Content::Renderer.new(context)
+      html_text = r.render(r.nodes(r.tokenize(Subdomain.current.cookies_consent_ui)))
+
+      render partial: 'shared/cookies_consent_ui', locals: {html_text: html_text}
+    end
   end
 end
