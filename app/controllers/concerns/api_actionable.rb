@@ -95,7 +95,7 @@ module ApiActionable
     return if @api_resource.nil? || @api_resource.new_record?
 
     @api_namespace.send(action_name).each do |action|
-      @api_resource.send(action_name).create(action.attributes.merge(custom_message: action.custom_message.to_s).except("id", "created_at", "updated_at", "api_namespace_id"))
+      @api_resource.send(action_name).create(action.attributes.merge(custom_message: action.custom_message.to_s, parent_id: action.id).except("id", "created_at", "updated_at", "api_namespace_id"))
     end
   end
 
@@ -107,7 +107,7 @@ module ApiActionable
         api_namespace_id: @api_namespace.id,
         errors: @api_resource.errors.full_messages.to_sentence
       }
-      ErrorApiAction.create(action.attributes.merge(custom_message: action.custom_message.to_s, meta_data: { api_resource: api_resource_json }).except("id", "created_at", "updated_at", "api_namespace_id"))
+      ErrorApiAction.create(action.attributes.merge(custom_message: action.custom_message.to_s, parent_id: action.id, meta_data: { api_resource: api_resource_json }).except("id", "created_at", "updated_at", "api_namespace_id"))
     end
   end
 

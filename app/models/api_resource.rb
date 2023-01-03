@@ -44,9 +44,9 @@ class ApiResource < ApplicationRecord
     Arel.sql("api_resources.properties::text") 
   end
 
-  def clone_api_actions(action_name)
+  def initialize_api_resource_actions(action_name)
     api_namespace.send(action_name).each do |action|
-      self.send(action_name).create(action.attributes.merge('custom_message' => action.custom_message.to_s, 'lifecycle_stage' => 'initialized').except("id", "created_at", "updated_at", "api_namespace_id"))
+      self.send(action_name).create(action.attributes.merge('custom_message' => action.custom_message.to_s, 'lifecycle_stage' => 'initialized', parent_id: action.id).except("id", "created_at", "updated_at", "api_namespace_id"))
     end
   end
 
@@ -103,12 +103,12 @@ class ApiResource < ApplicationRecord
   end
 
   def execute_create_api_actions
-    clone_api_actions('create_api_actions')
+    initialize_api_resource_actions('create_api_actions')
     CreateApiAction.where(id: self.create_api_actions.pluck(:id)).execute_model_context_api_actions
   end
 
   def execute_update_api_actions
-    clone_api_actions('update_api_actions')
+    initialize_api_resource_actions('update_api_actions')
     UpdateApiAction.where(id: self.update_api_actions.pluck(:id)).execute_model_context_api_actions
   end
 end

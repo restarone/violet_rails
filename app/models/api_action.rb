@@ -6,7 +6,7 @@ class ApiAction < ApplicationRecord
   attr_encrypted :bearer_token
   attr_dynamic :email, :email_subject, :custom_message, :payload_mapping, :custom_headers, :request_url, :redirect_url
 
-  after_update :update_executed_actions_payload, if: Proc.new { api_namespace.present? && saved_change_to_payload_mapping? }
+  after_update :update_api_resource_actions, if: Proc.new { self.api_namespace_action? }
 
   belongs_to :api_namespace, optional: true
   belongs_to :api_resource, optional: true
@@ -16,6 +16,11 @@ class ApiAction < ApplicationRecord
   enum lifecycle_stage: {initialized: 0, executing: 1, complete: 2, failed: 3, discarded: 4}
   
   enum redirect_type: { cms_page: 0, dynamic_url: 1 }
+
+  # api_namespace_action acts as class defination and api_resource_actions act as instance of api_namespace_action
+  has_many :api_resource_actions, class_name: 'ApiAction', foreign_key: :parent_id
+
+  belongs_to :api_namespace_action, class_name: 'ApiAction', foreign_key: :parent_id, optional: true
 
   EXECUTION_ORDER = {
     model_level: ['send_email', 'send_web_request', 'custom_action'],
@@ -64,7 +69,6 @@ class ApiAction < ApplicationRecord
   def execute_error_actions(error)
     self.update(lifecycle_stage: 'failed', lifecycle_message: error)
 
-    p "sdd: #{self}"
     return if type == 'ErrorApiAction' || api_resource.nil?
 
     api_resource.api_namespace.error_api_actions.each do |action|
@@ -73,10 +77,33 @@ class ApiAction < ApplicationRecord
     api_resource.error_api_actions.each(&:execute_action)
   end
 
+  def api_namespace_action?
+    api_namespace_id.present?
+  end
+
+  def api_resource_action?
+    api_resource_id.present?
+  end
+
   private
 
-  def update_executed_actions_payload
-    ApiAction.where(api_resource_id: api_namespace.api_resources.pluck(:id), payload_mapping: payload_mapping_previously_was, type: type, action_type: action_type).update_all(payload_mapping: payload_mapping)
+  def update_api_resource_actions
+    api_actions_to_update = self.api_resource_actions.where.not(lifecycle_stage: [:complete, :discarded])
+    api_actions_to_update.update_all({
+      payload_mapping: payload_mapping,
+      include_api_resource_data: include_api_resource_data,
+      redirect_url: redirect_url,
+      request_url: request_url,
+      position: position,
+      email: email,
+      file_snippet: file_snippet,
+      custom_headers: custom_headers,
+      http_method: http_method,
+      method_definition: method_definition,
+      email_subject: email_subject,
+      redirect_type: redirect_type,
+    })
+    ActionText::RichText.where(record_type: 'ApiAction', record_id: api_actions_to_update.pluck(:id)).update_all(body: custom_message.to_s)
   end
 
   def send_email(run_error_action = true)
