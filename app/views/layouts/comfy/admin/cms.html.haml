@@ -9,8 +9,9 @@
   -# this is a hack until I figure out how to get chartkick working without importing the whole application js pack
   - if controller_name == 'dashboard'
     = javascript_pack_tag 'application', 'data-turbo-track': 'reload'
-
-
+    %script{type: "text/javascript", src: "//cdn.jsdelivr.net/momentjs/latest/moment.min.js"}
+    %script{:type => "text/javascript", :src => "//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js" }
+    %link{:rel => "stylesheet", :type => "text/css", :href => "//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"}
 
   = render 'layouts/comfy/admin/cms/head'
   = render 'layouts/comfy/admin/cms/body'

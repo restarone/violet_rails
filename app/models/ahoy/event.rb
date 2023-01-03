@@ -1,5 +1,6 @@
 class Ahoy::Event < ApplicationRecord
   include Ahoy::QueryMethods
+  include JsonbSearch::Searchable
 
   SYSTEM_EVENTS = {
     'comfy-blog-page-visit'=> 0,

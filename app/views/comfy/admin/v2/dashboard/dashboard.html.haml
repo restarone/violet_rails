@@ -1,0 +1,68 @@
+= javascript_include_tag "//www.google.com/jsapi"
+.page-header
+  .d-flex.my-2.justify-content-between.align-items-center
+    .h2.mb-0
+      Dashboard
+
+    = form_with(url: v2_dashboard_path, method: :get, html: {id: 'analytics_filter' }) do |f|
+      .d-flex
+        = f.select :page, options_for_select(Subdomain.current.pages.map {|page| [page.label, page.id] }, params[:page]), { prompt: "All pages"}, { onchange: "$(this).closest('form').submit()" }
+        = f.hidden_field :start_date, value: params[:start_date]
+        = f.hidden_field :end_date, value: params[:end_date]
+        = f.hidden_field :interval, value: params[:interval]
+        
+        #reportrange
+          %span
+          .fa.fa-caret-down
+
+%main{class: 'my-5'}
+  .row
+    .col.col-9
+      .d-flex.justify-content-between
+        .d-flex.justify-content-between
+          %h5.sub-heading.mr-3
+            Website Visits
+          .count
+            = @page_visit_events.count 
+            total visits
+      = column_chart page_visit_chart_data(@page_visit_events, @start_date, @end_date), colors: ["#88DAE3FF", "#D785E3FF", "#F7C85CFF"], code: true, library: { plugins: { legend: { position: "top", align: "end", labels: { padding: 24, boxWidth: 8, usePointStyle: true, font: { size: 16 } } } }  }
+    .col.col-3
+      .donut-chart
+        %h5 Website visitors
+        = pie_chart visitors_chart_data(@visits), colors: ['#F7A47B', '#B5E69A'], donut: true, library: { cutout: 85, plugins: { legend: { position: "bottom",  align: 'start', labels: {boxWidth: 8, usePointStyle: true, font: { size: 16 } } } } }
+
+:javascript
+  $(function() {
+    function cb() {
+      if (!$('#start_date').val() && !$('#end_date').val()) {
+        $('#reportrange span').html(moment().format('MMMM YYYY'));
+      } else if ($('#interval').val() == 'Custom Range') {
+        $('#reportrange span').html(moment($("#start_date").val()).format('MMMM D, YYYY') + ' - ' + moment($("#end_date").val()).format('MMMM D, YYYY'));
+      } else {
+        $('#reportrange span').html($('#interval').val());
+      }
+    }
+
+    $('#reportrange').daterangepicker({
+        opens: 'left',
+        locale: {
+          format: 'YYYY/MM/DD'
+        },
+        startDate: $("#start_date").val() || moment().startOf('month'),
+        endDate: $("#end_date").val() || moment().endOf('month'),
+        ranges: {
+          [moment().format('MMMM YYYY')]: [moment().startOf('month'), moment().endOf('month')],
+          '3 months': [moment().startOf('month').subtract(2, 'months'), moment().endOf('month')],
+          '6 months': [moment().startOf('month').subtract(5, 'months'), moment().endOf('month')],
+          '1 year': [moment().startOf('month').subtract(11, 'months'), moment().endOf('month')]
+        }
+    }, function(start, end, label) {
+      $('#start_date').val(start.format('YYYY-MM-DD'));
+      $('#end_date').val(end.format('YYYY-MM-DD'));
+      $('#interval').val(label);
+      cb();
+      $("#analytics_filter").submit();
+    });
+
+    cb();
+  });
