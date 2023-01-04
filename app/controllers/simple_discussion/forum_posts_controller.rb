@@ -2,6 +2,7 @@ class SimpleDiscussion::ForumPostsController < SimpleDiscussion::ApplicationCont
   before_action :authenticate_user!
   before_action :set_forum_thread
   before_action :set_users_for_mention
+  before_action :require_mod_or_can_access_forum!, only: [:new, :create]
   before_action :set_forum_post, only: [:edit, :update, :destroy]
   before_action :require_mod_or_author_for_post!, only: [:edit, :update, :destroy]
   before_action :require_mod_or_author_for_thread!, only: [:solved, :unsolved]
