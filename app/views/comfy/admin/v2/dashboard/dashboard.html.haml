@@ -22,9 +22,11 @@
         .d-flex.justify-content-between
           %h5.sub-heading.mr-3
             Website Visits
-          .count
+          .count.mr-3
             = @page_visit_events.count 
             total visits
+          .percent-change
+            = display_percent_change(@page_visit_events.count, @pervious_period_page_visit_events.count)
       = column_chart page_visit_chart_data(@page_visit_events, @start_date, @end_date), colors: ["#88DAE3FF", "#D785E3FF", "#F7C85CFF"], code: true, library: { plugins: { legend: { position: "top", align: "end", labels: { padding: 24, boxWidth: 8, usePointStyle: true, font: { size: 16 } } } }  }
     .col.col-3
       .donut-chart

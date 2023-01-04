@@ -37,6 +37,12 @@ module DashboardHelper
     {"Single time visitor": single_time_visitors, "Recurring visitors" => recurring_visitors  }
   end
 
+  def display_percent_change(current_count, prev_count)
+    percent_change = (((current_count - prev_count).to_f / prev_count) * 100).round(2).abs
+
+    raw("<div class=\"fa fa-caret-#{ percent_change < 0 ? 'up positive' : 'down negative' }\"> #{percent_change} %</div>")
+  end
+
   private
   def split_into(start_date, end_date)
     time_in_days = (end_date - start_date).to_i
