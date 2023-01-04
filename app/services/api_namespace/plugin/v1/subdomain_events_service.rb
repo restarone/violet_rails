@@ -34,6 +34,7 @@ class ApiNamespace::Plugin::V1::SubdomainEventsService
         body: "New Forum Post @ #{domain_with_fallback}.#{ENV['APP_HOST']} - created by: #{created_by_user.name} (#{created_by_user.email})"
       }
     end
-    ApiResourceSpawnJob.perform_async(api_namespace.id, resource_properties.to_json)
+
+    api_namespace.api_resources.create!(properties: resource_properties)
   end
 end

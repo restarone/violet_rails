@@ -32,6 +32,7 @@ class ActiveSupport::TestCase
     end
     stub_request(:post, "www.example.com/success").to_return(body: "success response", status: 200)
     stub_request(:post, "www.example.com/error").to_return(body: "error response", status: 500)
+    stub_request(:post, "http://www.discord.com/").to_return(body: "success response", status: 200)
   end
 
   teardown do
