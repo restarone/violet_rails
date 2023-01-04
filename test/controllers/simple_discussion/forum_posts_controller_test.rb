@@ -23,6 +23,7 @@ class SimpleDiscussion::ForumPostsControllerTest < ActionDispatch::IntegrationTe
     @restarone_subdomain.update(tracking_enabled: true)
 
     Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_user.update(can_access_forum: true)
       sign_in(@restarone_user)
       payload = {
         forum_post: {
@@ -46,6 +47,7 @@ class SimpleDiscussion::ForumPostsControllerTest < ActionDispatch::IntegrationTe
     @restarone_subdomain.update(tracking_enabled: true)
 
     Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_user.update(can_access_forum: true)
       sign_in(@restarone_user)
       payload = {
         forum_post: {
@@ -66,6 +68,7 @@ class SimpleDiscussion::ForumPostsControllerTest < ActionDispatch::IntegrationTe
     @restarone_subdomain.update(tracking_enabled: false)
 
     Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_user.update(can_access_forum: true)
       sign_in(@restarone_user)
       payload = {
         forum_post: {
@@ -86,6 +89,7 @@ class SimpleDiscussion::ForumPostsControllerTest < ActionDispatch::IntegrationTe
     @restarone_subdomain.update(tracking_enabled: false)
 
     Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_user.update(can_access_forum: true)
       sign_in(@restarone_user)
       payload = {
         forum_post: {
@@ -104,6 +108,7 @@ class SimpleDiscussion::ForumPostsControllerTest < ActionDispatch::IntegrationTe
 
   test 'denies forum-post update with validation errors in the response' do
     Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_user.update(can_access_forum: true)
       sign_in(@restarone_user)
       payload = {
         forum_post: {

@@ -101,11 +101,11 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     assert_redirected_to new_user_session_url(subdomain: @restarone_subdomain.name)
   end
 
-  test 'allows forum_threads#new if logged in' do
+  test 'denies forum_threads#new if logged in user does not have access permission' do
     sign_in(@restarone_user)
     get simple_discussion.new_forum_thread_url(subdomain: @restarone_subdomain.name)
-    assert_template :new
-    assert_response :success
+    assert_response :redirect
+    assert_equal "You aren't allowed to do that.", flash[:alert]
   end
 
   test '#index: shows the latest post.body in the thread preview' do
@@ -158,7 +158,8 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
       assert_redirected_to new_user_session_path
   end
 
-  test 'allows new thread creation if logged in (mod does not get emails for thread creation)' do
+  test 'allows new thread creation if logged in with access permission or mod (mod does not get emails for thread creation)' do
+    @user.update(can_access_forum: true)
     sign_in(@user)
     payload = {
       forum_thread: {
@@ -187,6 +188,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     # stub subscribed users so the notification email gets enqueued
     ForumThread.any_instance.stubs(:subscribed_users).returns(User.all)
     assert @user.update(moderator: true)
+    @other_user.update(can_access_forum: true)
     sign_in(@other_user)
     payload = {
       forum_thread: {
@@ -226,6 +228,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
 
   test 'allows new thread creation and tracks if plugin: subdomain/subdomain_events is enabled' do
     subdomains(:public).update(api_plugin_events_enabled: true)
+    @user.update(can_access_forum: true)
     sign_in(@user)
     payload = {
       forum_thread: {
@@ -250,6 +253,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
 
   test 'denies new thread creation with validation errors in response if invalid payload is provided' do
     subdomains(:public).update(api_plugin_events_enabled: true)
+    @user.update(can_access_forum: true)
     sign_in(@user)
     payload = {
       forum_thread: {
@@ -275,6 +279,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
 
   test 'tracks new thread/reply creation if plugin: subdomain/subdomain_events is enabled' do
     subdomains(:public).update(api_plugin_events_enabled: true)
+    @user.update(can_access_forum: true)
     sign_in(@user)
     payload = {
       forum_thread: {
@@ -299,6 +304,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
   end
 
   test 'denies new thread/reply creation with validation-errors in response' do
+    @user.update(can_access_forum: true)
     sign_in(@user)
     payload = {
       forum_thread: {
@@ -447,6 +453,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @user.id, body: 'test body 2')
     ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @user.id, body: 'test body 3')
   
+    @user.update(can_access_forum: true)
     sign_in(@user)
     payload = {
       forum_thread: {
@@ -473,6 +480,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     forum_thread = @user.forum_threads.create!(title: 'Test Thread 1', forum_category_id: @forum_category.id)
     ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @user.id, body: 'test body 1')
   
+    @user.update(can_access_forum: true)
     sign_in(@user)
     payload = {
       forum_thread: {
@@ -492,6 +500,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
   end
 
   test 'send notification to mentioned users in thread/post body' do
+    @other_user.update(can_access_forum: true)
     sign_in(@other_user)
     payload = {
       forum_thread: {
