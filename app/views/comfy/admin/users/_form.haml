@@ -87,8 +87,7 @@
                 = f.check_box :can_access_forum
                 %label 
                   Can access Forum 
-                  %small
-                    (restricts system users from accessing private-forum if non-moderator user don't have access)
+
   = f.submit "Update", class: 'btn btn-success'
   - unless @user.is_last_admin?
     - confirm_message = "Are you sure you want to remove this user? This cannot be undone."
