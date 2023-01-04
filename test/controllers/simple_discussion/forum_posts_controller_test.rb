@@ -19,7 +19,7 @@ class SimpleDiscussion::ForumPostsControllerTest < ActionDispatch::IntegrationTe
     end
   end
 
-	test 'tracks forum-post update (if tracking is enabled and cookies accepted)' do
+	test 'when forum is public: allows and tracks forum-post update if user has access permission (if tracking is enabled and cookies accepted)' do
     @restarone_subdomain.update(tracking_enabled: true)
 
     Apartment::Tenant.switch @restarone_subdomain.name do
@@ -41,6 +41,39 @@ class SimpleDiscussion::ForumPostsControllerTest < ActionDispatch::IntegrationTe
     # Validation errors are not present in the response-body
     assert_select 'div#error_explanation', { count: 0 }
     refute @controller.view_assigns['forum_post'].errors.present?
+  end
+
+	test 'when forum is public: allows forum-post update if user is moderator' do
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_user.update(moderator: true)
+      sign_in(@restarone_user)
+      payload = {
+        forum_post: {
+          body: 'foobar'
+        }
+      }
+
+      patch simple_discussion.forum_thread_forum_post_url(subdomain: @restarone_subdomain.name, forum_thread_id: @forum_thread.id, id: @forum_post.id), params: payload, headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
+    end
+
+    assert_response :redirect
+    assert_redirected_to simple_discussion.forum_thread_url(subdomain: @restarone_subdomain.name, id: @forum_thread.slug), headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
+  end
+
+	test 'when forum is public: denies forum-post update if user does not have access permission' do
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      sign_in(@restarone_user)
+      payload = {
+        forum_post: {
+          body: 'foobar'
+        }
+      }
+
+      patch simple_discussion.forum_thread_forum_post_url(subdomain: @restarone_subdomain.name, forum_thread_id: @forum_thread.id, id: @forum_post.id), params: payload, headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
+    end
+
+    assert_response :redirect
+    assert_redirected_to simple_discussion.root_url(subdomain: @restarone_subdomain.name)
   end
 
   test 'does not track forum-post update (if tracking is enabled and cookies not accepted)' do
@@ -123,5 +156,57 @@ class SimpleDiscussion::ForumPostsControllerTest < ActionDispatch::IntegrationTe
       assert_select 'div#error_explanation'
       assert @controller.view_assigns['forum_post'].errors.present?
     end
+  end
+
+	test 'when forum is private: allows forum-post update if user has access permission' do
+    @restarone_subdomain.update(forum_is_private: true)
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_user.update(can_access_forum: true)
+      sign_in(@restarone_user)
+      payload = {
+        forum_post: {
+          body: 'foobar'
+        }
+      }
+
+      patch simple_discussion.forum_thread_forum_post_url(subdomain: @restarone_subdomain.name, forum_thread_id: @forum_thread.id, id: @forum_post.id), params: payload, headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
+    end
+    assert_response :redirect
+    assert_redirected_to simple_discussion.forum_thread_url(subdomain: @restarone_subdomain.name, id: @forum_thread.slug), headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
+  end
+
+	test 'when forum is private: allows forum-post update if user is moderator' do
+    @restarone_subdomain.update(forum_is_private: true)
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_user.update(moderator: true)
+      sign_in(@restarone_user)
+      payload = {
+        forum_post: {
+          body: 'foobar'
+        }
+      }
+
+      patch simple_discussion.forum_thread_forum_post_url(subdomain: @restarone_subdomain.name, forum_thread_id: @forum_thread.id, id: @forum_post.id), params: payload, headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
+    end
+
+    assert_response :redirect
+    assert_redirected_to simple_discussion.forum_thread_url(subdomain: @restarone_subdomain.name, id: @forum_thread.slug), headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
+  end
+
+	test 'when forum is private: denies forum-post update if user does not have access permission' do
+    @restarone_subdomain.update(forum_is_private: true)
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      sign_in(@restarone_user)
+      payload = {
+        forum_post: {
+          body: 'foobar'
+        }
+      }
+
+      patch simple_discussion.forum_thread_forum_post_url(subdomain: @restarone_subdomain.name, forum_thread_id: @forum_thread.id, id: @forum_post.id), params: payload, headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
+    end
+
+    assert_response :redirect
+    assert_redirected_to root_url(subdomain: @restarone_subdomain.name)
   end
 end
