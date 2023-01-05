@@ -11,12 +11,10 @@ class Api::ExternalApiClientsController < Api::BaseController
       if @external_api_client.webhook_verification_method.present?
         verified, message = Webhook::Verification.new(request, @external_api_client.webhook_verification_method).call
 
-        return render json: { message: message, success: false }, status: 400 unless verified
+        return render json: { message: message, success: false }, status: 401 unless verified
       end
 
-      @external_api_client.run({ request: { body: JSON.parse(request.body.read) } })
-      
-      render json: { success: true }
+      render json: @external_api_client.evaluated_model_definition.new(external_api_client: @external_api_client, request: { body: JSON.parse(request.body.read) }).start
     end
 
     private

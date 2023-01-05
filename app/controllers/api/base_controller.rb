@@ -4,7 +4,7 @@ class Api::BaseController < ActionController::API
   def authenticate_request
     if @api_namespace.requires_authentication
       unless validate_bearer_token
-        render json: { status: 'unauthorized', code: 401 }
+        render json: { status: 'unauthorized', code: 401 }, status: 401
       end
     end
   end
