@@ -79,14 +79,18 @@
                 = f.check_box :can_view_restricted_pages
                 %label 
                   Can view restricted web pages
-              .form-group
-                = f.check_box :moderator
-                %label 
-                  Can manage forum
-              .form-group
-                = f.check_box :can_access_forum
-                %label 
-                  Can access Forum 
+              .card
+                .card-header 
+                  .d-inline
+                    = f.check_box :moderator, id: 'moderator'
+                    %label
+                      %strong 
+                        Can manage forum
+                .card-body
+                  .form-group
+                    = f.check_box :can_access_forum, id: 'forum_access'
+                    %label 
+                      Can access Forum
 
   = f.submit "Update", class: 'btn btn-success'
   - unless @user.is_last_admin?
@@ -94,3 +98,25 @@
     - if @user.forum_threads.present? || @user.forum_posts.present? || @user.events.present?
       - confirm_message += "\n\n Note: Deleting this user will affect its associated #{@user.forum_threads.size} forum-threads, #{@user.forum_posts.size} forum-posts and #{@user.events.size} analytics events and will show 'user deleted'."
     = link_to "Remove", admin_user_path(id: @user.id), method: :delete, class: 'btn btn-sm btn-danger', data: { confirm: confirm_message.html_safe }   
+
+:javascript
+  $(document).ready(function() {
+    const moderator_checkbox = $('#moderator');
+    const forum_access_checkbox = $('#forum_access');
+
+    // On initialization
+    if (moderator_checkbox.prop('checked')) {
+      forum_access_checkbox.prop('checked', true);
+    } else {
+      forum_access_checkbox.prop('checked', false);
+    }
+
+    // Add event listener
+    moderator_checkbox.on('change', function() {
+      if (this.checked) {
+        forum_access_checkbox.prop('checked', true);
+      } else {
+        forum_access_checkbox.prop('checked', false);
+      }
+    });
+  });
