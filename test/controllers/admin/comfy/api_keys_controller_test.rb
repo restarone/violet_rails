@@ -84,7 +84,7 @@ class Comfy::Admin::ApiKeysControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should show api_key when user has proper access for api-keys" do
-    ['full_access', 'delete_access', 'read_access'].each do |access_name|
+    ['full_access', 'read_access'].each do |access_name|
       api_hash = {api_keys: {}}
       api_hash[:api_keys][access_name] = 'true'
       @user.update(api_accessibility: api_hash)
@@ -94,6 +94,16 @@ class Comfy::Admin::ApiKeysControllerTest < ActionDispatch::IntegrationTest
       assert_response :success
       assert_template :show
     end
+  end
+
+  test "should deny show api_key when user has delete_access for api-keys" do
+    api_hash = {api_keys: {delete_access: 'true'}}
+    @user.update(api_accessibility: api_hash)
+
+    sign_in(@user)
+    get api_key_url(id: @api_key.id)
+    assert_response :redirect
+    assert_equal "You do not have the permission to do that. Only users with full_access or read_access for ApiKeys are allowed to perform that action.", flash[:alert]
   end
 
   test "should get edit only when the user has full_access for api-key" do

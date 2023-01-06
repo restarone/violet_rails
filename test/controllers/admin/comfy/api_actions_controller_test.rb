@@ -438,7 +438,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get action_workflow if user has read_api_actions_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_api_actions_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_api_actions_only: 'true'}}})
 
     sign_in(@user)
     get action_workflow_api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
@@ -450,7 +450,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should not get action_workflow if user has other access for all namespace' do
-    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_api_resources_only: 'true'}}})
 
     sign_in(@user)
     get action_workflow_api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
@@ -601,7 +601,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[data-action-workflow='remove-api-action']"
   end
 
-  test 'should get action_workflow if user has read_api_actions_only for the uncategorized namespace' do
+  test 'should get action_workflow if user has full_access_for_api_actions_only for the uncategorized namespace' do
     @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_for_api_actions_only: 'true'}}}})
 
     sign_in(@user)
@@ -630,7 +630,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should not get action_workflow if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_resources_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_api_resources_only: 'true'}}}})
 
     sign_in(@user)
     get action_workflow_api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
