@@ -11,6 +11,71 @@ class Api::ExternalApiClientsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test '#webhook: should be able to render custom response' do
+    model_definition = "
+      class ExternalApiModelExample
+        def initialize(parameters)
+          @external_api_client = parameters[:external_api_client]
+        end
+
+        def start
+          render json: { a: 'b' }
+        end
+      end
+
+      ExternalApiModelExample
+    "
+
+    @external_api_client.update(model_definition: model_definition)
+    post api_external_api_client_webhook_url(version: @api_namespace.version, api_namespace: @api_namespace.slug, external_api_client: @external_api_client.slug), params: {},  as: :json
+    
+    assert_response :success
+    assert_equal({"a"=>"b"} , response.parsed_body)
+  end
+
+  test '#webhook: should be able to render custom status code' do
+    model_definition = "
+      class ExternalApiModelExample
+        def initialize(parameters)
+          @external_api_client = parameters[:external_api_client]
+        end
+
+        def start
+          render json: { a: 'b' }, status: 400 
+        end
+      end
+
+      ExternalApiModelExample
+    "
+
+    @external_api_client.update(model_definition: model_definition)
+    post api_external_api_client_webhook_url(version: @api_namespace.version, api_namespace: @api_namespace.slug, external_api_client: @external_api_client.slug), params: {},  as: :json
+    
+    assert_response 400
+    assert_equal({"a" =>"b"}, response.parsed_body)
+  end
+
+  test '#webhook: should return 204 if render method not called' do
+    model_definition = "
+      class ExternalApiModelExample
+        def initialize(parameters)
+          @external_api_client = parameters[:external_api_client]
+        end
+
+        def start
+          { a: 'b' }
+        end
+      end
+
+      ExternalApiModelExample
+    "
+
+    @external_api_client.update(model_definition: model_definition)
+    post api_external_api_client_webhook_url(version: @api_namespace.version, api_namespace: @api_namespace.slug, external_api_client: @external_api_client.slug), params: {},  as: :json
+    
+    assert_response 204
+  end
+
   test '#webhook: route should not exist if drive strategy id not webhook' do
     @external_api_client.update(drive_strategy: 'on_demand')
     assert_raises ActionController::RoutingError do
@@ -31,13 +96,11 @@ class Api::ExternalApiClientsControllerTest < ActionDispatch::IntegrationTest
 
     assert_difference "@api_namespace.api_resources.reload.count", +1 do
       post api_external_api_client_webhook_url(version: @api_namespace.version, api_namespace: @api_namespace.slug, external_api_client: @external_api_client.slug), params: { type: 'customer.created' },  as: :json
-      Sidekiq::Worker.drain_all
     end
     assert_response :success
 
     assert_no_difference "@api_namespace.api_resources.reload.count" do
       post api_external_api_client_webhook_url(version: @api_namespace.version, api_namespace: @api_namespace.slug, external_api_client: @external_api_client.slug), params: { type: 'customer.removed' },  as: :json
-      Sidekiq::Worker.drain_all
     end
     assert_response :success
   end
@@ -48,7 +111,7 @@ class Api::ExternalApiClientsControllerTest < ActionDispatch::IntegrationTest
 
     post api_external_api_client_webhook_url(version: @api_namespace.version, api_namespace: @api_namespace.slug, external_api_client: @external_api_client.slug), params: {},  as: :json
 
-    assert_response 400
+    assert_response 401
     assert_equal({ 'message' => 'error message', 'success' => false }, JSON.parse(response.body))
   end
 
@@ -67,13 +130,11 @@ class Api::ExternalApiClientsControllerTest < ActionDispatch::IntegrationTest
 
     assert_difference "@api_namespace.api_resources.reload.count", +1 do
       post api_external_api_client_webhook_url(version: @api_namespace.version, api_namespace: @api_namespace.slug, external_api_client: @external_api_client.slug), params: { type: 'customer.created' }, headers: { 'Authorization': 'secret' }, as: :json
-      Sidekiq::Worker.drain_all
     end
     assert_response :success
 
     assert_no_difference "@api_namespace.api_resources.reload.count" do
       post api_external_api_client_webhook_url(version: @api_namespace.version, api_namespace: @api_namespace.slug, external_api_client: @external_api_client.slug), params: { type: 'customer.removed' }, headers: { 'Authorization': 'secret' }, as: :json
-      Sidekiq::Worker.drain_all
     end
     assert_response :success
   end
@@ -94,7 +155,7 @@ class Api::ExternalApiClientsControllerTest < ActionDispatch::IntegrationTest
 
     post api_external_api_client_webhook_url(version: @api_namespace.version, api_namespace: @api_namespace.slug, external_api_client: @external_api_client.slug), params: {}, headers: { 'Authorization': 'not secret' }, as: :json
 
-    assert_response 400
+    assert_response 401
     assert_equal({ 'message' => 'Invalid Authorization Token', 'success' => false }, JSON.parse(response.body))
   end
 end

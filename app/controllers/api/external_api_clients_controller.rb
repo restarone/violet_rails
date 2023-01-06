@@ -14,7 +14,17 @@ class Api::ExternalApiClientsController < Api::BaseController
         return render json: { message: message, success: false }, status: 401 unless verified
       end
 
-      render json: @external_api_client.evaluated_model_definition.new(external_api_client: @external_api_client, request: { body: JSON.parse(request.body.read) }).start
+      model_definition = @external_api_client.evaluated_model_definition
+
+      # add render method on model_definition
+      # render should only be available on controller context
+      model_definition.define_method(:render) do |args|
+        return { render: true, args: args } 
+      end
+
+      response = model_definition.new(external_api_client: @external_api_client, request: { body: JSON.parse(request.body.read) }.deep_stringify_keys).start
+
+      render response[:args] if response.is_a?(Hash) && response[:render]
     end
 
     private

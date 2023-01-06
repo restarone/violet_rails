@@ -614,6 +614,7 @@ webhook_drive_strategy:
               request_body: @request["body"]	
             }
           )
+          render json: { success: true }
         end
       end
 
