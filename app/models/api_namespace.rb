@@ -25,8 +25,6 @@ class ApiNamespace < ApplicationRecord
  
   has_many :api_actions, dependent: :destroy
 
-  has_many :executed_api_actions, through: :api_resources, class_name: 'ApiAction', source: :api_actions
-
   has_many :new_api_actions, dependent: :destroy
   accepts_nested_attributes_for :new_api_actions, allow_destroy: true
 
@@ -341,6 +339,10 @@ class ApiNamespace < ApplicationRecord
     rescue => e
       { success: false, message: e.message }
     end
+  end
+
+  def executed_api_actions
+    ApiAction.where(api_resource_id: api_resources.pluck(:id)).or(ApiAction.where("meta_data->'api_resource' ->> 'api_namespace_id' = '#{self.id}'"))
   end
 
   def snippet(with_brackets: true)

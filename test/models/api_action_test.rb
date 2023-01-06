@@ -80,4 +80,53 @@ class ApiActionTest < ActiveSupport::TestCase
       end
     end
   end
+
+  test 'should update incomplete api actions when parent action is updated' do
+    api_namespace_action = api_actions(:create_api_action_one)
+    api_resource = api_resources(:one)
+    api_resource_action = api_resource.create_api_actions.create(api_namespace_action.attributes.merge('lifecycle_stage' => 'initialized', parent_id: api_namespace_action.id).except("id", "created_at", "updated_at", "api_namespace_id"))
+
+    assert_equal api_namespace_action.email, api_resource_action.email
+
+    api_namespace_action.update(email: 'test@random.com')
+
+    assert_equal 'test@random.com', api_resource_action.reload.email
+  end
+
+  test 'should not update completed api actions when parent action is updated' do
+    api_namespace_action = api_actions(:create_api_action_one)
+    api_resource = api_resources(:one)
+    api_resource_action = api_resource.create_api_actions.create(api_namespace_action.attributes.merge('lifecycle_stage' => 'complete', parent_id: api_namespace_action.id).except("id", "created_at", "updated_at", "api_namespace_id"))
+
+    assert_equal api_namespace_action.email, api_resource_action.email
+
+    api_namespace_action.update(email: 'test@random.com')
+
+    refute_equal 'test@random.com', api_resource_action.reload.email
+  end
+
+  test "should rerun with new code when api action is updated" do
+    api_namespace = api_namespaces(:one)
+
+    custom_action = api_actions(:create_api_action_one).dup
+    custom_action.action_type = "custom_action"
+    custom_action.method_definition = "1'+2"
+    custom_action.save!
+
+    assert_difference 'CreateApiAction.count', +api_namespace.reload.create_api_actions.count do
+      @api_resource = ApiResource.create!(api_namespace_id: api_namespace.id, properties: {'name': 'John Doe'})
+    end
+
+    api_action = @api_resource.create_api_actions.find_by(action_type: 'custom_action')
+
+    assert_raises SyntaxError do
+      api_action.reload.execute_action(true)
+    end
+
+    custom_action.update(method_definition: "1+2")
+
+    assert_changes -> { api_action.reload.lifecycle_stage }, to: 'complete' do
+      api_action.reload.execute_action(true)
+    end
+  end
 end

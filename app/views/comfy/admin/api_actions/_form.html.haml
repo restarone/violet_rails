@@ -1,7 +1,8 @@
 .card.form-container.font-size-sm.position-relative.p-3.mb-4{id: "api_action_form_#{type}_#{index}", style: "font-size: 13px; border-color: #3883fa"}
-  .position-absolute{style: "top: 6px; right: 6px"}
-    %a.text-danger{style: "cursor: pointer;", onclick: "removeForm('api_action_form_#{type}_#{index}', 'api_action_form_destroy_field_#{type}_#{index}')"}
-      %i.fas.fa-times
+  - if has_access_to_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:full_access_for_api_actions_only], current_user, @api_namespace)
+    .position-absolute{style: "top: 6px; right: 6px"}
+      %a.text-danger{style: "cursor: pointer;", onclick: "removeForm('api_action_form_#{type}_#{index}', 'api_action_form_destroy_field_#{type}_#{index}')", 'data-action-workflow': 'remove-api-action'}
+        %i.fas.fa-times
   .row
     .form-group.col-12
       = label_tag "Action"

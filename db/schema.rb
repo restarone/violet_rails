@@ -127,6 +127,8 @@ ActiveRecord::Schema.define(version: 2022_12_21_073259) do
     t.text "method_definition", default: "raise StandardError"
     t.text "email_subject"
     t.integer "redirect_type", default: 0
+    t.jsonb "meta_data", default: {}
+    t.integer "parent_id"
     t.index ["api_namespace_id"], name: "index_api_actions_on_api_namespace_id"
     t.index ["api_resource_id"], name: "index_api_actions_on_api_resource_id"
   end
