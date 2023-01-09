@@ -604,15 +604,14 @@ webhook_drive_strategy:
     class ExternalApiModelExample
       def initialize(parameters)
         @external_api_client = parameters[:external_api_client]
-        @request = parameters[:request]
+        @payload = parameters[:request]&.request_parameters
       end
   
       def start
-        request_body = @request.body.read
-        if request_body['type'] == 'customer.created'
+        if @payload['type'] == 'customer.created'
           @external_api_client.api_namespace.api_resources.create(
             properties: {
-              request_body: request_body
+              request_body: @payload
             }
           )
           render json: { success: true }

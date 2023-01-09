@@ -11,6 +11,13 @@ class Api::ExternalApiClientsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test '#webhook: should unload class after webhook request' do
+    post api_external_api_client_webhook_url(version: @api_namespace.version, api_namespace: @api_namespace.slug, external_api_client: @external_api_client.slug), params: {},  as: :json
+    assert_response :success
+
+    refute Object.const_defined?('ExternalApiClient::ExternalApiModelExample')
+  end
+
   test '#webhook: should be able to render custom response' do
     model_definition = "
       class ExternalApiModelExample
