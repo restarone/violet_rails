@@ -51,19 +51,20 @@
             %li.text-muted Example: request.headers['Authorization'] == verification_method.webhook_secret ? [true, 'Success'] : [false, 'Invalid Token']
           %div= webhook_form.text_area :custom_method_definition, data: {'cms-cm-mode' => 'javascript'}, class: "w-100"
 
-  .field
-    = f.label :drive_every
-    = f.select :drive_every, options_for_select(ExternalApiClient::DRIVE_INTERVALS.keys, f.object.drive_every), include_blank: true
+  .hide-if-webhook
+    .field
+      = f.label :drive_every
+      = f.select :drive_every, options_for_select(ExternalApiClient::DRIVE_INTERVALS.keys, f.object.drive_every), include_blank: true
 
-  .field
-    = f.label :max_requests_per_minute
-    = f.number_field :max_requests_per_minute
-  .field
-    = f.label :max_workers
-    = f.number_field :max_workers
-  .field
-    = f.label :max_retries
-    = f.number_field :max_retries
+    .field
+      = f.label :max_requests_per_minute
+      = f.number_field :max_requests_per_minute
+    .field
+      = f.label :max_workers
+      = f.number_field :max_workers
+    .field
+      = f.label :max_retries
+      = f.number_field :max_retries
 
   .field.mb-3
     = f.label :model_definition
@@ -92,10 +93,12 @@
   $('#external_api_client_drive_strategy').change(function(event) {
     if ($(this).val() === 'webhook') {
       $('#webhook_verification_container').show();
+      $('.hide-if-webhook').hide();
     } else {
       $('#webhook_verification_container').hide();
       $('#external_api_client_require_webhook_verification').prop("checked", false);
       $('#webhook_verification_method_container').hide();
+      $('.hide-if-webhook').show();
     }
   }).change();
 
