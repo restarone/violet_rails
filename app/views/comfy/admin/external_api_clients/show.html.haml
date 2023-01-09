@@ -47,6 +47,11 @@
       %p
         %b  webhook Verification Type:
         = @external_api_client.webhook_verification_method.webhook_type
+      
+    %p
+      %b Webhook url:
+      POST
+      = api_external_api_client_webhook_url(version: @external_api_client.api_namespace.version, api_namespace: @external_api_client.api_namespace.slug, external_api_client: @external_api_client.slug)
 
   - else
     - if !@external_api_client.drive_every.blank?

@@ -357,7 +357,7 @@ ActiveRecord::Schema.define(version: 2023_01_09_150520) do
     t.integer "retry_in_seconds", default: 0, null: false
     t.integer "max_retries", default: 1, null: false
     t.integer "retries", default: 0, null: false
-    t.text "model_definition", default: "class ApiConnectionExample\n  def initialize(parameters)\n    @external_api_client = parameters[:external_api_client]\n    @api_namespace = @external_api_client.api_namespace\n\n    # rails request object accessable for webhook, https://api.rubyonrails.org/classes/ActionDispatch/Request.html\n    # commonly used request methods: request_parameters, headers\n    # @request = parameters[:request]\n  end\n\n  def start\n    # render response incase of webhook\n    # render json: { success: true }\n  end\nend\n\nApiConnectionExample"
+    t.text "model_definition", default: "class ApiConnectionExample\n  def initialize(parameters)\n    @external_api_client = parameters[:external_api_client]\n\n    # rails request object accessable for webhook, https://api.rubyonrails.org/classes/ActionDispatch/Request.html\n    @payload = parameters[:request]&.request_parameters\n  end\n\n  def start\n    @external_api_client.api_namespace.api_resources.create(\n      properties: {\n        request_body: @payload\n      }\n    )\n    # render response incase of webhook\n    # render json: { success: true }\n  end\nend\n\nApiConnectionExample"
     t.jsonb "state_metadata"
     t.jsonb "error_metadata"
     t.jsonb "metadata"

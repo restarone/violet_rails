@@ -5,14 +5,17 @@ class ChangeDefaultForModelDefinition < ActiveRecord::Migration[6.1]
 "class ApiConnectionExample
   def initialize(parameters)
     @external_api_client = parameters[:external_api_client]
-    @api_namespace = @external_api_client.api_namespace
 
     # rails request object accessable for webhook, https://api.rubyonrails.org/classes/ActionDispatch/Request.html
-    # commonly used request methods: request_parameters, headers
-    # @request = parameters[:request]
+    @payload = parameters[:request]&.request_parameters
   end
 
   def start
+    @external_api_client.api_namespace.api_resources.create(
+      properties: {
+        request_body: @payload
+      }
+    )
     # render response incase of webhook
     # render json: { success: true }
   end
