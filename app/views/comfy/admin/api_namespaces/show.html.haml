@@ -1,6 +1,10 @@
-= link_to 'Edit', edit_api_namespace_path(@api_namespace)
-\|
-= link_to 'Back', api_namespaces_path
+.d-flex.justify-content-between.mt-3
+  %div
+    = link_to 'Edit', edit_api_namespace_path(@api_namespace)
+    \|
+    = link_to 'Back', api_namespaces_path
+  %div
+    = link_to "External API connections", api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id), class: 'btn btn-primary'
 
 %p#notice= notice
 
@@ -21,9 +25,6 @@
   %li.nav-item
     %a#interface-tab.nav-link.active{"aria-controls" => "interface", "aria-selected" => "true", "data-toggle" => "tab", :href => "#interface", :role => "tab"} 
       Interface
-  %li.nav-item
-    %a#connections-tab.nav-link{"aria-controls" => "connections", "aria-selected" => "false", "data-toggle" => "tab", :href => "#connections", :role => "tab"} 
-      Connections
   - if @api_namespace.api_form.present?
     %li.nav-item
       %a#form-tab.nav-link{"aria-controls" => "form", "aria-selected" => "false", "data-toggle" => "tab", :href => "#form", :role => "tab"} 
@@ -115,7 +116,7 @@
             %table
               %thead
                 %tr
-                  %th.px-3 External Api Client
+                  %th.px-3 API Connection
                   %th.px-3 HTTP method
                   %th.px-3 Webhook Interface
                   %th.px-3 Verification Method
@@ -126,12 +127,6 @@
                     %td.px-3 POST
                     %td.px-3= api_external_api_client_webhook_url(version: external_api_client.api_namespace.version, api_namespace: external_api_client.api_namespace.slug, external_api_client: external_api_client.slug)
                     %td.px-3= external_api_client.webhook_verification_method&.webhook_type
-
-  #connections.tab-pane.fade{"aria-labelledby" => "connections-tab", :role => "tabpanel"} 
-    .card.p-3
-      .card-body
-        %h4
-          = link_to "External API connections", api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)
 
   - if @api_namespace.api_form.present?
     #form.tab-pane.fade{"aria-labelledby" => "form-tab", :role => "tabpanel"}
