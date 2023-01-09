@@ -22,8 +22,7 @@ class Api::ExternalApiClientsController < Api::BaseController
         return { render: true, args: args } 
       end
 
-      request_body_json = request.body.read.present? ? request.body.read : "{}"
-      response = model_definition.new(external_api_client: @external_api_client, request: { body: JSON.parse(request_body_json) }.deep_stringify_keys).start
+      response = model_definition.new(external_api_client: @external_api_client, request: request).start
 
       render response[:args] if response.is_a?(Hash) && response[:render]
     end

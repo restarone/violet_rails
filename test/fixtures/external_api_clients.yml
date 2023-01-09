@@ -608,10 +608,11 @@ webhook_drive_strategy:
       end
   
       def start
-        if @request['body']['type'] == 'customer.created'
+        request_body = @request.body.read
+        if request_body['type'] == 'customer.created'
           @external_api_client.api_namespace.api_resources.create(
             properties: {
-              request_body: @request["body"]	
+              request_body: request_body
             }
           )
           render json: { success: true }
