@@ -26,4 +26,4 @@
 
 <%= render partial: "simple_discussion/forum_posts/forum_post", collection: @forum_thread.forum_posts.includes(:user).sorted %>
 
-<%= render partial: "simple_discussion/forum_posts/form" if user_signed_in? %>
+<%= render partial: "simple_discussion/forum_posts/form" if is_moderator_or_has_forum_access? %>
