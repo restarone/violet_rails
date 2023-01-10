@@ -85,8 +85,7 @@
 
   %p
     %b model definition:
-    %code
-      = @external_api_client.model_definition
+    = text_area_tag :model_definition, @external_api_client.model_definition, data: {'cms-cm-mode' => 'javascript', 'cms-cm-readOnly' => true}
 
 
   %p
