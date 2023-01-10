@@ -157,4 +157,17 @@ class ExternalApiClientTest < ActiveSupport::TestCase
     
     assert @external_api_client.reload.webhook_verification_method 
   end
+
+  test 'should set conditional boilerplate model definition based of drive strategry' do
+    api_namespace = api_namespaces(:one)
+
+    external_api_client_1 = ExternalApiClient.new(api_namespace: api_namespace, drive_strategy: ExternalApiClient::DRIVE_STRATEGIES[:cron])
+    assert_equal ExternalApiClient::DEFAULT_MODEL_DEFINITION, external_api_client_1.model_definition
+
+    external_api_client_2 = ExternalApiClient.new(api_namespace: api_namespace, drive_strategy: ExternalApiClient::DRIVE_STRATEGIES[:on_demand])
+    assert_equal ExternalApiClient::DEFAULT_MODEL_DEFINITION, external_api_client_2.model_definition
+
+    external_api_client_3 = ExternalApiClient.new(api_namespace: api_namespace, drive_strategy: ExternalApiClient::DRIVE_STRATEGIES[:webhook])
+    assert_equal ExternalApiClient::DEFAULT_WEBHOOK_DRIVEN_MODEL_DEFINITION, external_api_client_3.model_definition
+  end
 end

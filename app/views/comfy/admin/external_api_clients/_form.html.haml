@@ -18,7 +18,12 @@
   .field
     = f.label :drive_strategy
     = f.select :drive_strategy, options_for_select(ExternalApiClient::DRIVE_STRATEGIES.keys, f.object.drive_strategy)
-  
+
+  -# conditionally render boilerplate model definition based on drive strategy
+  - unless @external_api_client.persisted?
+    = f.hidden_field  :default_webhook_driven_model_definition
+    = f.hidden_field  :default_model_definition
+
   #webhook_verification_container
     .field
       = f.label :require_webhook_verification
@@ -90,39 +95,51 @@
 = render 'comfy/admin/api_namespaces/init_editor', {read_only: false}
 
 :javascript
-  $('#external_api_client_drive_strategy').change(function(event) {
-    if ($(this).val() === 'webhook') {
-      $('#webhook_verification_container').show();
-      $('.hide-if-webhook').hide();
-    } else {
-      $('#webhook_verification_container').hide();
-      $('#external_api_client_require_webhook_verification').prop("checked", false);
-      $('#webhook_verification_method_container').hide();
-      $('.hide-if-webhook').show();
-    }
-  }).change();
+  $(document).ready( function() {
+    $('#external_api_client_drive_strategy').change(function(event) {
+      if ($(this).val() === 'webhook') {
+        $('#webhook_verification_container').show();
+        $('.hide-if-webhook').hide();
+      } else {
+        $('#webhook_verification_container').hide();
+        $('#external_api_client_require_webhook_verification').prop("checked", false);
+        $('#webhook_verification_method_container').hide();
+        $('.hide-if-webhook').show();
+      }
 
-  $('#external_api_client_webhook_verification_method_attributes_webhook_type').change(function(event) {
-    if ($(this).val() === 'custom') {
-      $('#webhook_custom_method_definition').show();
-    } else {
-      $('#webhook_custom_method_definition').hide();
-    }
+      var codeMirror = $('#external_api_client_model_definition').next('.CodeMirror')[0].CodeMirror;
+      var isPristine = (codeMirror.getValue() == $('#external_api_client_default_model_definition').val()) || (codeMirror.getValue() == $('#external_api_client_default_webhook_driven_model_definition').val())
 
-    if ($(this).val() === 'stripe') {
-      $("label[for='external_api_client_webhook_verification_method_attributes_webhook_secret']").html('Webhook Signing Secret')
-    } else {
-      $("label[for='external_api_client_webhook_verification_method_attributes_webhook_secret']").html('Webhook Secret')
-    }
-  }).change();
+      if ($('#new_external_api_client').length && isPristine) {
+        if (($(this).val() === 'webhook')) {
+          codeMirror.setValue($('#external_api_client_default_webhook_driven_model_definition').val())
+        } else {
+          codeMirror.setValue($('#external_api_client_default_model_definition').val())
+        }
+      }
+    }).change();
 
+    $('#external_api_client_webhook_verification_method_attributes_webhook_type').change(function(event) {
+      if ($(this).val() === 'custom') {
+        $('#webhook_custom_method_definition').show();
+      } else {
+        $('#webhook_custom_method_definition').hide();
+      }
 
-  $('#external_api_client_require_webhook_verification').change(function(event) {
-    if ($(this).is(':checked')) {
-      $('#webhook_verification_method_container').show();
-    } else {
-      $('#webhook_verification_method_container').hide();
-    }
-  }).change();
+      if ($(this).val() === 'stripe') {
+        $("label[for='external_api_client_webhook_verification_method_attributes_webhook_secret']").html('Webhook Signing Secret')
+      } else {
+        $("label[for='external_api_client_webhook_verification_method_attributes_webhook_secret']").html('Webhook Secret')
+      }
+    }).change();
+
+    $('#external_api_client_require_webhook_verification').change(function(event) {
+      if ($(this).is(':checked')) {
+        $('#webhook_verification_method_container').show();
+      } else {
+        $('#webhook_verification_method_container').hide();
+      }
+    }).change();
+  })
   
 
