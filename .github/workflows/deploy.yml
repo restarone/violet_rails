@@ -6,6 +6,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      github_envs: ${{ steps.branch_check.outputs.github_envs }}
+      deploy_env: ${{ steps.branch_check.outputs.deploy_env }}
     steps:
       - name: Choose Environment
         id: branch_check
@@ -15,19 +18,16 @@ jobs:
             ENV_ARRAY="${{secrets.CLIENT_ENVS}}"
             ENV_ARRAY="${ENV_ARRAY//, /,}"
             ENV_ARRAY="${ENV_ARRAY//,/\",\"}"
-            echo "::set-output name=github_envs::{\"value\":[\"${ENV_ARRAY}\"]}"
-            echo "::set-output name=deploy_env::production"
+            echo "github_envs={\"value\":[\"${ENV_ARRAY}\"]}" >> $GITHUB_OUTPUT
+            echo "deploy_env=production" >> $GITHUB_OUTPUT
           elif [ "${{ github.ref }}" = "refs/heads/rc" ]; then
-            echo "::set-output name=github_envs::{\"value\":['staging']}"
-            echo "::set-output name=deploy_env::staging"
+            echo "github_envs={\"value\":['staging']}" >> $GITHUB_OUTPUT
+            echo "deploy_env=staging" >> $GITHUB_OUTPUT
           fi 
-    outputs:
-      github_envs: ${{ steps.branch_check.outputs.github_envs }}
-      deploy_env: ${{ steps.branch_check.outputs.deploy_env }}
 
   deploy:
     needs: build 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix: ${{fromJSON(needs.build.outputs.github_envs)}}
       fail-fast: false
