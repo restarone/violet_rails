@@ -27,7 +27,7 @@ jobs:
 
   deploy:
     needs: build 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       matrix: ${{fromJSON(needs.build.outputs.github_envs)}}
       fail-fast: false
