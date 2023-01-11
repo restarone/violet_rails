@@ -56,29 +56,7 @@
 
       .card
         .card-body
-          %h4
-            REST Interface
-          %strong
-            Request description endpoint:
-          %p
-            GET
-          %pre
-            = "#{api_base_url(Subdomain.current, @api_namespace)}/describe"
-
-          %strong
-            Request index endpoint:
-          %p
-            GET
-          %pre
-
-            = api_base_url(Subdomain.current, @api_namespace)
-
-          %strong
-            Request query endpoint:
-          %p
-            POST
-          %pre
-            = "#{api_base_url(Subdomain.current, @api_namespace)}/query"
+          = render partial: 'rest_interface', locals: { api_namespace: @api_namespace } 
 
         .card-body
           %h4
