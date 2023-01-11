@@ -4,6 +4,7 @@ class SimpleDiscussion::ApplicationController < ::ApplicationController
   before_action :redirect_if_forum_disabled
 
   before_action :redirect_if_not_logged_in, if: -> { Subdomain.current.forum_is_private }
+  before_action :redirect_if_no_access_to_forum, if: -> { Subdomain.current.forum_is_private }
 
   def page_number
     page = params.fetch(:page, "").gsub(/[^0-9]/, "").to_i
@@ -12,7 +13,7 @@ class SimpleDiscussion::ApplicationController < ::ApplicationController
   end
 
   def is_moderator_or_owner?(object)
-    is_moderator? || object.user == current_user
+    is_moderator? || (object.user == current_user && current_user.can_access_forum)
   end
   helper_method :is_moderator_or_owner?
 
@@ -20,6 +21,11 @@ class SimpleDiscussion::ApplicationController < ::ApplicationController
     current_user.respond_to?(:moderator) && current_user.moderator?
   end
   helper_method :is_moderator?
+
+  def is_moderator_or_has_forum_access?
+    is_moderator? || current_user&.can_access_forum
+  end
+  helper_method :is_moderator_or_has_forum_access?
 
   def require_mod!
     unless current_user.moderator
@@ -39,6 +45,13 @@ class SimpleDiscussion::ApplicationController < ::ApplicationController
     end
   end
 
+  def require_mod_or_can_access_forum!
+    unless is_moderator_or_has_forum_access?
+      flash.alert = "You aren't allowed to do that."
+      redirect_back(fallback_location: root_path)
+    end
+  end
+
   private
 
   def redirect_if_not_logged_in
@@ -46,6 +59,10 @@ class SimpleDiscussion::ApplicationController < ::ApplicationController
       flash.alert = 'please sign in to view this'
       redirect_to new_user_session_path
     end
+  end
+
+  def redirect_if_no_access_to_forum
+    require_mod_or_can_access_forum!
   end
 
   def redirect_if_forum_disabled

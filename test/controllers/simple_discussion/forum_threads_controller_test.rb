@@ -6,6 +6,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     @other_user = User.create!(email: 'contact1@restarone.com', password: '123456', password_confirmation: '123456', confirmed_at: Time.now)
 
     @user.update(global_admin: true)
+    @subdomain = Subdomain.current
     @restarone_subdomain = Subdomain.find_by(name: 'restarone')
     Apartment::Tenant.switch @restarone_subdomain.name do
       @restarone_user = User.find_by(email: 'contact@restarone.com')
@@ -20,20 +21,46 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     assert_response :redirect
   end
 
-  test 'denies #index if forum is by registration' do
+  test 'when forum is private: denies #index for visitors' do
     @restarone_subdomain.update(forum_is_private: true)
     get simple_discussion.root_url(subdomain: @restarone_subdomain.name)
     assert_response :redirect
   end
 
-  test 'allows #index if forum is by registration' do
-    sign_in(@restarone_user)
+  test 'when forum is private: allows #index if the user has can-access-forum permission' do
     @restarone_subdomain.update(forum_is_private: true)
+    @restarone_user.update!(can_access_forum: true)
+
+    sign_in(@restarone_user)
     get simple_discussion.root_url(subdomain: @restarone_subdomain.name)
     assert_response :success
   end
 
-  test 'allows #index if not logged in' do
+  test 'when forum is private: allows #index if the user is moderator though user does not have can-access-forum permission' do
+    @restarone_subdomain.update(forum_is_private: true)
+    @restarone_user.update!(moderator: true)
+
+    sign_in(@restarone_user)
+    get simple_discussion.root_url(subdomain: @restarone_subdomain.name)
+    assert_response :success
+  end
+
+  test 'when forum is private: deny #index if the user does not have can-access-forum permission' do
+    @restarone_subdomain.update(forum_is_private: true)
+
+    sign_in(@restarone_user)
+    get simple_discussion.root_url(subdomain: @restarone_subdomain.name)
+    assert_response :redirect
+    assert_redirected_to root_path
+  end
+
+  test 'when forum is public: allows #index if not logged in' do
+    get simple_discussion.root_url(subdomain: @restarone_subdomain.name)
+    assert_response :success
+  end
+
+  test 'when forum is public: allows #index for user who do not have can-access-forum or moderator permission' do
+    sign_in(@restarone_user)
     get simple_discussion.root_url(subdomain: @restarone_subdomain.name)
     assert_response :success
   end
@@ -69,17 +96,78 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     end
   end
 
-  test 'disallows forum_threads#new if not logged in' do
+  test 'when forum is private: disallows forum_threads#new if not logged in' do
+    @restarone_subdomain.update(forum_is_private: true)
     get simple_discussion.new_forum_thread_url(subdomain: @restarone_subdomain.name)
     assert_response :redirect
     assert_redirected_to new_user_session_url(subdomain: @restarone_subdomain.name)
   end
 
-  test 'allows forum_threads#new if logged in' do
-    sign_in(@restarone_user)
+  test 'when forum is private: denies forum_threads#new if logged in user does not have access permission' do
+    @restarone_subdomain.update(forum_is_private: true)
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      sign_in(@restarone_user)
+      get simple_discussion.new_forum_thread_url(subdomain: @restarone_subdomain.name)
+      assert_response :redirect
+      assert_equal "You aren't allowed to do that.", flash[:alert]
+    end
+  end
+
+  test 'when forum is private: allows forum_threads#new if logged in user have access permission' do
+    @restarone_subdomain.update(forum_is_private: true)
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_user.update(can_access_forum: true)
+      sign_in(@restarone_user)
+      get simple_discussion.new_forum_thread_url(subdomain: @restarone_subdomain.name)
+      assert_response :success
+      assert_template :new
+    end
+  end
+
+  test 'when forum is private: allows forum_threads#new if logged in user is moderator' do
+    @restarone_subdomain.update(forum_is_private: true)
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_user.update(moderator: true)
+      sign_in(@restarone_user)
+      get simple_discussion.new_forum_thread_url(subdomain: @restarone_subdomain.name)
+      assert_response :success
+      assert_template :new
+    end
+  end
+
+  test 'when forum is public: disallows forum_threads#new if not logged in' do
     get simple_discussion.new_forum_thread_url(subdomain: @restarone_subdomain.name)
-    assert_template :new
-    assert_response :success
+    assert_response :redirect
+    assert_redirected_to new_user_session_url(subdomain: @restarone_subdomain.name)
+  end
+
+  test 'when forum is public: denies forum_threads#new if logged in user does not have access permission' do
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      sign_in(@restarone_user)
+      get simple_discussion.new_forum_thread_url(subdomain: @restarone_subdomain.name)
+      assert_response :redirect
+      assert_equal "You aren't allowed to do that.", flash[:alert]
+    end
+  end
+
+  test 'when forum is public: allows forum_threads#new if logged in user have access permission' do
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_user.update(can_access_forum: true)
+      sign_in(@restarone_user)
+      get simple_discussion.new_forum_thread_url(subdomain: @restarone_subdomain.name)
+      assert_response :success
+      assert_template :new
+    end
+  end
+
+  test 'when forum is public: allows forum_threads#new if logged in user is moderator' do
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_user.update(moderator: true)
+      sign_in(@restarone_user)
+      get simple_discussion.new_forum_thread_url(subdomain: @restarone_subdomain.name)
+      assert_response :success
+      assert_template :new
+    end
   end
 
   test '#index: shows the latest post.body in the thread preview' do
@@ -114,7 +202,97 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     end
   end
 
-  test 'denies new thread creation if not logged in' do
+  test 'when forum is public: denies new thread creation if not logged in' do
+    payload = {
+      forum_thread: {
+        title: 'foo',
+        forum_category_id: @forum_category.id,
+        forum_posts_attributes: {
+          body: 'bar'
+        }
+      }
+    }
+    assert_no_difference "ForumThread.all.size" do
+      post simple_discussion.forum_threads_url, params: payload
+      Sidekiq::Worker.drain_all
+    end
+    assert_response :redirect
+    assert_redirected_to new_user_session_path
+  end
+
+  test 'when forum is public: denies new thread creation if user does not have access permission' do
+    payload = {
+      forum_thread: {
+        title: 'foo',
+        forum_category_id: @forum_category.id,
+        forum_posts_attributes: {
+          body: 'bar'
+        }
+      }
+    }
+    assert_no_difference "ForumThread.all.size" do
+      sign_in(@user)
+      post simple_discussion.forum_threads_url, params: payload
+      Sidekiq::Worker.drain_all
+    end
+    assert_response :redirect
+    assert_redirected_to root_path
+  end
+
+  test 'when forum is public: allows new thread creation if logged in with access permission (mod does not get emails for thread creation)' do
+    @user.update(can_access_forum: true)
+    sign_in(@user)
+    payload = {
+      forum_thread: {
+        forum_category_id: @forum_category.id,
+        title: 'foo',
+        forum_posts_attributes: {
+          "0": {
+            body: 'bar'
+          }
+        }
+      }
+    }
+    assert_difference "ForumThread.all.size", +1 do
+      perform_enqueued_jobs do
+        assert_no_changes "SimpleDiscussion::UserMailer.deliveries.size" do
+          post simple_discussion.forum_threads_url, params: payload
+          Sidekiq::Worker.drain_all
+        end
+      end
+    end
+    assert_response :redirect
+    assert_redirected_to simple_discussion.forum_thread_path(id: ForumThread.last.slug)
+  end
+
+  test 'when forum is public: allows new thread creation if user is moderator (mod does not get emails for thread creation)' do
+    @user.update(moderator: true)
+    sign_in(@user)
+    payload = {
+      forum_thread: {
+        forum_category_id: @forum_category.id,
+        title: 'foo',
+        forum_posts_attributes: {
+          "0": {
+            body: 'bar'
+          }
+        }
+      }
+    }
+    assert_difference "ForumThread.all.size", +1 do
+      perform_enqueued_jobs do
+        assert_no_changes "SimpleDiscussion::UserMailer.deliveries.size" do
+          post simple_discussion.forum_threads_url, params: payload
+          Sidekiq::Worker.drain_all
+        end
+      end
+    end
+    assert_response :redirect
+    assert_redirected_to simple_discussion.forum_thread_path(id: ForumThread.last.slug)
+  end
+
+  test 'when forum is private: denies new thread creation if not logged in' do
+    @subdomain.update(forum_is_private: true)
     payload = {
       forum_thread: {
         title: 'foo',
@@ -132,7 +310,56 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
       assert_redirected_to new_user_session_path
   end
 
-  test 'allows new thread creation if logged in (mod does not get emails for thread creation)' do
+  test 'when forum is private: denies new thread creation if user does not have access permission' do
+    @subdomain.update(forum_is_private: true)
+    payload = {
+      forum_thread: {
+        title: 'foo',
+        forum_category_id: @forum_category.id,
+        forum_posts_attributes: {
+          body: 'bar'
+        }
+      }
+    }
+    assert_no_difference "ForumThread.all.size" do
+      sign_in(@user)
+      post simple_discussion.forum_threads_url, params: payload
+      Sidekiq::Worker.drain_all
+    end
+      assert_response :redirect
+      assert_redirected_to root_path
+  end
+
+  test 'when forum is private: allows new thread creation if logged in with access permission (mod does not get emails for thread creation)' do
+    @subdomain.update(forum_is_private: true)
+    @user.update(can_access_forum: true)
+    sign_in(@user)
+    payload = {
+      forum_thread: {
+        forum_category_id: @forum_category.id,
+        title: 'foo',
+        forum_posts_attributes: {
+          "0": {
+            body: 'bar'
+          }
+        }
+      }
+    }
+    assert_difference "ForumThread.all.size", +1 do
+      perform_enqueued_jobs do
+        assert_no_changes "SimpleDiscussion::UserMailer.deliveries.size" do
+          post simple_discussion.forum_threads_url, params: payload
+          Sidekiq::Worker.drain_all
+        end
+      end
+    end
+    assert_response :redirect
+    assert_redirected_to simple_discussion.forum_thread_path(id: ForumThread.last.slug)
+  end
+
+  test 'when forum is private: allows new thread creation if user is moderator (mod does not get emails for thread creation)' do
+    @subdomain.update(forum_is_private: true)
+    @user.update(moderator: true)
     sign_in(@user)
     payload = {
       forum_thread: {
@@ -161,6 +388,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     # stub subscribed users so the notification email gets enqueued
     ForumThread.any_instance.stubs(:subscribed_users).returns(User.all)
     assert @user.update(moderator: true)
+    @other_user.update(can_access_forum: true)
     sign_in(@other_user)
     payload = {
       forum_thread: {
@@ -200,6 +428,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
 
   test 'allows new thread creation and tracks if plugin: subdomain/subdomain_events is enabled' do
     subdomains(:public).update(api_plugin_events_enabled: true)
+    @user.update(can_access_forum: true)
     sign_in(@user)
     payload = {
       forum_thread: {
@@ -224,6 +453,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
 
   test 'denies new thread creation with validation errors in response if invalid payload is provided' do
     subdomains(:public).update(api_plugin_events_enabled: true)
+    @user.update(can_access_forum: true)
     sign_in(@user)
     payload = {
       forum_thread: {
@@ -249,6 +479,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
 
   test 'tracks new thread/reply creation if plugin: subdomain/subdomain_events is enabled' do
     subdomains(:public).update(api_plugin_events_enabled: true)
+    @user.update(can_access_forum: true)
     sign_in(@user)
     payload = {
       forum_thread: {
@@ -261,18 +492,19 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
         }
       }
     }
-    post simple_discussion.forum_threads_url, params: payload
+
     assert_difference "ApiResource.count", +2 do
+      post simple_discussion.forum_threads_url, params: payload
       post simple_discussion.forum_thread_forum_posts_path(ForumThread.last), params: {
         forum_post: {
           body: "Reply"
         }
       }
-      Sidekiq::Worker.drain_all
     end
   end
 
   test 'denies new thread/reply creation with validation-errors in response' do
+    @user.update(can_access_forum: true)
     sign_in(@user)
     payload = {
       forum_thread: {
@@ -421,6 +653,7 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @user.id, body: 'test body 2')
     ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @user.id, body: 'test body 3')
   
+    @user.update(can_access_forum: true)
     sign_in(@user)
     payload = {
       forum_thread: {
@@ -443,10 +676,11 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     assert @controller.view_assigns['forum_thread'].errors.present?
   end
 
-  test 'allows forum-thread update without validation errors in response' do
+  test 'when forum is public: allows forum-thread update without validation errors in response if user has access permission' do
     forum_thread = @user.forum_threads.create!(title: 'Test Thread 1', forum_category_id: @forum_category.id)
     ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @user.id, body: 'test body 1')
   
+    @user.update(can_access_forum: true)
     sign_in(@user)
     payload = {
       forum_thread: {
@@ -465,7 +699,106 @@ class SimpleDiscussion::ForumThreadsControllerTest < ActionDispatch::Integration
     assert_equal payload[:forum_thread][:title], forum_thread.reload.title
   end
 
+  test 'when forum is public: allows forum-thread update if user is moderator' do
+    forum_thread = @user.forum_threads.create!(title: 'Test Thread 1', forum_category_id: @forum_category.id)
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @user.id, body: 'test body 1')
+  
+    @user.update(moderator: true)
+    sign_in(@user)
+    payload = {
+      forum_thread: {
+        title: 'Title Changed'
+      }
+    }
+
+    patch simple_discussion.forum_thread_url(id: forum_thread.id), params: payload
+    Sidekiq::Worker.drain_all
+
+    assert_equal payload[:forum_thread][:title], forum_thread.reload.title
+  end
+
+  test 'when forum is public: denies forum-thread update if user does not have access permission' do
+    forum_thread = @user.forum_threads.create!(title: 'Test Thread 1', forum_category_id: @forum_category.id)
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @user.id, body: 'test body 1')
+  
+    sign_in(@user)
+    payload = {
+      forum_thread: {
+        title: 'Title Changed'
+      }
+    }
+
+    patch simple_discussion.forum_thread_url(id: forum_thread.id), params: payload
+    Sidekiq::Worker.drain_all
+
+    assert_equal "You aren't allowed to do that.", flash[:alert]
+    refute_equal payload[:forum_thread][:title], forum_thread.reload.title
+  end
+
+  test 'when forum is private: allows forum-thread update without validation errors in response if user has access permission' do
+    @subdomain.update(forum_is_private: true)
+    forum_thread = @user.forum_threads.create!(title: 'Test Thread 1', forum_category_id: @forum_category.id)
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @user.id, body: 'test body 1')
+  
+    @user.update(can_access_forum: true)
+    sign_in(@user)
+    payload = {
+      forum_thread: {
+        title: 'Title Changed'
+      }
+    }
+
+    patch simple_discussion.forum_thread_url(id: forum_thread.id), params: payload
+    Sidekiq::Worker.drain_all
+
+    assert_response :redirect
+    # Validation errors are not present in the response-body
+    assert_select 'div#error_explanation', { count: 0 }
+    refute @controller.view_assigns['forum_thread'].errors.present?
+
+    assert_equal payload[:forum_thread][:title], forum_thread.reload.title
+  end
+
+  test 'when forum is private: allows forum-thread update if user is moderator' do
+    @subdomain.update(forum_is_private: true)
+    forum_thread = @user.forum_threads.create!(title: 'Test Thread 1', forum_category_id: @forum_category.id)
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @user.id, body: 'test body 1')
+  
+    @user.update(moderator: true)
+    sign_in(@user)
+    payload = {
+      forum_thread: {
+        title: 'Title Changed'
+      }
+    }
+
+    patch simple_discussion.forum_thread_url(id: forum_thread.id), params: payload
+    Sidekiq::Worker.drain_all
+
+    assert_equal payload[:forum_thread][:title], forum_thread.reload.title
+  end
+
+  test 'when forum is private: denies forum-thread update if user does not have access permission' do
+    @subdomain.update(forum_is_private: true)
+    forum_thread = @user.forum_threads.create!(title: 'Test Thread 1', forum_category_id: @forum_category.id)
+    ForumPost.create!(forum_thread_id: forum_thread.id, user_id: @user.id, body: 'test body 1')
+  
+    sign_in(@user)
+    payload = {
+      forum_thread: {
+        title: 'Title Changed'
+      }
+    }
+
+    patch simple_discussion.forum_thread_url(id: forum_thread.id), params: payload
+    Sidekiq::Worker.drain_all
+
+    assert_equal "You aren't allowed to do that.", flash[:alert]
+    refute_equal payload[:forum_thread][:title], forum_thread.reload.title
+  end
+
   test 'send notification to mentioned users in thread/post body' do
+    @other_user.update(can_access_forum: true)
     sign_in(@other_user)
     payload = {
       forum_thread: {
