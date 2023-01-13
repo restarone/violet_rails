@@ -203,10 +203,10 @@
         .form-group
           %li.api-keys-sub-option
             = check_box_tag (has_access_to_api_keys?(@user.api_accessibility, 'read_access') ? 'user[api_accessibility][api_keys][read_access]' : nil), true, (has_access_to_api_keys?(@user.api_accessibility, 'full_access') || has_access_to_api_keys?(@user.api_accessibility, 'read_access')) , data: { name: 'user[api_accessibility][api_keys][read_access]' }
-            = label_tag nil, 'Read access for API Keys only'
+            = label_tag nil, 'Read access only'
           %li.api-keys-sub-option
             = check_box_tag (has_access_to_api_keys?(@user.api_accessibility, 'delete_access') ? 'user[api_accessibility][api_keys][delete_access]' : nil), true, (has_access_to_api_keys?(@user.api_accessibility, 'full_access') || has_access_to_api_keys?(@user.api_accessibility, 'delete_access')), data: { name: 'user[api_accessibility][api_keys][delete_access]' }
-            = label_tag nil, 'Delete access for API Keys only'
+            = label_tag nil, 'Delete access only'
 
 
 
