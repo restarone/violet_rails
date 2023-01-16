@@ -555,6 +555,8 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
     payload_as_stringified_json = "{\"age\":26,\"alive\":true,\"last_name\":\"Teng\",\"first_name\":\"Jennifer\"}"
 
     sign_in(@user)
+    get new_api_namespace_resource_url(api_namespace_id: @api_namespace.id)
+    assert_response :success
     assert_difference('ApiResource.count') do
       post api_namespace_resources_url(api_namespace_id: @api_namespace.id), params: { api_resource: { properties: payload_as_stringified_json } }
     end
