@@ -47,6 +47,18 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_response :success
   end
 
+  test "should contain dynamic properties in api_namespace" do
+    sign_in(@user)
+    properties = {"attr_1"=>true, "attr_2"=>true, "attr_3"=>true, "attr_4"=>true}
+
+    @api_namespace.has_form = '1'
+    @api_namespace.update(properties: properties)
+
+    get api_namespace_url(@api_namespace)
+    assert_response :success
+    assert_equal  assigns(:custom_properties), @api_namespace.properties
+  end
+
   test "should get edit" do
     sign_in(@user)
     get edit_api_namespace_url(@api_namespace)
@@ -770,7 +782,8 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "#index: Rendering tab should include documentation on form snippet and API HTML renderer snippets" do
     sign_in(@user)
     @api_namespace.has_form = "1"
-
+    properties = {"attr_1"=>true, "attr_2"=>true, "attr_3"=>true, "attr_4"=>true}
+    @api_namespace.update(properties: properties)
     get api_namespace_url(@api_namespace)
     assert_response :success
 
@@ -778,10 +791,9 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_select "pre", {count: 1, text: @api_namespace.snippet}
 
     assert_select "b", {count: 1, text: "API HTML Renderer index snippet:"}
-    assert_select "pre", {count: 1, text: "{{ cms:helper api_namespace_resource_index '#{@api_namespace.slug}', scope: { properties:  { property: value } } }}"}
-
+    assert_select "pre", {count: 1, text: "{{ cms:helper render_api_namespace_resource_index '#{@api_namespace.slug}', scope: { properties: {\"attr_1\":true,\"attr_2\":true,\"attr_3\":true,\"attr_4\":true} } }}"}
     assert_select "b", {count: 1, text: "API HTML Renderer show snippet:"}
-    assert_select "pre", {count: 1, text: "{{ cms:helper api_namespace_resource '#{@api_namespace.slug}', scope: { properties:  { property: value } } }}"}
+    assert_select "pre", {count: 1, text: "{{ cms:helper render_api_namespace_resource '#{@api_namespace.slug}', scope: { properties: {\"attr_1\":true,\"attr_2\":true,\"attr_3\":true,\"attr_4\":true} } }}"}
   end
 
   ######## API Accessibility Tests - START #########
