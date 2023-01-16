@@ -10,7 +10,7 @@ class ApiActionMailer < ApplicationMailer
       mail(
         from: from,
         to: mail_to,
-        subject: api_action.email_subject_evaluated || "#{api_action.type} #{@api_resource.api_namespace.name.pluralize} v#{@api_resource.api_namespace.version}"
+        subject: api_action.email_subject_evaluated || "#{api_action.type} #{@api_resource&.api_namespace.name.pluralize} v#{@api_resource&.api_namespace.version}"
       )
     end
 end
