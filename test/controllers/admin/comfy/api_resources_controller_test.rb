@@ -548,4 +548,15 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
     expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_resources_only or delete_access_for_api_resources_only are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
   end
+
+  test "should able to create api_resource if has_form params is set false" do
+    @api_namespace.has_form = '0';
+    @api_namespace.save;
+    payload_as_stringified_json = "{\"age\":26,\"alive\":true,\"last_name\":\"Teng\",\"first_name\":\"Jennifer\"}"
+
+    sign_in(@user)
+    assert_difference('ApiResource.count') do
+      post api_namespace_resources_url(api_namespace_id: @api_namespace.id), params: { api_resource: { properties: payload_as_stringified_json } }
+    end
+  end
 end
