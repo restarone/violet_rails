@@ -30,9 +30,18 @@ class DynamicAttributeTest < ActiveSupport::TestCase
     assert_equal safe_instance.test_column_evaluated, 'Test 2'
   end
 
-
   test 'should raise invalid record error dynamic field contains unsafe string' do
     unsafe_instance = @dummy_class.new(test_column: "Test \#{User.destroy_all}")
+    refute unsafe_instance.valid?
+    assert_no_difference "User.all.size" do
+      assert_raises ActiveRecord::RecordInvalid do
+        unsafe_instance.test_column_evaluated
+      end
+    end
+  end
+
+  test 'should raise invalid record error if dynamic field contains encoded unsafe string' do
+    unsafe_instance = @dummy_class.new(test_column: "&lt;%=%20eval%20%1+2%20%&gt;")
     refute unsafe_instance.valid?
     assert_no_difference "User.all.size" do
       assert_raises ActiveRecord::RecordInvalid do
@@ -108,7 +117,9 @@ class DynamicAttributeTest < ActiveSupport::TestCase
   end
 
   test 'should unescape html and decode uri-encoded characters' do
-    safe_instance = @dummy_class.new(test_column: { test_key: "&lt;%= 1 + 1 %&gt;%20and%20\#{2 + 2}" })
-    assert_equal safe_instance.test_column_evaluated, { test_key: "2 and 4" }.to_json
+    safe_instance = @dummy_class.new(test_column: ActionText::RichText.new(body: '<a href="<%= 2 and 4 %>">'))
+    # action text encoded and escaped special characters
+    assert_equal "<div class=\"trix-content\">\n  <a href=\"&lt;%=%202%20and%204%20%&gt;\"></a>\n</div>\n", safe_instance.test_column.to_s
+    assert_equal "<div class=\"trix-content\">\n  <a href=\"4\"></a>\n</div>\n", safe_instance.test_column_evaluated
   end
 end
