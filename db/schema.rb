@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_01_03_123121) do
+ActiveRecord::Schema.define(version: 2023_01_09_150520) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -157,6 +157,26 @@ ActiveRecord::Schema.define(version: 2023_01_03_123121) do
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "show_recaptcha_v3", default: false
     t.index ["api_namespace_id"], name: "index_api_forms_on_api_namespace_id"
+  end
+
+  create_table "api_keys", force: :cascade do |t|
+    t.string "slug", null: false
+    t.string "label", default: "customer_identifier_here", null: false
+    t.string "authentication_strategy", default: "bearer_token", null: false
+    t.string "encrypted_token"
+    t.binary "salt"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["encrypted_token"], name: "index_api_keys_on_encrypted_token"
+  end
+
+  create_table "api_namespace_keys", force: :cascade do |t|
+    t.bigint "api_namespace_id", null: false
+    t.bigint "api_key_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["api_key_id"], name: "index_api_namespace_keys_on_api_key_id"
+    t.index ["api_namespace_id"], name: "index_api_namespace_keys_on_api_namespace_id"
   end
 
   create_table "api_namespaces", force: :cascade do |t|
@@ -337,7 +357,7 @@ ActiveRecord::Schema.define(version: 2023_01_03_123121) do
     t.integer "retry_in_seconds", default: 0, null: false
     t.integer "max_retries", default: 1, null: false
     t.integer "retries", default: 0, null: false
-    t.text "model_definition", default: "raise StandardError"
+    t.text "model_definition", default: "class ExternalApiConnection\n  def initialize(parameters)\n    @external_api_client = parameters[:external_api_client]\n  end\n\n  def start\n    @external_api_client.api_namespace.api_resources.create(\n      properties: {\n        request_body: {}\n      }\n    )\n  end\nend\n\nExternalApiConnection"
     t.jsonb "state_metadata"
     t.jsonb "error_metadata"
     t.jsonb "metadata"
@@ -549,12 +569,25 @@ ActiveRecord::Schema.define(version: 2023_01_03_123121) do
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
+  create_table "webhook_verification_methods", force: :cascade do |t|
+    t.bigint "external_api_client_id", null: false
+    t.string "webhook_type"
+    t.text "encrypted_webhook_secret"
+    t.text "custom_method_definition", default: "[false, 'Verification failed']"
+    t.binary "salt"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["external_api_client_id"], name: "index_webhook_verification_methods_on_external_api_client_id"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "api_actions", "api_namespaces"
   add_foreign_key "api_actions", "api_resources"
   add_foreign_key "api_clients", "api_namespaces"
   add_foreign_key "api_forms", "api_namespaces"
+  add_foreign_key "api_namespace_keys", "api_keys"
+  add_foreign_key "api_namespace_keys", "api_namespaces"
   add_foreign_key "api_resources", "api_namespaces"
   add_foreign_key "external_api_clients", "api_namespaces"
   add_foreign_key "forum_posts", "forum_threads"
@@ -566,4 +599,5 @@ ActiveRecord::Schema.define(version: 2023_01_03_123121) do
   add_foreign_key "messages", "message_threads"
   add_foreign_key "non_primitive_properties", "api_namespaces"
   add_foreign_key "non_primitive_properties", "api_resources"
+  add_foreign_key "webhook_verification_methods", "external_api_clients"
 end

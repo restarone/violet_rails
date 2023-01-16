@@ -1,30 +1,30 @@
 module ApiAccessibilityHelper
   def has_access_to_main_category?(api_accessibility, top_category)
-    api_accessibility.dig(top_category).present?
+    api_accessibility.dig('api_namespaces', top_category).present?
   end
 
   def has_access_to_specific_category?(api_accessibility, category_label)
-    api_accessibility.dig('namespaces_by_category', category_label).present?
+    api_accessibility.dig('api_namespaces', 'namespaces_by_category', category_label).present?
   end
 
   def has_sub_access_to_specific_category?(api_accessibility, sub_access, top_category, category_label = nil)
     if top_category == 'all_namespaces'
-      api_accessibility.dig(top_category, sub_access).present?
+      api_accessibility.dig('api_namespaces', top_category, sub_access).present?
     else
-      api_accessibility.dig(top_category, category_label, sub_access).present?
+      api_accessibility.dig('api_namespaces', top_category, category_label, sub_access).present?
     end
   end
 
   def has_no_sub_access_to_specific_category?(api_accessibility, top_category, category_label = nil)
     if top_category == 'all_namespaces'
-      api_accessibility.dig(top_category)&.keys.present?
+      api_accessibility.dig('api_namespaces', top_category)&.keys.present?
     else
-      api_accessibility.dig(top_category, category_label)&.keys.present?
+      api_accessibility.dig('api_namespaces', top_category, category_label)&.keys.present?
     end
   end
 
   def has_access_to_api_accessibility?(api_permissions, user, api_namespace)
-    user_api_accessibility = user.api_accessibility
+    user_api_accessibility = user.api_accessibility['api_namespaces']
 
     return false unless user_api_accessibility.present?
 
@@ -52,11 +52,18 @@ module ApiAccessibilityHelper
 
     is_user_authorized
   end
+  
+  def has_access_to_api_keys?(api_accessibility, access_name)
+    api_accessibility.dig('api_keys', access_name).present? && api_accessibility.dig('api_keys', access_name) == 'true'
+  end
 
   def has_only_uncategorized_access?(api_accessibility)
-    return false if api_accessibility.keys.include?('all_namespaces')
-    if api_accessibility.keys.include?('namespaces_by_category')
-      categories = api_accessibility['namespaces_by_category'].keys
+    api_namespaces_accessibility = api_accessibility['api_namespaces']
+
+    return false if api_namespaces_accessibility.keys.include?('all_namespaces')
+
+    if api_namespaces_accessibility.keys.include?('namespaces_by_category')
+      categories = api_namespaces_accessibility['namespaces_by_category'].keys
       return true if categories.size == 1 && categories[0] == 'uncategorized'
     end
 
@@ -64,10 +71,12 @@ module ApiAccessibilityHelper
   end
 
   def filter_categories_by_api_accessibility(api_accessibility, categories)
-    if api_accessibility.keys.include?('all_namespaces')
+    api_namespaces_accessibility = api_accessibility['api_namespaces']
+
+    if api_namespaces_accessibility.keys.include?('all_namespaces')
       categories
-    elsif api_accessibility.keys.include?('namespaces_by_category')
-      accessible_categories = api_accessibility['namespaces_by_category'].keys - ['uncategorized']
+    elsif api_namespaces_accessibility.keys.include?('namespaces_by_category')
+      accessible_categories = api_namespaces_accessibility['namespaces_by_category'].keys - ['uncategorized']
 
       categories.where(label: accessible_categories)
     end

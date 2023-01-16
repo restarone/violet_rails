@@ -592,3 +592,35 @@ transcript_parser_plugin:
     end
     # at the end of the file we have to implicitly return the class
     TranscriptParser
+
+webhook_drive_strategy:
+  api_namespace: two
+  slug: test-webhook-drive-strategy
+  label: Test Webhook Drive Strategy
+  enabled: true
+  metadata: {}
+  drive_strategy: 'webhook'
+  model_definition: |
+    class ExternalApiModelExample
+      def initialize(parameters)
+        @external_api_client = parameters[:external_api_client]
+        @payload = parameters[:request]&.request_parameters
+      end
+  
+      def start
+        if @payload['type'] == 'customer.created'
+          @external_api_client.api_namespace.api_resources.create(
+            properties: {
+              request_body: @payload
+            }
+          )
+          render json: { success: true }
+        end
+      end
+
+      def log
+        return true
+      end
+    end
+    
+    ExternalApiModelExample
