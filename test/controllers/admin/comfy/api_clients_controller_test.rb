@@ -3,7 +3,7 @@ require "test_helper"
 class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
     @api_client = api_clients(:one)
     @api_namespace = api_namespaces(:one)
   end
@@ -97,7 +97,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   # SHOW
   # API access for all namespaces
   test 'should get show if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     get api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
@@ -106,7 +106,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get show if user has full_read_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_read_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_read_access: 'true'}}})
 
     sign_in(@user)
     get api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
@@ -115,7 +115,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get show if user has full_access_for_api_clients_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_clients_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_clients_only: 'true'}}})
 
     sign_in(@user)
     get api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
@@ -124,7 +124,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get show if user has read_api_clients_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_api_clients_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_api_clients_only: 'true'}}})
 
     sign_in(@user)
     get api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
@@ -133,7 +133,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should not get show if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {allow_duplication: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {allow_duplication: 'true'}}})
 
     sign_in(@user)
     get api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
@@ -147,7 +147,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should get show if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
@@ -158,7 +158,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should get show if user has full_read_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
@@ -169,7 +169,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should get show if user has full_access_for_api_clients_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_clients_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_api_clients_only: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
@@ -180,7 +180,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should get show if user has read_api_clients_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_clients_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_api_clients_only: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
@@ -189,7 +189,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get show if user has read_api_clients_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {read_api_clients_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {read_api_clients_only: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
@@ -200,7 +200,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should not get show if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_duplication: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {allow_duplication: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
@@ -213,7 +213,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   # INDEX
   # API access for all namespaces
   test 'should get index if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
@@ -221,7 +221,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get index if user has full_read_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_read_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_read_access: 'true'}}})
 
     sign_in(@user)
     get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
@@ -229,7 +229,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get index if user has full_access_for_api_clients_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_clients_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_clients_only: 'true'}}})
 
     sign_in(@user)
     get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
@@ -237,7 +237,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get index if user has read_api_clients_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_api_clients_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_api_clients_only: 'true'}}})
 
     sign_in(@user)
     get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
@@ -245,7 +245,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should not get index if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {allow_duplication: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {allow_duplication: 'true'}}})
 
     sign_in(@user)
     get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
@@ -259,7 +259,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should get index if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
@@ -269,7 +269,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should get index if user has full_read_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
@@ -279,7 +279,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should get index if user has full_access_for_api_clients_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_clients_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_api_clients_only: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
@@ -289,7 +289,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should get index if user has read_api_clients_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_clients_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_api_clients_only: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
@@ -297,7 +297,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get index if user has read_api_clients_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {read_api_clients_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {read_api_clients_only: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
@@ -307,7 +307,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should not get index if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_duplication: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {allow_duplication: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_api_clients_url(api_namespace_id: @api_namespace.id)
@@ -320,7 +320,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   # NEW
   # API access for all_namespaces
   test 'should get new if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     get new_api_namespace_api_client_url(api_namespace_id: @api_namespace.id)
@@ -328,7 +328,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get new if user has full_access_for_api_clients_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_clients_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_clients_only: 'true'}}})
 
     sign_in(@user)
     get new_api_namespace_api_client_url(api_namespace_id: @api_namespace.id)
@@ -336,7 +336,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should not get new if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_api_clients_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_api_clients_only: 'true'}}})
 
     sign_in(@user)
     get new_api_namespace_api_client_url(api_namespace_id: @api_namespace.id)
@@ -350,7 +350,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should get new if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     get new_api_namespace_api_client_url(api_namespace_id: @api_namespace.id)
@@ -360,7 +360,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should get new if user has full_access_for_api_clients_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_clients_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_api_clients_only: 'true'}}}})
 
     sign_in(@user)
     get new_api_namespace_api_client_url(api_namespace_id: @api_namespace.id)
@@ -368,7 +368,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get new if user has read_api_clients_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_api_clients_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_for_api_clients_only: 'true'}}}})
 
     sign_in(@user)
     get new_api_namespace_api_client_url(api_namespace_id: @api_namespace.id)
@@ -378,7 +378,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should not get new if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_clients_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_api_clients_only: 'true'}}}})
 
     sign_in(@user)
     get new_api_namespace_api_client_url(api_namespace_id: @api_namespace.id)
@@ -391,7 +391,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   # EDIT
   # API access for all_namespaces
   test 'should get edit if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     get edit_api_namespace_api_client_path(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
@@ -400,7 +400,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get edit if user has full_access_for_api_clients_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_clients_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_clients_only: 'true'}}})
 
     sign_in(@user)
     get edit_api_namespace_api_client_path(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
@@ -409,7 +409,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should not get edit if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_api_clients_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_api_clients_only: 'true'}}})
 
     sign_in(@user)
     get edit_api_namespace_api_client_path(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
@@ -423,7 +423,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should get edit if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     get edit_api_namespace_api_client_path(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
@@ -434,7 +434,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should get edit if user has full_access_for_api_clients_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_clients_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_api_clients_only: 'true'}}}})
 
     sign_in(@user)
     get edit_api_namespace_api_client_path(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
@@ -443,7 +443,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get edit if user has read_api_clients_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_api_clients_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_for_api_clients_only: 'true'}}}})
 
     sign_in(@user)
     get edit_api_namespace_api_client_path(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
@@ -454,7 +454,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should not get edit if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_clients_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_api_clients_only: 'true'}}}})
 
     sign_in(@user)
     get edit_api_namespace_api_client_path(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id)
@@ -467,7 +467,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   # CREATE
   # API access for all_namespaces
   test 'should get create if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     assert_difference('ApiClient.count') do
@@ -478,7 +478,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get create if user has full_access_for_api_clients_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_clients_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_clients_only: 'true'}}})
 
     sign_in(@user)
     assert_difference('ApiClient.count') do
@@ -489,7 +489,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should not get create if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_api_clients_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_api_clients_only: 'true'}}})
 
     sign_in(@user)
     assert_no_difference('ApiClient.count') do
@@ -506,7 +506,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should get create if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     assert_difference('ApiClient.count') do
@@ -519,7 +519,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should get create if user has full_access_for_api_clients_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_clients_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_api_clients_only: 'true'}}}})
 
     sign_in(@user)
     assert_difference('ApiClient.count') do
@@ -530,7 +530,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get create if user has read_api_clients_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_api_clients_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_for_api_clients_only: 'true'}}}})
 
     sign_in(@user)
     assert_difference('ApiClient.count') do
@@ -543,7 +543,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should not get create if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_clients_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_api_clients_only: 'true'}}}})
 
     sign_in(@user)
     assert_no_difference('ApiClient.count') do
@@ -558,7 +558,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   # UPDATE
   # API access for all_namespaces
   test 'should get update if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     patch api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id), params: { api_client: { authentication_strategy: @api_client.authentication_strategy, bearer_token: @api_client.bearer_token, label: @api_client.label } }
@@ -566,7 +566,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get update if user has full_access_for_api_clients_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_clients_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_clients_only: 'true'}}})
 
     sign_in(@user)
     patch api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id), params: { api_client: { authentication_strategy: @api_client.authentication_strategy, bearer_token: @api_client.bearer_token, label: @api_client.label } }
@@ -574,7 +574,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should not get update if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_api_clients_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_api_clients_only: 'true'}}})
 
     sign_in(@user)
     patch api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id), params: { api_client: { authentication_strategy: @api_client.authentication_strategy, bearer_token: @api_client.bearer_token, label: @api_client.label } }
@@ -588,7 +588,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should get update if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     patch api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id), params: { api_client: { authentication_strategy: @api_client.authentication_strategy, bearer_token: @api_client.bearer_token, label: @api_client.label } }
@@ -598,7 +598,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should get update if user has full_access_for_api_clients_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_clients_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_api_clients_only: 'true'}}}})
 
     sign_in(@user)
     patch api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id), params: { api_client: { authentication_strategy: @api_client.authentication_strategy, bearer_token: @api_client.bearer_token, label: @api_client.label } }
@@ -606,7 +606,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get update if user has read_api_clients_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_api_clients_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_for_api_clients_only: 'true'}}}})
 
     sign_in(@user)
     patch api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id), params: { api_client: { authentication_strategy: @api_client.authentication_strategy, bearer_token: @api_client.bearer_token, label: @api_client.label } }
@@ -616,7 +616,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should not get update if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_clients_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_api_clients_only: 'true'}}}})
 
     sign_in(@user)
     patch api_namespace_api_client_url(api_namespace_id: @api_client.api_namespace.id, id: @api_client.id), params: { api_client: { authentication_strategy: @api_client.authentication_strategy, bearer_token: @api_client.bearer_token, label: @api_client.label } }
@@ -629,7 +629,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   # DESTROY
   # API access for all_namespaces
   test 'should destroy if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     assert_difference('ApiClient.count', -1) do
@@ -640,7 +640,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should destroy if user has full_access_for_api_clients_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_clients_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_clients_only: 'true'}}})
 
     sign_in(@user)
     assert_difference('ApiClient.count', -1) do
@@ -651,7 +651,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should not destroy if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_api_clients_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_api_clients_only: 'true'}}})
 
     sign_in(@user)
     assert_no_difference('ApiClient.count') do
@@ -668,7 +668,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should destroy if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     assert_difference('ApiClient.count', -1) do
@@ -681,7 +681,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should destroy if user has full_access_for_api_clients_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_clients_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_api_clients_only: 'true'}}}})
 
     sign_in(@user)
     assert_difference('ApiClient.count', -1) do
@@ -692,7 +692,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should destroy if user has read_api_clients_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_api_clients_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_for_api_clients_only: 'true'}}}})
 
     sign_in(@user)
     assert_difference('ApiClient.count', -1) do
@@ -705,7 +705,7 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   test 'should not destroy if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_clients_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_api_clients_only: 'true'}}}})
 
     sign_in(@user)
     assert_no_difference('ApiClient.count') do

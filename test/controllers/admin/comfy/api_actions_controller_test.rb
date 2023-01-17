@@ -3,7 +3,7 @@ require "test_helper"
 class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
     @api_namespace = api_namespaces(:one)
     @api_action = api_actions(:one)
   end
@@ -47,7 +47,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   # SHOW
   # API access for all_namespaces
   test 'should get show if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     api_action = api_actions(:two)
@@ -56,7 +56,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get show if user has full_read_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_read_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_read_access: 'true'}}})
 
     sign_in(@user)
     api_action = api_actions(:two)
@@ -65,7 +65,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get show if user has full_access_for_api_actions_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_actions_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_actions_only: 'true'}}})
 
     sign_in(@user)
     api_action = api_actions(:two)
@@ -74,7 +74,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get show if user has read_api_actions_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_api_actions_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_api_actions_only: 'true'}}})
 
     sign_in(@user)
     api_action = api_actions(:two)
@@ -83,7 +83,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should not get show if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {allow_duplication: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {allow_duplication: 'true'}}})
 
     sign_in(@user)
     api_action = api_actions(:two)
@@ -98,7 +98,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should get show if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     api_action = api_actions(:two)
@@ -109,7 +109,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should get show if user has full_read_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}}})
 
     sign_in(@user)
     api_action = api_actions(:two)
@@ -120,7 +120,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should get show if user has full_access_for_api_actions_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_api_actions_only: 'true'}}}})
 
     sign_in(@user)
     api_action = api_actions(:two)
@@ -131,7 +131,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should get show if user has read_api_actions_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_api_actions_only: 'true'}}}})
 
     sign_in(@user)
     api_action = api_actions(:two)
@@ -140,7 +140,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get show if user has read_api_actions_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {read_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {read_api_actions_only: 'true'}}}})
 
     sign_in(@user)
     api_action = api_actions(:two)
@@ -151,7 +151,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should not get show if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_duplication: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {allow_duplication: 'true'}}}})
 
     sign_in(@user)
     api_action = api_actions(:two)
@@ -165,7 +165,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   # INDEX
   # API access for all_namespaces
   test 'should get index if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     get api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
@@ -173,7 +173,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get index if user has full_read_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_read_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_read_access: 'true'}}})
 
     sign_in(@user)
     get api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
@@ -181,7 +181,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get index if user has full_access_for_api_actions_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_actions_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_actions_only: 'true'}}})
 
     sign_in(@user)
     get api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
@@ -189,7 +189,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get index if user has read_api_actions_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_api_actions_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_api_actions_only: 'true'}}})
 
     sign_in(@user)
     get api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
@@ -197,7 +197,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should not get index if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {allow_duplication: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {allow_duplication: 'true'}}})
 
     sign_in(@user)
     get api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
@@ -211,7 +211,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should get index if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
@@ -221,7 +221,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should get index if user has full_read_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
@@ -231,7 +231,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should get index if user has full_access_for_api_actions_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_api_actions_only: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
@@ -241,7 +241,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should get index if user has read_api_actions_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_api_actions_only: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
@@ -249,7 +249,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get index if user has read_api_actions_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {read_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {read_api_actions_only: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
@@ -259,7 +259,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should not get index if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_duplication: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {allow_duplication: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
@@ -272,7 +272,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   # NEW
   # API access for all_namespaces
   test 'should get new if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     get new_api_namespace_api_action_url(api_namespace_id: @api_action.api_namespace_id, index: 1, type: 'new_api_actions'), xhr: true
@@ -280,7 +280,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get new if user has full_access_for_api_actions_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_actions_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_actions_only: 'true'}}})
 
     sign_in(@user)
     get new_api_namespace_api_action_url(api_namespace_id: @api_action.api_namespace_id, index: 1, type: 'new_api_actions'), xhr: true
@@ -288,7 +288,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should not get new if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_api_actions_only: 'true'}})
+    @user.update(api_accessibility: {api_namespace: {all_namespaces: {read_api_actions_only: 'true'}}})
 
     sign_in(@user)
     get new_api_namespace_api_action_url(api_namespace_id: @api_action.api_namespace_id)
@@ -302,7 +302,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should get new if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     get new_api_namespace_api_action_url(api_namespace_id: @api_action.api_namespace_id, index: 1, type: 'new_api_actions'), xhr: true
@@ -312,7 +312,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should get new if user has full_access_for_api_actions_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_api_actions_only: 'true'}}}})
 
     sign_in(@user)
     get new_api_namespace_api_action_url(api_namespace_id: @api_action.api_namespace_id, index: 1, type: 'new_api_actions'), xhr: true
@@ -320,7 +320,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get new if user has read_api_actions_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_for_api_actions_only: 'true'}}}})
 
     sign_in(@user)
     get new_api_namespace_api_action_url(api_namespace_id: @api_action.api_namespace_id, index: 1, type: 'new_api_actions'), xhr: true
@@ -330,7 +330,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should not get new if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_api_actions_only: 'true'}}}})
 
     sign_in(@user)
     get new_api_namespace_api_action_url(api_namespace_id: @api_action.api_namespace_id, index: 1, type: 'new_api_actions'), xhr: true
@@ -343,7 +343,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   # EDIT
   # API access for all_namespaces
   test 'should get edit if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     get new_api_namespace_api_action_url(api_namespace_id: @api_action.api_namespace_id, index: 1, type: 'new_api_actions'), xhr: true
@@ -351,7 +351,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get edit if user has full_access_for_api_actions_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_actions_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_actions_only: 'true'}}})
 
     sign_in(@user)
     get new_api_namespace_api_action_url(api_namespace_id: @api_action.api_namespace_id, index: 1, type: 'new_api_actions'), xhr: true
@@ -359,7 +359,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should not get edit if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_api_actions_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_api_actions_only: 'true'}}})
 
     sign_in(@user)
     get new_api_namespace_api_action_url(api_namespace_id: @api_action.api_namespace_id)
@@ -373,7 +373,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should get edit if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     get new_api_namespace_api_action_url(api_namespace_id: @api_action.api_namespace_id, index: 1, type: 'new_api_actions'), xhr: true
@@ -383,7 +383,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should get edit if user has full_access_for_api_actions_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_api_actions_only: 'true'}}}})
 
     sign_in(@user)
     get new_api_namespace_api_action_url(api_namespace_id: @api_action.api_namespace_id, index: 1, type: 'new_api_actions'), xhr: true
@@ -391,7 +391,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get edit if user has read_api_actions_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_for_api_actions_only: 'true'}}}})
 
     sign_in(@user)
     get new_api_namespace_api_action_url(api_namespace_id: @api_action.api_namespace_id, index: 1, type: 'new_api_actions'), xhr: true
@@ -401,7 +401,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should not get edit if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_api_actions_only: 'true'}}}})
 
     sign_in(@user)
     get new_api_namespace_api_action_url(api_namespace_id: @api_action.api_namespace_id, index: 1, type: 'new_api_actions'), xhr: true
@@ -414,7 +414,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   # ACTION_WORKFLOW
   # API access for all_namespaces
   test 'should get action_workflow if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     get action_workflow_api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
@@ -426,7 +426,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get action_workflow if user has full_access_for_api_actions_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_actions_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_actions_only: 'true'}}})
 
     sign_in(@user)
     get action_workflow_api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
@@ -438,7 +438,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get action_workflow if user has read_api_actions_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_api_actions_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_api_actions_only: 'true'}}})
 
     sign_in(@user)
     get action_workflow_api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
@@ -450,7 +450,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should not get action_workflow if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_api_resources_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_api_resources_only: 'true'}}})
 
     sign_in(@user)
     get action_workflow_api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
@@ -461,7 +461,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should update action_workflow if user has full_access_for_api_actions_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_api_actions_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_api_actions_only: 'true'}}})
 
     payload = {
       api_namespace: {
@@ -517,7 +517,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should not update action_workflow if user has read_api_actions_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_api_actions_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_api_actions_only: 'true'}}})
 
     payload = {
       api_namespace: {
@@ -576,7 +576,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should get action_workflow if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     get action_workflow_api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
@@ -590,7 +590,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should get action_workflow if user has full_access_for_api_actions_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_api_actions_only: 'true'}}}})
 
     sign_in(@user)
     get action_workflow_api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
@@ -602,7 +602,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should get action_workflow if user has full_access_for_api_actions_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_for_api_actions_only: 'true'}}}})
 
     sign_in(@user)
     get action_workflow_api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
@@ -616,7 +616,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should get action_workflow if user has read_api_actions_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_api_actions_only: 'true'}}}})
 
     sign_in(@user)
     get action_workflow_api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
@@ -630,7 +630,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should not get action_workflow if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_resources_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_api_resources_only: 'true'}}}})
 
     sign_in(@user)
     get action_workflow_api_namespace_api_actions_url(api_namespace_id: @api_action.api_namespace_id)
@@ -643,7 +643,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should update action_workflow if user has category-specific full_access_for_api_actions_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_api_actions_only: 'true'}}}})
 
     payload = {
       api_namespace: {
@@ -701,7 +701,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   test 'should not update action_workflow if user has category-specific read_api_actions_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_api_actions_only: 'true'}}}})
 
     payload = {
       api_namespace: {
@@ -757,7 +757,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should update action_workflow if user has uncategorized full_access_for_api_actions_only for the namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_for_api_actions_only: 'true'}}}})
 
     payload = {
       api_namespace: {
@@ -813,7 +813,7 @@ class Comfy::Admin::ApiActionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should not update action_workflow if user has uncategorized read_api_actions_only for the namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {read_api_actions_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {read_api_actions_only: 'true'}}}})
 
     payload = {
       api_namespace: {

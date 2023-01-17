@@ -3,7 +3,7 @@ require "test_helper"
 class BishopMonitoringPluginTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
   end
 
   test "#BishopMonitoring: sends HTTP request and does not log incident (resource creation + email) if HTTP endpoint error does not occur" do
