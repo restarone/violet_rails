@@ -1,11 +1,11 @@
 class ExternalApiClientJob
   include Sidekiq::Job
 
-  def perform(id)
+  def perform(id, args = {})
     external_api_client = ExternalApiClient.find_by(id: id)
     external_api_client.update(last_run_at: Time.now)
     external_api_interface = external_api_client.evaluated_model_definition
-    external_api_client_runner = external_api_interface.new(external_api_client: external_api_client)
+    external_api_client_runner = external_api_interface.new(external_api_client: external_api_client, request: args['request'])
     retries = 0
     begin
       external_api_client.reload

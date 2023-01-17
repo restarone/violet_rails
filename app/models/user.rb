@@ -55,7 +55,7 @@ class User < ApplicationRecord
     can_manage_users: true,
     can_manage_blog: true,
     can_manage_subdomain_settings: true,
-    api_accessibility: {all_namespaces: {full_access: 'true'}},
+    api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}, api_keys: {full_access: 'true'}},
     can_view_restricted_pages: true,
     moderator: true
   }
