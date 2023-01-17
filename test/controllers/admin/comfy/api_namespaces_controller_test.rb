@@ -775,18 +775,17 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "#index: Rendering tab should include documentation on form snippet and API HTML renderer snippets" do
     sign_in(@user)
     @api_namespace.has_form = "1"
+    properties = { test_id: 123, obj:{ a:"b", c:"d"}, title: "Hello World", published: true}
 
+    @api_namespace.update(properties: properties)
     get api_namespace_url(@api_namespace)
     assert_response :success
-
     assert_select "b", {count: 1, text: "Form rendering snippet:"}
     assert_select "pre", {count: 1, text: @api_namespace.snippet}
-
     assert_select "b", {count: 1, text: "API HTML Renderer index snippet:"}
-    assert_select "pre", {count: 1, text: "{{ cms:helper api_namespace_resource_index '#{@api_namespace.slug}', scope: { properties:  { property: value } } }}"}
-
+    assert_select "pre", {count: 1, text: "{{ cms:helper render_api_namespace_resource_index '#{@api_namespace.slug}', scope: { properties: { obj:{ a:\"b\", c:\"d\"}, title:\"Hello World\", test_id:123, published:true} } }}"}
     assert_select "b", {count: 1, text: "API HTML Renderer show snippet:"}
-    assert_select "pre", {count: 1, text: "{{ cms:helper api_namespace_resource '#{@api_namespace.slug}', scope: { properties:  { property: value } } }}"}
+    assert_select "pre", {count: 1, text: "{{ cms:helper render_api_namespace_resource '#{@api_namespace.slug}', scope: { properties: { obj:{ a:\"b\", c:\"d\"}, title:\"Hello World\", test_id:123, published:true} } }}"}
   end
 
   ######## API Accessibility Tests - START #########
