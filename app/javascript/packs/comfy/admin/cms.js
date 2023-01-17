@@ -4,6 +4,11 @@ window.addEventListener('DOMContentLoaded', (event) => {
     $('.js-sortable').each(function() {
         initializeSortable($(this).attr('id'))
     })
+
+    $('textarea[data-cms-cm-readOnly=true]').each(function () {
+        let editor = $(this).next('.CodeMirror')[0].CodeMirror;
+        editor.options.readOnly = 'nocursor';
+    })
 })
 
 function initializeSortable(containerId) {
