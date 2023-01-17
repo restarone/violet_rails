@@ -7,10 +7,13 @@ class ApiActionMailer < ApplicationMailer
     
       @api_action = api_action
       @api_resource = api_action.api_resource
-      mail(
+      custom_subject = api_action.email_subject_evaluated || if api_action.api_namespace_action then  "#{api_action.type} #{api_action.api_namespace_action.api_namespace&.name.pluralize} v#{api_action.api_namespace_action.api_namespace&.version}" 
+      else "#{api_action.type} #{@api_resource.api_namespace.name.pluralize} v#{@api_resource.api_namespace.version}" end
+      
+        mail(
         from: from,
         to: mail_to,
-        subject: api_action.email_subject_evaluated || "#{api_action.type} #{api_action.api_namespace_action&.api_namespace&.name.pluralize} v#{api_action.api_namespace_action&.api_namespace&.version}"
+        subject: custom_subject
       )
     end
 end
