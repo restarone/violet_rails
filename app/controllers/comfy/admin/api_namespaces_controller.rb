@@ -44,22 +44,10 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
     @custom_properties = {}
     @api_namespace.properties.values.each_with_index do |obj,index|
       if(obj.present? && obj != "nil" && obj != "\"\"")
-        # byebug
-        # cleanKey = fields_in_properties[index].to_json.gsub!(/"/, '')
-        # byebug
         @custom_properties[fields_in_properties[index]] = obj;
       end
-    end
-    # @custom_properties =  @custom_properties.to_json.replaceAll("\"(\\w+)\":", "$1:");
-    # @custom_properties =  @custom_properties.to_json.replace("/("(\\[^]|[^\\"]")*"(?!\s*:))|"((\\[^]|[^\\"])*)"(?=\s*:)/g, '$1$3')
-      # byebug
-      # @custom_properties.each do |x|
-      #   byebug 
-
-      # end
-      byebug
-    @custom_properties =  @custom_properties.to_json.gsub!(/"/, '')
-      
+    end 
+    @custom_properties = JSON.parse(@custom_properties.to_json, object_class: OpenStruct).to_s.gsub(/=/,':').gsub(/#<OpenStruct/,'{').gsub(/>/,'}')
     @image_options = @api_namespace.non_primitive_properties.select { |non_primitive_property| non_primitive_property.field_type == 'file' }.pluck(:label)
     # check if we are sorting by a field inside properties jsonb column
     if field && fields_in_properties.include?(field)
