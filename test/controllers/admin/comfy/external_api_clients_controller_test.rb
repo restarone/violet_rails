@@ -4,7 +4,7 @@ require "test_helper"
 class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
     @api_client = api_clients(:one)
     @api_namespace = api_namespaces(:one)
     @external_api_client = external_api_clients(:test)
@@ -588,7 +588,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   # SHOW
   # API access for all namespaces
   test 'should get show if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     get api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
@@ -597,7 +597,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should get show if user has full_read_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_read_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_read_access: 'true'}}})
 
     sign_in(@user)
     get api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
@@ -606,7 +606,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should get show if user has full_access_for_external_api_connections_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_external_api_connections_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_external_api_connections_only: 'true'}}})
 
     sign_in(@user)
     get api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
@@ -615,7 +615,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should get show if user has read_external_api_connections_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_external_api_connections_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_external_api_connections_only: 'true'}}})
 
     sign_in(@user)
     get api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
@@ -624,7 +624,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should not get show if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {allow_duplication: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {allow_duplication: 'true'}}})
 
     sign_in(@user)
     get api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
@@ -639,7 +639,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should get show if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
@@ -650,7 +650,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should get show if user has full_read_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
@@ -661,7 +661,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should get show if user has full_access_for_external_api_connections_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_external_api_connections_only: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
@@ -672,7 +672,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should get show if user has read_external_api_connections_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_external_api_connections_only: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
@@ -681,7 +681,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should get show if user has read_external_api_connections_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {read_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {read_external_api_connections_only: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
@@ -692,7 +692,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should not get show if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_duplication: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {allow_duplication: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
@@ -706,7 +706,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   # INDEX
   # API access for all namespaces
   test 'should get index if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     get api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)
@@ -714,7 +714,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should get index if user has full_read_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_read_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_read_access: 'true'}}})
 
     sign_in(@user)
     get api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)
@@ -722,7 +722,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should get index if user has full_access_for_external_api_connections_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_external_api_connections_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_external_api_connections_only: 'true'}}})
 
     sign_in(@user)
     get api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)
@@ -730,7 +730,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should get index if user has read_external_api_connections_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_external_api_connections_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_external_api_connections_only: 'true'}}})
 
     sign_in(@user)
     get api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)
@@ -738,7 +738,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should not get index if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {allow_duplication: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {allow_duplication: 'true'}}})
 
     sign_in(@user)
     get api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)
@@ -752,7 +752,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should get index if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)
@@ -762,7 +762,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should get index if user has full_read_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_read_access: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)
@@ -772,7 +772,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should get index if user has full_access_for_external_api_connections_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_external_api_connections_only: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)
@@ -782,7 +782,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should get index if user has read_external_api_connections_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_external_api_connections_only: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)
@@ -790,7 +790,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should get index if user has read_external_api_connections_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {read_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {read_external_api_connections_only: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)
@@ -800,7 +800,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should not get index if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {allow_duplication: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {allow_duplication: 'true'}}}})
 
     sign_in(@user)
     get api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)
@@ -813,7 +813,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   # NEW
   # API access for all_namespaces
   test 'should get new if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     get new_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id)
@@ -821,7 +821,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should get new if user has full_access_for_external_api_connections_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_external_api_connections_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_external_api_connections_only: 'true'}}})
 
     sign_in(@user)
     get new_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id)
@@ -829,7 +829,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should not get new if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_external_api_connections_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_external_api_connections_only: 'true'}}})
 
     sign_in(@user)
     get new_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id)
@@ -843,7 +843,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should get new if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     get new_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id)
@@ -853,7 +853,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should get new if user has full_access_for_external_api_connections_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_external_api_connections_only: 'true'}}}})
 
     sign_in(@user)
     get new_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id)
@@ -861,7 +861,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should get new if user has read_external_api_connections_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_for_external_api_connections_only: 'true'}}}})
 
     sign_in(@user)
     get new_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id)
@@ -871,7 +871,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should not get new if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_external_api_connections_only: 'true'}}}})
 
     sign_in(@user)
     get new_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id)
@@ -884,7 +884,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   # EDIT
   # API access for all_namespaces
   test 'should get edit if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     get edit_api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
@@ -892,7 +892,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should get edit if user has full_access_for_external_api_connections_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_external_api_connections_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_external_api_connections_only: 'true'}}})
 
     sign_in(@user)
     get edit_api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
@@ -900,7 +900,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should not get edit if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_external_api_connections_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_external_api_connections_only: 'true'}}})
 
     sign_in(@user)
     get edit_api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
@@ -914,7 +914,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should get edit if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     get edit_api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
@@ -924,7 +924,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should get edit if user has full_access_for_external_api_connections_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_external_api_connections_only: 'true'}}}})
 
     sign_in(@user)
     get edit_api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
@@ -932,7 +932,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should get edit if user has read_external_api_connections_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_for_external_api_connections_only: 'true'}}}})
 
     sign_in(@user)
     get edit_api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
@@ -942,7 +942,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should not get edit if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_external_api_connections_only: 'true'}}}})
 
     sign_in(@user)
     get edit_api_namespace_external_api_client_url(api_namespace_id: @api_namespace.id, id: @external_api_client.id)
@@ -955,7 +955,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   # CREATE
   # API access for all_namespaces
   test 'should get create if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     payload = {
       external_api_client: {
@@ -993,7 +993,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should get create if user has full_access_for_external_api_connections_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_external_api_connections_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_external_api_connections_only: 'true'}}})
 
     payload = {
       external_api_client: {
@@ -1031,7 +1031,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should not get create if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_external_api_connections_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_external_api_connections_only: 'true'}}})
 
     payload = {
       external_api_client: {
@@ -1073,7 +1073,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should get create if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     payload = {
       external_api_client: {
@@ -1113,7 +1113,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should get create if user has full_access_for_external_api_connections_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_external_api_connections_only: 'true'}}}})
 
     payload = {
       external_api_client: {
@@ -1151,7 +1151,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should get create if user has read_external_api_connections_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_for_external_api_connections_only: 'true'}}}})
 
     payload = {
       external_api_client: {
@@ -1191,7 +1191,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should not get create if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_external_api_connections_only: 'true'}}}})
 
     payload = {
       external_api_client: {
@@ -1231,7 +1231,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   # UPDATE
   # API access for all_namespaces
   test 'should get update if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     payload = {
       external_api_client: {
@@ -1267,7 +1267,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should get update if user has full_access_for_external_api_connections_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_external_api_connections_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_external_api_connections_only: 'true'}}})
 
     payload = {
       external_api_client: {
@@ -1303,7 +1303,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should not get update if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_external_api_connections_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_external_api_connections_only: 'true'}}})
 
     payload = {
       external_api_client: {
@@ -1343,7 +1343,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should get update if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     payload = {
       external_api_client: {
@@ -1381,7 +1381,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should get update if user has full_access_for_external_api_connections_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_external_api_connections_only: 'true'}}}})
 
     payload = {
       external_api_client: {
@@ -1417,7 +1417,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should get update if user has read_external_api_connections_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_for_external_api_connections_only: 'true'}}}})
 
     payload = {
       external_api_client: {
@@ -1455,7 +1455,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should not get update if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_external_api_connections_only: 'true'}}}})
 
     payload = {
       external_api_client: {
@@ -1494,7 +1494,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   # DESTROY
   # API access for all_namespaces
   test 'should destroy if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
 
@@ -1509,7 +1509,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should destroy if user has full_access_for_external_api_connections_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_external_api_connections_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_external_api_connections_only: 'true'}}})
 
     sign_in(@user)
 
@@ -1524,7 +1524,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should not destroy if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_external_api_connections_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_external_api_connections_only: 'true'}}})
 
     sign_in(@user)
 
@@ -1541,7 +1541,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should destroy if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
 
@@ -1558,7 +1558,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should destroy if user has full_access_for_external_api_connections_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_external_api_connections_only: 'true'}}}})
 
     sign_in(@user)
 
@@ -1573,7 +1573,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should destroy if user has read_external_api_connections_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_for_external_api_connections_only: 'true'}}}})
 
     sign_in(@user)
 
@@ -1590,7 +1590,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should not destroy if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_external_api_connections_only: 'true'}}}})
 
     sign_in(@user)
 
@@ -1606,7 +1606,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   # START
   # API access for all_namespaces
   test 'should start if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
 
     sign_in(@user)
     @external_api_client.update(status: ExternalApiClient::STATUSES[:stopped], enabled: true)
@@ -1617,7 +1617,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should start if user has full_access_for_external_api_connections_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_external_api_connections_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_external_api_connections_only: 'true'}}})
 
     sign_in(@user)
     @external_api_client.update(status: ExternalApiClient::STATUSES[:stopped], enabled: true)
@@ -1628,7 +1628,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should not start if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_external_api_connections_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_external_api_connections_only: 'true'}}})
 
     sign_in(@user)
     @external_api_client.update(status: ExternalApiClient::STATUSES[:stopped], enabled: true)
@@ -1645,7 +1645,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should start if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
 
     sign_in(@user)
     @external_api_client.update(status: ExternalApiClient::STATUSES[:stopped], enabled: true)
@@ -1658,7 +1658,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should start if user has full_access_for_external_api_connections_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_external_api_connections_only: 'true'}}}})
 
     sign_in(@user)
     @external_api_client.update(status: ExternalApiClient::STATUSES[:stopped], enabled: true)
@@ -1669,7 +1669,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should start if user has read_external_api_connections_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_for_external_api_connections_only: 'true'}}}})
 
     sign_in(@user)
     @external_api_client.update(status: ExternalApiClient::STATUSES[:stopped], enabled: true)
@@ -1682,7 +1682,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should not start if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_external_api_connections_only: 'true'}}}})
 
     sign_in(@user)
     @external_api_client.update(status: ExternalApiClient::STATUSES[:stopped], enabled: true)
@@ -1698,7 +1698,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   # STOP
   # API access for all_namespaces
   test 'should stop if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
     @external_api_client.update(status: ExternalApiClient::STATUSES[:running])
 
     sign_in(@user)
@@ -1708,7 +1708,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should stop if user has full_access_for_external_api_connections_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_external_api_connections_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_external_api_connections_only: 'true'}}})
     @external_api_client.update(status: ExternalApiClient::STATUSES[:running])
 
     sign_in(@user)
@@ -1718,7 +1718,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should not stop if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_external_api_connections_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_external_api_connections_only: 'true'}}})
     @external_api_client.update(status: ExternalApiClient::STATUSES[:running])
 
     sign_in(@user)
@@ -1734,7 +1734,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should stop if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
     @external_api_client.update(status: ExternalApiClient::STATUSES[:running])
 
     sign_in(@user)
@@ -1746,7 +1746,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should stop if user has full_access_for_external_api_connections_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_external_api_connections_only: 'true'}}}})
     @external_api_client.update(status: ExternalApiClient::STATUSES[:running])
 
     sign_in(@user)
@@ -1756,7 +1756,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should stop if user has read_external_api_connections_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_for_external_api_connections_only: 'true'}}}})
     @external_api_client.update(status: ExternalApiClient::STATUSES[:running])
 
     sign_in(@user)
@@ -1768,7 +1768,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should not stop if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_external_api_connections_only: 'true'}}}})
     @external_api_client.update(status: ExternalApiClient::STATUSES[:running])
 
     sign_in(@user)
@@ -1783,7 +1783,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   # CLEAR_ERRORS
   # API access for all_namespaces
   test 'should clear_errors if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
     @external_api_client.update(status: ExternalApiClient::STATUSES[:error], error_message: 'test error message', retries: 3, error_metadata: { 'testKey': 'testMessage'})
 
     sign_in(@user)
@@ -1798,7 +1798,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should clear_errors if user has full_access_for_external_api_connections_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_external_api_connections_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_external_api_connections_only: 'true'}}})
     @external_api_client.update(status: ExternalApiClient::STATUSES[:error], error_message: 'test error message', retries: 3, error_metadata: { 'testKey': 'testMessage'})
 
     sign_in(@user)
@@ -1813,7 +1813,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should not clear_errors if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_external_api_connections_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_external_api_connections_only: 'true'}}})
     @external_api_client.update(status: ExternalApiClient::STATUSES[:error], error_message: 'test error message', retries: 3, error_metadata: { 'testKey': 'testMessage'})
 
     sign_in(@user)
@@ -1834,7 +1834,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should clear_errors if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
     @external_api_client.update(status: ExternalApiClient::STATUSES[:error], error_message: 'test error message', retries: 3, error_metadata: { 'testKey': 'testMessage'})
 
     sign_in(@user)
@@ -1851,7 +1851,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should clear_errors if user has full_access_for_external_api_connections_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_external_api_connections_only: 'true'}}}})
     @external_api_client.update(status: ExternalApiClient::STATUSES[:error], error_message: 'test error message', retries: 3, error_metadata: { 'testKey': 'testMessage'})
 
     sign_in(@user)
@@ -1866,7 +1866,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should clear_errors if user has read_external_api_connections_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_for_external_api_connections_only: 'true'}}}})
     @external_api_client.update(status: ExternalApiClient::STATUSES[:error], error_message: 'test error message', retries: 3, error_metadata: { 'testKey': 'testMessage'})
 
     sign_in(@user)
@@ -1883,7 +1883,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should not clear_errors if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_external_api_connections_only: 'true'}}}})
     @external_api_client.update(status: ExternalApiClient::STATUSES[:error], error_message: 'test error message', retries: 3, error_metadata: { 'testKey': 'testMessage'})
 
     sign_in(@user)
@@ -1903,7 +1903,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   # CLEAR_STATE
   # API access for all_namespaces
   test 'should clear_state if user has full_access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
     @external_api_client.update(state_metadata: { 'testKey': 'testMessage'})
 
     sign_in(@user)
@@ -1915,7 +1915,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should clear_state if user has full_access_for_external_api_connections_only for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {full_access_for_external_api_connections_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access_for_external_api_connections_only: 'true'}}})
     @external_api_client.update(state_metadata: { 'testKey': 'testMessage'})
 
     sign_in(@user)
@@ -1927,7 +1927,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should not clear_state if user has other access for all namespace' do
-    @user.update(api_accessibility: {all_namespaces: {read_external_api_connections_only: 'true'}})
+    @user.update(api_accessibility: {api_namespaces: {all_namespaces: {read_external_api_connections_only: 'true'}}})
     @external_api_client.update(state_metadata: { 'testKey': 'testMessage'})
 
     sign_in(@user)
@@ -1945,7 +1945,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should clear_state if user has full_access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access: 'true'}}}})
     @external_api_client.update(state_metadata: { 'testKey': 'testMessage'})
 
     sign_in(@user)
@@ -1959,7 +1959,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should clear_state if user has full_access_for_external_api_connections_only for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {full_access_for_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {full_access_for_external_api_connections_only: 'true'}}}})
     @external_api_client.update(state_metadata: { 'testKey': 'testMessage'})
 
     sign_in(@user)
@@ -1971,7 +1971,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   end
 
   test 'should clear_state if user has read_external_api_connections_only for the uncategorized namespace' do
-    @user.update(api_accessibility: {namespaces_by_category: {uncategorized: {full_access_for_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {uncategorized: {full_access_for_external_api_connections_only: 'true'}}}})
     @external_api_client.update(state_metadata: { 'testKey': 'testMessage'})
 
     sign_in(@user)
@@ -1985,7 +1985,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
   test 'should not clear_state if user has other access for the namespace' do
     category = comfy_cms_categories(:api_namespace_1)
     @api_namespace.update(category_ids: [category.id])
-    @user.update(api_accessibility: {namespaces_by_category: {"#{category.label}": {read_external_api_connections_only: 'true'}}})
+    @user.update(api_accessibility: {api_namespaces: {namespaces_by_category: {"#{category.label}": {read_external_api_connections_only: 'true'}}}})
     @external_api_client.update(state_metadata: { 'testKey': 'testMessage'})
 
     sign_in(@user)

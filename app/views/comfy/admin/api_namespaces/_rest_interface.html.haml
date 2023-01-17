@@ -1,0 +1,78 @@
+.row 
+  .col.col-md-6
+    %h4
+      REST Interface
+    %strong
+      Request description endpoint:
+    %p
+      GET
+      %pre= "#{api_base_url(Subdomain.current, api_namespace)}/describe"
+
+    %strong
+      Request index endpoint:
+    %p
+      GET
+      %pre= api_base_url(Subdomain.current, api_namespace)
+
+    %strong
+      Request query endpoint:
+    %p
+      POST
+      %pre= "#{api_base_url(Subdomain.current, api_namespace)}/query"
+
+    %p
+      %small.text-info Please make sure that your parameters are provided under a data: {} top-level key
+
+    - if !api_namespace.requires_authentication
+      %p
+        %small.text-danger write access is disabled by default for public access namespaces
+
+    %p
+      %small.text-info
+        JSON API standard:
+        %a{href: 'https://jsonapi.org/format/#crud', target: '_blank'} 
+          https://jsonapi.org/format/#crud
+    %div{style: "#{!api_namespace.requires_authentication && 'cursor: not-allowed; color: grey;'}"}
+      %strong
+        Request create endpoint:
+      %p
+        POST
+        %pre= api_base_url(Subdomain.current, api_namespace)
+
+      %strong
+        Request update endpoint:
+      %p
+        PATCH
+        %pre= "#{api_base_url(Subdomain.current, api_namespace)}/edit/:api_resource_id"
+
+      %strong
+        Request destroy endpoint:
+      %p
+        DELETE
+        %pre= "#{api_base_url(Subdomain.current, api_namespace)}/destroy/:api_resource_id"
+
+  .col.col-md-6{style: "border-left: 1px solid rgba(0, 0, 0, 0.125);"}
+    %h4
+      Authentication
+
+    - if api_namespace.api_keys.present?
+      %p  
+        Use bearer token from one of the associated API keys:
+
+        .d-flex.mb-3
+          - api_namespace.api_keys.each do |key|
+            .mr-2
+              = link_to key.label, api_key_path(id: key.id), class: 'link badge badge-primary'
+
+        OR
+  
+    - else
+      %p This API namespace doesn't have any associated API keys.  
+
+
+    %p 
+      = link_to "Create API key", new_api_key_path
+      and associate the namespace , or associate to 
+      = link_to "already existing ones", api_keys_path
+      and use the bearer token for authentication
+

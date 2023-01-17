@@ -941,4 +941,92 @@ class ResourceControllerTest < ActionDispatch::IntegrationTest
     # When user is signed in
     assert_equal Ahoy::Event.last.properties['user_id'], user.id 
   end
+
+  test 'should run error api action if recaptcha verification failed' do
+    @api_namespace.api_form.update(show_recaptcha: true)
+    payload = {
+      data: {
+          properties: {
+            first_name: 'Don'
+          }
+      }
+    }
+    # Recaptcha is disabled for test env by deafult
+    Recaptcha.configuration.skip_verify_env.delete("test")
+    assert_no_difference "@api_namespace.api_resources.count" do
+      assert_difference "@api_namespace.reload.executed_api_actions.count", +@api_namespace.error_api_actions.count do 
+        post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
+        assert_response :success
+      end
+    end
+
+    # should store user input with proper error message
+    expected_json = {"api_resource"=>{"errors"=>"reCAPTCHA verification failed, please try again.", "properties"=>{"first_name"=>"Don"}, "api_namespace_id"=>@api_namespace.id}}
+    assert_equal expected_json,  @api_namespace.executed_api_actions.order(:created_at).last.meta_data
+
+    Recaptcha.configuration.skip_verify_env.push("test")
+  end
+
+  test 'should run error api action if there are any error while saving api resources' do
+    @api_namespace.api_form.update(properties: { 'name': {'label': 'Test', 'placeholder': 'Test', 'field_type': 'input', 'required': '1' }})
+    payload = {
+      data: {
+          properties: {
+            name: '',
+          }
+      }
+    }
+    assert_no_difference "@api_namespace.api_resources.count" do
+      assert_difference "@api_namespace.reload.executed_api_actions.count", +@api_namespace.error_api_actions.count do 
+        post api_namespace_resource_index_url(api_namespace_id: @api_namespace.id), params: payload
+      end
+    end
+
+    # should store user input with proper error message
+    expected_json = {"api_resource"=>{"errors"=>"Properties name is required", "properties"=>{"name"=>""}, "api_namespace_id"=>@api_namespace.id}}
+    assert_equal expected_json, @api_namespace.executed_api_actions.order(:created_at).last.meta_data
+  end
+
+  test 'should run all error api actions once for each failed api actions' do
+    api_namespace = api_namespaces(:no_api_actions)
+    # this api action will raise an error on execution
+    CreateApiAction.create(api_namespace_id: api_namespace.id, action_type: 'custom_action', method_definition: "raise StandardError")
+    # This api action should execute incase of any errors
+    ErrorApiAction.create(api_namespace_id: api_namespace.id, action_type: 'custom_action', method_definition: "p 'no errors here'")
+
+    payload = {
+      data: {
+          properties: {
+            name: 'test',
+          }
+      }
+    }
+
+    Sidekiq::Testing.inline! do
+      assert_difference "api_namespace.api_resources.count", +1 do
+        assert_difference "api_namespace.reload.executed_api_actions.where(type: 'ErrorApiAction').count", +1 do  
+          perform_enqueued_jobs do
+            assert_raises StandardError do
+              post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+            end
+          end
+        end
+      end
+    end
+
+    assert_equal ["\"no errors here\""], api_namespace.executed_api_actions.where(type: 'ErrorApiAction').pluck(:lifecycle_message)
+
+    # This api action should execute incase of any errors
+    ErrorApiAction.create(api_namespace_id: api_namespace.id, action_type: 'custom_action', method_definition: "p 'no error here either'")
+
+    Sidekiq::Testing.inline! do
+      assert_difference "api_namespace.reload.executed_api_actions.where(type: 'ErrorApiAction').count", +2 do  
+        perform_enqueued_jobs do
+          assert_raises StandardError do
+            post api_namespace_resource_index_url(api_namespace_id: api_namespace.id), params: payload
+          end
+        end
+      end
+    end
+  end
 end

@@ -135,7 +135,7 @@ class ContentHelperTest < ActionView::TestCase
     @current_user = @user
     params[:properties] = {name: { value: 'test user', option: 'PARTIAL' }}.to_json
 
-    snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<% @api_resources.each do |res| %><%= res.properties['name'] %><% end %>")
+    snippet = Comfy::Cms::Snippet.create(site_id: @cms_site.id, label: 'clients', identifier: @api_namespace.slug, position: 0, content: "<% @api_resources.jsonb_order_pre({ properties: { name: 'ASC'}}).each do |res| %><%= res.properties['name'] %><% end %>")
     
     response = render_api_namespace_resource_index(@api_namespace.slug, { 'scope' => { 'current_user' => 'true' } })
     excepted_response = "#{@api_resource_1.properties['name']}#{@api_resource_2.properties['name']}"
