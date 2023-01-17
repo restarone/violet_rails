@@ -22,7 +22,7 @@
     %a#interface-tab.nav-link.active{"aria-controls" => "interface", "aria-selected" => "true", "data-toggle" => "tab", :href => "#interface", :role => "tab"} 
       Interface
   %li.nav-item
-    %a#connections-tab.nav-link{"aria-controls" => "connections", "aria-selected" => "false", "data-toggle" => "tab", :href => "#connections", :role => "tab"} 
+    %a#connections-tab.nav-link{:href => api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)} 
       Connections
   - if @api_namespace.api_form.present?
     %li.nav-item
@@ -56,29 +56,7 @@
 
       .card
         .card-body
-          %h4
-            REST Interface
-          %strong
-            Request description endpoint:
-          %p
-            GET
-          %pre
-            = "#{api_base_url(Subdomain.current, @api_namespace)}/describe"
-
-          %strong
-            Request index endpoint:
-          %p
-            GET
-          %pre
-
-            = api_base_url(Subdomain.current, @api_namespace)
-
-          %strong
-            Request query endpoint:
-          %p
-            POST
-          %pre
-            = "#{api_base_url(Subdomain.current, @api_namespace)}/query"
+          = render partial: 'rest_interface', locals: { api_namespace: @api_namespace } 
 
         .card-body
           %h4
@@ -108,20 +86,25 @@
             Payload (global)
           %pre
             = "query: { apiNamespaces { id } }"
-  #connections.tab-pane.fade{"aria-labelledby" => "connections-tab", :role => "tabpanel"} 
-    .card.p-3
-      .card-body
-        %h4
-          = link_to "External API connections", api_namespace_external_api_clients_path(api_namespace_id: @api_namespace.id)
-        .my-3
-          = link_to "Create new external API Client", new_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id)
-      %hr
-      - if @api_namespace.requires_authentication
         .card-body
           %h4
-            = link_to "API Clients", api_namespace_api_clients_path(api_namespace_id: @api_namespace.id)
-          .my-3
-            = link_to "Create new key for client", new_api_namespace_api_client_path(api_namespace_id: @api_namespace.id)
+            Webhook
+          .table-responsive
+            %table
+              %thead
+                %tr
+                  %th.px-3 API Connection
+                  %th.px-3 HTTP method
+                  %th.px-3 Webhook Interface
+                  %th.px-3 Verification Method
+              %tbody
+                - @api_namespace.external_api_clients.where(drive_strategy: ExternalApiClient::DRIVE_STRATEGIES[:webhook]).each do |external_api_client|
+                  %tr
+                    %td.px-3= link_to external_api_client.label, api_namespace_external_api_client_path(api_namespace_id: external_api_client.api_namespace.id, id: external_api_client.id)
+                    %td.px-3 POST
+                    %td.px-3= api_external_api_client_webhook_url(version: external_api_client.api_namespace.version, api_namespace: external_api_client.api_namespace.slug, external_api_client: external_api_client.slug)
+                    %td.px-3= external_api_client.webhook_verification_method&.webhook_type
+
   - if @api_namespace.api_form.present?
     #form.tab-pane.fade{"aria-labelledby" => "form-tab", :role => "tabpanel"}
       %p

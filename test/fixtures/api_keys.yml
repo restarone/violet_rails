@@ -1,0 +1,16 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  slug: MyString
+  label: MyString
+  authentication_strategy: 'bearer_token'
+
+two:
+  slug: MyString
+  label: MyString
+  authentication_strategy: bearer_token
+
+for_users:
+  slug: MyString
+  label: MyString
+  authentication_strategy: bearer_token

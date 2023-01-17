@@ -219,7 +219,7 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
       assert_redirected_to api_namespace_url(subdomain: @restarone_subdomain.name, id: api_namespace.id)
 
       # The response will be success if the user is properly permissioned
-      @restarone_user.update!(api_accessibility: {all_namespaces: {full_access: 'true'}})
+      @restarone_user.update!(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
       sign_in(@restarone_user)
       get api_namespace_url(subdomain: @restarone_subdomain.name, id: api_namespace.id)
       assert_response :success
