@@ -25,8 +25,6 @@ class ApiNamespace < ApplicationRecord
  
   has_many :api_actions, dependent: :destroy
 
-  has_many :executed_api_actions, through: :api_resources, class_name: 'ApiAction', source: :api_actions
-
   has_many :new_api_actions, dependent: :destroy
   accepts_nested_attributes_for :new_api_actions, allow_destroy: true
 
@@ -44,6 +42,9 @@ class ApiNamespace < ApplicationRecord
 
   has_many :error_api_actions, dependent: :destroy
   accepts_nested_attributes_for :error_api_actions, allow_destroy: true
+
+  has_many :api_namespace_keys, dependent: :destroy
+  has_many :api_keys, through: :api_namespace_keys
 
   ransacker :properties do |_parent|
     Arel.sql("api_namespaces.properties::text") 
@@ -75,20 +76,26 @@ class ApiNamespace < ApplicationRecord
     read_api_clients_only: ['full_access', 'full_read_access', 'full_access_for_api_clients_only', 'read_api_clients_only'],
     full_access_for_api_clients_only: ['full_access', 'full_access_for_api_clients_only'],
     full_access_for_api_form_only: ['full_access', 'full_access_for_api_form_only'],
+    read_api_keys_only: ['full_access', 'delete_access', 'read_access'],
+    view_api_keys_details_only: ['full_access', 'read_access'],
+    full_access_for_api_keys_only: ['full_access'],
+    delete_access_for_api_keys_only: ['full_access', 'delete_access'],
   }
 
   scope :filter_by_user_api_accessibility, ->(user) { 
-    api_accessibility = user.api_accessibility
+    api_accessibility = user.api_accessibility['api_namespaces']
 
-    if api_accessibility.keys.include?('all_namespaces')
+    if api_accessibility.present? && api_accessibility.keys.include?('all_namespaces')
       self
-    elsif api_accessibility.keys.include?('namespaces_by_category')
+    elsif api_accessibility.present? && api_accessibility.keys.include?('namespaces_by_category')
       category_specific_keys = api_accessibility['namespaces_by_category'].keys
       if category_specific_keys.include?('uncategorized')
         self.includes(:categories).left_outer_joins(categorizations: :category).where("comfy_cms_categories.id IS ? OR comfy_cms_categories.label IN (?)", nil, category_specific_keys)
       else
         self.includes(:categories).for_category(category_specific_keys)
       end
+    else
+      self.none
     end
    }
 
@@ -133,8 +140,9 @@ class ApiNamespace < ApplicationRecord
       ActiveRecord::Base.transaction do
         raise 'You cannot duplicate the api_namespace without associations if it has api_form' if duplicate_associations == false && self.api_form.present?
 
+        random_hex = SecureRandom.hex(4)
         new_api_namespace = self.dup
-        new_api_namespace.name = self.name + '-copy-' + SecureRandom.hex(4)
+        new_api_namespace.name = self.name + '-copy-' + random_hex
         new_api_namespace.save!
     
         if duplicate_associations
@@ -145,11 +153,11 @@ class ApiNamespace < ApplicationRecord
             new_api_form.save!
           end
     
-          # Duplicate ApiClients
-          self.api_clients.each do |api_client|
-            new_api_client = api_client.dup
-            new_api_client.api_namespace = new_api_namespace
-            new_api_client.save!
+          # Duplicate ApiKeys
+          self.api_keys.each do |api_key|
+            label = api_key.label + '-copy-' + random_hex
+            new_api_key = ApiKey.create(label: label, authentication_strategy: api_key.authentication_strategy)
+            ApiNamespaceKey.create(api_key_id: new_api_key.id, api_namespace_id: new_api_namespace.id )
           end
     
           # Duplicate ExternalApiClients
@@ -201,7 +209,6 @@ class ApiNamespace < ApplicationRecord
         root: 'api_namespace',
         include: [
           :api_form,
-          :api_clients,
           :external_api_clients,
           :non_primitive_properties,
           {
@@ -221,6 +228,12 @@ class ApiNamespace < ApplicationRecord
                 }
               ]
             }
+          },
+          {
+            api_keys: {
+              except: [:salt, :encrypted_token], # Copying salt raises error related to encoding and these are encypted data. So, we should not copy such values.
+              methods: [:token]
+            }
           }
         ]
       )
@@ -234,7 +247,7 @@ class ApiNamespace < ApplicationRecord
       ActiveRecord::Base.transaction do
         neglected_attributes = {
           api_action: ['id', 'created_at', 'updated_at', 'encrypted_bearer_token', 'salt', 'api_namespace_id', 'api_resource_id'],
-          api_client: ['id', 'created_at', 'updated_at', 'api_namespace_id', 'slug'],
+          api_key: ['id', 'created_at', 'updated_at', 'api_namespace_id', 'token'],
           api_form: ['id', 'created_at', 'updated_at', 'api_namespace_id'],
           api_namespace: ['id', 'created_at', 'updated_at', 'slug'],
           api_resource: ['id', 'created_at', 'updated_at', 'api_namespace_id'],
@@ -251,7 +264,8 @@ class ApiNamespace < ApplicationRecord
       
         # creating api_namespace
         if ApiNamespace.find_by(slug: hash['slug']).present?
-          hash['name'] = hash['name'] + '-' + SecureRandom.hex(4)
+          random_hex = SecureRandom.hex(4)
+          hash['name'] = hash['name'] + '-' + random_hex
         end
 
         api_namespace_hash = hash.except(*neglected_attributes[:api_namespace])
@@ -266,12 +280,14 @@ class ApiNamespace < ApplicationRecord
           api_form_hash = hash['api_form'].except(*neglected_attributes[:api_form]).merge({'api_namespace_id': new_api_namespace.id})
           ApiForm.create!(api_form_hash)
         end
-        
-        # Creating api_clients
-        if hash['api_clients'].present? && hash['api_clients'].is_a?(Array)
-          hash['api_clients'].each do |api_client_hash|
-            api_client_hash = api_client_hash.except(*neglected_attributes[:api_client]).merge({'api_namespace_id': new_api_namespace.id})
-            ApiClient.create!(api_client_hash)
+
+        # Creating api_keys
+        if hash['api_keys'].present? && hash['api_keys'].is_a?(Array)
+          hash['api_keys'].each do |api_key_hash|
+            api_key_hash = api_key_hash.except(*neglected_attributes[:api_key])
+            api_key_hash['label'] = api_key_hash['label'] + '_' + random_hex if random_hex.present?
+            api_key = ApiKey.create!(api_key_hash)
+            ApiNamespaceKey.create(api_key_id: api_key.id, api_namespace_id: new_api_namespace.id )
           end
         end
         
@@ -324,6 +340,10 @@ class ApiNamespace < ApplicationRecord
     rescue => e
       { success: false, message: e.message }
     end
+  end
+
+  def executed_api_actions
+    ApiAction.where(api_resource_id: api_resources.pluck(:id)).or(ApiAction.where("meta_data->'api_resource' ->> 'api_namespace_id' = '#{self.id}'"))
   end
 
   def snippet(with_brackets: true)

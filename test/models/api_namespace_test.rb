@@ -33,7 +33,18 @@ class ApiNamespaceTest < ActiveSupport::TestCase
       service.track_event
       Sidekiq::Worker.drain_all
     end
-    assert_equal @subdomain_events_api.executed_api_actions.first.reload.lifecycle_stage, 'failed'
+
+    assert_equal @subdomain_events_api.reload.executed_api_actions.first.lifecycle_stage, 'complete'
+  end
+
+  test "plugin: subdomain/subdomain_events -> should run actions only once" do
+    CreateApiAction.any_instance.expects(:execute_action).times(@subdomain_events_api.api_actions.size)
+
+    service = ApiNamespace::Plugin::V1::SubdomainEventsService.new(@message)
+    assert_difference "ApiResource.count", +1 do      
+      service.track_event
+      Sidekiq::Worker.drain_all
+    end
   end
 
   test "should check the associated CMS entities: Page, Layout and Snippet for the api-namespace if the api-form snippet is content of them" do

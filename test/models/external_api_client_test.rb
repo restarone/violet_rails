@@ -133,4 +133,41 @@ class ExternalApiClientTest < ActiveSupport::TestCase
       assert_includes external_api_client.errors.messages[:model_definition].to_s, 'contains disallowed keyword'
     end
   end
+
+  test 'should remove webhook_verification_method if require_webhook_verification is false' do
+    WebhookVerificationMethod.create(webhook_type: 'stripe', external_api_client_id: @external_api_client.id, webhook_secret: 'secret')
+    assert @external_api_client.reload.webhook_verification_method 
+    @external_api_client.update(require_webhook_verification: false)
+
+    refute @external_api_client.reload.webhook_verification_method 
+  end
+
+  test 'should not remove webhook_verification_method if require_webhook_verification is true' do
+    WebhookVerificationMethod.create(webhook_type: 'stripe', external_api_client_id: @external_api_client.id, webhook_secret: 'secret')
+    assert @external_api_client.reload.webhook_verification_method 
+    @external_api_client.update(require_webhook_verification: true)
+
+    assert @external_api_client.reload.webhook_verification_method 
+  end
+
+  test 'should not remove webhook_verification_method if require_webhook_verification is not provided' do
+    WebhookVerificationMethod.create(webhook_type: 'stripe', external_api_client_id: @external_api_client.id, webhook_secret: 'secret')
+    assert @external_api_client.reload.webhook_verification_method 
+    @external_api_client.update(label: 'test')
+    
+    assert @external_api_client.reload.webhook_verification_method 
+  end
+
+  test 'should set conditional boilerplate model definition based of drive strategry' do
+    api_namespace = api_namespaces(:one)
+
+    external_api_client_1 = ExternalApiClient.new(api_namespace: api_namespace, drive_strategy: ExternalApiClient::DRIVE_STRATEGIES[:cron])
+    assert_equal ExternalApiClient::DEFAULT_MODEL_DEFINITION, external_api_client_1.model_definition
+
+    external_api_client_2 = ExternalApiClient.new(api_namespace: api_namespace, drive_strategy: ExternalApiClient::DRIVE_STRATEGIES[:on_demand])
+    assert_equal ExternalApiClient::DEFAULT_MODEL_DEFINITION, external_api_client_2.model_definition
+
+    external_api_client_3 = ExternalApiClient.new(api_namespace: api_namespace, drive_strategy: ExternalApiClient::DRIVE_STRATEGIES[:webhook])
+    assert_equal ExternalApiClient::DEFAULT_WEBHOOK_DRIVEN_MODEL_DEFINITION, external_api_client_3.model_definition
+  end
 end

@@ -73,32 +73,12 @@ module ApiActionable
   end
 
   def handle_error(e)
-    clone_actions(:error_api_actions)
     execute_error_actions
     raise
   end
 
   def execute_error_actions
-    return if @api_resource.nil?
-
-    error_api_actions = @api_resource.error_api_actions
-
-    redirect_action = error_api_actions.where(action_type: 'redirect').last
-    error_api_actions.each do |action|
-      action.execute_action unless action.redirect?
-    end
-
-    if redirect_action
-      redirect_action.update(lifecycle_stage: 'complete', lifecycle_message: redirect_action.redirect_url)
-      # Redirecting with JS is only needed when dealing with reCaptcha.
-      # reCaptcha related request is handled by ResourceController
-      if controller_name == "resource"
-        redirect_with_js(redirect_url) and return
-      else
-        redirect_to redirect_url and return
-      end
-    end
-
+    ErrorApiAction.where(id: create_error_actions.map(&:id)).execute_model_context_api_actions
     @error_api_actions_exectuted = true
   end
 
@@ -115,7 +95,19 @@ module ApiActionable
     return if @api_resource.nil? || @api_resource.new_record?
 
     @api_namespace.send(action_name).each do |action|
-      @api_resource.send(action_name).create(action.attributes.merge(custom_message: action.custom_message.to_s).except("id", "created_at", "updated_at", "api_namespace_id"))
+      @api_resource.send(action_name).create(action.attributes.merge(custom_message: action.custom_message.to_s, parent_id: action.id).except("id", "created_at", "updated_at", "api_namespace_id"))
+    end
+  end
+
+  # api_resource doesn't get saved if there's any error
+  def create_error_actions
+    @api_namespace.error_api_actions.map do |action|
+      api_resource_json = {
+        properties: @api_resource.properties,
+        api_namespace_id: @api_namespace.id,
+        errors: @api_resource.errors.full_messages.to_sentence
+      }
+      ErrorApiAction.create(action.attributes.merge(custom_message: action.custom_message.to_s, parent_id: action.id, meta_data: { api_resource: api_resource_json }).except("id", "created_at", "updated_at", "api_namespace_id"))
     end
   end
 
