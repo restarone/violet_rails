@@ -1,11 +1,11 @@
 module ApiFormsHelper
-  def render_form(id)
+  def render_form(id, options = {})
     # usage in cms  {{ cms:helper render_form, 1 }} here 1 is the id
     # usage in rails = render_form @api_form.id
     @api_form = ApiForm.find_by(id: id)
     if @api_form
       @api_namespace = @api_form.api_namespace
-      render partial: 'comfy/admin/api_forms/render'
+      render partial: 'comfy/admin/api_forms/render', locals: { data: options['data'] || {} }
     end
   end
 

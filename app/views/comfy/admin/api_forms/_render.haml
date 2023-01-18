@@ -8,7 +8,7 @@
 - recaptcha_keys_set = @api_form.show_recaptcha_v3 && ENV['RECAPTCHA_SITE_KEY_V3'].present? && ENV['RECAPTCHA_SECRET_KEY_V3'].present? unless recaptcha_keys_set
 
 - if (@api_form.show_recaptcha.blank? && @api_form.show_recaptcha_v3.blank?) || recaptcha_keys_set
-  = form_for :data, url: api_namespace_resource_index_path(api_namespace_id: @api_namespace.id), method: :post, html: {class: 'violet-cta-form', 'data-type': 'json', multipart: true, id: "api_form_#{@api_form.object_id}", onsubmit: 'disableForm(this); return checkRequiredRichTextFields()'}, data: { turbo: false, remote: true } do |f|
+  = form_for :data, url: api_namespace_resource_index_path(api_namespace_id: @api_namespace.id), method: :post, html: {class: 'violet-cta-form', 'data-type': 'json', multipart: true, id: "api_form_#{@api_form.object_id}", onsubmit: 'disableForm(this); return checkRequiredRichTextFields()'}, data: { turbo: false, remote: true }.merge(data) do |f|
     = hidden_field_tag :form_id, @api_form.object_id
     .form-group
       - properties.each do |key, value|
