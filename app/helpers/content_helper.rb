@@ -27,9 +27,8 @@ module ContentHelper
     response = api_namespace.api_resources
 
     response = response.where.not(user_id: nil).where(user_id: current_user&.id) if scope&.dig('current_user') == 'true'
-
+    # custom_properties = JSON.parse(scope["properties"].to_json, object_class: OpenStruct).to_s.gsub(/=/,':').gsub(/#<OpenStruct/,'{').gsub(/>/,'}').gsub("\\", "'").gsub(/'"/,'"').gsub(/"'/,'"').gsub(/""/,'"') if scope["properties"]
     response = response.jsonb_search(:properties, scope["properties"], scope["match"]) if scope["properties"]
-
     response = response.jsonb_search(:properties, JSON.parse(params[:properties]).to_hash, params[:match]) if params[:properties]
 
     response = response.jsonb_order(options["order"]) if options["order"]
@@ -39,24 +38,26 @@ module ContentHelper
     response = response.limit(options["limit"]) if options["limit"]
 
     snippet_identifier = options["snippet"] ? options["snippet"] : slug
-
+    byebug
     cms_dynamic_snippet_render(snippet_identifier, nil, { api_resources: response, api_namespace: api_namespace })
   end
 
   # render resource show
   # available variables on view: @api_resource , @api_namespace
   def render_api_namespace_resource(api_namespace_slug, options = {})
+    
     set_api_html_render_flag
     @is_show_page = true
     scope = options["scope"]
     
     api_namespace = ApiNamespace.find_by(slug: api_namespace_slug)
     api_resources = api_namespace.api_resources
-
+    
     api_resources = api_resources.where.not(user_id: nil).where(user_id: current_user&.id) if scope&.dig('current_user') == 'true'
     
     api_resources = api_resources.jsonb_search(:properties, scope["properties"], scope["match"]) if scope&.has_key?("properties")
     
+    # byebug
     @api_resource_to_render = api_resources.find(params[:id])
 
     snippet_name = options["snippet"] ? options["snippet"] : api_namespace_slug
