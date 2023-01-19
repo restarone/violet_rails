@@ -58,7 +58,7 @@ jobs:
         with:
           node-version: 14.x
       - name: Add public IP to AWS security group
-        uses: sohelamin/aws-security-group-add-ip-action@master
+        uses: uxxman/aws-security-group-add-ip-action@patch-1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
