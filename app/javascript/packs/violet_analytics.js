@@ -38,24 +38,33 @@ $(document).on("turbo:load", () => {
     //   <source src="<%= resource.props['demo'].file_url %>" type="video/mp4">
     // </video>
     $('[data-violet-track-video-view="true"]').each( function(index) {
+
         var startTime;
         const eventName = this.dataset.violetEventName;
         const eventLabel = this.dataset.violetEventLabel;
         var resourceId = this.dataset.violetResourceId;
+        // Count paused and then played video as a single view.
+        var isFirstPlay = true;
 
         $(this).on("play", function() {
+            if (this.seeking) { return; }
             startTime = Date.now();
         });
 
-        $(this).on("pause", function() {
-            var duration = Date.now() - startTime;
+        $(this).on("pause ended", function(e) {
+            if (this.seeking) { return; }
+            var watchTime = Date.now() - startTime;
             ahoy.track(eventName, {
                 category: 'video_view',
                 label: eventLabel,
                 page_id: $('body').data('page-id'),
-                duration: duration,
-                resource_id: resourceId
+                watch_time: watchTime,
+                resource_id: resourceId,
+                is_first_play: isFirstPlay
             })
+
+            // replay counts as a new view event
+            isFirstPlay = e.type == 'ended'
         });
     })
 })
