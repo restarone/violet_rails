@@ -60,6 +60,7 @@ module JsonbSearch
         when 'Hash'
           return hash_query(key, term, option, query_string)
         when 'Array'
+          byebug
           if option
             return array_query(key, term, option, query_string, param[:match])
           else
@@ -98,9 +99,14 @@ module JsonbSearch
         if option == QUERY_OPTION[:PARTIAL]
           match == MATCH_OPTION[:ANY] ? term.map { |q| "#{query} -> '#{key}' ? '#{q}'" }.join(' OR ') : "#{query} -> '#{key}' @> '#{term.to_json.gsub("'", "''")}'"
         else
+          byebug 
+
           "#{query} -> '#{key}' @> '#{term.to_json}' AND #{query} -> '#{key}' <@ '#{term.to_json.gsub("'", "''")}'"
         end
       end
     end
   end
 end
+['fruit','veg']
+
+[1,2] => ["1","2"]

@@ -28,6 +28,16 @@ module ContentHelper
 
     response = response.where.not(user_id: nil).where(user_id: current_user&.id) if scope&.dig('current_user') == 'true'
     # custom_properties = JSON.parse(scope["properties"].to_json, object_class: OpenStruct).to_s.gsub(/=/,':').gsub(/#<OpenStruct/,'{').gsub(/>/,'}').gsub("\\", "'").gsub(/'"/,'"').gsub(/"'/,'"').gsub(/""/,'"') if scope["properties"]
+    byebug
+    # scope["properties"].each do |key, value|
+    #   if value.instance_of?(Array) 
+    #     value.each do |x| 
+    #       if x.is_a? Integer
+    #         byebug
+    #       end
+    #     end
+    #   end
+    # end
     response = response.jsonb_search(:properties, scope["properties"], scope["match"]) if scope["properties"]
     response = response.jsonb_search(:properties, JSON.parse(params[:properties]).to_hash, params[:match]) if params[:properties]
 
@@ -38,7 +48,8 @@ module ContentHelper
     response = response.limit(options["limit"]) if options["limit"]
 
     snippet_identifier = options["snippet"] ? options["snippet"] : slug
-    byebug
+    # byebug
+
     cms_dynamic_snippet_render(snippet_identifier, nil, { api_resources: response, api_namespace: api_namespace })
   end
 
