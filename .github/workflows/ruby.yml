@@ -47,7 +47,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get -yqq install libxml2-dev libxslt-dev nodejs yarn tzdata less imagemagick libpq-dev postgresql-client jq bc
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set Environment Variables
       run: cat ci_env.cfg >> $GITHUB_ENV
     - name: Setup Ruby
@@ -55,7 +55,7 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby_version }} # Not needed with a .ruby-version file (2.6.6) but it's good to be clear here
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-    - uses: actions/setup-node@v2
+    - uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node_version }}
     - name: Fetch schema file before running migration
