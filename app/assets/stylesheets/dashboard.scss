@@ -2,10 +2,119 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: https://sass-lang.com/
 
-.donut-chart {
-  border: 1px solid #e9eaec;
-  box-shadow: -4px 12px 24px #29384514;
-  border: 1px solid #E9EAEC;
-  border-radius: 5px;
-  padding: 16px;
+.vr-analytics {
+  color: #293845;
+
+  &-title {
+    font-size: 32px;
+    line-height: 44px;
+    font-weight: bold;
+  }
+
+  &-sub-title {
+    font-size: 24px;
+    line-height: 33px;
+  }
+
+  &-count,
+  &-percent-change,
+  &-event-label {
+    color: #535F6A;
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  &-count {
+    margin-right: 10px;
+    margin-left: 24px;;
+  }
+
+  &-count-lg {
+    font-size: 24px;
+    line-height: 33px;
+    margin-right: 10px;
+  }
+
+  &-percent-change {
+    .positive {
+      color: #63C32D;
+    }
+  
+    .negative {
+      color: #E93E3E;
+    }
+  }
+
+  &-filters {
+    &-pages {
+      border: none;
+      outline: none;
+      -moz-appearance:none; /* Firefox */
+      -webkit-appearance:none; /* Safari and Chrome */
+      appearance:none;
+      background: transparent;
+      background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+      background-repeat: no-repeat;
+      background-position-x: 100%;
+    }
+
+    &-pages, 
+    &-ranges > span,
+    &-ranges > i  {
+      color: #BD34D1;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  }
+
+  &-card {
+    box-shadow: -4px 12px 24px #29384514;
+    border: 1px solid #E9EAEC;
+    border-radius: 5px;
+
+    &-section {
+      padding: 16px;
+    }
+
+    &-resource-poster-conatiner {
+      margin-right: 10px;  
+
+      & > img {
+        height: 48px;
+        width: 85px;
+        object-fit: cover;
+      }
+    }
+
+    &-resource-title {
+      font-weight: bold;
+    }
+
+    &-resource-duration {
+      color: #535F6A;
+    }
+  }
+
+  &-section {
+    padding: 32px 0;
+
+    &-header {
+      margin-bottom: 24px;
+    }
+  }
+
+  &-page-visit-events {
+    &-donut-chart {
+      padding: 16px;
+    }
+  }
+
+  &-click-events {
+    &-grid {
+      display: grid;
+      gap: 64px;
+      grid-template-columns: 1fr 1fr 1fr 1fr; 
+    }
+  }
 }

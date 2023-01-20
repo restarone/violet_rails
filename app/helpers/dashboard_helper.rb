@@ -38,9 +38,50 @@ module DashboardHelper
   end
 
   def display_percent_change(current_count, prev_count)
+    return if prev_count == 0
+
     percent_change = (((current_count - prev_count).to_f / prev_count) * 100).round(2).abs
 
-    raw("<div class=\"fa fa-caret-#{ percent_change < 0 ? 'up positive' : 'down negative' }\"> #{percent_change} %</div>")
+    raw("<div class=\"#{ percent_change < 0 ? 'positive' : 'negative' }\"><i class=\"pr-2 fa fa-caret-#{ percent_change < 0 ? 'up' : 'down' }\"></i>#{percent_change} %</div>")
+  end
+
+  def total_watch_time(video_watch_events)
+    video_watch_events.sum { |event| event.properties['watch_time'].to_i }
+  end
+
+  def to_minutes(time_in_milisecond)
+    "#{number_with_delimiter((time_in_milisecond.to_f / (1000 * 60)).round(2) , :delimiter => ',')} min"
+  end
+
+  def total_views(video_watch_events)
+    video_watch_events.select { |event| event.properties['video_start'] }.size
+  end
+
+  def avg_view_duration(video_watch_events)
+    total_watch_time(video_watch_events).to_f / (total_views(video_watch_events).nonzero? || 1)
+  end
+
+  def avg_view_percentage(video_watch_events)
+    view_percentage_arr = video_watch_events.group_by { |event| event.properties['resource_id'] }.map do |_resource_id, events|
+      (events.sum { |event| event.properties['watch_time'].to_f  / event.properties['total_duration'].to_f }) * 100
+    end
+    view_percentage_arr.sum / (video_watch_events.size.nonzero? || 1)
+  end
+
+  def top_three_videos(video_watch_events, previous_video_watch_events) 
+    video_watch_events.group_by { |event| event.properties['resource_id'] }.map do |resource_id, events|
+      previous_period_event = previous_video_watch_events.jsonb_search(:properties, { resource_id: resource_id })
+      api_resource = ApiResource.find_by(id: resource_id) 
+      { 
+        total_views: total_views(events),
+        total_watch_time:  total_watch_time(events),
+        previous_period_total_views: total_views(previous_period_event),
+        previous_period_total_watch_time: total_watch_time(previous_period_event),
+        resource_title: api_resource.properties.dig(api_resource.api_namespace.social_share_metadata.dig("title")),
+        resource_image: api_resource.non_primitive_properties.find_by(field_type: "file", label: api_resource.api_namespace.social_share_metadata.dig("image"))&.file_url,
+        duration: events.first.properties['total_duration']
+      }
+    end.sort_by {|event| event[:total_views]}.reverse.first(3)
   end
 
   private

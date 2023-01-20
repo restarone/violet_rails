@@ -1,38 +1,128 @@
 = javascript_include_tag "//www.google.com/jsapi"
-.page-header
-  .d-flex.my-2.justify-content-between.align-items-center
-    .h2.mb-0
-      Dashboard
+.vr-analytics
+  .page-header
+    .d-flex.my-2.justify-content-between.align-items-center
+      .vr-analytics-title
+        Dashboard
+      .vr-analytics-filters
+        = form_with(url: v2_dashboard_path, method: :get, html: {id: 'analytics_filter' }) do |f|
+          .d-flex
+            = f.hidden_field :start_date, value: params[:start_date]
+            = f.hidden_field :end_date, value: params[:end_date]
+            = f.hidden_field :interval, value: params[:interval]
+            = f.select :page, options_for_select(Subdomain.current.pages.map {|page| [page.label, page.id] }, params[:page]), { prompt: "All pages"}, { class: 'vr-analytics-filters-pages', onchange: "$(this).closest('form').submit()" }            
+            #reportrange.vr-analytics-filters-ranges.ml-4
+              %span
+              %i.fa.fa-caret-down.ml-2
 
-    = form_with(url: v2_dashboard_path, method: :get, html: {id: 'analytics_filter' }) do |f|
-      .d-flex
-        = f.select :page, options_for_select(Subdomain.current.pages.map {|page| [page.label, page.id] }, params[:page]), { prompt: "All pages"}, { onchange: "$(this).closest('form').submit()" }
-        = f.hidden_field :start_date, value: params[:start_date]
-        = f.hidden_field :end_date, value: params[:end_date]
-        = f.hidden_field :interval, value: params[:interval]
-        
-        #reportrange
-          %span
-          .fa.fa-caret-down
-
-%main{class: 'my-5'}
-  .row
-    .col.col-9
-      .d-flex.justify-content-between
+  %main{class: 'my-5'}
+    %section.row.vr-analytics-section.vr-analytics-page-visit-events
+      .col.col-9
         .d-flex.justify-content-between
-          %h5.sub-heading.mr-3
-            Website Visits
-          .count.mr-3
-            = @page_visit_events.count 
-            total visits
-          .percent-change
-            = display_percent_change(@page_visit_events.count, @pervious_period_page_visit_events.count)
-      = column_chart page_visit_chart_data(@page_visit_events, @start_date, @end_date), colors: ["#88DAE3FF", "#D785E3FF", "#F7C85CFF"], code: true, library: { plugins: { legend: { position: "top", align: "end", labels: { padding: 24, boxWidth: 8, usePointStyle: true, font: { size: 16 } } } }  }
-    .col.col-3
-      .donut-chart
-        %h5 Website visitors
-        = pie_chart visitors_chart_data(@visits), colors: ['#F7A47B', '#B5E69A'], donut: true, library: { cutout: 85, plugins: { legend: { position: "bottom",  align: 'start', labels: {boxWidth: 8, usePointStyle: true, font: { size: 16 } } } } }
+          .vr-analytics-section-header.d-flex.justify-content-between.align-items-center
+            .vr-analytics-sub-title
+              Website Visits
+            .vr-analytics-count
+              = @page_visit_events.count 
+              total visits
+            .vr-analytics-percent-change
+              = display_percent_change(@page_visit_events.count, @pervious_period_page_visit_events.count)
+        .vr-analytics-section-body
+          = column_chart page_visit_chart_data(@page_visit_events, @start_date, @end_date), colors: ["#88DAE3FF", "#D785E3FF", "#F7C85CFF"], code: true, library: { plugins: { legend: { position: "top", align: "end", labels: { padding: 24, boxWidth: 8, usePointStyle: true, font: { size: 16 } } } }  }
+      .col.col-3
+        .vr-analytics-card.vr-analytics-page-visit-events-donut-chart
+          %h5 Website visitors
+          = pie_chart visitors_chart_data(@visits), colors: ['#F7A47B', '#B5E69A'], donut: true, library: { cutout: 85, plugins: { legend: { position: "bottom",  align: 'start', labels: {boxWidth: 8, usePointStyle: true, font: { size: 16 } } } } }
+  
+    %hr.m-0
 
+    %section.vr-analytics-section.vr-analytics-click-events
+      .vr-analytics-section-header
+        .d-flex.align-items-center
+          .vr-analytics-sub-title
+            Clicks
+          .vr-analytics-count
+            = @click_events.count 
+            total clicks
+          .vr-analytics-percent-change
+            = display_percent_change(@click_events.count, @pervious_period_click_events.count)
+
+      .vr-analytics-section-body.d-flex.align-items-center
+        .vr-analytics-click-events-grid
+          - previous_grouped_cick_events = @pervious_period_click_events.group(:name).size
+          - @click_events.group_by(&:label).each do |key, value|
+            .vr-analytics-click-events-grid-item
+              .d-flex.mr-4.align-items-center.mb-2
+                .vr-analytics-count-lg
+                  = value.count 
+                .vr-analytics-percent-change
+                  = display_percent_change(value.count, previous_grouped_cick_events[key].to_i)
+              = link_to key, dashboard_events_path(ahoy_event_type: key), class: 'vr-analytics-event-label'
+
+    %hr.m-0
+
+    %section.vr-analytics-section
+      .vr-analytics-section-header
+        .d-flex.align-items-center
+          .vr-analytics-sub-title
+            Watch time
+      
+          .vr-analytics-count
+            Total watch time
+            = to_minutes(total_watch_time(@video_watch_events))
+          .vr-analytics-percent-change
+            = display_percent_change(total_watch_time(@video_watch_events), total_watch_time(@pervious_period_video_watch_events))
+      
+          .vr-analytics-count
+            Avg. view duration
+            = to_minutes(avg_view_duration(@video_watch_events))
+          .vr-analytics-percent-change
+            = display_percent_change(avg_view_duration(@video_watch_events), avg_view_duration(@pervious_period_video_watch_events))
+
+          .vr-analytics-count
+            Avg. view percentage
+            = "#{avg_view_percentage(@video_watch_events).round(2)}%"
+          .vr-analytics-percent-change
+            = display_percent_change(avg_view_percentage(@video_watch_events), avg_view_percentage(@pervious_period_video_watch_events))
+
+      .vr-analytics-section-body
+        .vr-analytics-event-label 
+          Top 3 videos
+
+        .row.mt-4
+          - top_three_videos(@video_watch_events, @pervious_period_video_watch_events).each do |event|
+            .col.col-md-5.mb-4
+              .vr-analytics-card
+                .vr-analytics-card-section
+                  .d-flex 
+                    .vr-analytics-card-resource-poster-conatiner
+                      %img{src: event[:resource_image]}
+                    .vr-analytics-card-resource-title-duration
+                      .vr-analytics-card-resource-title
+                        =  event[:resource_title]
+                      .vr-analytics-card-resource-duration
+                        = Time.at(event[:duration]/1000).strftime("%M:%S")
+
+                %hr
+                .vr-analytics-card-section
+                  .row
+                    .col.col-6
+                      .d-flex.align-items-center
+                        .vr-analytics-count-lg
+                          = to_minutes(event[:total_watch_time])
+                        .vr-analytics-percent-change
+                          = display_percent_change(event[:total_watch_time], event[:previous_period_total_watch_time])
+                      .vr-analytics-event-label.mt-2
+                        Total watch time
+                    .col.col-6 
+                      .d-flex.align-items-center
+                        .vr-analytics-count-lg
+                          = event[:total_views]
+                        .vr-analytics-percent-change
+                          = display_percent_change(event[:total_views], event[:previous_period_total_views])
+                      .vr-analytics-event-label.mt-2
+                        Total views
+          
 :javascript
   $(function() {
     function cb() {

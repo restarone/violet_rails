@@ -33,6 +33,10 @@ class Ahoy::Event < ApplicationRecord
     Arel.sql('distinct_name')
   end
 
+  def label
+    properties["label"] || name
+  end
+
   def self.delete_specific_events_and_associated_visits(delete_events: false, event_type:)
     begin
       ActiveRecord::Base.transaction do

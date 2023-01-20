@@ -48,19 +48,22 @@ $(document).on("turbo:load", () => {
 
         $(this).on("play", function() {
             if (this.seeking) { return; }
+    
             startTime = Date.now();
         });
 
         $(this).on("pause ended", function(e) {
             if (this.seeking) { return; }
+    
             var watchTime = Date.now() - startTime;
             ahoy.track(eventName, {
                 category: 'video_view',
                 label: eventLabel,
                 page_id: $('body').data('page-id'),
-                watch_time: watchTime,
                 resource_id: resourceId,
-                is_first_play: isFirstPlay
+                video_start: isFirstPlay,
+                watch_time: watchTime,
+                total_duration: this.duration * 1000
             })
 
             // replay counts as a new view event
