@@ -40,9 +40,9 @@ module DashboardHelper
   def display_percent_change(current_count, prev_count)
     return if prev_count == 0
 
-    percent_change = (((current_count - prev_count).to_f / prev_count) * 100).round(2).abs
+    percent_change = (((current_count - prev_count).to_f / prev_count) * 100)
 
-    raw("<div class=\"#{ percent_change < 0 ? 'positive' : 'negative' }\"><i class=\"pr-2 fa fa-caret-#{ percent_change < 0 ? 'up' : 'down' }\"></i>#{percent_change} %</div>")
+    raw("<div class=\"#{ percent_change > 0 ? 'positive' : 'negative' }\"><i class=\"pr-2 fa fa-caret-#{ percent_change > 0 ? 'up' : 'down' }\"></i>#{percent_change.round(2).abs} %</div>")
   end
 
   def total_watch_time(video_watch_events)
