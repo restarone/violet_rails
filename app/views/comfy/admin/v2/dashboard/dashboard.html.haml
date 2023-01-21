@@ -21,7 +21,7 @@
         .d-flex.justify-content-between
           .vr-analytics-section-header.d-flex.justify-content-between.align-items-center
             .vr-analytics-sub-title
-              Website Visits
+              = "#{page_name(params[:page])} visits"
             .vr-analytics-count
               = @page_visit_events.count 
               total visits

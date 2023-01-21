@@ -29,6 +29,12 @@ module DashboardHelper
     end
   end
 
+  def page_name(page_id)
+    return 'Website' if page_id.nil?
+
+    Comfy::Cms::Page.find_by(id: page_id)&.label
+  end
+
   def visitors_chart_data(visits)
     visitors_by_token = visits.group(:visitor_token).count
     recurring_visitors = visitors_by_token.values.count { |v| v > 1 }
