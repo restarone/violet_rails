@@ -10,7 +10,7 @@ class Comfy::Admin::V2::DashboardController < Comfy::Admin::Cms::BaseController
 
     @visits = Ahoy::Visit.where(started_at: @start_date..@end_date)
 
-    @page_visit_events = Ahoy::Event.where(name: 'comfy-cms-page-visit').joins(:visit)
+    @page_visit_events = Ahoy::Event.jsonb_search(:properties, { category: 'page_visit' }).joins(:visit)
     @click_events = Ahoy::Event.jsonb_search(:properties, { category: 'click' }).joins(:visit)
     @video_watch_events = Ahoy::Event.jsonb_search(:properties, { category: 'video_view' }).joins(:visit)
 
@@ -35,7 +35,7 @@ class Comfy::Admin::V2::DashboardController < Comfy::Admin::Cms::BaseController
 
   def previous_period(interval, start_date, end_date)
     today = Date.current
-    interval = interval || todat.strftime('%B %Y')
+    interval = interval || today.strftime('%B %Y')
 
     case interval
     when "#{today.strftime('%B %Y')}"

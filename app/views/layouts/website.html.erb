@@ -21,7 +21,7 @@
   <%= render partial: 'shared/flash' %>
   <%= render partial: 'shared/navbars/web_admin' %>
 
-  <body data-page-id="<%= @cms_page&.id %>" data-violet-track-page-visit="true">
+  <body data-page-id="<%= @cms_page&.id %>">
     <%= yield %>
     <%= render_cookies_consent_ui %>
   </body>
