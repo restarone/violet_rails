@@ -1,4 +1,4 @@
-const VIOLET_EVENT_CATEGORY = {
+const VIOLET_EVENT_CATEGORIES = {
     page_visit: 'page_visit',
     click: 'click',
     form_submit: 'form_submit',
@@ -23,7 +23,7 @@ $(document).on("turbo:load", () => {
         const eventName = this.dataset.violetEventName || 'click';
         const eventLabel = this.dataset.violetEventLabel;
         ahoy.track(eventName, {
-            category: VIOLET_EVENT_CATEGORY.click,
+            category: VIOLET_EVENT_CATEGORIES.click,
             label: eventLabel,
             page_id: pageId,
             tag: this.tagName,
@@ -36,7 +36,7 @@ $(document).on("turbo:load", () => {
         const eventName = this.dataset.violetEventName;
         const eventLabel = this.dataset.violetEventLabel;
         ahoy.track(eventName, {
-            category: VIOLET_EVENT_CATEGORY.form_submit,
+            category: VIOLET_EVENT_CATEGORIES.form_submit,
             label: eventLabel,
             page_id: pageId,
         })
@@ -65,7 +65,7 @@ $(document).on("turbo:load", () => {
     
             var watchTime = Date.now() - startTime;
             ahoy.track(eventName, {
-                category: VIOLET_EVENT_CATEGORY.video_view,
+                category: VIOLET_EVENT_CATEGORIES.video_view,
                 label: eventLabel,
                 page_id: pageId,
                 resource_id: resourceId,
@@ -96,7 +96,7 @@ function trackSectionViews(target, pageId) {
         const targetHasBeenViewed = analyticsStorage.sectionsViewedMap[eventName];
         if (entry.isIntersecting && !targetHasBeenViewed) {
         ahoy.track(eventName, {
-            category: VIOLET_EVENT_CATEGORY.section_view,
+            category: VIOLET_EVENT_CATEGORIES.section_view,
             label: target.dataset.violetEventLabel || eventName,
             page_id: pageId
         });
@@ -113,7 +113,7 @@ function trackPageVisit() {
     const eventName = target.data('violetEventName') || 'page_view';
     const eventLabel = target.data('violetEventLabel');
     ahoy.track(eventName, {
-        category: VIOLET_EVENT_CATEGORY.page_visit,
+        category: VIOLET_EVENT_CATEGORIES.page_visit,
         label: eventLabel,
         page_id: $('body').data('page-id'),
         page_title: document.title
