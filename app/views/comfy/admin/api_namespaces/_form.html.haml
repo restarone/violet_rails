@@ -29,7 +29,7 @@
     = f.label :requires_authentication
     = f.check_box :requires_authentication
   .field
-    = f.label :has_form
+    = f.label "Renderable (Form, and representation)"
     = f.check_box :has_form, checked: @api_namespace.api_form.present?
 
   - unless has_only_uncategorized_access?(current_user.api_accessibility) 
