@@ -29,7 +29,6 @@ module DashboardHelper
     end
   end
 
-
   def visitors_chart_data(visits)
     visitors_by_token = visits.group(:visitor_token).count
     recurring_visitors = visitors_by_token.values.count { |v| v > 1 }
@@ -43,6 +42,13 @@ module DashboardHelper
     percent_change = (((current_count - prev_count).to_f / prev_count) * 100)
 
     raw("<div class=\"#{ percent_change > 0 ? 'positive' : 'negative' }\"><i class=\"pr-2 fa fa-caret-#{ percent_change > 0 ? 'up' : 'down' }\"></i>#{percent_change.round(2).abs} %</div>")
+  end
+
+  def tooltip_content(prev_count, interval, start_date, end_date)
+    prev_interval = previous_interval(interval, start_date, end_date)
+    return "There's no data from the previous #{prev_interval} to compare" if prev_count.zero?
+
+    "This is an increase/decrease compaired to the previous #{prev_interval}"
   end
 
   def total_watch_time(video_watch_events)
@@ -98,6 +104,22 @@ module DashboardHelper
       [:month, '%^b %Y']
     else
       [:year, '%Y']
+    end
+  end
+
+  def previous_interval(interval, start_date, end_date)
+    today = Date.current
+    interval = interval || today.strftime('%B %Y')
+
+    case interval
+    when "3 months"
+    when "6 months"
+    when "1 year"
+      interval
+    when "#{today.strftime('%B %Y')}"
+      "month"
+    else
+      "#{ (end_date - start_date).to_i } days"
     end
   end
 end

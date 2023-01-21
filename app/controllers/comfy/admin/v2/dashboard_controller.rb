@@ -20,9 +20,9 @@ class Comfy::Admin::V2::DashboardController < Comfy::Admin::Cms::BaseController
       @video_watch_events = @video_watch_events.jsonb_search(:properties, { page_id: params[:page] })
     end
 
-    @pervious_period_page_visit_events = @page_visit_events.where(time: previous_period((params[:interval] || Date.current.strftime('%B %Y')), @start_date, @end_date))
-    @pervious_period_click_events = @click_events.where(time: previous_period((params[:interval] || Date.current.strftime('%B %Y')), @start_date, @end_date))
-    @pervious_period_video_watch_events = @video_watch_events.where(time: previous_period((params[:interval] || Date.current.strftime('%B %Y')), @start_date, @end_date))
+    @pervious_period_page_visit_events = @page_visit_events.where(time: previous_period(params[:interval], @start_date, @end_date))
+    @pervious_period_click_events = @click_events.where(time: previous_period(params[:interval], @start_date, @end_date))
+    @pervious_period_video_watch_events = @video_watch_events.where(time: previous_period(params[:interval], @start_date, @end_date))
 
     date_range = @start_date.beginning_of_day..@end_date.end_of_day
     @page_visit_events = @page_visit_events.where(time: date_range)
@@ -35,6 +35,7 @@ class Comfy::Admin::V2::DashboardController < Comfy::Admin::Cms::BaseController
 
   def previous_period(interval, start_date, end_date)
     today = Date.current
+    interval = interval || todat.strftime('%B %Y')
 
     case interval
     when "#{today.strftime('%B %Y')}"

@@ -35,6 +35,20 @@
     margin-right: 10px;
   }
 
+  &-tooltips {
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background-color: #D4D7DA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 8px;
+    cursor: default;
+  }
+
   &-percent-change {
     .positive {
       color: #63C32D;

@@ -27,6 +27,8 @@
               total visits
             .vr-analytics-percent-change
               = display_percent_change(@page_visit_events.count, @pervious_period_page_visit_events.count)
+            .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(@pervious_period_page_visit_events.count, params[:interval], @start_date, @end_date) }
+              ?
         .vr-analytics-section-body
           = column_chart page_visit_chart_data(@page_visit_events, @start_date, @end_date), colors: ["#88DAE3FF", "#D785E3FF", "#F7C85CFF"], code: true, library: { plugins: { legend: { position: "top", align: "end", labels: { padding: 24, boxWidth: 8, usePointStyle: true, font: { size: 16 } } } }  }
       .col.col-3
@@ -46,6 +48,8 @@
             total clicks
           .vr-analytics-percent-change
             = display_percent_change(@click_events.count, @pervious_period_click_events.count)
+          .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(@pervious_period_click_events.count, params[:interval], @start_date, @end_date) }
+            ?
 
       .vr-analytics-section-body.d-flex.align-items-center
         .vr-analytics-click-events-grid
@@ -72,18 +76,24 @@
             = to_minutes(total_watch_time(@video_watch_events))
           .vr-analytics-percent-change
             = display_percent_change(total_watch_time(@video_watch_events), total_watch_time(@pervious_period_video_watch_events))
+          .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(total_watch_time(@pervious_period_video_watch_events), params[:interval], @start_date, @end_date) }
+            ?
       
           .vr-analytics-count
             Avg. view duration
             = to_minutes(avg_view_duration(@video_watch_events))
           .vr-analytics-percent-change
             = display_percent_change(avg_view_duration(@video_watch_events), avg_view_duration(@pervious_period_video_watch_events))
+          .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(avg_view_duration(@pervious_period_video_watch_events), params[:interval], @start_date, @end_date) }
+            ?
 
           .vr-analytics-count
             Avg. view percentage
             = "#{avg_view_percentage(@video_watch_events).round(2)}%"
           .vr-analytics-percent-change
             = display_percent_change(avg_view_percentage(@video_watch_events), avg_view_percentage(@pervious_period_video_watch_events))
+          .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(avg_view_percentage(@pervious_period_video_watch_events), params[:interval], @start_date, @end_date) }
+            ?
 
       .vr-analytics-section-body
         .vr-analytics-event-label 
@@ -125,6 +135,8 @@
           
 :javascript
   $(function() {
+    $('[data-toggle="tooltip"]').tooltip();
+  
     function cb() {
       if (!$('#start_date').val() && !$('#end_date').val()) {
         $('#reportrange span').html(moment().format('MMMM YYYY'));
