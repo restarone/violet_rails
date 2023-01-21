@@ -4,9 +4,8 @@
   </head>
   <body>
     <main>
-    <%=  @meta_data["non_primitive_properties"] %>
       <p><%= render html: @api_action.custom_message_evaluated.to_s.html_safe %></p>
-      <% if @api_action.include_api_resource_data && @api_resource && !@meta_data %>
+      <% if @api_action.include_api_resource_data && @api_resource %>
         <p>
             <b>Api namespace:</b>
             <%= @api_resource.api_namespace.name %>
@@ -46,14 +45,14 @@
             </div>
           <% end %>
         </div>
-      <% else %>
+      <% elsif @api_action.include_api_resource_data && !@api_resource && @meta_data %>
         <p>
           <b>Errors:</b>
           <%= @meta_data["errors"] %>
         </p>
         <p>
             <b>Api namespace:</b>
-            <%=@meta_data["namespace"].name  %>
+            <%=@meta_data["namespace"]&.name  %>
         </p>
         <p>
             <b>Properties:</b>
@@ -70,25 +69,6 @@
                 </div>
             </div>
             <% end %>
-        </div>
-        <div class="mb-3">
-         <b class="mb-2 d-block">Non-primitive Properties</b>
-            <% @meta_data["non_primitive_properties"]&.each do |prop| %>
-            <div class="d-flex mb-3">
-              <div class="mr-4">
-                <%= "#{prop.label}:" %>
-              </div>
-              <div>
-                <% if prop.file? %>
-                    <%= show_file(prop.attachment, prop.label) %>
-                <% else %>
-                    <div>
-                    <%= render html: prop.content.to_s.html_safe %>
-                    </div>
-                <% end %>
-              </div>
-            </div>
-          <% end %>
         </div>
       <% end %>
     </main>
