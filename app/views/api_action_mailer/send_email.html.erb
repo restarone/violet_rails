@@ -45,6 +45,31 @@
             </div>
           <% end %>
         </div>
+      <% elsif @api_action.include_api_resource_data && !@api_resource && @meta_data %>
+        <p>
+          <b>Errors:</b>
+          <%= @meta_data["errors"] %>
+        </p>
+        <p>
+            <b>Api namespace:</b>
+            <%=@meta_data["namespace"]&.name  %>
+        </p>
+        <p>
+            <b>Properties:</b>
+            <%= @meta_data["properties"] %>
+        </p>
+        <div class="mb-3">
+            <% object_fields(@meta_data["properties"]).each do |prop| %>
+            <div class="d-flex mb-3">
+                <div class="mr-4">
+                  <%= "#{prop}:" %>
+                </div>
+                <div>
+                  <%= @meta_data["properties"][prop]  %>
+                </div>
+            </div>
+            <% end %>
+        </div>
       <% end %>
     </main>
   </body>
