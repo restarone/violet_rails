@@ -15,12 +15,12 @@ jobs:
     if: github.event_name == 'push'
     steps:
       - name: Cloning repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: Add public IP to AWS security group
-        uses: sohelamin/aws-security-group-add-ip-action@master
+        uses: uxxman/aws-security-group-add-ip-action@patch-1
         with:
           aws-access-key-id: ${{ secrets.DOKKU_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.DOKKU_AWS_SECRET_ACCESS_KEY }}
@@ -44,12 +44,12 @@ jobs:
     if: github.event_name == 'pull_request' && github.event.pull_request.state == 'open' && (github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'synchronize' || github.event.action == 'labeled') && contains( github.event.pull_request.labels.*.name, 'deploy-review-app')
     steps:
       - name: Cloning repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: Add public IP to AWS security group
-        uses: sohelamin/aws-security-group-add-ip-action@master
+        uses: uxxman/aws-security-group-add-ip-action@patch-1
         with:
           aws-access-key-id: ${{ secrets.DOKKU_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.DOKKU_AWS_SECRET_ACCESS_KEY }}
@@ -114,7 +114,7 @@ jobs:
     if: github.event_name == 'pull_request' && ((github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'deploy-review-app')) || (github.event.pull_request.state == 'open' && github.event.action == 'unlabeled' && needs.checklabel.outputs.deploy_review_app_removed))
     steps:
       - name: Add public IP to AWS security group
-        uses: sohelamin/aws-security-group-add-ip-action@master
+        uses: uxxman/aws-security-group-add-ip-action@patch-1
         with:
           aws-access-key-id: ${{ secrets.DOKKU_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.DOKKU_AWS_SECRET_ACCESS_KEY }}
