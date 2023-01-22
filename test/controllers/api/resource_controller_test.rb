@@ -285,6 +285,25 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
     assert_equal response.parsed_body["data"].pluck("id").map(&:to_i).sort, [@api_resource_1.id, @api_resource_3.id].sort
   end
 
+  test '#index search jsonb field - string - partial: multi word string' do
+    @api_resource_1.update(properties: {name: 'Professional Writer'})
+    @api_resource_2.update(properties: {name: 'Physical Development'})
+    @api_resource_3.update(properties: {name: 'Professional Development'})
+
+    payload = { 
+      properties: { 
+        name: { 
+          value: 'professional development',
+          option: 'PARTIAL'
+        }
+      }
+    }
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+    assert_response :success
+
+    assert_equal response.parsed_body["data"].pluck("id").map(&:to_i).sort, [@api_resource_1.id, @api_resource_2.id, @api_resource_3.id].sort
+  end
+
   test '#index search jsonb field - string - partial (unhappy)' do
     payload = { 
       properties: { 

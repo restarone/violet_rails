@@ -36,6 +36,24 @@ class JsonbSearch::QueryBuilderTest < ActiveSupport::TestCase
     assert_equal "lower(properties ->> 'name') LIKE lower('%violet%')", jsonb_query
   end
 
+  test 'query string - partial: splits the provided value into words' do
+    query = { name: { value: 'violet rails development', option: 'PARTIAL' } } 
+    jsonb_query = JsonbSearch::QueryBuilder.build_jsonb_query(:properties, query)
+
+    expected_query = "lower(properties ->> 'name') LIKE lower('%violet%') OR lower(properties ->> 'name') LIKE lower('%rails%') OR lower(properties ->> 'name') LIKE lower('%development%') OR lower(properties ->> 'name') LIKE lower('%violet rails development%')"
+
+    assert_equal expected_query, jsonb_query
+  end
+
+  test 'query string - partial: splits the provided value into words by skipping the individual query for stopwords' do
+    query = { name: { value: 'a hope for future', option: 'PARTIAL' } } 
+    jsonb_query = JsonbSearch::QueryBuilder.build_jsonb_query(:properties, query)
+
+    expected_query = "lower(properties ->> 'name') LIKE lower('%hope%') OR lower(properties ->> 'name') LIKE lower('%future%') OR lower(properties ->> 'name') LIKE lower('%a hope for future%')"
+
+    assert_equal expected_query, jsonb_query
+  end
+
   test 'query string - multiple properties' do
     query = { name: { value: 'violet' }, age: 20 } 
     jsonb_query = JsonbSearch::QueryBuilder.build_jsonb_query(:properties, query)
