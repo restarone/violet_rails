@@ -8,7 +8,7 @@ class Comfy::Admin::V2::DashboardController < Comfy::Admin::Cms::BaseController
     @end_date = params[:end_date]&.to_date || Date.today.end_of_month
 
 
-    @visits = Ahoy::Visit.where(started_at: @start_date..@end_date)
+    @visits = Ahoy::Visit.where(started_at: @start_date.beginning_of_day..@end_date.end_of_day)
 
     @page_visit_events = Ahoy::Event.jsonb_search(:properties, { category: 'page_visit' }).joins(:visit)
     @click_events = Ahoy::Event.jsonb_search(:properties, { category: 'click' }).joins(:visit)

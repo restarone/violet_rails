@@ -89,8 +89,8 @@ module DashboardHelper
         total_watch_time:  total_watch_time(events),
         previous_period_total_views: total_views(previous_period_event),
         previous_period_total_watch_time: total_watch_time(previous_period_event),
-        resource_title: api_resource.properties.dig(api_resource.api_namespace.social_share_metadata.dig("title")),
-        resource_image: api_resource.non_primitive_properties.find_by(field_type: "file", label: api_resource.api_namespace.social_share_metadata.dig("image"))&.file_url,
+        resource_title: api_resource&.properties.dig(api_resource&.api_namespace.social_share_metadata&.dig("title")),
+        resource_image: api_resource&.non_primitive_properties.find_by(field_type: "file", label: api_resource&.api_namespace.social_share_metadata&.dig("image"))&.file_url,
         duration: events.first.properties['total_duration']
       }
     end.sort_by {|event| event[:total_views]}.reverse.first(3)
