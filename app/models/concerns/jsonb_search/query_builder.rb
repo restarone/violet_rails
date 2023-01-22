@@ -8,7 +8,12 @@ module JsonbSearch
     MATCH_OPTION = {
       ALL: 'ALL',
       ANY: 'ANY'
-  }.freeze
+    }.freeze
+
+    # https://github.com/Altoros/belarus-ruby-on-rails/blob/master/solr/conf/stopwords.txt
+    STOP_WORDS = [
+      'a', 'an', 'and', 'are', 'as', 'at', 'be', 'but', 'by', 'for', 'if', 'in', 'into', 'is', 'it', 'no', 'not', 'of', 'on', 'or', 's', 'such', 't', 'that', 'the', 'their', 'then', 'there', 'these', 'they', 'this', 'to', 'was', 'will', 'with'
+    ]
 
     class << self
       def build_jsonb_query(column_name, query_params, match = nil)
@@ -78,9 +83,25 @@ module JsonbSearch
       # "column ->> 'property' = 'term'" 
       def string_query(key, term, option, query)
         if option == QUERY_OPTION[:PARTIAL]
-          term = "%#{term}%"
+          query_array = []
           operator = 'LIKE'
+
+          terms = term.split(' ') - STOP_WORDS
+          terms = terms.map { |txt| "%#{txt}%" }
+
+          terms.each do |txt|
+            query_array << string_sql(query, key, txt, operator)
+          end
+
+          query_array << string_sql(query, key, "%#{term}%", operator) if terms.size > 1
+
+          query_array.join(' OR ')
+        else
+          string_sql(query, key, term)
         end
+      end
+
+      def string_sql(query, key, term, operator = nil)
         # A ' inside a string quoted with ' may be written as ''.
         # https://stackoverflow.com/questions/54144340/how-to-query-jsonb-fields-and-values-containing-single-quote-in-rails#comment95120456_54144340
         # https://dev.mysql.com/doc/refman/8.0/en/string-literals.html#character-escape-sequences
