@@ -20,8 +20,8 @@ $(document).on("turbo:load", () => {
     trackPageVisit();
  
     $('[data-violet-track-click="true"]').on('click', function() {
-        const eventName = this.dataset.violetEventName || 'click';
-        const eventLabel = this.dataset.violetEventLabel;
+        const eventName = this.dataset.violetEventName || VIOLET_EVENT_CATEGORIES.click;
+        const eventLabel = this.dataset.violetEventLabel || eventName;
         ahoy.track(eventName, {
             category: VIOLET_EVENT_CATEGORIES.click,
             label: eventLabel,
@@ -33,8 +33,8 @@ $(document).on("turbo:load", () => {
 
     // Usage: {{ cms:helper render_form, 1, { data: { violet-track-form-submit: true, violet-event-name: 'contact_form_submit', violet-event-label: 'Contact form Submission' } } }}
     $('[data-violet-track-form-submit="true"]').on('submit', function() {
-        const eventName = this.dataset.violetEventName;
-        const eventLabel = this.dataset.violetEventLabel;
+        const eventName = this.dataset.violetEventName || VIOLET_EVENT_CATEGORIES.form_submit;
+        const eventLabel = this.dataset.violetEventLabel || eventName;
         ahoy.track(eventName, {
             category: VIOLET_EVENT_CATEGORIES.form_submit,
             label: eventLabel,
@@ -48,8 +48,8 @@ $(document).on("turbo:load", () => {
     // </video>
     $('[data-violet-track-video-view="true"]').each( function() {
         var startTime;
-        const eventName = this.dataset.violetEventName;
-        const eventLabel = this.dataset.violetEventLabel;
+        const eventName = this.dataset.violetEventName || VIOLET_EVENT_CATEGORIES.video_view;
+        const eventLabel = this.dataset.violetEventLabel || eventName;
         var resourceId = this.dataset.violetResourceId;
         // Count paused and then played video as a single view.
         var isFirstPlay = true;
@@ -110,8 +110,8 @@ function trackSectionViews(target, pageId) {
 
 function trackPageVisit() {
     const target = $('[data-violet-track-page-visit="true"]')
-    const eventName = target.data('violetEventName') || 'page_view';
-    const eventLabel = target.data('violetEventLabel');
+    const eventName = target.data('violetEventName') || VIOLET_EVENT_CATEGORIES.page_visit;
+    const eventLabel = target.data('violetEventLabel') || eventName;
     ahoy.track(eventName, {
         category: VIOLET_EVENT_CATEGORIES.page_visit,
         label: eventLabel,
