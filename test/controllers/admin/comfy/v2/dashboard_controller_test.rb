@@ -1,6 +1,6 @@
 require "test_helper"
 
-class DashboardControllerTest < ActionDispatch::IntegrationTest
+class Comfy::Admin::V2::DashboardControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
     @subdomain = subdomains(:public)
@@ -16,25 +16,25 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     @api_resource = api_resources(:one)
   end
 
-  test "should deny #dashboard if not signed in" do
+  test "should deny #v2_dashboard if not signed in" do
     get v2_dashboard_url
     assert_redirected_to new_user_session_url
   end
 
-  test "should deny #dashboard if not permissioned" do
+  test "should deny #v2_dashboard if not permissioned" do
     sign_in(@user)
     @user.update(can_manage_analytics: false)
     get v2_dashboard_url
     assert_response :redirect
   end
 
-  test "should get #dashboard if signed in and permissioned" do
+  test "should get #v2_dashboard if signed in and permissioned" do
     sign_in(@user)
     get v2_dashboard_url
     assert_response :success
   end
 
-  test "#dashboard: " do
+  test "#dashboard: should set correct data" do
     @subdomain.update!(tracking_enabled: true)
     visit = Ahoy::Visit.first
     page_visit_event_1 = visit.events.create(name: 'test-page-visit', user_id: @user.id, time: (Time.now.beginning_of_month - 4.days),  properties: {"label"=>"test_page_view", "page_id"=>@page.id, "category"=>"page_visit", "page_title"=>"lvh.me:5250"})
