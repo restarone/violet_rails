@@ -54,7 +54,7 @@ module DashboardHelper
     prev_interval = previous_interval(interval, start_date, end_date)
     return "There's no data from the previous #{prev_interval} to compare" if prev_count.zero?
 
-    "This is an increase/decrease compaired to the previous #{prev_interval}"
+    "This is an increase/decrease compared to the previous #{prev_interval}"
   end
 
   def total_watch_time(video_watch_events)
@@ -77,7 +77,7 @@ module DashboardHelper
     view_percentage_arr = video_watch_events.group_by { |event| event.properties['resource_id'] }.map do |_resource_id, events|
       (events.sum { |event| event.properties['watch_time'].to_f  / event.properties['total_duration'].to_f }) * 100
     end
-    view_percentage_arr.sum / (video_watch_events.size.nonzero? || 1)
+    view_percentage_arr.sum / (total_views(video_watch_events).nonzero? || 1)
   end
 
   def top_three_videos(video_watch_events, previous_video_watch_events) 
@@ -118,9 +118,7 @@ module DashboardHelper
     interval = interval || today.strftime('%B %Y')
 
     case interval
-    when "3 months"
-    when "6 months"
-    when "1 year"
+    when "3 months", "6 months", "1 year"
       interval
     when "#{today.strftime('%B %Y')}"
       "month"
