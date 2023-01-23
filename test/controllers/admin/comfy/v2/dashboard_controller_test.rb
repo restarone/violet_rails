@@ -62,11 +62,11 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
   
     assert_equal [page_visit_event_1_page_2.id], assigns(:page_visit_events).pluck(:id)
     assert_equal [click_event_1_page_2.id], assigns(:click_events).pluck(:id)
-    assert_equal [video_watch_event_1_page_2.id], assigns(:video_watch_events).pluck(:id)
+    assert_equal [video_watch_event_1_page_2.id], assigns(:video_view_events).pluck(:id)
 
-    assert_equal [page_visit_event_1.id], assigns(:pervious_period_page_visit_events).pluck(:id)
-    assert_equal [click_event_1.id], assigns(:pervious_period_click_events).pluck(:id)
-    assert_equal [video_watch_event_1.id], assigns(:pervious_period_video_watch_events).pluck(:id)
+    assert_equal [page_visit_event_1.id], assigns(:previous_period_page_visit_events).pluck(:id)
+    assert_equal [click_event_1.id], assigns(:previous_period_click_events).pluck(:id)
+    assert_equal [video_watch_event_1.id], assigns(:previous_period_video_view_events).pluck(:id)
 
     # When range params is present
     get v2_dashboard_url, params: {start_date: (Time.now.beginning_of_month - 2.months).strftime('%Y-%m-%d'), end_date: Time.now.end_of_month.strftime('%Y-%m-%d'), interval: "3 months" }
@@ -76,21 +76,21 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
   
     assert_equal [page_visit_event_1.id, page_visit_event_1_page_2.id].sort, assigns(:page_visit_events).pluck(:id).sort
     assert_equal [click_event_1.id, click_event_1_page_2.id].sort, assigns(:click_events).pluck(:id).sort
-    assert_equal [video_watch_event_1.id, video_watch_event_1_page_2.id].sort, assigns(:video_watch_events).pluck(:id).sort
+    assert_equal [video_watch_event_1.id, video_watch_event_1_page_2.id].sort, assigns(:video_view_events).pluck(:id).sort
 
-    assert_equal [page_visit_event_2.id], assigns(:pervious_period_page_visit_events).pluck(:id)
-    assert_equal [click_event_2.id], assigns(:pervious_period_click_events).pluck(:id)
-    assert_equal [video_watch_event_2.id], assigns(:pervious_period_video_watch_events).pluck(:id)
+    assert_equal [page_visit_event_2.id], assigns(:previous_period_page_visit_events).pluck(:id)
+    assert_equal [click_event_2.id], assigns(:previous_period_click_events).pluck(:id)
+    assert_equal [video_watch_event_2.id], assigns(:previous_period_video_view_events).pluck(:id)
 
     # When page params present, it should filter by page
     get v2_dashboard_url, params: {start_date: (Time.now.beginning_of_month - 2.months).strftime('%Y-%m-%d'), end_date: Time.now.end_of_month.strftime('%Y-%m-%d'), interval: "3 months", page: @page.id }
   
     assert_equal [page_visit_event_1.id], assigns(:page_visit_events).pluck(:id)
     assert_equal [click_event_1.id], assigns(:click_events).pluck(:id)
-    assert_equal [video_watch_event_1.id], assigns(:video_watch_events).pluck(:id)
+    assert_equal [video_watch_event_1.id], assigns(:video_view_events).pluck(:id)
 
-    assert_empty assigns(:pervious_period_page_visit_events)
-    assert_equal [click_event_2.id], assigns(:pervious_period_click_events).pluck(:id)
-    assert_equal [video_watch_event_2.id], assigns(:pervious_period_video_watch_events).pluck(:id)
+    assert_empty assigns(:previous_period_page_visit_events)
+    assert_equal [click_event_2.id], assigns(:previous_period_click_events).pluck(:id)
+    assert_equal [video_watch_event_2.id], assigns(:previous_period_video_view_events).pluck(:id)
   end
 end

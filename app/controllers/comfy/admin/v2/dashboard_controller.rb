@@ -6,28 +6,21 @@ class Comfy::Admin::V2::DashboardController < Comfy::Admin::Cms::BaseController
   def dashboard
     @start_date = params[:start_date]&.to_date || Date.today.beginning_of_month
     @end_date = params[:end_date]&.to_date || Date.today.end_of_month
-
+    date_range = @start_date.beginning_of_day..@end_date.end_of_day
 
     @visits = Ahoy::Visit.where(started_at: @start_date.beginning_of_day..@end_date.end_of_day)
 
-    @page_visit_events = Ahoy::Event.jsonb_search(:properties, { category: 'page_visit' }).joins(:visit)
-    @click_events = Ahoy::Event.jsonb_search(:properties, { category: 'click' }).joins(:visit)
-    @video_watch_events = Ahoy::Event.jsonb_search(:properties, { category: 'video_view' }).joins(:visit)
-
-    if params[:page].present?
-      @page_visit_events = @page_visit_events.jsonb_search(:properties, { page_id: params[:page] })
-      @click_events = @click_events.jsonb_search(:properties, { page_id: params[:page] })
-      @video_watch_events = @video_watch_events.jsonb_search(:properties, { page_id: params[:page] })
+    Ahoy::Event::EVENT_CATEGORIES.values.each do |event_category|
+      events = Ahoy::Event.jsonb_search(:properties, { category: event_category }).joins(:visit)
+      events = events.jsonb_search(:properties, { page_id: params[:page] }) if params[:page].present?
+      instance_variable_set("@previous_period_#{event_category}_events", events.where(time: previous_period(params[:interval], @start_date, @end_date)))
+      instance_variable_set("@#{event_category}_events", events.where(time: date_range))
     end
 
-    @pervious_period_page_visit_events = @page_visit_events.where(time: previous_period(params[:interval], @start_date, @end_date))
-    @pervious_period_click_events = @click_events.where(time: previous_period(params[:interval], @start_date, @end_date))
-    @pervious_period_video_watch_events = @video_watch_events.where(time: previous_period(params[:interval], @start_date, @end_date))
-
-    date_range = @start_date.beginning_of_day..@end_date.end_of_day
-    @page_visit_events = @page_visit_events.where(time: date_range)
-    @click_events = @click_events.where(time: date_range)
-    @video_watch_events = @video_watch_events.where(time: date_range)
+    # legacy and system events does not have category
+    @legacy_and_system_events = Ahoy::Event.where.not('properties::jsonb ? :key', key: 'category').joins(:visit)
+    @previous_period_legacy_and_system_events = @legacy_and_system_events.where(time: previous_period(params[:interval], @start_date, @end_date))
+    @legacy_and_system_events.where(time: date_range)
   end
 
 

@@ -17,51 +17,60 @@
 
   %main{class: 'my-5'}
     %section.row.vr-analytics-section.vr-analytics-page-visit-events
-      .col.col-9
+      .col{ class: @page_visit_events.present? ? "col-9" : "col-12" }
         .d-flex.justify-content-between
           .vr-analytics-section-header.d-flex.justify-content-between.align-items-center
             .vr-analytics-sub-title
               = "#{page_name(params[:page])} visits"
-            .vr-analytics-count
-              = @page_visit_events.count 
-              total visits
-            .vr-analytics-percent-change
-              = display_percent_change(@page_visit_events.count, @pervious_period_page_visit_events.count)
-            .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(@pervious_period_page_visit_events.count, params[:interval], @start_date, @end_date) }
-              ?
+            - if @page_visit_events.present?
+              .vr-analytics-count
+                = @page_visit_events.count 
+                total visits
+              .vr-analytics-percent-change
+                = display_percent_change(@page_visit_events.count, @previous_period_page_visit_events.count)
+              .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(@previous_period_page_visit_events.count, params[:interval], @start_date, @end_date) }
+                ?
         .vr-analytics-section-body
-          = column_chart page_visit_chart_data(@page_visit_events, @start_date, @end_date), colors: ["#88DAE3FF", "#D785E3FF", "#F7C85CFF"], code: true, library: { plugins: { legend: { position: "top", align: "end", labels: { padding: 24, boxWidth: 8, usePointStyle: true, font: { size: 16 } } } }  }
-      .col.col-3
-        .vr-analytics-card.vr-analytics-page-visit-events-donut-chart
-          %h5 Website visitors
-          = pie_chart visitors_chart_data(@visits), colors: ['#F7A47B', '#B5E69A'], donut: true, library: { cutout: 85, plugins: { legend: { position: "bottom",  align: 'start', labels: {boxWidth: 8, usePointStyle: true, font: { size: 16 } } } } }
+          - if @page_visit_events.present?
+            = column_chart page_visit_chart_data(@page_visit_events, @start_date, @end_date), colors: ["#88DAE3FF", "#D785E3FF", "#F7C85CFF"], code: true, library: { plugins: { legend: { position: "top", align: "end", labels: { padding: 24, boxWidth: 8, usePointStyle: true, font: { size: 16 } } } }  }
+          - else
+            .vr-analytics-blank-states
+              There are no page visit events within the selected date range. 
+              %br
+              Use 'data-violet-track-page-visit="true"' attribute on a html attribute to track page visits.
+              %br
+              %br
+              %code
+                :escaped
+                  <main data-violet-track-page-visit="true" data-violet-event-name="landing-page-viewed" data-violet-event-label="Landing Page">
+                %br
+                :escaped
+                  .
+                %br
+                :escaped
+                  .
+                %br
+                :escaped
+                  </main>
+      - if @page_visit_events.present?
+        .col.col-3
+          .vr-analytics-card.vr-analytics-page-visit-events-donut-chart
+            %h5 Website visitors
+            = pie_chart visitors_chart_data(@visits), colors: ['#F7A47B', '#B5E69A'], donut: true, library: { cutout: 85, plugins: { legend: { position: "bottom",  align: 'start', labels: {boxWidth: 8, usePointStyle: true, font: { size: 16 } } } } }
+
   
     %hr.m-0
-
-    %section.vr-analytics-section.vr-analytics-click-events
-      .vr-analytics-section-header
-        .d-flex.align-items-center
-          .vr-analytics-sub-title
-            Clicks
-          .vr-analytics-count
-            = @click_events.count 
-            total clicks
-          .vr-analytics-percent-change
-            = display_percent_change(@click_events.count, @pervious_period_click_events.count)
-          .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(@pervious_period_click_events.count, params[:interval], @start_date, @end_date) }
-            ?
-
-      .vr-analytics-section-body.d-flex.align-items-center
-        .vr-analytics-click-events-grid
-          - previous_grouped_cick_events = @pervious_period_click_events.group(:name).size
-          - @click_events.group_by(&:label).each do |key, value|
-            .vr-analytics-click-events-grid-item
-              .d-flex.mr-4.align-items-center.mb-2
-                .vr-analytics-count-lg
-                  = value.count 
-                .vr-analytics-percent-change
-                  = display_percent_change(value.count, previous_grouped_cick_events[key].to_i)
-              = link_to key, dashboard_events_path(ahoy_event_type: key), class: 'vr-analytics-event-label'
+    = render partial: 'events', locals: { events: @click_events, previous_period_events: @previous_period_click_events, title: 'Clicks', type: 'clickables' }
+    - unless @click_events.present?
+      .vr-analytics-blank-states
+        There are no click events within the selected date range. 
+        %br
+        Use 'data-violet-track-click="true"' attribute on a html element to track clicks.
+        %br
+        %br
+        %code
+          :escaped
+            <a data-violet-track-="true" data-violet-event-name="test-link-clicked" data-violet-event-label="Test Link">Test</a>
 
     %hr.m-0
 
@@ -71,68 +80,146 @@
           .vr-analytics-sub-title
             Watch time
       
-          .vr-analytics-count
-            Total watch time
-            = to_minutes(total_watch_time(@video_watch_events))
-          .vr-analytics-percent-change
-            = display_percent_change(total_watch_time(@video_watch_events), total_watch_time(@pervious_period_video_watch_events))
-          .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(total_watch_time(@pervious_period_video_watch_events), params[:interval], @start_date, @end_date) }
-            ?
-      
-          .vr-analytics-count
-            Avg. view duration
-            = to_minutes(avg_view_duration(@video_watch_events))
-          .vr-analytics-percent-change
-            = display_percent_change(avg_view_duration(@video_watch_events), avg_view_duration(@pervious_period_video_watch_events))
-          .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(avg_view_duration(@pervious_period_video_watch_events), params[:interval], @start_date, @end_date) }
-            ?
+          - if @video_view_events.present? 
+            .vr-analytics-count
+              Total watch time
+              = to_minutes(total_watch_time(@video_view_events))
+            .vr-analytics-percent-change
+              = display_percent_change(total_watch_time(@video_view_events), total_watch_time(@previous_period_video_view_events))
+            .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(total_watch_time(@previous_period_video_view_events), params[:interval], @start_date, @end_date) }
+              ?
+        
+            .vr-analytics-count
+              Avg. view duration
+              = to_minutes(avg_view_duration(@video_view_events))
+            .vr-analytics-percent-change
+              = display_percent_change(avg_view_duration(@video_view_events), avg_view_duration(@previous_period_video_view_events))
+            .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(avg_view_duration(@previous_period_video_view_events), params[:interval], @start_date, @end_date) }
+              ?
 
-          .vr-analytics-count
-            Avg. view percentage
-            = "#{avg_view_percentage(@video_watch_events).round(2)}%"
-          .vr-analytics-percent-change
-            = display_percent_change(avg_view_percentage(@video_watch_events), avg_view_percentage(@pervious_period_video_watch_events))
-          .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(avg_view_percentage(@pervious_period_video_watch_events), params[:interval], @start_date, @end_date) }
-            ?
+            .vr-analytics-count
+              Avg. view percentage
+              = "#{avg_view_percentage(@video_view_events).round(2)}%"
+            .vr-analytics-percent-change
+              = display_percent_change(avg_view_percentage(@video_view_events), avg_view_percentage(@previous_period_video_view_events))
+            .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(avg_view_percentage(@previous_period_video_view_events), params[:interval], @start_date, @end_date) }
+              ?
+      - if @video_view_events.present? 
+        .vr-analytics-section-body
+          .vr-analytics-event-label 
+            Top 3 videos
 
-      .vr-analytics-section-body
-        .vr-analytics-event-label 
-          Top 3 videos
+          .row.mt-4
+            - top_three_videos(@video_view_events, @previous_period_video_view_events).each do |event|
+              .col.col-md-5.mb-4
+                .vr-analytics-card
+                  .vr-analytics-card-section
+                    .d-flex 
+                      .vr-analytics-card-resource-poster-conatiner
+                        %img{src: event[:resource_image]}
+                      .vr-analytics-card-resource-title-duration
+                        .vr-analytics-card-resource-title
+                          = link_to event[:resource_title], api_namespace_resource_path(api_namespace_id: event[:namespace_id], id: event[:resource_id])
+                        .vr-analytics-card-resource-duration
+                          = Time.at(event[:duration]/1000).strftime("%M:%S")
 
-        .row.mt-4
-          - top_three_videos(@video_watch_events, @pervious_period_video_watch_events).each do |event|
-            .col.col-md-5.mb-4
-              .vr-analytics-card
-                .vr-analytics-card-section
-                  .d-flex 
-                    .vr-analytics-card-resource-poster-conatiner
-                      %img{src: event[:resource_image]}
-                    .vr-analytics-card-resource-title-duration
-                      .vr-analytics-card-resource-title
-                        =  event[:resource_title]
-                      .vr-analytics-card-resource-duration
-                        = Time.at(event[:duration]/1000).strftime("%M:%S")
+                  %hr
+                  .vr-analytics-card-section
+                    .row
+                      .col.col-6
+                        .d-flex.align-items-center
+                          .vr-analytics-count-lg
+                            = to_minutes(event[:total_watch_time])
+                          .vr-analytics-percent-change
+                            = display_percent_change(event[:total_watch_time], event[:previous_period_total_watch_time])
+                        .vr-analytics-event-label.mt-2
+                          Total watch time
+                      .col.col-6 
+                        .d-flex.align-items-center
+                          .vr-analytics-count-lg
+                            = event[:total_views]
+                          .vr-analytics-percent-change
+                            = display_percent_change(event[:total_views], event[:previous_period_total_views])
+                        .vr-analytics-event-label.mt-2
+                          Total views
+      - else
+        .vr-analytics-blank-states
+          There are no video view events within the selected date range. 
+          %br
+          Use 'data-violet-track-video-view="true"' attribute on a video element to track views.
+          %br
+          %br
+          %code
+            :escaped
+              <video data-violet-track-video-view="true" data-violet-resource-id="<%= resource.id %>" data-violet-event-name="intro_video_watch" data-violet-event-label="Intro Video" width="500px"  controls>
+            %br
+            :escaped
+              <source src="<%= resource.props['demo'].file_url %>" type="video/mp4">
+            %br
+            :escaped
+              </video>
 
-                %hr
-                .vr-analytics-card-section
-                  .row
-                    .col.col-6
-                      .d-flex.align-items-center
-                        .vr-analytics-count-lg
-                          = to_minutes(event[:total_watch_time])
-                        .vr-analytics-percent-change
-                          = display_percent_change(event[:total_watch_time], event[:previous_period_total_watch_time])
-                      .vr-analytics-event-label.mt-2
-                        Total watch time
-                    .col.col-6 
-                      .d-flex.align-items-center
-                        .vr-analytics-count-lg
-                          = event[:total_views]
-                        .vr-analytics-percent-change
-                          = display_percent_change(event[:total_views], event[:previous_period_total_views])
-                      .vr-analytics-event-label.mt-2
-                        Total views
-          
+          %br
+          %br
+
+          Please make sure 'data-violet-resource-id' is present and Social sharing metadata are populated
+        
+    %hr.m-0
+    = render partial: 'events', locals: { events: @form_submit_events, previous_period_events: @previous_period_form_submit_events, title: 'Form Submissions', type: 'submitables' }
+    - unless @form_submit_events.present?
+      .vr-analytics-blank-states
+        There are no form submission events within the selected date range. 
+        %br
+        Use 'data-violet-track-from-submit="true"' attribute on a form element to track form submissions.
+        %br
+        %br
+        %code
+          :escaped
+            {{ cms:helper render_form, 1, { data: { violet-track-form-submit: true, violet-event-name: 'contact-form-submit', violet-event-label: 'Contact form' }}}}
+        %br
+        %br
+        OR 
+        %br
+        %br
+        %code
+          :escaped
+            <form data-violet-track-form-submit="true" data-violet-event-name="inquiry-form-submited" data-violet-event-label="Inquiry Form">
+          %br
+          :escaped
+            .
+          %br 
+          :escaped
+            .
+          %br
+          :escaped
+            </form>
+
+    %hr.m-0
+    = render partial: 'events', locals: { events: @section_view_events, previous_period_events: @previous_period_section_view_events, title: 'Section Views', type: 'viewables' }
+    - unless @section_view_events.present?
+      .vr-analytics-blank-states
+        There are no section view events within the selected date range. 
+        %br
+        Use 'data-violet-track-section="true"' attribute on a HTML element to track section views.
+        %br
+        %br
+        %code
+          :escaped
+            <div data-violet-track-section-view="true" data-violet-event-name="test-section-viewed" data-violet-event-label="Test Section">
+          %br
+          :escaped
+            .
+          %br 
+          :escaped
+            .
+          %br
+          :escaped
+            </div>
+
+    %hr.m-0
+    = render partial: 'events', locals: { events: @legacy_and_system_events, previous_period_events: @previous_period_legacy_and_system_events, title: 'Events', type: 'events' }   
+
+
 :javascript
   $(function() {
     $('[data-toggle="tooltip"]').tooltip();

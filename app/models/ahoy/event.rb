@@ -14,6 +14,14 @@ class Ahoy::Event < ApplicationRecord
     'api-resource-create' => 8
   }
 
+  EVENT_CATEGORIES = {
+    page_visit: 'page_visit',
+    click: 'click',
+    video_view: 'video_view', 
+    form_submit: 'form_submit', 
+    section_view: 'section_view'
+  }
+
   self.table_name = "ahoy_events"
 
   belongs_to :visit

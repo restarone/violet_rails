@@ -30,7 +30,7 @@ module DashboardHelper
   end
 
   def page_name(page_id)
-    return 'Website' if page_id.nil?
+    return 'Website' if page_id.blank?
 
     Comfy::Cms::Page.find_by(id: page_id)&.label
   end
@@ -57,32 +57,32 @@ module DashboardHelper
     "This is an increase/decrease compared to the previous #{prev_interval}"
   end
 
-  def total_watch_time(video_watch_events)
-    video_watch_events.sum { |event| event.properties['watch_time'].to_i }
+  def total_watch_time(video_view_events)
+    video_view_events.sum { |event| event.properties['watch_time'].to_i }
   end
 
   def to_minutes(time_in_milisecond)
     "#{number_with_delimiter((time_in_milisecond.to_f / (1000 * 60)).round(2) , :delimiter => ',')} min"
   end
 
-  def total_views(video_watch_events)
-    video_watch_events.select { |event| event.properties['video_start'] }.size
+  def total_views(video_view_events)
+    video_view_events.select { |event| event.properties['video_start'] }.size
   end
 
-  def avg_view_duration(video_watch_events)
-    total_watch_time(video_watch_events).to_f / (total_views(video_watch_events).nonzero? || 1)
+  def avg_view_duration(video_view_events)
+    total_watch_time(video_view_events).to_f / (total_views(video_view_events).nonzero? || 1)
   end
 
-  def avg_view_percentage(video_watch_events)
-    view_percentage_arr = video_watch_events.group_by { |event| event.properties['resource_id'] }.map do |_resource_id, events|
+  def avg_view_percentage(video_view_events)
+    view_percentage_arr = video_view_events.group_by { |event| event.properties['resource_id'] }.map do |_resource_id, events|
       (events.sum { |event| event.properties['watch_time'].to_f  / event.properties['total_duration'].to_f }) * 100
     end
-    view_percentage_arr.sum / (total_views(video_watch_events).nonzero? || 1)
+    view_percentage_arr.sum / (total_views(video_view_events).nonzero? || 1)
   end
 
-  def top_three_videos(video_watch_events, previous_video_watch_events) 
-    video_watch_events.group_by { |event| event.properties['resource_id'] }.map do |resource_id, events|
-      previous_period_event = previous_video_watch_events.jsonb_search(:properties, { resource_id: resource_id })
+  def top_three_videos(video_view_events, previous_video_view_events) 
+    video_view_events.group_by { |event| event.properties['resource_id'] }.map do |resource_id, events|
+      previous_period_event = previous_video_view_events.jsonb_search(:properties, { resource_id: resource_id })
       api_resource = ApiResource.find_by(id: resource_id) 
       { 
         total_views: total_views(events),
@@ -91,6 +91,8 @@ module DashboardHelper
         previous_period_total_watch_time: total_watch_time(previous_period_event),
         resource_title: api_resource&.properties.dig(api_resource&.api_namespace.social_share_metadata&.dig("title")),
         resource_image: api_resource&.non_primitive_properties.find_by(field_type: "file", label: api_resource&.api_namespace.social_share_metadata&.dig("image"))&.file_url,
+        resource_id: api_resource&.id,
+        namespace_id: api_resource&.api_namespace.id,
         duration: events.first.properties['total_duration']
       }
     end.sort_by {|event| event[:total_views]}.reverse.first(3)
