@@ -3053,7 +3053,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_response :redirect
 
     expected_message = 'You do not have the permission to do that. Only users who can_manage_analytics are allowed to perform that action.'
-    assert_equal expected_message, flash[:notice]
+    assert_equal expected_message, flash[:alert]
     refute_equal payload[:api_namespace]['analytics_metadata'], @api_namespace.reload.analytics_metadata
   end
 end
