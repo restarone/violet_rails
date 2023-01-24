@@ -503,4 +503,39 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
 
     assert_empty response.parsed_body["data"]
   end
+
+  test '#index search jsonb field - array - KEYWORDS match ALL' do
+    @api_resource_2.update(properties: {interests: ['hello world', 'foo', 'bar']})
+    payload = { 
+        properties: { 
+          interests: {
+            value: ['hello world', 'foo'],
+            option: 'KEYWORDS'
+          }
+        }
+      }
+
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+
+    assert_equal response.parsed_body["data"].pluck("id").map(&:to_i).sort, [@api_resource_2.id].sort
+  end
+
+  test '#index search jsonb field - array - KEYWORDS match ANY' do
+    @api_resource_1.update(properties: {interests: ['hello']})
+    @api_resource_2.update(properties: {interests: ['hello world', 'foo', 'bar']})
+
+    payload = { 
+        properties: { 
+          interests: {
+            value: ['hello world', 'foo'],
+            option: 'KEYWORDS',
+            match: 'ANY'
+          }
+        }
+      }
+
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+
+    assert_equal response.parsed_body["data"].pluck("id").map(&:to_i).sort, [@api_resource_1.id, @api_resource_2.id].sort
+  end
 end
