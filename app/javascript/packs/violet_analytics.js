@@ -16,8 +16,6 @@ $(document).on("turbo:load", () => {
     })
 
     sessionStorage.setItem(analyticsBrowserStorageKey, JSON.stringify({sectionsViewedMap}));
-
-    trackPageVisit();
  
     $('[data-violet-track-click="true"]').on('click', function() {
         const eventName = this.dataset.violetEventName || VIOLET_EVENT_CATEGORIES.click;
@@ -106,16 +104,4 @@ function trackSectionViews(target, pageId) {
     }, observerOptions);
 
     observer.observe(target);
-}
-
-function trackPageVisit() {
-    const target = $('[data-violet-track-page-visit="true"]')
-    const eventName = target.data('violetEventName') || VIOLET_EVENT_CATEGORIES.page_visit;
-    const eventLabel = target.data('violetEventLabel') || 'Page Visit';
-    ahoy.track(eventName, {
-        category: VIOLET_EVENT_CATEGORIES.page_visit,
-        label: eventLabel,
-        page_id: $('body').data('page-id'),
-        page_title: document.title
-    })
 }
