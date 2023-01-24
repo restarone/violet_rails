@@ -2,7 +2,8 @@ module JsonbSearch
   module QueryBuilder
     QUERY_OPTION = {
       EXACT: 'EXACT',
-      PARTIAL: 'PARTIAL'
+      PARTIAL: 'PARTIAL',
+      KEYWORDS: 'KEYWORDS'
     }.freeze
 
     MATCH_OPTION = {
@@ -80,9 +81,9 @@ module JsonbSearch
         end
       end
 
-      # "column ->> 'property' = 'term'" 
+      # "column ->> 'property' = 'term'"
       def string_query(key, term, option, query)
-        if option == QUERY_OPTION[:PARTIAL]
+        if option == QUERY_OPTION[:KEYWORDS]
           query_array = []
           operator = 'LIKE'
 
@@ -90,18 +91,23 @@ module JsonbSearch
           terms = terms.map { |txt| "%#{txt}%" }
 
           terms.each do |txt|
-            query_array << string_sql(query, key, txt, operator)
+            query_array << generate_string_sql(query, key, txt, operator)
           end
 
-          query_array << string_sql(query, key, "%#{term}%", operator) if terms.size > 1
+          query_array << generate_string_sql(query, key, "%#{term}%", operator) if terms.size > 1
 
           query_array.join(' OR ')
+        elsif option == QUERY_OPTION[:PARTIAL]
+          term = "%#{term}%"
+          operator = 'LIKE'
+
+          generate_string_sql(query, key, term, operator)
         else
-          string_sql(query, key, term)
+          generate_string_sql(query, key, term)
         end
       end
 
-      def string_sql(query, key, term, operator = nil)
+      def generate_string_sql(query, key, term, operator = nil)
         # A ' inside a string quoted with ' may be written as ''.
         # https://stackoverflow.com/questions/54144340/how-to-query-jsonb-fields-and-values-containing-single-quote-in-rails#comment95120456_54144340
         # https://dev.mysql.com/doc/refman/8.0/en/string-literals.html#character-escape-sequences
@@ -116,7 +122,21 @@ module JsonbSearch
 
       # "column -> 'property' ? '['term']'" 
       def array_query(key, term, option, query, match)
-        if option == QUERY_OPTION[:PARTIAL]
+        if option == QUERY_OPTION[:KEYWORDS]
+          query_array = []
+          operator = 'LIKE'
+
+          term.each do |data|
+            items = data.split(' ') - STOP_WORDS
+            items = items.map { |txt| "%#{txt}%" }
+
+            items.each do |item|
+              query_array  << "lower(#{query} ->> '#{key}'::text) LIKE lower('#{item.to_s.gsub("'", "''")}')"
+            end
+          end
+
+          query_array.join(match == MATCH_OPTION[:ANY] ? ' OR ' : ' AND ')
+        elsif option == QUERY_OPTION[:PARTIAL]
           match == MATCH_OPTION[:ANY] ? term.map { |q| "#{query} -> '#{key}' ? '#{q}'" }.join(' OR ') : "#{query} -> '#{key}' @> '#{term.to_json.gsub("'", "''")}'"
         else
           "#{query} -> '#{key}' @> '#{term.to_json}' AND #{query} -> '#{key}' <@ '#{term.to_json.gsub("'", "''")}'"
