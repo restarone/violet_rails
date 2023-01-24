@@ -64,6 +64,7 @@ Rails.application.routes.draw do
       get 'export_with_associations_as_json'
       get 'export_without_associations_as_json'
       patch 'social_share_metadata'
+      patch 'analytics_metadata'
       patch 'api_action_workflow'
     end
 
