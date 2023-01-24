@@ -28,7 +28,7 @@
                 total visits
               .vr-analytics-percent-change
                 = display_percent_change(@page_visit_events.count, @previous_period_page_visit_events.count)
-              .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(@previous_period_page_visit_events.count, params[:interval], @start_date, @end_date) }
+              .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(@page_visit_events.count, @previous_period_page_visit_events.count, params[:interval], @start_date, @end_date) }
                 ?
         .vr-analytics-section-body
           - if @page_visit_events.present?
@@ -81,28 +81,34 @@
             Watch time
       
           - if @video_view_events.present? 
+            - watch_time = total_watch_time(@video_view_events)
+            - previous_watch_time = total_watch_time(@previous_period_video_view_events)
             .vr-analytics-count
               Total watch time
-              = to_minutes(total_watch_time(@video_view_events))
+              = to_minutes(watch_time)
             .vr-analytics-percent-change
-              = display_percent_change(total_watch_time(@video_view_events), total_watch_time(@previous_period_video_view_events))
-            .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(total_watch_time(@previous_period_video_view_events), params[:interval], @start_date, @end_date) }
+              = display_percent_change(watch_time, previous_watch_time)
+            .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(watch_time, previous_watch_time, params[:interval], @start_date, @end_date) }
               ?
         
             .vr-analytics-count
               Avg. view duration
-              = to_minutes(avg_view_duration(@video_view_events))
+              - view_duration = avg_view_duration(@video_view_events)
+              - previous_view_duration = avg_view_duration(@previous_period_video_view_events)
+              = to_minutes(view_duration)
             .vr-analytics-percent-change
-              = display_percent_change(avg_view_duration(@video_view_events), avg_view_duration(@previous_period_video_view_events))
-            .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(avg_view_duration(@previous_period_video_view_events), params[:interval], @start_date, @end_date) }
+              = display_percent_change(view_duration, previous_view_duration)
+            .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(view_duration, previous_view_duration, params[:interval], @start_date, @end_date) }
               ?
 
             .vr-analytics-count
               Avg. view percentage
-              = "#{avg_view_percentage(@video_view_events).round(2)}%"
+              - view_percent = avg_view_percentage(@video_view_events)
+              - previous_view_percent = avg_view_percentage(@previous_period_video_view_events)
+              = "#{view_percent.round(2)}%"
             .vr-analytics-percent-change
-              = display_percent_change(avg_view_percentage(@video_view_events), avg_view_percentage(@previous_period_video_view_events))
-            .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(avg_view_percentage(@previous_period_video_view_events), params[:interval], @start_date, @end_date) }
+              = display_percent_change(view_percent, previous_view_percent)
+            .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(view_percent, previous_view_percent, params[:interval], @start_date, @end_date) }
               ?
       - if @video_view_events.present? 
         .vr-analytics-section-body
@@ -162,7 +168,7 @@
           %br
           %br
 
-          Please make sure 'data-violet-resource-id' is present and Social sharing metadata are populated
+          Please make sure 'data-violet-resource-id' is present and Analytics mapping is populated
         
     %hr.m-0
     = render partial: 'events', locals: { events: @form_submit_events, previous_period_events: @previous_period_form_submit_events, title: 'Form Submissions', type: 'submitables' }

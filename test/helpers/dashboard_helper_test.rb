@@ -76,17 +76,17 @@ class DashboardHelperTest < ActionView::TestCase
   end
 
   test 'tooltip_content' do
-    assert_equal "There's no data from the previous 3 months to compare", tooltip_content(0, '3 months', (Time.now.beginning_of_month - 2.months).to_date, Time.now.end_of_month.to_date)
+    assert_equal "There's no data from the previous 3 months to compare", tooltip_content(1, 0, '3 months', (Time.now.beginning_of_month - 2.months).to_date, Time.now.end_of_month.to_date)
 
-    assert_equal "This is an increase/decrease compared to the previous 6 months", tooltip_content(1, '6 months', (Time.now.beginning_of_month - 5.months).to_date, Time.now.end_of_month.to_date)
+    assert_equal "This is a 100.0 % increase compared to the previous 6 months", tooltip_content(2, 1, '6 months', (Time.now.beginning_of_month - 5.months).to_date, Time.now.end_of_month.to_date)
 
-    assert_equal "There's no data from the previous month to compare", tooltip_content(0, Date.current.strftime('%B %Y'), Time.now.beginning_of_month.to_date, Time.now.end_of_month.to_date)
+    assert_equal "There's no data from the previous month to compare", tooltip_content(1, 0, Date.current.strftime('%B %Y'), Time.now.beginning_of_month.to_date, Time.now.end_of_month.to_date)
 
-    assert_equal "This is an increase/decrease compared to the previous month", tooltip_content(1, Date.current.strftime('%B %Y'), Time.now.beginning_of_month.to_date, Time.now.end_of_month.to_date)
+    assert_equal "This is a 50.0 % decrease compared to the previous month", tooltip_content(1, 2, Date.current.strftime('%B %Y'), Time.now.beginning_of_month.to_date, Time.now.end_of_month.to_date)
 
-    assert_equal "There's no data from the previous 10 days to compare", tooltip_content(0, 'Custom Interval', (Time.now - 10.days).to_date, Time.now.to_date)
+    assert_equal "There's no data from the previous 10 days to compare", tooltip_content(1, 0, 'Custom Interval', (Time.now - 10.days).to_date, Time.now.to_date)
 
-    assert_equal "This is an increase/decrease compared to the previous 10 days", tooltip_content(1, 'Custom Range', (Time.now - 10.days).to_date, Time.now.to_date)
+    assert_equal "This is a 100.0 % increase compared to the previous 10 days", tooltip_content(2, 1, 'Custom Range', (Time.now - 10.days).to_date, Time.now.to_date)
   end
 
   test 'total watch time' do
@@ -111,7 +111,7 @@ class DashboardHelperTest < ActionView::TestCase
 
   test 'avg_view_percentange' do
     mock_video_view_events
-    assert_equal '50.0', avg_view_percentage([@video_watch_event_1, @video_watch_event_2, @video_watch_event_3])
+    assert_equal 50.0, avg_view_percentage([@video_watch_event_1, @video_watch_event_2, @video_watch_event_3])
   end
 
   private 
