@@ -45,16 +45,19 @@ module DashboardHelper
   def display_percent_change(current_count, prev_count)
     return if prev_count == 0
 
-    percent_change = (((current_count - prev_count).to_f / prev_count) * 100)
+    percent_change = percent_change(current_count, prev_count)
 
     raw("<div class=\"#{ percent_change > 0 ? 'positive' : 'negative' }\"><i class=\"pr-2 fa fa-caret-#{ percent_change > 0 ? 'up' : 'down' }\"></i>#{percent_change.round(2).abs} %</div>")
   end
 
-  def tooltip_content(prev_count, interval, start_date, end_date)
+  def tooltip_content(current_count, prev_count, interval, start_date, end_date)
     prev_interval = previous_interval(interval, start_date, end_date)
     return "There's no data from the previous #{prev_interval} to compare" if prev_count.zero?
 
-    "This is an increase/decrease compared to the previous #{prev_interval}"
+    return "There's no change compared the previous #{prev_interval}" if current_count == prev_count
+
+    percent_change = percent_change(current_count, prev_count)
+    "This is a #{percent_change.round(2).abs} % #{percent_change > 0 ? 'increase': 'decrease'} compared to the previous #{prev_interval}"
   end
 
   def total_watch_time(video_view_events)
@@ -128,5 +131,9 @@ module DashboardHelper
     else
       "#{ (end_date - start_date).to_i } days"
     end
+  end
+
+  def percent_change(current_count, prev_count)
+    ((current_count - prev_count).to_f / prev_count) * 100
   end
 end
