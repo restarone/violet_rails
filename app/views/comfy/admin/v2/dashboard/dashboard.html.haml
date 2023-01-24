@@ -175,7 +175,10 @@
         %br
         %code
           :escaped
-            {{ cms:helper render_form, 1, { data: { violet-track-form-submit: true, violet-event-name: 'contact-form-submit', violet-event-label: 'Contact form' }}}}
+            {{ cms:helper render_form, 1, { data: { violet-track-form-submit: true }}}}
+        %br
+        %br
+        Default event name withh me <code>\#{api_namespace.slug}-form-submit</code> and default event label will be <code>\#{api_namespace.slug} Form Submit</code>, which can be overridden with 'data-violet-event-name' and 'data-violet-event-label' respectively.
         %br
         %br
         OR 

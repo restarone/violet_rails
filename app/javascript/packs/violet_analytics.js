@@ -33,8 +33,8 @@ $(document).on("turbo:load", () => {
 
     // Usage: {{ cms:helper render_form, 1, { data: { violet-track-form-submit: true, violet-event-name: 'contact_form_submit', violet-event-label: 'Contact form Submission' } } }}
     $('[data-violet-track-form-submit="true"]').on('submit', function() {
-        const eventName = this.dataset.violetEventName || VIOLET_EVENT_CATEGORIES.form_submit;
-        const eventLabel = this.dataset.violetEventLabel || eventName;
+        const eventName = this.dataset.violetEventName || `${this.dataset.slug}-form-submit`;
+        const eventLabel = this.dataset.violetEventLabel || `${this.dataset.slug} Form`;
         ahoy.track(eventName, {
             category: VIOLET_EVENT_CATEGORIES.form_submit,
             label: eventLabel,
@@ -111,7 +111,7 @@ function trackSectionViews(target, pageId) {
 function trackPageVisit() {
     const target = $('[data-violet-track-page-visit="true"]')
     const eventName = target.data('violetEventName') || VIOLET_EVENT_CATEGORIES.page_visit;
-    const eventLabel = target.data('violetEventLabel') || eventName;
+    const eventLabel = target.data('violetEventLabel') || 'Page Visit';
     ahoy.track(eventName, {
         category: VIOLET_EVENT_CATEGORIES.page_visit,
         label: eventLabel,
