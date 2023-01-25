@@ -1,6 +1,8 @@
 class ExternalApiClient < ApplicationRecord
   include JsonbFieldsParsable
 
+  attr_accessor :require_webhook_verification, :default_model_definition, :default_webhook_driven_model_definition
+
   STATUSES = {
     stopped: 'stopped',
     running: 'running',
@@ -10,7 +12,8 @@ class ExternalApiClient < ApplicationRecord
 
   DRIVE_STRATEGIES = {
     on_demand: 'on_demand',
-    cron: 'cron'
+    cron: 'cron',
+    webhook: 'webhook'
   }
 
   DRIVE_INTERVALS = {
@@ -31,7 +34,58 @@ class ExternalApiClient < ApplicationRecord
     one_year: '1.year',
   }
 
+  SKIPPABLE_KEYWORDS = ['render'].freeze
+
+  DEFAULT_MODEL_DEFINITION = 
+"class ExternalApiConnection
+  def initialize(parameters)
+    @external_api_client = parameters[:external_api_client]
+  end
+
+  def start
+    @external_api_client.api_namespace.api_resources.create(
+      properties: {
+        request_body: {}
+      }
+    )
+  end
+end
+
+ExternalApiConnection"
+
+  DEFAULT_WEBHOOK_DRIVEN_MODEL_DEFINITION = 
+"class WebhookDrivenConnection
+  def initialize(parameters)
+    @external_api_client = parameters[:external_api_client]
+  
+    # rails request object accessable for webhook, https://api.rubyonrails.org/classes/ActionDispatch/Request.html
+    @payload = parameters[:request]&.request_parameters
+  end
+  
+  def start
+    object = @external_api_client.api_namespace.api_resources.create(
+      properties: {
+        request_body: @payload
+      }
+    )
+    # render the object as the response
+    render json: { result: object }
+  end
+end
+
+WebhookDrivenConnection"
+
   extend FriendlyId
+
+  before_save :remove_webhook_verification_method, unless: -> { (require_webhook_verification.nil? || ActiveModel::Type::Boolean.new.cast(require_webhook_verification)) }
+
+  after_initialize do
+    self.default_webhook_driven_model_definition = DEFAULT_WEBHOOK_DRIVEN_MODEL_DEFINITION
+    self.default_model_definition = DEFAULT_MODEL_DEFINITION
+
+    self.model_definition = DEFAULT_WEBHOOK_DRIVEN_MODEL_DEFINITION if drive_strategy == ExternalApiClient::DRIVE_STRATEGIES[:webhook] && self.new_record?
+  end
+
   friendly_id :label, use: :slugged
   belongs_to :api_namespace
 
@@ -41,7 +95,11 @@ class ExternalApiClient < ApplicationRecord
   validates :drive_every, presence: true, if: -> { drive_strategy == ExternalApiClient::DRIVE_STRATEGIES[:cron] }
 
   validates :drive_every, inclusion: { in: ExternalApiClient::DRIVE_INTERVALS.keys.map(&:to_s) }, allow_blank: true, allow_nil: true
-  validates :model_definition, safe_executable: true
+  validates :model_definition, safe_executable: { skip_keywords: SKIPPABLE_KEYWORDS }
+
+  has_one :webhook_verification_method
+
+  accepts_nested_attributes_for :webhook_verification_method
 
   def self.cron_jobs
     intervals = ExternalApiClient.pluck(:drive_every).compact
@@ -60,12 +118,12 @@ class ExternalApiClient < ApplicationRecord
     return runnable_external_api_clients
   end
 
-  def run
+  def run(args = {})
     # prevent triggering if its not enabled or the status is error (means that the custom model definition raised an error and it bubbled up)
     return false if !self.enabled || self.status == ExternalApiClient::STATUSES[:error]
     # prevent race conditions, if a client is running already-- dont run
     return false if self.status == ExternalApiClient::STATUSES[:running]
-    ExternalApiClientJob.perform_async(self.id)
+    ExternalApiClientJob.perform_async(self.id, args.deep_stringify_keys)
   end
 
   def evaluated_model_definition
@@ -97,5 +155,9 @@ class ExternalApiClient < ApplicationRecord
 
   def set_metadata(hash)
     self.update(metadata: hash)
+  end
+
+  def remove_webhook_verification_method
+    self.webhook_verification_method&.destroy
   end
 end
