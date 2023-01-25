@@ -60,7 +60,6 @@ module JsonbSearch
         when 'Hash'
           return hash_query(key, term, option, query_string)
         when 'Array'
-          byebug
           if option
             return array_query(key, term, option, query_string, param[:match])
           else
@@ -99,14 +98,77 @@ module JsonbSearch
         if option == QUERY_OPTION[:PARTIAL]
           match == MATCH_OPTION[:ANY] ? term.map { |q| "#{query} -> '#{key}' ? '#{q}'" }.join(' OR ') : "#{query} -> '#{key}' @> '#{term.to_json.gsub("'", "''")}'"
         else
-          byebug 
+          # array(select unnest(array[#{query} -> '#{key}'])::text)
+          # jsonb_agg(jsonb_build_object())
+          # json_array_elements_text('[5, 6]'::json)
+          # CAST(colname AS varchar[])
+          # json_array_elements_text('[5, 6]'::json)
+          #  to_json(string_to_array(replace((json->'object'->'urls')::text, '"',''), ';'))
 
+
+          # {
+          #   "name" : "Admin",
+          #   "age" : 36,
+          #   "Array" : [ 1, 2, 3 ]
+          # }
+
+          # before comparing , converting data as : 
+
+          # {
+          #   "name" : "Admin",
+          #   "age" : 36,
+          #   "Array" : [ "1", "2", "3" ]
+          # }
+
+          # { "object": { "urls": "A;B;C" } }
+          # { "object" : { "urls": ["A", "B", "C"] } }
+          # to_json(string_to_array(replace((json->'object'->'urls')::text, '"',''), ';'));
+
+
+          
+          
+          
+# 'items@> ARRAY[?]::varchar[]', ["0", "1"]
+          # byebug 
+          #original 
           "#{query} -> '#{key}' @> '#{term.to_json}' AND #{query} -> '#{key}' <@ '#{term.to_json.gsub("'", "''")}'"
+          # json_array_elements_text('[5, 6]'::json) WITH ORDINALITY as elems(value, index)
+          # json_agg(elems.value::text ORDER BY elems.index)
+          
+          
+            #  "jsonb_array_elements('#{query}') WITH ORDINALITY arr('#{query}', '#{key}') @> '#{term.to_json}' AND jsonb_array_elements('#{query}') WITH ORDINALITY arr('#{query}', '#{key}') <@ '#{term.to_json.gsub("'", "''")}'"
+
+
+          # "(#{query} -> '#{key}'::text[]) @> '#{term.to_json}' AND (#{query} -> '#{key}'::text[]) <@ '#{term.to_json.gsub("'", "''")}'"
+          # json_agg(#{query}.#{key}::text ORDER BY #{key}.index)
+          # " json_agg(#{query}.#{key}::text ORDER BY #{key}.index) @> '#{term.to_json}' AND  json_agg(#{query}.#{key}::text ORDER BY #{key}.index) <@ '#{term.to_json.gsub("'", "''")}'"
+          
+          # "json_array_elements_text(#{query}->'#{key}') @> '#{term.to_json}' AND json_array_elements_text(#{query}->'#{key}') <@ '#{term.to_json.gsub("'", "''")}'"
+
+          # jsonb_array_to_text_array(misc->'names')
+
+
+          # "(#{query} -> '#{key}'::text[]) @> '#{term.to_json}' AND (#{query} -> '#{key}'::text[]) <@ '#{term.to_json.gsub("'", "''")}'"
+          
+          
+          # json_array_elements_text('[5, 6]'::json) WITH ORDINALITY as elems(value, index)
+          # "CAST (#{query} -> '#{key}' AS text[]) @> '#{term.to_json}' AND CAST (#{query} -> '#{key}' AS text[]) <@ '#{term.to_json.gsub("'", "''")}'"
+
+          
+          # "#{query} -> '#{key}'@> ARRAY[?]::varchar[], '#{term.to_json}' AND #{query} -> '#{key}'<@ ARRAY[?]::varchar[], '#{term.to_json.gsub("'", "''")}'"
+          
+          # "#{query} -> '#{key}'::text[] @> '#{term.to_json}' AND #{query} -> '#{key}'::text[] <@ '#{term.to_json.gsub("'", "''")}'"
+
+          #  to_json(string_to_array(replace((json->'#{query}'->'#{key}')::text, '"',''), ';'))
+          
+          
+          # "(#{query} -> '#{key}')::varchar(255) @> '#{term.to_json}' AND (#{query} -> '#{key}')::varchar(255) <@ '#{term.to_json.gsub("'", "''")}'"
+          
+          # "to_json(string_to_array(replace(('#{query}'-->'#{key}')::text[], '[','["',"]",'"]'),'')) @> '#{term.to_json}' AND to_json(string_to_array(replace(('#{query}'-->'#{key}')::text[], '[','["',"]",'"]'),'')) <@ '#{term.to_json.gsub("'", "''")}'";
+          # "json_array_elements_text(#{query} --> '#{key}'::json) WITH ORDINALITY as elems(value, index)  @> '#{term.to_json}' AND json_array_elements_text(#{query} --> '#{key}'::json) WITH ORDINALITY as elems(value, index) <@ '#{term.to_json.gsub("'", "''")}'"
+          # "array(select unnest(array[#{query} --> '#{key}'])::text[]) @> '#{term.to_json}' AND array(select unnest(array[#{query} --> '#{key}'])::text[]) <@ '#{term.to_json.gsub("'", "''")}'"
         end
       end
     end
   end
 end
-['fruit','veg']
-
-[1,2] => ["1","2"]
