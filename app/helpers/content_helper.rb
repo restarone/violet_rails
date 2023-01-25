@@ -22,13 +22,13 @@ module ContentHelper
   def render_api_namespace_resource_index(slug, options = {})
     set_api_html_render_flag
     scope = options["scope"] || {}
-
+    byebug
+    
     api_namespace = ApiNamespace.find_by(slug: slug)
     response = api_namespace.api_resources
 
     response = response.where.not(user_id: nil).where(user_id: current_user&.id) if scope&.dig('current_user') == 'true'
     # custom_properties = JSON.parse(scope["properties"].to_json, object_class: OpenStruct).to_s.gsub(/=/,':').gsub(/#<OpenStruct/,'{').gsub(/>/,'}').gsub("\\", "'").gsub(/'"/,'"').gsub(/"'/,'"').gsub(/""/,'"') if scope["properties"]
-    byebug
     # scope["properties"].each do |key, value|
     #   if value.instance_of?(Array) 
     #     value.each do |x| 
@@ -48,7 +48,6 @@ module ContentHelper
     response = response.limit(options["limit"]) if options["limit"]
 
     snippet_identifier = options["snippet"] ? options["snippet"] : slug
-    # byebug
 
     cms_dynamic_snippet_render(snippet_identifier, nil, { api_resources: response, api_namespace: api_namespace })
   end
