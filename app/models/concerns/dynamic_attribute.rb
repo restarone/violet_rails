@@ -34,6 +34,10 @@ module DynamicAttribute
 
       def attribute_value_string(attribute)
         value = public_send(attribute.to_sym)
+
+        # decoding special characters that action text encoded
+        value = Addressable::URI.unencode(value.to_s) if value.is_a? ActionText::RichText
+
         # Deep copy of non-enumerable column like string-type would get passed and the evaluated value would get reflected as change.
         value.is_a?(Enumerable) ? JSON.generate(value) : value.to_s.dup
       end
