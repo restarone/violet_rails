@@ -22,22 +22,12 @@ module ContentHelper
   def render_api_namespace_resource_index(slug, options = {})
     set_api_html_render_flag
     scope = options["scope"] || {}
-    byebug
     
     api_namespace = ApiNamespace.find_by(slug: slug)
     response = api_namespace.api_resources
 
     response = response.where.not(user_id: nil).where(user_id: current_user&.id) if scope&.dig('current_user') == 'true'
-    # custom_properties = JSON.parse(scope["properties"].to_json, object_class: OpenStruct).to_s.gsub(/=/,':').gsub(/#<OpenStruct/,'{').gsub(/>/,'}').gsub("\\", "'").gsub(/'"/,'"').gsub(/"'/,'"').gsub(/""/,'"') if scope["properties"]
-    # scope["properties"].each do |key, value|
-    #   if value.instance_of?(Array) 
-    #     value.each do |x| 
-    #       if x.is_a? Integer
-    #         byebug
-    #       end
-    #     end
-    #   end
-    # end
+    
     response = response.jsonb_search(:properties, scope["properties"], scope["match"]) if scope["properties"]
     response = response.jsonb_search(:properties, JSON.parse(params[:properties]).to_hash, params[:match]) if params[:properties]
 
