@@ -5,7 +5,10 @@ module ApiFormsHelper
     @api_form = ApiForm.find_by(id: id)
     if @api_form
       @api_namespace = @api_form.api_namespace
-      render partial: 'comfy/admin/api_forms/render', locals: { data: options['data'] || {} }
+      data = options['data'] || {}
+
+      data["violet-track-form-submit"] = "true" unless data["violet-track-form-submit"].present?
+      render partial: 'comfy/admin/api_forms/render', locals: { data: data }
     end
   end
 
