@@ -5,10 +5,15 @@ const VIOLET_EVENT_CATEGORIES = {
     video_view: 'video_view',
     section_view: 'section_view',
 }
+var analyticsLoaded = false;
 
-$(document).on("turbo:load", () => {
+
+$(window).on("load turbo:load", () => {
+    if (analyticsLoaded) { return ; }
+
     const pageId = $('body').data('page-id');
     const analyticsBrowserStorageKey = `violet_analytics_page_${pageId}`;
+
     let sectionsViewedMap = {};
 
     $('[data-violet-track-section-view="true"]').each(function() {
@@ -81,6 +86,12 @@ $(document).on("turbo:load", () => {
     $('[data-violet-track-section-view="true"]').each(function() {
         trackSectionViews(this, pageId)
     })
+
+    analyticsLoaded = true;
+})
+
+$(window).on('beforeunload turbo:before-visit', function() {
+    analyticsLoaded = false;
 })
 
 function trackSectionViews(target, pageId) {
