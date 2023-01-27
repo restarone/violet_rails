@@ -87,6 +87,15 @@
     box-shadow: -4px 12px 24px #29384514;
     border: 1px solid #E9EAEC;
     border-radius: 5px;
+    position: relative;
+
+    & > a {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+    } 
 
     &-section {
       padding: 16px;
@@ -104,9 +113,13 @@
 
     &-resource-title {
       font-weight: bold;
+      position: relative;
+      pointer-events: none;
+      z-index: 1;
 
       & > a {
         color: #293845;
+        pointer-events: all;
       }
     }
 

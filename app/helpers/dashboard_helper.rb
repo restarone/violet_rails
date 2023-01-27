@@ -97,7 +97,8 @@ module DashboardHelper
         resource_image: api_resource&.non_primitive_properties.find_by(field_type: "file", label: api_resource&.api_namespace.analytics_metadata&.dig("thumbnail"))&.file_url,
         resource_id: api_resource&.id,
         namespace_id: api_resource&.api_namespace.id,
-        duration: events.first.properties['total_duration']
+        duration: events.first.properties['total_duration'],
+        name: events.first.name
       }
     end.sort_by {|event| event[:total_views]}.reverse.first(3)
   end

@@ -119,6 +119,7 @@
             - top_three_videos(@video_view_events, @previous_period_video_view_events).each do |event|
               .col.col-md-5.mb-4
                 .vr-analytics-card
+                  = link_to '', dashboard_events_path(ahoy_event_type: event[:name])
                   .vr-analytics-card-section
                     .d-flex 
                       .vr-analytics-card-resource-poster-conatiner
