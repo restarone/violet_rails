@@ -22,12 +22,12 @@ module ContentHelper
   def render_api_namespace_resource_index(slug, options = {})
     set_api_html_render_flag
     scope = options["scope"] || {}
-    byebug
     
     api_namespace = ApiNamespace.find_by(slug: slug)
     response = api_namespace.api_resources
 
     response = response.where.not(user_id: nil).where(user_id: current_user&.id) if scope&.dig('current_user') == 'true'
+    
     response = response.jsonb_search(:properties, scope["properties"], scope["match"]) if scope["properties"]
     response = response.jsonb_search(:properties, JSON.parse(params[:properties]).to_hash, params[:match]) if params[:properties]
 
@@ -52,11 +52,12 @@ module ContentHelper
     
     api_namespace = ApiNamespace.find_by(slug: api_namespace_slug)
     api_resources = api_namespace.api_resources
-
+    
     api_resources = api_resources.where.not(user_id: nil).where(user_id: current_user&.id) if scope&.dig('current_user') == 'true'
     
     api_resources = api_resources.jsonb_search(:properties, scope["properties"], scope["match"]) if scope&.has_key?("properties")
     
+    # byebug
     @api_resource_to_render = api_resources.find(params[:id])
 
     snippet_name = options["snippet"] ? options["snippet"] : api_namespace_slug
