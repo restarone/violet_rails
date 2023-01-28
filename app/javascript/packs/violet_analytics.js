@@ -91,6 +91,8 @@ $(window).on("load turbo:load", () => {
 })
 
 $(window).on('beforeunload turbo:before-visit', function() {
+    // trigger pause event on videos
+    $('[data-violet-track-video-view="true"]').each( function() { this.pause(); })
     analyticsLoaded = false;
 })
 
