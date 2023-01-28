@@ -17,7 +17,7 @@
 
   %main{class: 'my-5'}
     %section.row.vr-analytics-section.vr-analytics-page-visit-events
-      .col{ class: @page_visit_events.present? ? "col-9" : "col-12" }
+      .col{ class: @page_visit_events.present? ? "col-lg-9 mb-4" : "col-12" }
         .d-flex.justify-content-between
           .vr-analytics-section-header.d-flex.justify-content-between.align-items-center
             .vr-analytics-sub-title
@@ -53,7 +53,7 @@
                 :escaped
                   </main>
       - if @page_visit_events.present?
-        .col.col-3
+        .col.col-lg-3
           .vr-analytics-card.vr-analytics-page-visit-events-donut-chart
             %h5 Website visitors
             = pie_chart visitors_chart_data(@visits), colors: ['#F7A47B', '#B5E69A'], donut: true, library: { cutout: 85, plugins: { legend: { position: "bottom",  align: 'start', labels: {boxWidth: 8, usePointStyle: true, font: { size: 16 } } } } }
@@ -76,48 +76,54 @@
 
     %section.vr-analytics-section
       .vr-analytics-section-header
-        .d-flex.align-items-center
-          .vr-analytics-sub-title
+        .row.align-items-center
+          .vr-analytics-sub-title.col.col-12.col-md-2
             Watch time
-      
-          - if @video_view_events.present? 
-            - watch_time = total_watch_time(@video_view_events)
-            - previous_watch_time = total_watch_time(@previous_period_video_view_events)
-            .vr-analytics-count
-              Total watch time
-              = to_minutes(watch_time)
-            .vr-analytics-percent-change
-              = display_percent_change(watch_time, previous_watch_time)
-            .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(watch_time, previous_watch_time, params[:interval], @start_date, @end_date) }
-              ?
-        
-            .vr-analytics-count
-              Avg. view duration
-              - view_duration = avg_view_duration(@video_view_events)
-              - previous_view_duration = avg_view_duration(@previous_period_video_view_events)
-              = to_minutes(view_duration)
-            .vr-analytics-percent-change
-              = display_percent_change(view_duration, previous_view_duration)
-            .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(view_duration, previous_view_duration, params[:interval], @start_date, @end_date) }
-              ?
 
-            .vr-analytics-count
-              Avg. view percentage
-              - view_percent = avg_view_percentage(@video_view_events)
-              - previous_view_percent = avg_view_percentage(@previous_period_video_view_events)
-              = "#{view_percent.round(2)}%"
-            .vr-analytics-percent-change
-              = display_percent_change(view_percent, previous_view_percent)
-            .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(view_percent, previous_view_percent, params[:interval], @start_date, @end_date) }
-              ?
+          - if @video_view_events.present? 
+            .col.col-md-10
+              .row
+                - watch_time = total_watch_time(@video_view_events)
+                - previous_watch_time = total_watch_time(@previous_period_video_view_events)
+                .col.col-12.col-sm-4.d-flex.align-items-center.my-3.my-sm-0
+                  .vr-analytics-count.ml-0
+                    Total watch time
+                    = to_minutes(watch_time)
+                  .vr-analytics-percent-change
+                    = display_percent_change(watch_time, previous_watch_time)
+                  .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(watch_time, previous_watch_time, params[:interval], @start_date, @end_date) }
+                    ?
+            
+                .col.col-12.col-sm-4.d-flex.align-items-center.mb-3.mb-sm-0
+                  .vr-analytics-count.ml-0
+                    Avg. view duration
+                    - view_duration = avg_view_duration(@video_view_events)
+                    - previous_view_duration = avg_view_duration(@previous_period_video_view_events)
+                    = to_minutes(view_duration)
+                  .vr-analytics-percent-change
+                    = display_percent_change(view_duration, previous_view_duration)
+                  .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(view_duration, previous_view_duration, params[:interval], @start_date, @end_date) }
+                    ?
+
+                .col.col-12.col-sm-4.d-flex.align-items-center.mb-3.mb-sm-0
+                  .vr-analytics-count.ml-0
+                    Avg. view percentage
+                    - view_percent = avg_view_percentage(@video_view_events)
+                    - previous_view_percent = avg_view_percentage(@previous_period_video_view_events)
+                    = "#{view_percent.round(2)}%"
+                  .vr-analytics-percent-change
+                    = display_percent_change(view_percent, previous_view_percent)
+                  .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(view_percent, previous_view_percent, params[:interval], @start_date, @end_date) }
+                    ?
       - if @video_view_events.present? 
         .vr-analytics-section-body
           .vr-analytics-event-label 
-            Top 3 videos
+            - top_videos = top_three_videos(@video_view_events, @previous_period_video_view_events)
+            = "Top #{top_videos.count} videos"
 
           .row.mt-4
-            - top_three_videos(@video_view_events, @previous_period_video_view_events).each do |event|
-              .col.col-md-5.mb-4
+            - top_videos.each do |event|
+              .col.col-12.col-lg-5.mb-4
                 .vr-analytics-card
                   = link_to '', dashboard_events_path(ahoy_event_type: event[:name])
                   .vr-analytics-card-section

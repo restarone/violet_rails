@@ -142,13 +142,6 @@
     }
   }
 
-  &-events {
-    &-grid {
-      display: grid;
-      gap: 64px;
-      grid-template-columns: 1fr 1fr 1fr 1fr; 
-    }
-  }
 
   &-blank-states {
     color: grey;

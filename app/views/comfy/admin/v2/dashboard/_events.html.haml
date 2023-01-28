@@ -14,10 +14,10 @@
 
   - if events.present?
     .vr-analytics-section-body.d-flex.align-items-center
-      .vr-analytics-events-grid
+      .vr-analytics-events-grid.row.w-100
         - previous_grouped_events = previous_period_events.group(:name).size
         - events.group_by(&:label).each do |key, value|
-          .vr-analytics-events-grid-item
+          .vr-analytics-events-grid-item.col.col-12.col-sm-6.col-md-4.col-lg-3.mb-4
             .d-flex.mr-4.align-items-center.mb-2
               .vr-analytics-count-lg
                 = value.count 
