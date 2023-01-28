@@ -26,4 +26,4 @@
               - if previous_grouped_events[key].to_i == 0
                 .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(value.count, 0, params[:interval], @start_date, @end_date) }
                   ?
-            = link_to key, dashboard_events_path(ahoy_event_type: key), class: 'vr-analytics-event-label'  
+            = link_to key, dashboard_events_path(ahoy_event_type: value.first&.name), class: 'vr-analytics-event-label'  
