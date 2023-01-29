@@ -48,11 +48,11 @@ module ApiFormsHelper
     key = form.object.label.to_sym
     case type
     when 'file'
-      options = { required:  form_properties.dig(key, 'required') == '1', class: 'form-control', type: 'file', direct_upload: true, onchange: "previewFile(event, '#{key.to_s.parameterize.underscore}_preview')" }
+      options = { required:  form_properties&.dig(key, 'required') == '1', class: 'form-control', type: 'file', direct_upload: true, onchange: "previewFile(event, '#{key.to_s.parameterize.underscore}_preview')" }
       form.file_field :attachment, options
     when 'richtext'
-      options = { placeholder: form_properties.dig(key, 'placeholder'), required: form_properties.dig(key, 'required') == '1' }
-      options[:value] = form_properties.dig(key, 'prepopulate') == '1' || is_edit ? form.object.content : ''
+      options = { placeholder:  form_properties&.dig(key, 'placeholder'), required:  form_properties&.dig(key, 'required') == '1' }
+      options[:value] =  form_properties&.dig(key, 'prepopulate') == '1' || is_edit ? form.object.content : ''
       form.rich_text_area :content, options
     end
   end
