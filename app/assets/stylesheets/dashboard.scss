@@ -60,6 +60,14 @@
     }
   }
 
+  &-filter-dropdown-container {
+    & > button {
+      color: #BD34D1;
+      font-size: 16px;
+      font-weight: 600;
+    }
+  }
+
   &-filters {
     &-pages {
       border: none;
@@ -70,7 +78,8 @@
       background: transparent;
       background-image: url("data:image/svg+xml;utf8,<svg fill='%23bd34d1' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
       background-repeat: no-repeat;
-      background-position-x: 100%;
+      background-position-x: 98.5%;
+      background-position-y: 50%;
     }
 
     &-pages, 
@@ -81,6 +90,18 @@
       font-weight: 600;
       cursor: pointer;
     }
+
+    @media (max-width: 767px) {
+      &-pages,
+      &-ranges {
+        width: 100%;
+        border: 1px solid #E5E7E8;
+        border-radius: 5px;
+        padding: 9px 16px;
+        margin-bottom: 8px;
+      }
+    }
+
   }
 
   &-card {
