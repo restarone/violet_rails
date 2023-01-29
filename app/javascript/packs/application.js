@@ -20,3 +20,5 @@ require("./tribute")
 require("./select2")
 require("./common")
 require("./turbo")
+
+import 'bootstrap-daterangepicker/daterangepicker.css';
