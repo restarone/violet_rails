@@ -1,16 +1,17 @@
 %section.vr-analytics-section.vr-analytics-events
   .vr-analytics-section-header
-    .d-flex.align-items-center
+    .d-md-flex.align-items-center
       .vr-analytics-sub-title
         = title
       - if events.present?
-        .vr-analytics-count
-          = events.count 
-          = "total #{type}"
-        .vr-analytics-percent-change
-          = display_percent_change(events.count, previous_period_events.count)
-        .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(events.count, previous_period_events.count, params[:interval], @start_date, @end_date) }
-          ?
+        .d-flex.align-items-center.mt-2.mt-md-0
+          .vr-analytics-count
+            = events.count 
+            = "total #{type}"
+          .vr-analytics-percent-change
+            = display_percent_change(events.count, previous_period_events.count)
+          .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(events.count, previous_period_events.count, params[:interval], @start_date, @end_date) }
+            ?
 
   - if events.present?
     .vr-analytics-section-body.d-flex.align-items-center

@@ -24,17 +24,18 @@
     %section.row.vr-analytics-section.vr-analytics-page-visit-events
       .col{ class: @page_visit_events.present? ? "col-lg-9 mb-4" : "col-12" }
         .d-flex.justify-content-between
-          .vr-analytics-section-header.d-flex.justify-content-between.align-items-center
+          .vr-analytics-section-header.d-md-flex.justify-content-between.align-items-center
             .vr-analytics-sub-title
               = "#{page_name(params[:page])} visits"
             - if @page_visit_events.present?
-              .vr-analytics-count
-                = @page_visit_events.count 
-                total visits
-              .vr-analytics-percent-change
-                = display_percent_change(@page_visit_events.count, @previous_period_page_visit_events.count)
-              .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(@page_visit_events.count, @previous_period_page_visit_events.count, params[:interval], @start_date, @end_date) }
-                ?
+              .d-flex.justify-content-between.align-items-center.mt-2.mt-md-0
+                .vr-analytics-count
+                  = @page_visit_events.count 
+                  total visits
+                .vr-analytics-percent-change
+                  = display_percent_change(@page_visit_events.count, @previous_period_page_visit_events.count)
+                .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(@page_visit_events.count, @previous_period_page_visit_events.count, params[:interval], @start_date, @end_date) }
+                  ?
         .vr-analytics-section-body
           - if @page_visit_events.present?
             = column_chart page_visit_chart_data(@page_visit_events, @start_date, @end_date), colors: ["#88DAE3FF", "#D785E3FF", "#F7C85CFF"], library: { plugins: { legend: { position: "top", align: "end", labels: { padding: 24, boxWidth: 8, usePointStyle: true, font: { size: 16 } } } }  }
