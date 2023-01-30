@@ -29,6 +29,7 @@ module ContentHelper
     response = response.where.not(user_id: nil).where(user_id: current_user&.id) if scope&.dig('current_user') == 'true'
 
     response = response.jsonb_search(:properties, scope["properties"], scope["match"]) if scope["properties"]
+
     response = response.jsonb_search(:properties, JSON.parse(params[:properties]).to_hash, params[:match]) if params[:properties]
 
     response = response.jsonb_order(options["order"]) if options["order"]
