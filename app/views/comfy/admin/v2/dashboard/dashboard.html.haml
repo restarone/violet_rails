@@ -4,12 +4,12 @@
     .row.my-2.justify-content-between.align-items-center.navbar.navbar-expand-md.p-0
       .vr-analytics-title.col.col-6.col-md-3
         Dashboard
-      .vr-analytics-filter-dropdown-container.col.col-6.d-flex.justify-content-end
+      .vr-analytics-filter-dropdown-container.col.col-6.d-flex.d-md-none.justify-content-end
         %button{"aria-controls" => "navbarSupportedContent", "aria-expanded" => "false", "aria-label" => "Toggle navigation", class:"navbar-toggler", "data-target" => "#filter-collapse", "data-toggle" => "collapse", type: "button"}
           %i.fas.fa-filter.mr-2
           Filters
 
-      .vr-analytics-filters.col.col-md-9.navbar-collapse.collapse{id: 'filter-collapse'}
+      .vr-analytics-filters.col.col-md-9.justify-content-end.navbar-collapse.collapse{id: 'filter-collapse'}
         = form_with(url: v2_dashboard_path, method: :get, html: {id: 'analytics_filter' }) do |f|
           .d-md-flex.justify-content-end.mt-3.mt-md-0
             = f.hidden_field :start_date, value: params[:start_date]

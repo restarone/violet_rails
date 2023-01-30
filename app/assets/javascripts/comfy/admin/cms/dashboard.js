@@ -29,7 +29,6 @@ $(function() {
 });
 
 function cb() {
-  console.log('I am here')
   if (!$('#start_date').val() && !$('#end_date').val()) {
     $('#reportrange span').html(moment().format('MMMM YYYY'));
   } else if ($('#interval').val() == 'Custom Range') {
