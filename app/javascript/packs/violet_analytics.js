@@ -106,13 +106,13 @@ function trackSectionViews(target, pageId) {
         const entry = entries[0];
         const targetHasBeenViewed = analyticsStorage.sectionsViewedMap[eventName];
         if (entry.isIntersecting && !targetHasBeenViewed) {
-        ahoy.track(eventName, {
-            category: VIOLET_EVENT_CATEGORIES.section_view,
-            label: target.dataset.violetEventLabel || eventName,
-            page_id: pageId
-        });
-        analyticsStorage.sectionsViewedMap[eventName] = true;
-        sessionStorage.setItem(analyticsBrowserStorageKey, JSON.stringify(analyticsStorage));
+            ahoy.track(eventName, {
+                category: VIOLET_EVENT_CATEGORIES.section_view,
+                label: target.dataset.violetEventLabel || eventName,
+                page_id: pageId
+            });
+            analyticsStorage.sectionsViewedMap[eventName] = true;
+            sessionStorage.setItem(analyticsBrowserStorageKey, JSON.stringify(analyticsStorage));
         }
     }, observerOptions);
 
