@@ -37,7 +37,7 @@ jobs:
       SERVER_IP: ${{ secrets.SERVER_IP }}
       BRANCH: ${{ secrets.BRANCH }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install Rbenv
         run: |
           sudo git clone https://github.com/rbenv/rbenv.git /home/runner/.rbenv
@@ -54,11 +54,11 @@ jobs:
         with:
           ruby-version: 2.6.6
           bundler-cache: true 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14.x
       - name: Add public IP to AWS security group
-        uses: sohelamin/aws-security-group-add-ip-action@master
+        uses: uxxman/aws-security-group-add-ip-action@patch-1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

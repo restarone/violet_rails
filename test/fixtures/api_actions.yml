@@ -81,6 +81,15 @@ error_api_action_one:
   email: test@restarone.com
   api_namespace: one
 
+error_api_action_one_with_api_resource_data:
+  type: ErrorApiAction
+  action_type: send_email
+  include_api_resource_data: true
+  payload_mapping:
+  redirect_url:
+  email: test@restarone.com
+  api_namespace: one
+
 error_api_action_two:
   type: ErrorApiAction
   action_type: redirect
