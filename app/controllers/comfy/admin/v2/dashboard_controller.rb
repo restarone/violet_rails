@@ -25,7 +25,7 @@ class Comfy::Admin::V2::DashboardController < Comfy::Admin::Cms::BaseController
     # separating out 'comfy-cms-page-visit' event since we have a seprate section
     @legacy_and_system_events = Ahoy::Event.where.not('properties::jsonb ? :key', key: 'category').where.not(name: 'comfy-cms-page-visit').joins(:visit)
     @previous_period_legacy_and_system_events = @legacy_and_system_events.where(time: previous_period(params[:interval], @start_date, @end_date))
-    @legacy_and_system_events.where(time: date_range)
+    @legacy_and_system_events = @legacy_and_system_events.where(time: date_range)
   end
 
 
