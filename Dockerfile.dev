@@ -20,6 +20,7 @@ RUN apk --no-cache update \
 && apk --no-cache upgrade \
 && apk add --no-cache \ 
 build-base \
+python2 \
 ttf-ubuntu-font-family \
 git \
 postgresql-dev \

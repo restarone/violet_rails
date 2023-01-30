@@ -20,6 +20,8 @@ Rails.application.routes.draw do
 
   post 'import_api_namespace', to: 'comfy/admin/api_namespaces#import_as_json', as: :import_as_json_api_namespaces
 
+  get 'v2/dashboard', to: 'comfy/admin/v2/dashboard#dashboard'
+  
   resources :signup_wizard
   resources :signin_wizard
   constraints SubdomainConstraint do
@@ -62,6 +64,7 @@ Rails.application.routes.draw do
       get 'export_with_associations_as_json'
       get 'export_without_associations_as_json'
       patch 'social_share_metadata'
+      patch 'analytics_metadata'
       patch 'api_action_workflow'
     end
 
