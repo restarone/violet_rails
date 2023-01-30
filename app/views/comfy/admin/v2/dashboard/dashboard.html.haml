@@ -76,7 +76,7 @@
         %br
         %code
           :escaped
-            <a data-violet-track-="true" data-violet-event-name="test-link-clicked" data-violet-event-label="Test Link">Test</a>
+            <a data-violet-track-click="true" data-violet-event-name="test-link-clicked" data-violet-event-label="Test Link">Test</a>
 
     %hr.m-0
 
@@ -222,7 +222,7 @@
       .vr-analytics-blank-states
         There are no section view events within the selected date range. 
         %br
-        Use 'data-violet-track-section="true"' attribute on a HTML element to track section views.
+        Use 'data-violet-track-section-view="true"' attribute on a HTML element to track section views.
         %br
         %br
         %code
@@ -237,6 +237,19 @@
           %br
           :escaped
             </div>
+
+        %br
+        %br
+        Make sure to adjust target visibility threshold for large sections with 'data-violet-visibility-threshold'.
+        %br
+        Threshold indicates at what percentage of the target's visibility the tracking should be executed
+        %br
+        %a{href: 'https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API#thresholds'}
+          https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API#thresholds
+
+        %br
+        %br
+        By default, the threshold value is 0.75
 
     %hr.m-0
     = render partial: 'events', locals: { events: @legacy_and_system_events, previous_period_events: @previous_period_legacy_and_system_events, title: 'Events', type: 'events' }   

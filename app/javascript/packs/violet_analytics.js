@@ -98,7 +98,7 @@ $(window).on('beforeunload turbo:before-visit', function() {
 
 function trackSectionViews(target, pageId) {
     const eventName = target.dataset.violetEventName;
-    const observerOptions = { root: null, threshold: 0.75 };
+    const observerOptions = { root: null, threshold: target.dataset.violetVisibilityThreshold || 0.75 };
     const analyticsBrowserStorageKey = `violet_analytics_page_${pageId}`  
 
     const observer = new IntersectionObserver((entries) => {
@@ -106,13 +106,13 @@ function trackSectionViews(target, pageId) {
         const entry = entries[0];
         const targetHasBeenViewed = analyticsStorage.sectionsViewedMap[eventName];
         if (entry.isIntersecting && !targetHasBeenViewed) {
-        ahoy.track(eventName, {
-            category: VIOLET_EVENT_CATEGORIES.section_view,
-            label: target.dataset.violetEventLabel || eventName,
-            page_id: pageId
-        });
-        analyticsStorage.sectionsViewedMap[eventName] = true;
-        sessionStorage.setItem(analyticsBrowserStorageKey, JSON.stringify(analyticsStorage));
+            ahoy.track(eventName, {
+                category: VIOLET_EVENT_CATEGORIES.section_view,
+                label: target.dataset.violetEventLabel || eventName,
+                page_id: pageId
+            });
+            analyticsStorage.sectionsViewedMap[eventName] = true;
+            sessionStorage.setItem(analyticsBrowserStorageKey, JSON.stringify(analyticsStorage));
         }
     }, observerOptions);
 
