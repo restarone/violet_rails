@@ -98,7 +98,7 @@ $(window).on('beforeunload turbo:before-visit', function() {
 
 function trackSectionViews(target, pageId) {
     const eventName = target.dataset.violetEventName;
-    const observerOptions = { root: null, threshold: 0.75 };
+    const observerOptions = { root: null, threshold: target.dataset.violetVisibilityThreshold || 0.75 };
     const analyticsBrowserStorageKey = `violet_analytics_page_${pageId}`  
 
     const observer = new IntersectionObserver((entries) => {

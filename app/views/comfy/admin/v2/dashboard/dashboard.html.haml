@@ -238,5 +238,18 @@
           :escaped
             </div>
 
+        %br
+        %br
+        Make sure to adjust target visibility threshold for large sections with 'data-violet-visibility-threshold'.
+        %br
+        Threshold indicates at what percentage of the target's visibility the tracking should be executed
+        %br
+        %a{href: 'https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API#thresholds'}
+          https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API#thresholds
+
+        %br
+        %br
+        By default, the threshold value is 0.75
+
     %hr.m-0
     = render partial: 'events', locals: { events: @legacy_and_system_events, previous_period_events: @previous_period_legacy_and_system_events, title: 'Events', type: 'events' }   
