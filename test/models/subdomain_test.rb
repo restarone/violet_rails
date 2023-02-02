@@ -195,4 +195,16 @@ class SubdomainTest < ActiveSupport::TestCase
       end
     end
   end
+
+  test 'subdomain_name when name is not ROOT_DOMAIN_NAME' do
+    ENV['APP_HOST']="lvh.me:5250"
+    subdomain = Subdomain.new(name: "test")
+    assert_equal 'test', subdomain.subdomain_name
+  end
+
+  test 'subdomain_name when name is ROOT_DOMAIN_NAME' do
+    ENV['APP_HOST']="lvh.me:5250"
+    subdomain = Subdomain.new(name: Subdomain::ROOT_DOMAIN_NAME)
+    assert_equal 'www', subdomain.subdomain_name
+  end
 end
