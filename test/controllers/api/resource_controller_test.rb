@@ -635,4 +635,64 @@ class Api::ResourceControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal response.parsed_body["data"].pluck("id").map(&:to_i).sort, [@api_resource_1.id, @api_resource_2.id].sort
   end
+
+  test '#index search jsonb field - string - ignores empty values without throwing exception' do
+    @api_resource_1.update(properties: {name: 'Professional Writer', age: 11})
+    @api_resource_2.update(properties: {name: 'Physical Development', age: 22})
+    @api_resource_3.update(properties: {name: 'Professional Development', age: 33})
+
+    payload = { 
+      properties: { 
+        name: { 
+          value: '',
+          option: 'KEYWORDS'
+        },
+        age: { 
+          value: '',
+          option: 'KEYWORDS'
+        },
+      }
+    }
+
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+    # Does not throw exception
+    assert_response :success
+
+    response_resource_ids = response.parsed_body["data"].pluck("id").map(&:to_i).sort
+
+    # Ignores empty value parameters and the filters are not applied
+    assert_includes response_resource_ids, @api_resource_1.id
+    assert_includes response_resource_ids, @api_resource_2.id
+    assert_includes response_resource_ids, @api_resource_3.id
+  end
+
+  test '#index search jsonb field - array - ignores empty values without throwing exception' do
+    @api_resource_1.update(properties: {name: 'Professional Writer', age: 11})
+    @api_resource_2.update(properties: {name: 'Physical Development', age: 22})
+    @api_resource_3.update(properties: {name: 'Professional Development', age: 33})
+
+    payload = { 
+      properties: { 
+        name: { 
+          value: [],
+          option: 'KEYWORDS'
+        },
+        age: { 
+          value: [],
+          option: 'KEYWORDS'
+        },
+      }
+    }
+
+    get api_url(version: @api_namespace.version, api_namespace: @api_namespace.slug), params: payload, as: :json
+    # Does not throw exception
+    assert_response :success
+
+    response_resource_ids = response.parsed_body["data"].pluck("id").map(&:to_i).sort
+
+    # Ignores empty value parameters and the filters are not applied
+    assert_includes response_resource_ids, @api_resource_1.id
+    assert_includes response_resource_ids, @api_resource_2.id
+    assert_includes response_resource_ids, @api_resource_3.id
+  end
 end

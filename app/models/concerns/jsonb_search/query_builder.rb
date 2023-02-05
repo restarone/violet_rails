@@ -29,12 +29,15 @@ module JsonbSearch
 
         query_params.each do |key, value|
           if value.is_a?(Hash) && value.key?(:value)
+            next unless value[:value].present?
             # { name: { value: 'violet', query }} || { name: { value: 'violet', option: 'EXACT' }}
             queries << { option: value[:option] || QUERY_OPTION[:EXACT], key: key, value: value[:value], match: value[:match] }
           elsif value.is_a?(Hash)
             # { foo: { bar: 'baz', wat: 'up' }}
             value.each do |k, v|
               if v.is_a?(Hash) && v.key?(:value)
+                next unless v[:value].present?
+
                 queries <<  { key: key, value: [{ option: v[:option] || QUERY_OPTION[:EXACT], key: k, value: v[:value], match: v[:match] }] }
               else
                 queries << { key: key, value: [{ option: QUERY_OPTION[:EXACT], key: k, value: v }]}
