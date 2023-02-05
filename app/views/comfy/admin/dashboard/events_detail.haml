@@ -7,7 +7,7 @@
     - unless Ahoy::Event::SYSTEM_EVENTS.keys.include?(params[:ahoy_event_type])
       = link_to 'Delete', dashboard_destroy_event_path(ahoy_event_type: params[:ahoy_event_type]), method: :delete, data: { confirm: 'This will delete all such events and its associated visits data. Are you sure you?' }, class: 'btn btn-sm btn-danger'
 
-%main{class: 'm-5'}
+%main.my-4.mx-2.my-md-5.mx-md-5
   = render partial: 'events_search_filters'
 
   %h4.mb-5.font-weight-bold
@@ -34,7 +34,7 @@
         = geo_chart @events.group('ahoy_visits.country').count, label: "events"
 
     .col-12.my-5
-      .row
+      .d-flex.flex-wrap.justify-content-around
         .mx-5.my-3
           %p By device type
           = pie_chart @events.where.not('ahoy_visits.device_type': nil).group('ahoy_visits.device_type').count, width: "300px", height: "300px", label: "events"
