@@ -367,9 +367,18 @@ class ApiNamespace < ApplicationRecord
     associations += Comfy::Cms::Snippet.where('comfy_cms_snippets.identifier = ? OR comfy_cms_snippets.identifier = ?', self.slug, "#{self.slug}-show")
 
     if self.snippet.present?
-      associations += Comfy::Cms::Page.joins(:fragments).where('comfy_cms_fragments.content LIKE ?', "%#{self.snippet(with_brackets: false)}%")
-      associations += Comfy::Cms::Layout.where('comfy_cms_layouts.content LIKE ?', "%#{self.snippet(with_brackets: false)}%")
-      associations += Comfy::Cms::Snippet.where('comfy_cms_snippets.content LIKE ?', "%#{self.snippet(with_brackets: false)}%")
+      api_form_text = "render_form, #{self.api_form&.id}"
+
+      associations += Comfy::Cms::Page
+                        .joins(:fragments)
+                        .where('comfy_cms_fragments.content LIKE ? AND comfy_cms_fragments.content LIKE ?', '%cms:helper%', "%#{api_form_text}%")
+                        .select { |page| page.fragments.where(identifier: 'content').first.content.match(self.snippet(with_brackets: false)) }
+      associations += Comfy::Cms::Layout
+                        .where('comfy_cms_layouts.content LIKE ? AND comfy_cms_layouts.content LIKE ?', '%cms:helper%', "%#{api_form_text}%")
+                        .select { |layout| layout.content.match(self.snippet(with_brackets: false)) }
+      associations += Comfy::Cms::Snippet
+                        .where('comfy_cms_snippets.content LIKE ? AND comfy_cms_snippets.content LIKE ?', '%cms:helper%', "%#{api_form_text}%")
+                        .select { |snippet| snippet.content.match(self.snippet(with_brackets: false)) }
     end
 
     associations.uniq
