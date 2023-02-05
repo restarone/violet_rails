@@ -4,7 +4,7 @@
 
 
 Subdomain.all.each do |subdomain|
-  subdomain_name = subdomain.name == Subdomain::ROOT_DOMAIN_NAME ? 'www' : subdomain.name
+  subdomain_name = subdomain.subdomain_name
   sitemap_path = "/sitemaps/#{subdomain_name}/sitemap.xml.gz"
   SitemapGenerator::Sitemap.default_host = "https://#{subdomain_name}.#{ENV['APP_HOST']}"
   SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/#{subdomain_name}"

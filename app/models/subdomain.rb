@@ -163,6 +163,10 @@ class Subdomain < ApplicationRecord
     UserMailer.analytics_report(self).deliver_later
   end
 
+  def subdomain_name
+    self.name == Subdomain::ROOT_DOMAIN_NAME ? 'www' : self.name
+  end
+
   private
 
   def change_2fa_setting 
