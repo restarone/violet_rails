@@ -101,4 +101,26 @@ class ApiNamespaceTest < ActiveSupport::TestCase
 
     assert_includes associations, page
   end
+
+  test "should check the associated CMS Page, Layout, Snippet of the api-namespace if the API form is rendered as content with newlines" do
+    namespace = api_namespaces(:users)
+    api_form = api_forms(:one)
+    api_form.update!(api_namespace: namespace)
+
+    layout = comfy_cms_layouts(:default)
+    snippet = comfy_cms_snippets(:public)
+    page = comfy_cms_pages(:root)
+
+    content = "<div class=\"contact-us-form\">\r\n\t<h3>Send us a message</h3>\r\n\t#{namespace.snippet}\r\n</div>\r\n"
+
+    layout.update!(content: content)
+    snippet.update!(content: content)
+
+    page.fragments.create!(content: content, identifier: 'content')
+    associations = namespace.cms_associations
+
+    assert_includes associations, page
+    assert_includes associations, layout
+    assert_includes associations, snippet
+  end
 end
