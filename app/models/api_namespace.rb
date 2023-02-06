@@ -356,29 +356,19 @@ class ApiNamespace < ApplicationRecord
   end
 
   def cms_associations
-    # We will need to refactor this query.
-    # regex did not work in SQL query. /cms:helper render_api_namespace_resource(_index)? ('|")#{self.slug}('|")/
     associations = Comfy::Cms::Page
                     .joins(:fragments)
                     .where('comfy_cms_fragments.identifier': 'content')
-                    .where("comfy_cms_fragments.content ~ ? AND comfy_cms_fragments.content LIKE ?", "render_api_namespace_resource(_index)?", "%#{self.slug}%")
-                    .select { |page| page.fragments.where(identifier: 'content').first.content.match(/cms:helper render_api_namespace_resource(_index)? ('|")#{self.slug}('|")/)}
+                    .where("comfy_cms_fragments.content ~ ?", "(cms:helper)[\n\r\t\ ]+(render_api_namespace_resource)(_index)?[\n\r\t\ ]+(\'|\")(#{self.slug})(\'|\")")
 
     associations += Comfy::Cms::Snippet.where('comfy_cms_snippets.identifier = ? OR comfy_cms_snippets.identifier = ?', self.slug, "#{self.slug}-show")
 
     if self.snippet.present?
-      api_form_text = "render_form, #{self.api_form&.id}"
+      api_form_regex = "(cms:helper)[\n\r\t\ ]+(render_form),[\n\r\t\ ]*(#{self.api_form&.id})"
 
-      associations += Comfy::Cms::Page
-                        .joins(:fragments)
-                        .where('comfy_cms_fragments.content LIKE ? AND comfy_cms_fragments.content LIKE ?', '%cms:helper%', "%#{api_form_text}%")
-                        .select { |page| page.fragments.where(identifier: 'content').first.content.match(self.snippet(with_brackets: false)) }
-      associations += Comfy::Cms::Layout
-                        .where('comfy_cms_layouts.content LIKE ? AND comfy_cms_layouts.content LIKE ?', '%cms:helper%', "%#{api_form_text}%")
-                        .select { |layout| layout.content.match(self.snippet(with_brackets: false)) }
-      associations += Comfy::Cms::Snippet
-                        .where('comfy_cms_snippets.content LIKE ? AND comfy_cms_snippets.content LIKE ?', '%cms:helper%', "%#{api_form_text}%")
-                        .select { |snippet| snippet.content.match(self.snippet(with_brackets: false)) }
+      associations += Comfy::Cms::Page.joins(:fragments).where('comfy_cms_fragments.content ~ ?', api_form_regex)
+      associations += Comfy::Cms::Layout.where('comfy_cms_layouts.content ~ ?', api_form_regex)
+      associations += Comfy::Cms::Snippet.where('comfy_cms_snippets.content ~ ?', api_form_regex)
     end
 
     associations.uniq

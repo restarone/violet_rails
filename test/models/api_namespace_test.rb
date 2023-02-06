@@ -100,6 +100,11 @@ class ApiNamespaceTest < ActiveSupport::TestCase
     associations = namespace.cms_associations
 
     assert_includes associations, page
+
+    page.fragments.first.update!(content: "<p><strong>Tester: User Acceptance and Quality Assurance</strong>\r\n</p>\r\n<p>\r\n\tAs a tester at Restarone you will closely evaluate software before it is released to be used by thousands of people.\r\n</p>\r\n<p>\r\n\tIf you’re a tester with 0-2 years of experience looking to improve software products, then this is for you!\r\n</p>\r\n<p>\r\n\tComplete the form below to start the application process:\r\n</p>\r\n<p>{{ cms:helper render_api_namespace_resource_index '#{namespace.slug}', scope: { properties:  { property: value } } }}\r\n</p>\r\n<p>By submitting the form above, you consent to Restarone Solutions Inc. storing your information and reaching out for relevant opportunities.\r\n</p>")
+    associations = namespace.cms_associations
+
+    assert_includes associations, page
   end
 
   test "should check the associated CMS Page, Layout, Snippet of the api-namespace if the API form is rendered as content with newlines" do
@@ -115,8 +120,20 @@ class ApiNamespaceTest < ActiveSupport::TestCase
 
     layout.update!(content: content)
     snippet.update!(content: content)
-
     page.fragments.create!(content: content, identifier: 'content')
+
+    associations = namespace.cms_associations
+
+    assert_includes associations, page
+    assert_includes associations, layout
+    assert_includes associations, snippet
+
+    new_content = "<p><strong>Tester: User Acceptance and Quality Assurance</strong>\r\n</p>\r\n<p>\r\n\tAs a tester at Restarone you will closely evaluate software before it is released to be used by thousands of people.\r\n</p>\r\n<p>\r\n\tIf you’re a tester with 0-2 years of experience looking to improve software products, then this is for you!\r\n</p>\r\n<p>\r\n\tComplete the form below to start the application process:\r\n</p>\r\n<p>#{namespace.snippet}\r\n</p>\r\n<p>By submitting the form above, you consent to Restarone Solutions Inc. storing your information and reaching out for relevant opportunities.\r\n</p>"
+
+    layout.update!(content: new_content)
+    snippet.update!(content: new_content)
+    page.fragments.first.update!(content: new_content)
+
     associations = namespace.cms_associations
 
     assert_includes associations, page
