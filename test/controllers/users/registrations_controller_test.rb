@@ -394,4 +394,28 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     get edit_user_registration_path
     assert_nil session[:otp_user_id]
   end
+
+  test '#update email: should send confirmation email with correct confirmation url' do
+    payload = {
+      user: {
+        email: 'test123@test.com',
+        current_password: '123456'
+      }
+    }
+    assert_changes "Devise.mailer.deliveries.size", +1 do    
+      sign_in(@user)
+      patch user_registration_url, params: payload
+    end
+
+    assert_includes Devise.mailer.deliveries.last.body.to_s, "http://public.localhost/users/confirmation?confirmation_token=#{@user.reload.confirmation_token}"
+
+    Subdomain.current.update(name: 'root')
+
+    assert_changes "Devise.mailer.deliveries.size", +1 do    
+      sign_in(@user)
+      patch user_registration_url, params: payload
+    end
+  
+    assert_includes Devise.mailer.deliveries.last.body.to_s, "http://www.localhost/users/confirmation?confirmation_token=#{@user.reload.confirmation_token}"  
+  end
 end
