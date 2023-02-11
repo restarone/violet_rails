@@ -17,7 +17,7 @@ module ComfyPublicAuthentication
       visit_id = current_visit ? current_visit.id : nil
       ahoy.track(
         "comfy-cms-page-visit",
-        { visit_id: visit_id, page_id: @cms_page&.id, user_id: user_id }
+        { visit_id: visit_id, page_id: @cms_page&.id, user_id: user_id, category: Ahoy::Event::EVENT_CATEGORIES[:page_visit] }
       )
     end
     protected_paths = Comfy::Cms::Page.where(is_restricted: true).pluck(:full_path)

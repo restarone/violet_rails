@@ -10,7 +10,7 @@
     = f.search_field :visit_ip_in, value: params.dig(:q, :visit_ip_in), class: 'form-control'
     = f.label "IP addresses (exclude)", class: 'col-form-label'
     = f.search_field :visit_ip_does_not_match_all, value: params.dig(:q, :visit_ip_does_not_match_all), class: 'form-control'
-    .form-row.p-5
+    .form-row.py-4.px-2.py-md-5.px-md-5
       .col
         = f.label "start date", class: 'col-form-label'
         = f.search_field :visit_started_at_gteq, class: 'form-control', type: 'date', value: params.dig(:q, :visit_started_at_gteq)

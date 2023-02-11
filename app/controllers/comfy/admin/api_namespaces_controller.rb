@@ -1,7 +1,7 @@
 require 'will_paginate/array'
 
 class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
-  before_action :set_api_namespace, only: %i[ show edit update destroy discard_failed_api_actions rerun_failed_api_actions export export_api_resources duplicate_with_associations duplicate_without_associations export_without_associations_as_json export_with_associations_as_json social_share_metadata api_action_workflow ]
+  before_action :set_api_namespace, except: %i[index new create import_as_json]
 
   before_action :ensure_authority_for_creating_api, only: %i[ new create import_as_json]
   before_action :ensure_authority_for_viewing_all_api, only: :index
@@ -12,6 +12,7 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
   before_action :ensure_authority_for_allow_exports_in_api, only: %i[ export export_api_resources export_without_associations_as_json export_with_associations_as_json ]
   before_action :ensure_authority_for_allow_duplication_in_api, only: %i[ duplicate_with_associations duplicate_without_associations ]
   before_action :ensure_authority_for_allow_social_share_metadata_in_api, only: %i[ social_share_metadata ]
+  before_action :ensure_authority_to_manage_analytics, only: :analytics_metadata
   before_action :ensure_authority_for_full_access_for_api_actions_only_in_api, only: %i[ api_action_workflow discard_failed_api_actions rerun_failed_api_actions ]
 
   # GET /api_namespaces or /api_namespaces.json
@@ -219,6 +220,25 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
     end
   end
 
+
+  def analytics_metadata
+    respond_to do |format|
+      if @api_namespace.update(analytics_metadata_params)
+        format.html do
+          flash[:notice] = 'Analytics Metadata successfully updated.'
+          redirect_to @api_namespace
+        end
+        format.json { render :show, status: :ok, location: @api_namespace }
+      else
+        format.html do
+          flash[:error] = @api_namespace.errors.full_messages
+          render :edit, status: :unprocessable_entity
+        end
+        format.json { render json: @api_namespace.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   def api_action_workflow
     respond_to do |format|
       if @api_namespace.update(api_action_workflow_params)
@@ -268,5 +288,9 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
 
     def api_namespace_social_share_metadata_params
       params.require(:api_namespace).permit(social_share_metadata: [:title, :description, :image])
+    end
+
+    def analytics_metadata_params
+      params.require(:api_namespace).permit(analytics_metadata: [:title, :author, :thumbnail])
     end
 end

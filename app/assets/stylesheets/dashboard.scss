@@ -1,3 +1,175 @@
 // Place all the styles related to the dashboard controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: https://sass-lang.com/
+
+.vr-analytics {
+  color: #293845;
+
+  &-title {
+    font-size: 32px;
+    line-height: 44px;
+    font-weight: bold;
+  }
+
+  &-sub-title {
+    font-size: 24px;
+    line-height: 33px;
+    text-transform: capitalize;
+  }
+
+  &-count,
+  &-percent-change,
+  &-event-label {
+    color: #535F6A;
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  &-count {
+    margin-right: 10px;
+
+    @media (min-width: 768px) {
+      margin-left: 24px;
+    }
+  }
+
+  &-count-lg {
+    font-size: 24px;
+    line-height: 33px;
+    margin-right: 10px;
+  }
+
+  &-tooltips {
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background-color: #D4D7DA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 8px;
+    cursor: default;
+  }
+
+  &-percent-change {
+    .positive {
+      color: #63C32D;
+    }
+  
+    .negative {
+      color: #E93E3E;
+    }
+  }
+
+  &-filter-dropdown-container {
+    & > button {
+      color: #BD34D1;
+      font-size: 16px;
+      font-weight: 600;
+    }
+  }
+
+  &-filters {
+    &-pages {
+      border: none;
+      outline: none;
+      -moz-appearance:none; /* Firefox */
+      -webkit-appearance:none; /* Safari and Chrome */
+      appearance:none;
+      background: transparent;
+      background-image: url("data:image/svg+xml;utf8,<svg fill='%23bd34d1' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+      background-repeat: no-repeat;
+      background-position-x: 98.5%;
+      background-position-y: 50%;
+    }
+
+    &-pages, 
+    &-ranges > span,
+    &-ranges > i  {
+      color: #BD34D1;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    @media (max-width: 767px) {
+      &-pages,
+      &-ranges {
+        width: 100%;
+        border: 1px solid #E5E7E8;
+        border-radius: 5px;
+        padding: 9px 16px;
+        margin-bottom: 8px;
+      }
+    }
+
+  }
+
+  &-card {
+    box-shadow: -4px 12px 24px #29384514;
+    border: 1px solid #E9EAEC;
+    border-radius: 5px;
+    position: relative;
+
+    & > a {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+    } 
+
+    &-section {
+      padding: 16px;
+    }
+
+    &-resource-poster-conatiner {
+      margin-right: 10px;  
+
+      & > img {
+        height: 48px;
+        width: 85px;
+        object-fit: cover;
+      }
+    }
+
+    &-resource-title {
+      font-weight: bold;
+      position: relative;
+      pointer-events: none;
+      z-index: 1;
+
+      & > a {
+        color: #293845;
+        pointer-events: all;
+      }
+    }
+
+    &-resource-duration {
+      color: #535F6A;
+    }
+  }
+
+  &-section {
+    padding: 32px 0;
+
+    &-header {
+      margin-bottom: 24px;
+    }
+  }
+
+  &-page-visit-events {
+    &-donut-chart {
+      padding: 16px;
+    }
+  }
+
+
+  &-blank-states {
+    color: grey;
+    padding: 0 25px 40px; 
+    font-size: 14px;
+  }
+}

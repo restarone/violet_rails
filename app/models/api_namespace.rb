@@ -356,20 +356,25 @@ class ApiNamespace < ApplicationRecord
   end
 
   def cms_associations
-    # We will need to refactor this query.
-    # regex did not work in SQL query. /cms:helper render_api_namespace_resource(_index)? ('|")#{self.slug}('|")/
     associations = Comfy::Cms::Page
                     .joins(:fragments)
                     .where('comfy_cms_fragments.identifier': 'content')
-                    .where("comfy_cms_fragments.content ~ ? AND comfy_cms_fragments.content LIKE ?", "render_api_namespace_resource(_index)?", "%#{self.slug}%")
-                    .select { |page| page.fragments.where(identifier: 'content').first.content.match(/cms:helper render_api_namespace_resource(_index)? ('|")#{self.slug}('|")/)}
+                    .where("comfy_cms_fragments.content ~ ? AND comfy_cms_fragments.content ~ ?", "render_api_namespace_resource(_index)?", self.slug)
+                    .select { |page| page.fragments.first.content.match(/cms:helper[\n\t\r\ ]+render_api_namespace_resource(_index)?[\n\t\r\ ]+('|")#{self.slug}('|")/) }
 
     associations += Comfy::Cms::Snippet.where('comfy_cms_snippets.identifier = ? OR comfy_cms_snippets.identifier = ?', self.slug, "#{self.slug}-show")
 
     if self.snippet.present?
-      associations += Comfy::Cms::Page.joins(:fragments).where('comfy_cms_fragments.content LIKE ?', "%#{self.snippet(with_brackets: false)}%")
-      associations += Comfy::Cms::Layout.where('comfy_cms_layouts.content LIKE ?', "%#{self.snippet(with_brackets: false)}%")
-      associations += Comfy::Cms::Snippet.where('comfy_cms_snippets.content LIKE ?', "%#{self.snippet(with_brackets: false)}%")
+      associations += Comfy::Cms::Page
+                        .joins(:fragments)
+                        .where('comfy_cms_fragments.content ~ ? AND comfy_cms_fragments.content ~ ?', "render_form,", self.api_form&.id&.to_s)
+                        .select { |page| page.fragments.first.content.match(/cms:helper[\n\r\t\ ]+render_form,[\n\r\t\ ]+#{self.api_form&.id}/) }
+      associations += Comfy::Cms::Layout
+                        .where('comfy_cms_layouts.content ~ ? AND comfy_cms_layouts.content ~ ?', "render_form,", self.api_form&.id&.to_s)
+                        .select { |layout| layout.content.match(/cms:helper[\n\r\t\ ]+render_form,[\n\r\t\ ]+#{self.api_form&.id}/) }
+      associations += Comfy::Cms::Snippet
+                        .where('comfy_cms_snippets.content ~ ? AND comfy_cms_snippets.content ~ ?', "render_form,", self.api_form&.id&.to_s)
+                        .select { |snippet| snippet.content.match(/cms:helper[\n\r\t\ ]+render_form,[\n\r\t\ ]+#{self.api_form&.id}/) }
     end
 
     associations.uniq
