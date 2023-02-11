@@ -1,7 +1,7 @@
 GIT
-  remote: https://github.com/ajaystha42/comfortable-mexican-sofa
-  revision: 54b4fd77de63b4e2f883df46cced0641a485df1e
-  branch: feat/parser_modifications
+  remote: https://github.com/restarone/comfortable-mexican-sofa
+  revision: 456fb8507e9668128529c0302fa2e77e029c1f88
+  tag: 3.4
   specs:
     comfortable_mexican_sofa (2.0.19)
       active_link_to (>= 1.0.0)
