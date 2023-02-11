@@ -43,6 +43,9 @@
   %li.nav-item
     %a#social-tab.nav-link{"aria-controls" => "social", "aria-selected" => "false", "data-toggle" => "tab", :href => "#social", :role => "tab"} 
       Social Share Mapping
+  %li.nav-item
+    %a#analytics-mapping-tab.nav-link{"aria-controls" => "analytics-mapping", "aria-selected" => "false", "data-toggle" => "tab", :href => "#analytics-mapping", :role => "tab"} 
+      Analytics Mapping
 
 .tab-content
   #interface.tab-pane.fade.show.active{"aria-labelledby" => "interface-tab", :role => "tabpanel"} 
@@ -195,6 +198,20 @@
       .form-group
         = f.label :image
         = f.select 'api_namespace[social_share_metadata][image]', options_for_select(@image_options,(@api_namespace.social_share_metadata.present? ? @api_namespace.social_share_metadata["image"] : nil)),{include_blank: "Choose an option"}, {class: 'form-control'}
+      .form-group
+        = f.submit "Submit", class: 'btn btn-primary'
+
+  #analytics-mapping.tab-pane.fade{"aria-labelledby" => "analytics-mapping-tab", :role => "tabpanel"} 
+    = form_with(method: :patch , url: analytics_metadata_api_namespace_path(@api_namespace))  do |f|
+      .form-group
+        = f.label :title
+        = f.select 'api_namespace[analytics_metadata][title]', options_for_select(@api_namespace.properties.keys,(@api_namespace.analytics_metadata&.dig('title'))),{include_blank: "Choose an option"}, {class: 'form-control'}
+      .form-group
+        = f.label :author
+        = f.select 'api_namespace[analytics_metadata][author]', options_for_select(@api_namespace.properties.keys,(@api_namespace.analytics_metadata&.dig('author'))),{include_blank: "Choose an option"}, {class: 'form-control'}
+      .form-group
+        = f.label :thumbnail
+        = f.select 'api_namespace[analytics_metadata][thumbnail]', options_for_select(@image_options,(@api_namespace.analytics_metadata&.dig('thumbnail'))),{include_blank: "Choose an option"}, {class: 'form-control'}
       .form-group
         = f.submit "Submit", class: 'btn btn-primary'
       

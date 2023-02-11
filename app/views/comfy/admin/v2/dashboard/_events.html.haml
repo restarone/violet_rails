@@ -1,0 +1,30 @@
+%section.vr-analytics-section.vr-analytics-events
+  .vr-analytics-section-header
+    .d-md-flex.align-items-center
+      .vr-analytics-sub-title
+        = title
+      - if events.present?
+        .d-flex.align-items-center.mt-2.mt-md-0
+          .vr-analytics-count
+            = events.count 
+            = "total #{type}"
+          .vr-analytics-percent-change
+            = display_percent_change(events.count, previous_period_events.count)
+          .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(events.count, previous_period_events.count, params[:interval], @start_date, @end_date) }
+            ?
+
+  - if events.present?
+    .vr-analytics-section-body.d-flex.align-items-center
+      .vr-analytics-events-grid.row.w-100
+        - previous_grouped_events = previous_period_events.group(:name).size
+        - events.group_by(&:label).each do |key, value|
+          .vr-analytics-events-grid-item.col.col-12.col-sm-6.col-md-4.col-lg-3.mb-4
+            .d-flex.mr-4.align-items-center.mb-2
+              .vr-analytics-count-lg
+                = value.count 
+              .vr-analytics-percent-change
+                = display_percent_change(value.count, previous_grouped_events[key].to_i)
+              - if previous_grouped_events[key].to_i == 0
+                .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(value.count, 0, params[:interval], @start_date, @end_date) }
+                  ?
+            = link_to key, dashboard_events_path(ahoy_event_type: value.first&.name), class: 'vr-analytics-event-label'  

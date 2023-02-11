@@ -1,5 +1,6 @@
 class Ahoy::Event < ApplicationRecord
   include Ahoy::QueryMethods
+  include JsonbSearch::Searchable
 
   SYSTEM_EVENTS = {
     'comfy-blog-page-visit'=> 0,
@@ -11,6 +12,14 @@ class Ahoy::Event < ApplicationRecord
     'subdomain-forum-post-update'=> 6,
     'subdomain-forum-thread-visit'=> 7,
     'api-resource-create' => 8
+  }
+
+  EVENT_CATEGORIES = {
+    page_visit: 'page_visit',
+    click: 'click',
+    video_view: 'video_view', 
+    form_submit: 'form_submit', 
+    section_view: 'section_view'
   }
 
   self.table_name = "ahoy_events"
@@ -30,6 +39,10 @@ class Ahoy::Event < ApplicationRecord
 
   ransacker :distinct_name do
     Arel.sql('distinct_name')
+  end
+
+  def label
+    properties["label"] || name
   end
 
   def self.delete_specific_events_and_associated_visits(delete_events: false, event_type:)
