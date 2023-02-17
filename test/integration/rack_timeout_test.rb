@@ -11,6 +11,10 @@ class RackTimeoutTest < ActionDispatch::IntegrationTest
     end
   end
 
+  teardown do
+    Rails.application.reload_routes!
+  end
+
   test "should interrupt request when timeout is exceeded" do
     Rack::Timeout.any_instance.stubs(:service_timeout).returns(0.1)
     assert_raises(Rack::Timeout::RequestTimeoutError) do
