@@ -1,5 +1,4 @@
 require "test_helper"
-# require 'minitest/stub_any_instance'
 
 class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
   setup do
@@ -718,5 +717,6 @@ class Comfy::Admin::ApiClientsControllerTest < ActionDispatch::IntegrationTest
     expected_message = "You do not have the permission to do that. Only users with full_access or full_access_for_api_clients_only are allowed to perform that action."
     assert_equal expected_message, flash[:alert]
   end
+
 
 end
