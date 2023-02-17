@@ -10,11 +10,24 @@ class Comfy::Admin::V2::DashboardController < Comfy::Admin::Cms::BaseController
 
     @visits = Ahoy::Visit.where(started_at: @start_date.beginning_of_day..@end_date.end_of_day)
 
+    filtered_events = Ahoy::Event.joins(:visit).where(visit: {id: @visits})
+
+    # Ahoy::Event::EVENT_CATEGORIES.values.each do |event_category|
+    #   if event_category == Ahoy::Event::EVENT_CATEGORIES[:page_visit]
+    #     events = Ahoy::Event.where(name: 'comfy-cms-page-visit').joins(:visit)
+    #   else
+    #     events = Ahoy::Event.jsonb_search(:properties, { category: event_category }).joins(:visit)
+    #   end
+    #   events = events.jsonb_search(:properties, { page_id: params[:page] }) if params[:page].present?
+    #   instance_variable_set("@previous_period_#{event_category}_events", events.where(time: previous_period(params[:interval], @start_date, @end_date)))
+    #   instance_variable_set("@#{event_category}_events", events.where(time: date_range))
+    # end
+
     Ahoy::Event::EVENT_CATEGORIES.values.each do |event_category|
       if event_category == Ahoy::Event::EVENT_CATEGORIES[:page_visit]
-        events = Ahoy::Event.where(name: 'comfy-cms-page-visit').joins(:visit)
+        events = filtered_events.where(name: 'comfy-cms-page-visit')
       else
-        events = Ahoy::Event.jsonb_search(:properties, { category: event_category }).joins(:visit)
+        events = filtered_events.jsonb_search(:properties, { category: event_category })
       end
       events = events.jsonb_search(:properties, { page_id: params[:page] }) if params[:page].present?
       instance_variable_set("@previous_period_#{event_category}_events", events.where(time: previous_period(params[:interval], @start_date, @end_date)))
