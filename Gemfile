@@ -118,4 +118,4 @@ gem 'stripe-rails'
 
 gem 'devise-two-factor', "4.0.2"
 
-gem "rack-timeout"
+gem "rack-timeout", "~> 0.6"
