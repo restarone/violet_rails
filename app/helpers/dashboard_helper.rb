@@ -24,7 +24,11 @@ module DashboardHelper
 
   def page_visit_chart_data(page_visit_events, start_date, end_date)
     period, format = split_into(start_date, end_date)
-    page_visit_events.where.not('ahoy_visits.device_type': nil).group_by { |u| u.visit.device_type }.map do |key, value|
+
+    # page_visit_events.where.not('ahoy_visits.device_type': nil).group_by { |u| u.visit.device_type }.map do |key, value|
+    #   { name: key, data: Ahoy::Event.where(id: value.pluck(:id)).group_by_period(period, :time, range: start_date..end_date, format: format).count }
+    # end
+    page_visit_events.where.not(visit: {device_type: nil}).group_by { |u| u.visit.device_type }.map do |key, value|
       { name: key, data: Ahoy::Event.where(id: value.pluck(:id)).group_by_period(period, :time, range: start_date..end_date, format: format).count }
     end
   end
