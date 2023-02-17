@@ -2,17 +2,20 @@ require "test_helper"
 
 class RackTimeoutTest < ActionDispatch::IntegrationTest
   setup do
-    # create fake routes to mock long processing time
+    setup_fake_routes
+  end
+
+  teardown do
+    Rails.application.reload_routes!
+  end
+
+  def setup_fake_routes
     Rails.application.routes.draw do
       get '/sleep', to: -> (env) { 
         sleep(0.5) 
         [200, {}, ['Hello, world!']]
       }
     end
-  end
-
-  teardown do
-    Rails.application.reload_routes!
   end
 
   test "should interrupt request when timeout is exceeded" do
