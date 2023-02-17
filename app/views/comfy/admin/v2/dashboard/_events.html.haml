@@ -17,7 +17,7 @@
     .vr-analytics-section-body.d-flex.align-items-center
       .vr-analytics-events-grid.row.w-100
         - previous_grouped_events = previous_period_events.group(:name).size
-        - events.group_by(&:label).each do |key, value|
+        - events.with_label.group(:label).pluck(:label, Arel.sql('json_agg(ahoy_events.name)')).each do |key, value|
           .vr-analytics-events-grid-item.col.col-12.col-sm-6.col-md-4.col-lg-3.mb-4
             .d-flex.mr-4.align-items-center.mb-2
               .vr-analytics-count-lg
@@ -27,4 +27,15 @@
               - if previous_grouped_events[key].to_i == 0
                 .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(value.count, 0, params[:interval], @start_date, @end_date) }
                   ?
-            = link_to key, dashboard_events_path(ahoy_event_type: value.first&.name), class: 'vr-analytics-event-label'  
+            = link_to key, dashboard_events_path(ahoy_event_type: value.first), class: 'vr-analytics-event-label'  
+        -# - events.group_by(&:label).each do |key, value|
+        -#   .vr-analytics-events-grid-item.col.col-12.col-sm-6.col-md-4.col-lg-3.mb-4
+        -#     .d-flex.mr-4.align-items-center.mb-2
+        -#       .vr-analytics-count-lg
+        -#         = value.count 
+        -#       .vr-analytics-percent-change
+        -#         = display_percent_change(value.count, previous_grouped_events[key].to_i)
+        -#       - if previous_grouped_events[key].to_i == 0
+        -#         .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(value.count, 0, params[:interval], @start_date, @end_date) }
+        -#           ?
+        -#     = link_to key, dashboard_events_path(ahoy_event_type: value.first&.name), class: 'vr-analytics-event-label'  

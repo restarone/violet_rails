@@ -27,6 +27,15 @@ class Ahoy::Event < ApplicationRecord
   belongs_to :visit
   belongs_to :user, optional: true
 
+  scope :with_label , -> {
+    # Build a subquery SQL snippet
+    # Since we will be joining it onto the base table, we need to select the id column as well
+    subquery = self.unscoped.select("(case when properties->>'label' is not NULL then properties->>'label' else name end) as label, #{table_name}.id").to_sql
+
+    # join the subquery to base model
+    joins("INNER JOIN (#{subquery}) as addendum ON addendum.id = #{table_name}.id")
+  }
+
   # For events_list page, sorting on the grouped query
   # https://stackoverflow.com/a/35987240
   ransacker :count do
