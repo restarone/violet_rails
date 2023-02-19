@@ -82,7 +82,8 @@ module DashboardHelper
   end
 
   def total_views(video_view_events)
-    video_view_events.select { |event| event.properties['video_start'] }.size
+    video_view_events.pluck(Arel.sql("SUM(CASE WHEN (#{Ahoy::Event.table_name}.properties ->> 'video_start')::boolean THEN 1 ELSE 0 END)")).sum
+    # video_view_events.select { |event| event.properties['video_start'] }.size
   end
 
   def avg_view_duration(video_view_events)
@@ -96,27 +97,57 @@ module DashboardHelper
     view_percentage_arr.sum / (total_views(video_view_events).nonzero? || 1)
   end
 
-  def top_three_videos(video_view_events, previous_video_view_events) 
-    video_view_events.group_by { |event| event.properties['resource_id'] }.map do |resource_id, events|
-      previous_period_event = previous_video_view_events.jsonb_search(:properties, { resource_id: resource_id })
-      api_resource = ApiResource.find_by(id: resource_id)
-      
-      return if api_resource.blank?
+  def top_three_videos(video_view_events, previous_video_view_events)
+    video_view_events
+      .with_api_resource
+      .group(:resource_id)
+      .reorder("SUM(is_viewed) DESC", "total_watch_time DESC")
+      .select(:resource_id,
+        "SUM(watch_time)::INT AS total_watch_time",
+        "SUM(is_viewed) AS total_views",
+        "MAX(total_duration)::float AS duration",
+        "json_agg(ahoy_events.name) AS names",
+        "json_agg(namespace_id) AS namespace_ids")
+      .limit(3)
+      .as_json
+      .map(&:with_indifferent_access)
+      .each do |video_event|
+        previous_period_event = previous_video_view_events.jsonb_search(:properties, { resource_id: video_event[:resource_id] })
+        api_resource = ApiResource.find_by(id: video_event[:resource_id])
 
-      { 
-        total_views: total_views(events),
-        total_watch_time:  total_watch_time(events),
-        previous_period_total_views: total_views(previous_period_event),
-        previous_period_total_watch_time: total_watch_time(previous_period_event),
-        resource_title: api_resource&.properties.dig(api_resource&.api_namespace.analytics_metadata&.dig("title")) || "Resource Id: #{resource_id}",
-        resource_author: api_resource&.properties.dig(api_resource&.api_namespace.analytics_metadata&.dig("author")),
-        resource_image: api_resource&.non_primitive_properties.find_by(field_type: "file", label: api_resource&.api_namespace.analytics_metadata&.dig("thumbnail"))&.file_url,
-        resource_id: api_resource&.id,
-        namespace_id: api_resource&.api_namespace.id,
-        duration: events.first.properties['total_duration'],
-        name: events.first.name
-      }
-    end.compact.sort_by {|event| event[:total_views]}.reverse.first(3)
+        video_event[:name] = video_event[:names].uniq.first
+        video_event[:namespace_id] = video_event[:namespace_ids].uniq.first
+        video_event[:previous_period_total_views] = total_views(previous_period_event)
+        video_event[:previous_period_total_watch_time] = total_watch_time(previous_period_event)
+        video_event[:resource_title] = api_resource&.properties.dig(api_resource&.api_namespace.analytics_metadata&.dig("title")) || "Resource Id: #{video_event[:resource_id]}"
+        video_event[:resource_author] = api_resource&.properties.dig(api_resource&.api_namespace.analytics_metadata&.dig("author"))
+        video_event[:resource_image] = api_resource&.non_primitive_properties.find_by(field_type: "file", label: api_resource&.api_namespace.analytics_metadata&.dig("thumbnail"))&.file_url
+
+        video_event.delete(:names)
+        video_event.delete(:namespace_ids)
+        video_event.delete(:id)
+      end
+
+    # video_view_events.group_by { |event| event.properties['resource_id'] }.map do |resource_id, events|
+    #   previous_period_event = previous_video_view_events.jsonb_search(:properties, { resource_id: resource_id })
+    #   api_resource = ApiResource.find_by(id: resource_id)
+      
+    #   return if api_resource.blank?
+
+    #   { 
+    #     total_views: total_views(events),
+    #     resource_id: api_resource&.id,
+    #     total_watch_time:  total_watch_time(events),
+    #     duration: events.first.properties['total_duration'],
+    #     name: events.first.name,
+    #     previous_period_total_views: total_views(previous_period_event),
+    #     previous_period_total_watch_time: total_watch_time(previous_period_event),
+    #     resource_title: api_resource&.properties.dig(api_resource&.api_namespace.analytics_metadata&.dig("title")) || "Resource Id: #{resource_id}",
+    #     resource_author: api_resource&.properties.dig(api_resource&.api_namespace.analytics_metadata&.dig("author")),
+    #     resource_image: api_resource&.non_primitive_properties.find_by(field_type: "file", label: api_resource&.api_namespace.analytics_metadata&.dig("thumbnail"))&.file_url,
+    #     namespace_id: api_resource&.api_namespace.id,
+    #   }
+    # end.compact.sort_by {|event| event[:total_views]}.reverse.first(3)
   end
 
   private

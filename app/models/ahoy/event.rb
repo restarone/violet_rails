@@ -36,6 +36,26 @@ class Ahoy::Event < ApplicationRecord
     joins("INNER JOIN (#{subquery}) as addendum ON addendum.id = #{table_name}.id")
   }
 
+  scope :with_api_resource , -> {
+    # Build a subquery SQL snippet
+    # Since we will be joining it onto the base table, we need to select the id column as well
+    subquery = self
+                .unscoped
+                .joins("INNER JOIN #{ApiResource.table_name} ON ahoy_events.properties->>'resource_id' IS NOT NULL AND (ahoy_events.properties ->> 'resource_id')::int = #{ApiResource.table_name}.id")
+                .select(
+                  "(#{self.table_name}.properties ->> 'resource_id')::int AS resource_id",
+                  "#{self.table_name}.id",
+                  "#{ApiResource.table_name}.api_namespace_id AS namespace_id",
+                  "(#{self.table_name}.properties ->> 'watch_time')::bigint AS watch_time",
+                  "round((#{self.table_name}.properties->>'total_duration')::numeric, 3) AS total_duration",
+                  "CASE WHEN (#{self.table_name}.properties ->> 'video_start')::boolean THEN 1 ELSE 0 END AS is_viewed",
+                  )
+                  .to_sql
+
+    # join the subquery to base model
+    joins("INNER JOIN (#{subquery}) as addendum ON addendum.id = #{table_name}.id")
+  }
+
   # For events_list page, sorting on the grouped query
   # https://stackoverflow.com/a/35987240
   ransacker :count do
