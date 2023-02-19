@@ -28,11 +28,20 @@ module DashboardHelper
     # page_visit_events.where.not('ahoy_visits.device_type': nil).group_by { |u| u.visit.device_type }.map do |key, value|
     #   { name: key, data: Ahoy::Event.where(id: value.pluck(:id)).group_by_period(period, :time, range: start_date..end_date, format: format).count }
     # end
-    page_visit_events.where.not(visit: {device_type: nil}).group_by { |u| u.visit.device_type }.map do |key, value|
-      { name: key, data: Ahoy::Event.where(id: value.pluck(:id)).group_by_period(period, :time, range: start_date..end_date, format: format).count }
-    end
-  end
-
+    page_visit_events
+      .where.not(visit: {device_type: nil})
+      .group("visit.device_type")
+      .group_by_period(period, :time, range: start_date..end_date, format: format)
+      .count
+      .group_by {|k, v| k.first}
+      .map do |k,  v| 
+        {
+          name: k,
+          data: v.map {|item| [item.first.last, item.last]}.to_h
+        }
+      end 
+  end 
+    
   def page_name(page_id)
     return 'Website' if page_id.blank?
 
@@ -90,7 +99,10 @@ module DashboardHelper
   def top_three_videos(video_view_events, previous_video_view_events) 
     video_view_events.group_by { |event| event.properties['resource_id'] }.map do |resource_id, events|
       previous_period_event = previous_video_view_events.jsonb_search(:properties, { resource_id: resource_id })
-      api_resource = ApiResource.find_by(id: resource_id) 
+      api_resource = ApiResource.find_by(id: resource_id)
+      
+      return if api_resource.blank?
+
       { 
         total_views: total_views(events),
         total_watch_time:  total_watch_time(events),
@@ -104,7 +116,7 @@ module DashboardHelper
         duration: events.first.properties['total_duration'],
         name: events.first.name
       }
-    end.sort_by {|event| event[:total_views]}.reverse.first(3)
+    end.compact.sort_by {|event| event[:total_views]}.reverse.first(3)
   end
 
   private
