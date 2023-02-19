@@ -2,7 +2,6 @@ require "test_helper"
 
 class RackTimeoutTest < ActionDispatch::IntegrationTest
   setup do
-    # setup_mock_objects
     setup_fake_routes
   end
 
@@ -29,17 +28,6 @@ class RackTimeoutTest < ActionDispatch::IntegrationTest
     # Mock MyBackgroundJob
     MyBackgroundJob.stubs(:perform_now).returns(true)
   end
-
-  # class MyBackgroundJob
-  #   def perform
-  #     sleep(2)
-  #     MyModel.create(name: "test")
-  #   end
-  # end
-
-  # class MyModel < ApplicationRecord
-  #   validates :name, presence: true
-  # end
 
   class MyModel
     def foo
