@@ -74,7 +74,8 @@ module DashboardHelper
   end
 
   def total_watch_time(video_view_events)
-    video_view_events.sum { |event| event.properties['watch_time'].to_i }
+    video_view_events.pluck(Arel.sql("SUM((#{Ahoy::Event.table_name}.properties ->> 'watch_time')::bigint)")).sum
+    # video_view_events.sum { |event| event.properties['watch_time'].to_i }
   end
 
   def to_minutes(time_in_milisecond)
@@ -91,10 +92,11 @@ module DashboardHelper
   end
 
   def avg_view_percentage(video_view_events)
-    view_percentage_arr = video_view_events.group_by { |event| event.properties['resource_id'] }.map do |_resource_id, events|
-      (events.sum { |event| event.properties['watch_time'].to_f  / event.properties['total_duration'].to_f }) * 100
-    end
-    view_percentage_arr.sum / (total_views(video_view_events).nonzero? || 1)
+    video_view_events.pluck(Arel.sql("((properties ->> 'watch_time')::float / (properties ->> 'total_duration')::float) * 100")).sum / (total_views(video_view_events).nonzero? || 1)
+    # view_percentage_arr = video_view_events.group_by { |event| event.properties['resource_id'] }.map do |_resource_id, events|
+    #   (events.sum { |event| event.properties['watch_time'].to_f  / event.properties['total_duration'].to_f }) * 100
+    # end
+    # view_percentage_arr.sum / (total_views(video_view_events).nonzero? || 1)
   end
 
   def top_three_videos(video_view_events, previous_video_view_events)
