@@ -1,6 +1,7 @@
 # Rack::Attack.cache.store = ActiveSupport::Cache::RedisStore.new(ENV[REDIS_URL])
 class Rack::Attack
   REQUEST_LIMIT = ENV['REQUEST_PER_MINUTE'].to_i.nonzero? || 100
+  ERROR_LIMIT = ENV['ERROR_PER_MINUTE'].to_i.nonzero? || 30
   MULTIPLIER = ENV['PERIOD_MULTIPLIER'].to_i.nonzero? || 2
   
   # When REQUEST_PER_MINUTE = 100
@@ -24,7 +25,7 @@ class Rack::Attack
   end
   
   (0..5).each do |level|
-    ban_limit = (REQUEST_LIMIT * (level.nonzero? || 1))
+    ban_limit = (ERROR_LIMIT * (level.nonzero? || 1))
     ban_period = (MULTIPLIER ** level).minutes
     Rack::Attack.blocklist("error_request/ip/#{level}".to_sym) do |req|
       Rack::Attack::Allow2Ban.filter(req.ip, maxretry: ban_limit, findtime: ban_period, bantime: ban_period) do
