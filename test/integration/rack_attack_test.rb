@@ -4,6 +4,8 @@ class RackAttackTest < ActionDispatch::IntegrationTest
   setup do
     Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new
     @user = users(:public)
+    ENV['REQUEST_PER_MINUTE'] = '5'
+    @limit = ENV['REQUEST_PER_MINUTE'].to_i
   end
 
   teardown do
@@ -21,7 +23,7 @@ class RackAttackTest < ActionDispatch::IntegrationTest
 
   test 'throttle exceeded request' do
     sign_in(@user)
-    122.times do
+    (@limit + 5).times do
       get '/'
     end
 
@@ -33,15 +35,21 @@ class RackAttackTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test 'exponential backoff' do
-    ENV['REQUEST_PER_MINUTE'] = '5'
+  test 'should not throttle for global admins' do
+    @user.update(global_admin: true)
 
-    limit = ENV['REQUEST_PER_MINUTE'].to_i
-  
-    1.upto(limit + 2) do |i|
+    sign_in(@user)
+    (@limit + 5).times do
       get '/'
-      assert_response :success if i <= limit
-      assert_response 429 if  i > limit
+      assert_response :success
+    end
+  end
+
+  test 'exponential backoff' do  
+    1.upto(@limit + 2) do |i|
+      get '/'
+      assert_response :success if i <= @limit
+      assert_response 429 if  i > @limit
     end
 
     travel 30.seconds
@@ -49,19 +57,19 @@ class RackAttackTest < ActionDispatch::IntegrationTest
     assert_response 429
 
     travel 30.seconds
-    1.upto(limit + 2) do |i|
+    1.upto(@limit + 2) do |i|
       get '/'
-      assert_response :success if i <= limit
-      assert_response 429 if  i > limit
+      assert_response :success if i <= @limit
+      assert_response 429 if  i > @limit
     end
 
     travel 2.minutes
 
 
-    # 1.upto(limit + 2) do |i|
+    # 1.upto(@limit + 2) do |i|
     #   get '/'
-    #   assert_response :success if i <= limit
-    #   assert_response 429 if  i > limit
+    #   assert_response :success if i <= @limit
+    #   assert_response 429 if  i > @limit
     # end
 
     # travel 1.minutes
@@ -69,9 +77,9 @@ class RackAttackTest < ActionDispatch::IntegrationTest
     # assert_response 403
 
     # travel 2.minutes
-    # (limit + 2).times do |i|
+    # (@limit + 2).times do |i|
     #   get '/'
-    #   assert_response 403 if  i >= limit
+    #   assert_response 403 if  i >= @limit
     # end
   end
 end
