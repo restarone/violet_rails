@@ -12,7 +12,7 @@ module MyRackTimeout
         thread = Thread.current
         timer_thread = Thread.new do
           sleep service_timeout
-          thread.safe_raise(timeout: 3, exception: "Request timed out")
+          thread.safe_raise(timeout: service_timeout - 3, exception: "Request timed out")
         end
 
         status, headers, body = @app.call(env)
