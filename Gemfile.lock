@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/restarone/comfortable-mexican-sofa
-  revision: fc1113b530d0b550c5bd91b094c45bb79e7a2b46
-  branch: ajaystha42feat/parser_modifications
+  revision: 637d15bbb89a2de2c8c3168908608035a4ee4c50
+  branch: ajaystha42feat/integer_parser_implementation
   specs:
     comfortable_mexican_sofa (2.0.19)
       active_link_to (>= 1.0.0)
