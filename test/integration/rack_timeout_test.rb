@@ -21,14 +21,6 @@ class RackTimeoutTest < ActionDispatch::IntegrationTest
     end
   end
 
-  def setup_mock_objects
-    # Mock MyModel
-    MyModel.any_instance.stubs(:foo).returns("bar")
-
-    # Mock MyBackgroundJob
-    MyBackgroundJob.stubs(:perform_now).returns(true)
-  end
-
   class MyModel
     def foo
       "bar"
