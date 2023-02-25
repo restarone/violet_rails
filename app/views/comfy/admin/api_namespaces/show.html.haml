@@ -115,10 +115,10 @@
       %pre= @api_namespace.snippet
       %p
         %b API HTML Renderer index snippet:
-      %pre= "{{ cms:helper api_namespace_resource_index '#{@api_namespace.slug}', scope: { properties:  { property: value } } }}"
+      %pre= "{{ cms:helper render_api_namespace_resource_index '#{@api_namespace.slug}', scope: { properties: #{@custom_properties} } }}"
       %p
         %b API HTML Renderer show snippet:
-      %pre= "{{ cms:helper api_namespace_resource '#{@api_namespace.slug}', scope: { properties:  { property: value } } }}"
+      %pre= "{{ cms:helper render_api_namespace_resource '#{@api_namespace.slug}', scope: { properties: #{@custom_properties} } }}"
       %p
         .d-flex.justify-content-between
           %b Preview (outer border is present in preview only):
