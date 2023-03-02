@@ -21,6 +21,15 @@
   if (existingValue) {
     let json = JSON.parse(existingValue)
     $("#api_resource_properties").val(existingValue)
+    const truncated_json = Object.values(json).map((x)=> {
+        if(typeof x == 'number' || typeof x =='string'){
+          b = ''+x
+          length = b.length
+          if (length > 50)  b = b.substring(0, 100) + "..."; 
+        
+        }
+        return x
+    })
     editor.set(json)
   } else {
     setFields()
