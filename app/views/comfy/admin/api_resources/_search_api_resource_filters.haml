@@ -1,0 +1,45 @@
+= search_form_for objects, url: path, remote: true, html: { id: 'search-form' } do |f|
+  .form-group
+    = f.label "Search by properties", class: 'col-form-label'
+    = f.search_field :properties_cont, value: params[:q][:properties_cont], class: 'form-control', placeholder: 'Enter the value of properties you want to search'
+    .text-center
+      = f.submit "Search", class: 'btn btn-primary my-2', data: { disable_with: "Searching..." }
+      = link_to "Clear Search", request.path, class: "cancel-button", remote: true, data: { disable_with: "Clearing..." }
+
+
+:javascript
+  $('#search-form').submit(function(event) {
+    event.preventDefault();
+    $.ajax({
+      url: $(this).attr('action'),
+      data: $(this).serialize(),
+      type: 'GET',
+      success: function(response) {
+        $('.digg_pagination').html($(response).find('.digg_pagination').html());
+        $('#api-resources-table').html($(response).find('#api-resources-table').html());
+      },
+      error: function(xhr, status, error) {
+        // Handle the error
+        console.log(xhr.responseText);
+      },
+      complete: function() {
+      }
+    });
+  });
+
+  $(document).on("click", ".cancel-button", function(event) {
+    event.preventDefault();
+    $.ajax({
+      url: window.location.href.split('?')[0],
+      type: 'GET',
+      success: function(response) {
+        $('.digg_pagination').html($(response).find('.digg_pagination').html());
+        $('#search-form input[type="search"]').val('');
+        $('#api-resources-table').html($(response).find('#api-resources-table').html());
+      },
+      error: function(xhr, status, error) {
+        // Handle the error
+        console.log(xhr.responseText);
+      }
+    });
+  });

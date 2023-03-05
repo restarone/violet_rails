@@ -1,4 +1,4 @@
 .digg_pagination
   .page-info
     = page_entries_info objects
-  = will_paginate objects, container: false
+  = will_paginate objects, container: false, remote: true, params: { search: true }

@@ -40,22 +40,27 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
     params[:q] ||= {}
     @api_resources_q = @api_namespace.api_resources.ransack(params[:q])
     @api_resources = @api_resources_q.result.paginate(page: params[:page], per_page: 10)
-    
-    field, direction = params[:q].key?(:s) ? params[:q][:s].split(" ") : [nil, nil]
+
+    # field, direction = params[:q].key?(:s) ? params[:q][:s].split(" ") : [nil, nil]
     fields_in_properties = @api_namespace.properties.keys
     @custom_properties = {}
     @api_namespace.properties.values.each_with_index do |obj,index|
       if(obj.present? && obj != "nil" && obj != "\"\"")
+        # field_name = fields_in_properties[index]
         @custom_properties[fields_in_properties[index]] = obj;
+        # @dynamic_columns << field_name unless [:id, :created_at, :updated_at].include?(field_name.to_sym)
       end
     end
     @custom_properties = JSON.parse(@custom_properties.to_json, object_class: OpenStruct).to_s.gsub(/=/,': ').gsub(/#<OpenStruct/,'{').gsub(/>/,'}').gsub("\\", "'").gsub(/"'"/,'"').gsub(/'""/,'"')
     @image_options = @api_namespace.non_primitive_properties.select { |non_primitive_property| non_primitive_property.field_type == 'file' }.pluck(:label)
-    # check if we are sorting by a field inside properties jsonb column
-    if field && fields_in_properties.include?(field)
-      @api_resources = @api_resources.jsonb_order_pre({ "properties" => { "#{field}": "#{direction}" }})
+  
+    respond_to do |format|
+      format.html 
+      format.js 
     end
   end
+  
+  
 
   # GET /api_namespaces/new
   def new
