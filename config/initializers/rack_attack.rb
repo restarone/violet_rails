@@ -2,7 +2,7 @@
 class Rack::Attack
   MAX_THROTTLE_LEVEL = 5
   REQUEST_LIMIT = ENV['REQUEST_PER_MINUTE'].to_i.nonzero? || 100
-  ERROR_LIMIT = ENV['ERROR_PER_MINUTE'].to_i.nonzero? || 30
+  ERROR_LIMIT = ENV['ERROR_PER_MINUTE'].to_i.nonzero? || 3
   MULTIPLIER = ENV['PERIOD_MULTIPLIER'].to_i.nonzero? || 2
   
   # When REQUEST_PER_MINUTE = 100
@@ -30,15 +30,42 @@ class Rack::Attack
       !req.env['warden'].user&.global_admin && !req.path.start_with?('/rails/active_storage') && configuration.throttles["req/ip/#{MAX_THROTTLE_LEVEL}"].exceeded?(req)
     end
   end
-  # (0..5).each do |level|
-  #   ban_limit = (ERROR_LIMIT * (level + 1))
-  #   ban_period = (MULTIPLIER ** level)*60
-  #   Rack::Attack.blocklist("error_request/ip/#{level}".to_sym) do |req|
-  #     Rack::Attack::Allow2Ban.filter(req.ip, maxretry: ban_limit, findtime: ban_period, bantime: ban_period) do
-  #       req.env["rack.exception"].present? && !req.env['warden'].user&.global_admin && !req.path.start_with?('/rails/active_storage')
-  #     end
-  #   end
-  # end
+
+  def call(env)
+    return @app.call(env) if !self.class.enabled || env["rack.attack.called"]
+
+    env["rack.attack.called"] = true
+    env['PATH_INFO'] = PathNormalizer.normalize_path(env['PATH_INFO'])
+    request = Rack::Attack::Request.new(env)
+
+    if configuration.safelisted?(request)
+      @app.call(env)
+    elsif configuration.blocklisted?(request)
+      configuration.blocklisted_responder.call(request)
+    elsif configuration.throttled?(request)
+      configuration.throttled_responder.call(request)
+    else
+      begin
+        configuration.tracked?(request)
+        return @app.call(env)
+      rescue StandardError => error
+        (0..MAX_THROTTLE_LEVEL).each do |level|
+          Rack::Attack.throttle("error_req/ip/#{level}",
+                     :limit => (ERROR_LIMIT * (level + 1)),
+                     :period => (MULTIPLIER ** level)*60) do |req|
+            req.ip unless (req.env['warden'].user&.global_admin || req.path.start_with?('/rails/active_storage'))
+          end
+        end
+
+        Rack::Attack.blocklist("ban_error/ip}".to_sym) do |req|
+          Rack::Attack::Allow2Ban.filter(req.ip, maxretry: 0, findtime: (MULTIPLIER ** (MAX_THROTTLE_LEVEL + 1))*60, bantime: 12.hours) do
+            !req.env['warden'].user&.global_admin && !req.path.start_with?('/rails/active_storage') && configuration.throttles["error_req/ip/#{MAX_THROTTLE_LEVEL}"].exceeded?(req)
+          end
+        end
+        raise error
+      end
+    end
+  end
 end
 
 # ActiveSupport::Notifications.subscribe("throttle.rack_attack") do |name, start, finish, request_id, payload|
