@@ -1,6 +1,6 @@
 <p><%= t('rack_attack.mailer.limit_exceeded.greeting', user: @user.name || 'User') %></p>
 
-<p><%= t('rack_attack.mailer.limit_exceeded.message', time: "12 hours") %></p>
+<p><%= t("rack_attack.mailer.limit_exceeded.message.#{@error_limit_exceeded ? 'error_limit_exceeded' : 'request_limit_exceeded'}", time: "12 hours") %></p>
 
 <p><%= t('rack_attack.mailer.limit_exceeded.unblock_instructions') %></p>
 

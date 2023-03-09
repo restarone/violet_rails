@@ -1,6 +1,6 @@
 # Rack::Attack.cache.store = ActiveSupport::Cache::RedisStore.new(ENV[REDIS_URL])
 class Rack::Attack
-  MAX_THROTTLE_LEVEL = 5
+  MAX_THROTTLE_LEVEL = 1
   REQUEST_LIMIT = ENV['REQUEST_PER_MINUTE'].to_i.nonzero? || 100
   ERROR_LIMIT = ENV['ERROR_PER_MINUTE'].to_i.nonzero? || 3
   MULTIPLIER = ENV['PERIOD_MULTIPLIER'].to_i.nonzero? || 2
@@ -24,7 +24,7 @@ class Rack::Attack
       req.ip unless (req.env['warden'].user&.global_admin || req.path.start_with?('/rails/active_storage'))
     end
   end
-  
+
   Rack::Attack.blocklist("ban/ip}".to_sym) do |req|
     Rack::Attack::Allow2Ban.filter(req.ip, maxretry: 0, findtime: (MULTIPLIER ** (MAX_THROTTLE_LEVEL + 1))*60, bantime: 12.hours) do
       !req.env['warden'].user&.global_admin && !req.path.start_with?('/rails/active_storage') && configuration.throttles["req/ip/#{MAX_THROTTLE_LEVEL}"].exceeded?(req)
@@ -58,7 +58,7 @@ class Rack::Attack
         end
 
         Rack::Attack.blocklist("ban_error/ip}".to_sym) do |req|
-          Rack::Attack::Allow2Ban.filter(req.ip, maxretry: 0, findtime: (MULTIPLIER ** (MAX_THROTTLE_LEVEL + 1))*60, bantime: 12.hours) do
+          Rack::Attack::Allow2Ban.filter("ban_error/ip/#{req.ip}", maxretry: 0, findtime: (MULTIPLIER ** (MAX_THROTTLE_LEVEL + 1))*60, bantime: 12.hours) do
             !req.env['warden'].user&.global_admin && !req.path.start_with?('/rails/active_storage') && configuration.throttles["error_req/ip/#{MAX_THROTTLE_LEVEL}"].exceeded?(req)
           end
         end
@@ -68,13 +68,9 @@ class Rack::Attack
   end
 end
 
-# ActiveSupport::Notifications.subscribe("throttle.rack_attack") do |name, start, finish, request_id, payload|
-  
-# end
-
 ActiveSupport::Notifications.subscribe("blocklist.rack_attack") do |name, start, finish, request_id, payload|
   user = payload[:request].env['warden'].user
-  RackAttackMailer.limit_exceeded(user).deliver_later if user.present?
+  RackAttackMailer.limit_exceeded(user, payload[:request].env["rack.attack.matched"] == :"ban_error/ip}" ).deliver_later if user.present?
 end
 
 class Rack::Attack::Throttle 
