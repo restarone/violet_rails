@@ -66,7 +66,6 @@
 
   
     %hr.m-0
-    -# = render partial: 'events', locals: { events: @click_events, previous_period_events: @previous_period_click_events, title: 'Clicks', type: 'clickables' }
     = render partial: 'events', locals: { events_exists: @click_events.load.any?, events_count: @click_events.size, label_grouped_event: @click_events.with_label.group(:label).pluck(:label, Arel.sql('json_agg(ahoy_events.name)')), previous_period_events_count: @previous_period_click_events.size, previous_grouped_events: @previous_period_click_events.with_label.group(:label).size, title: 'Clicks', type: 'clickables' }
     - unless @click_events.load.any?
       .vr-analytics-blank-states
@@ -185,7 +184,6 @@
           Please make sure 'data-violet-resource-id' is present and Analytics mapping is populated
         
     %hr.m-0
-    -# = render partial: 'events', locals: { events: @form_submit_events, previous_period_events: @previous_period_form_submit_events, title: 'Form Submissions', type: 'submitables' }
     = render partial: 'events', locals: { events_exists: @form_submit_events.load.any?, events_count: @form_submit_events.size, label_grouped_event: @form_submit_events.with_label.group(:label).pluck(:label, Arel.sql('json_agg(ahoy_events.name)')), previous_period_events_count: @previous_period_form_submit_events.size, previous_grouped_events: @previous_period_form_submit_events.with_label.group(:label).size, title: 'Form Submissions', type: 'submitables' }
     - unless @form_submit_events.load.any?
       .vr-analytics-blank-states
@@ -219,7 +217,6 @@
             </form>
 
     %hr.m-0
-    -# = render partial: 'events', locals: { events: @section_view_events, previous_period_events: @previous_period_section_view_events, title: 'Section Views', type: 'viewables' }
     = render partial: 'events', locals: { events_exists: @section_view_events.load.any?, events_count: @section_view_events.size, label_grouped_event: @section_view_events.with_label.group(:label).pluck(:label, Arel.sql('json_agg(ahoy_events.name)')), previous_period_events_count: @previous_period_section_view_events.size, previous_grouped_events: @previous_period_section_view_events.with_label.group(:label).size, title: 'Section Views', type: 'viewables' }
     - unless @section_view_events.load.any?
       .vr-analytics-blank-states
@@ -255,5 +252,4 @@
         By default, the threshold value is 0.75
 
     %hr.m-0
-    -# = render partial: 'events', locals: { events: @legacy_and_system_events, previous_period_events: @previous_period_legacy_and_system_events, title: 'Events', type: 'events' }   
     = render partial: 'events', locals: { events_exists: @legacy_and_system_events.load.any?, events_count: @legacy_and_system_events.size, label_grouped_event: @legacy_and_system_events.with_label.group(:label).pluck(:label, Arel.sql('json_agg(ahoy_events.name)')), previous_period_events_count: @previous_period_legacy_and_system_events.size, previous_grouped_events: @previous_period_legacy_and_system_events.with_label.group(:label).size, title: 'Events', type: 'events' }

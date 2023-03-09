@@ -28,8 +28,7 @@ class Ahoy::Event < ApplicationRecord
   belongs_to :user, optional: true
 
   scope :with_label , -> {
-    # Build a subquery SQL snippet
-    # Since we will be joining it onto the base table, we need to select the id column as well
+    # Build a subquery SQL
     subquery = self.unscoped.select("(case when #{table_name}.properties->>'label' is not NULL then #{table_name}.properties->>'label' else #{table_name}.name end) as label, #{table_name}.id").to_sql
 
     # join the subquery to base model
@@ -37,8 +36,7 @@ class Ahoy::Event < ApplicationRecord
   }
 
   scope :with_api_resource , -> {
-    # Build a subquery SQL snippet
-    # Since we will be joining it onto the base table, we need to select the id column as well
+    # Build a subquery SQL
     subquery = self
                 .unscoped
                 .joins("INNER JOIN #{ApiResource.table_name} ON ahoy_events.properties->>'resource_id' IS NOT NULL AND (ahoy_events.properties ->> 'resource_id')::int = #{ApiResource.table_name}.id")

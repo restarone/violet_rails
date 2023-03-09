@@ -25,9 +25,6 @@ module DashboardHelper
   def page_visit_chart_data(page_visit_events, start_date, end_date)
     period, format = split_into(start_date, end_date)
 
-    # page_visit_events.where.not('ahoy_visits.device_type': nil).group_by { |u| u.visit.device_type }.map do |key, value|
-    #   { name: key, data: Ahoy::Event.where(id: value.pluck(:id)).group_by_period(period, :time, range: start_date..end_date, format: format).count }
-    # end
     page_visit_events
       .where.not(visit: {device_type: nil})
       .group("visit.device_type")
@@ -75,7 +72,6 @@ module DashboardHelper
 
   def total_watch_time(video_view_events)
     video_view_events.pluck(Arel.sql("SUM((#{Ahoy::Event.table_name}.properties ->> 'watch_time')::bigint)")).sum
-    # video_view_events.sum { |event| event.properties['watch_time'].to_i }
   end
 
   def to_minutes(time_in_milisecond)
@@ -84,7 +80,6 @@ module DashboardHelper
 
   def total_views(video_view_events)
     video_view_events.pluck(Arel.sql("SUM(CASE WHEN (#{Ahoy::Event.table_name}.properties ->> 'video_start')::boolean THEN 1 ELSE 0 END)")).sum
-    # video_view_events.select { |event| event.properties['video_start'] }.size
   end
 
   def avg_view_duration(video_view_events)
@@ -93,10 +88,6 @@ module DashboardHelper
 
   def avg_view_percentage(video_view_events)
     video_view_events.pluck(Arel.sql("((properties ->> 'watch_time')::float / (properties ->> 'total_duration')::float) * 100")).sum / (total_views(video_view_events).nonzero? || 1)
-    # view_percentage_arr = video_view_events.group_by { |event| event.properties['resource_id'] }.map do |_resource_id, events|
-    #   (events.sum { |event| event.properties['watch_time'].to_f  / event.properties['total_duration'].to_f }) * 100
-    # end
-    # view_percentage_arr.sum / (total_views(video_view_events).nonzero? || 1)
   end
 
   def top_three_videos(video_view_events, previous_video_view_events)
@@ -129,27 +120,6 @@ module DashboardHelper
         video_event.delete(:namespace_ids)
         video_event.delete(:id)
       end
-
-    # video_view_events.group_by { |event| event.properties['resource_id'] }.map do |resource_id, events|
-    #   previous_period_event = previous_video_view_events.jsonb_search(:properties, { resource_id: resource_id })
-    #   api_resource = ApiResource.find_by(id: resource_id)
-      
-    #   return if api_resource.blank?
-
-    #   { 
-    #     total_views: total_views(events),
-    #     resource_id: api_resource&.id,
-    #     total_watch_time:  total_watch_time(events),
-    #     duration: events.first.properties['total_duration'],
-    #     name: events.first.name,
-    #     previous_period_total_views: total_views(previous_period_event),
-    #     previous_period_total_watch_time: total_watch_time(previous_period_event),
-    #     resource_title: api_resource&.properties.dig(api_resource&.api_namespace.analytics_metadata&.dig("title")) || "Resource Id: #{resource_id}",
-    #     resource_author: api_resource&.properties.dig(api_resource&.api_namespace.analytics_metadata&.dig("author")),
-    #     resource_image: api_resource&.non_primitive_properties.find_by(field_type: "file", label: api_resource&.api_namespace.analytics_metadata&.dig("thumbnail"))&.file_url,
-    #     namespace_id: api_resource&.api_namespace.id,
-    #   }
-    # end.compact.sort_by {|event| event[:total_views]}.reverse.first(3)
   end
 
   private

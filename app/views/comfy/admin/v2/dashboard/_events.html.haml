@@ -3,25 +3,19 @@
     .d-md-flex.align-items-center
       .vr-analytics-sub-title
         = title
-      -# - if events.load.any?
       - if events_exists
         .d-flex.align-items-center.mt-2.mt-md-0
           .vr-analytics-count
-            -# = events.size 
             = events_count 
             = "total #{type}"
           .vr-analytics-percent-change
-            -# = display_percent_change(events.size, previous_period_events.size)
             = display_percent_change(events_count, previous_period_events_count)
-          -# .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(events.size, previous_period_events.size, params[:interval], @start_date, @end_date) }
           .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(events_count, previous_period_events_count, params[:interval], @start_date, @end_date) }
             ?
 
   - if events_exists
     .vr-analytics-section-body.d-flex.align-items-center
       .vr-analytics-events-grid.row.w-100
-        -# - previous_grouped_events = previous_period_events.group(:label).size
-        -# - events.group(:label).pluck(:label, Arel.sql('json_agg(ahoy_events.name)')).each do |key, value|
         - label_grouped_event.each do |key, value|
           .vr-analytics-events-grid-item.col.col-12.col-sm-6.col-md-4.col-lg-3.mb-4
             .d-flex.mr-4.align-items-center.mb-2
@@ -33,14 +27,3 @@
                 .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(value.size, 0, params[:interval], @start_date, @end_date) }
                   ?
             = link_to key, dashboard_events_path(ahoy_event_type: value.first), class: 'vr-analytics-event-label'  
-        -# - events.group_by(&:label).each do |key, value|
-        -#   .vr-analytics-events-grid-item.col.col-12.col-sm-6.col-md-4.col-lg-3.mb-4
-        -#     .d-flex.mr-4.align-items-center.mb-2
-        -#       .vr-analytics-count-lg
-        -#         = value.count 
-        -#       .vr-analytics-percent-change
-        -#         = display_percent_change(value.count, previous_grouped_events[key].to_i)
-        -#       - if previous_grouped_events[key].to_i == 0
-        -#         .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(value.count, 0, params[:interval], @start_date, @end_date) }
-        -#           ?
-        -#     = link_to key, dashboard_events_path(ahoy_event_type: value.first&.name), class: 'vr-analytics-event-label'  
