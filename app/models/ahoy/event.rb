@@ -30,10 +30,10 @@ class Ahoy::Event < ApplicationRecord
   scope :with_label , -> {
     # Build a subquery SQL snippet
     # Since we will be joining it onto the base table, we need to select the id column as well
-    subquery = self.unscoped.select("(case when properties->>'label' is not NULL then properties->>'label' else name end) as label, #{table_name}.id").to_sql
+    subquery = self.unscoped.select("(case when #{table_name}.properties->>'label' is not NULL then #{table_name}.properties->>'label' else #{table_name}.name end) as label, #{table_name}.id").to_sql
 
     # join the subquery to base model
-    joins("INNER JOIN (#{subquery}) as addendum ON addendum.id = #{table_name}.id")
+    joins("INNER JOIN (#{subquery}) as labelled_events ON labelled_events.id = #{table_name}.id")
   }
 
   scope :with_api_resource , -> {
@@ -53,7 +53,7 @@ class Ahoy::Event < ApplicationRecord
                   .to_sql
 
     # join the subquery to base model
-    joins("INNER JOIN (#{subquery}) as addendum ON addendum.id = #{table_name}.id")
+    joins("INNER JOIN (#{subquery}) as api_resourced_events ON api_resourced_events.id = #{table_name}.id")
   }
 
   # For events_list page, sorting on the grouped query

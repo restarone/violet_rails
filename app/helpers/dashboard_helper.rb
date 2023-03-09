@@ -32,7 +32,7 @@ module DashboardHelper
       .where.not(visit: {device_type: nil})
       .group("visit.device_type")
       .group_by_period(period, :time, range: start_date..end_date, format: format)
-      .count
+      .size
       .group_by {|k, v| k.first}
       .map do |k,  v| 
         {
@@ -49,9 +49,9 @@ module DashboardHelper
   end
 
   def visitors_chart_data(visits)
-    visitors_by_token = visits.group(:visitor_token).count
-    recurring_visitors = visitors_by_token.values.count { |v| v > 1 }
-    single_time_visitors = visitors_by_token.keys.count - recurring_visitors
+    visitors_by_token = visits.group(:visitor_token).size
+    recurring_visitors = visitors_by_token.values.size { |v| v > 1 }
+    single_time_visitors = visitors_by_token.keys.size - recurring_visitors
     {"Single time visitor": single_time_visitors, "Recurring visitors" => recurring_visitors  }
   end
 
