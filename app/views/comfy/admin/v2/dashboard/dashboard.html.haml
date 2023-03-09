@@ -128,7 +128,7 @@
             = "Top #{top_videos.count} videos"
 
           .row.mt-4
-            - top_videos.each do |event|
+            - top_videos&.each do |event|
               .col.col-12.col-lg-5.mb-4
                 .vr-analytics-card
                   = link_to '', dashboard_events_path(ahoy_event_type: event[:name])
@@ -140,7 +140,7 @@
                         .vr-analytics-card-resource-title
                           = link_to event[:resource_title], api_namespace_resource_path(api_namespace_id: event[:namespace_id], id: event[:resource_id])
                         .vr-analytics-card-resource-duration
-                          = Time.at(event[:duration]/1000).strftime("%M:%S")
+                          = Time.at(event[:duration]/1000).strftime("%M:%S") if event[:duration].present?
 
                   %hr
                   .vr-analytics-card-section
