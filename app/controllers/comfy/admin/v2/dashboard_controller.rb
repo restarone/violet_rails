@@ -10,7 +10,7 @@ class Comfy::Admin::V2::DashboardController < Comfy::Admin::Cms::BaseController
 
     @visits = Ahoy::Visit.where(started_at: date_range)
 
-    filtered_events = Ahoy::Event.joins(:visit).where(visit: {id: @visits})
+    filtered_events = Ahoy::Event.joins(:visit)
 
     Ahoy::Event::EVENT_CATEGORIES.values.each do |event_category|
       if event_category == Ahoy::Event::EVENT_CATEGORIES[:page_visit]

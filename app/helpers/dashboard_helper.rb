@@ -47,8 +47,8 @@ module DashboardHelper
 
   def visitors_chart_data(visits)
     visitors_by_token = visits.group(:visitor_token).size
-    recurring_visitors = visitors_by_token.values.size { |v| v > 1 }
-    single_time_visitors = visitors_by_token.keys.size - recurring_visitors
+    recurring_visitors = visitors_by_token.values.count { |v| v > 1 }
+    single_time_visitors = visitors_by_token.keys.count - recurring_visitors
     {"Single time visitor": single_time_visitors, "Recurring visitors" => recurring_visitors  }
   end
 
