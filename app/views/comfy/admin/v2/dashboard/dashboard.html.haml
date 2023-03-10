@@ -62,7 +62,7 @@
         .col.col-lg-3
           .vr-analytics-card.vr-analytics-page-visit-events-donut-chart
             %h5 Website visitors
-            = pie_chart visitors_chart_data(@visits), colors: ['#F7A47B', '#B5E69A'], donut: true, library: { cutout: 85, plugins: { legend: { position: "bottom",  align: 'start', labels: {boxWidth: 8, usePointStyle: true, font: { size: 16 } } } } }
+            = pie_chart visitors_chart_data(@page_visit_events), colors: ['#F7A47B', '#B5E69A'], donut: true, library: { cutout: 85, plugins: { legend: { position: "bottom",  align: 'start', labels: {boxWidth: 8, usePointStyle: true, font: { size: 16 } } } } }
 
   
     %hr.m-0
