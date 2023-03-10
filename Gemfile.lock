@@ -277,6 +277,7 @@ GEM
     mailgun-ruby (1.2.4)
       rest-client (>= 2.0.2)
     marcel (1.0.2)
+    memory_profiler (1.0.1)
     meta-tags (2.14.0)
       actionpack (>= 3.2.0, < 6.2)
     method_source (1.0.0)
@@ -534,6 +535,7 @@ DEPENDENCIES
   listen (~> 3.3)
   local_time
   mailgun-ruby
+  memory_profiler
   meta-tags
   mocha
   net-ssh (>= 6.0.2)
@@ -571,7 +573,7 @@ DEPENDENCIES
   will_paginate
 
 RUBY VERSION
-   ruby 3.0.0p0
+   ruby 2.6.6p146
 
 BUNDLED WITH
    2.1.4

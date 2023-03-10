@@ -67,6 +67,7 @@ gem 'bcrypt_pbkdf', '>= 1.0', '< 2.0'
 gem 'rack-mini-profiler', '~> 3.0', require: false
 gem 'flamegraph'
 gem 'stackprof'
+gem 'memory_profiler'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
