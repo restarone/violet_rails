@@ -216,6 +216,7 @@ GEM
     faker (2.21.0)
       i18n (>= 1.8.11, < 2)
     ffi (1.15.5)
+    flamegraph (0.9.5)
     font-awesome-sass (5.15.1)
       sassc (>= 1.11)
     friendly_id (5.4.2)
@@ -317,7 +318,7 @@ GEM
       rack (>= 0.4)
     rack-cors (1.1.1)
       rack (>= 2.0.0)
-    rack-mini-profiler (2.3.1)
+    rack-mini-profiler (3.0.0)
       rack (>= 1.2.0)
     rack-protection (2.2.0)
       rack
@@ -439,6 +440,7 @@ GEM
     sshkit (1.21.2)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
+    stackprof (0.2.23)
     stripe (7.1.0)
     stripe-rails (2.3.5)
       rails (>= 5.1)
@@ -519,6 +521,7 @@ DEPENDENCIES
   ember-cli-rails (= 0.10.0)
   exception_notification (~> 4.5)
   faker
+  flamegraph
   friendly_id
   graphiql-rails
   graphql (~> 2.0)
@@ -538,7 +541,7 @@ DEPENDENCIES
   pry
   puma (~> 5.6)
   rack-cors
-  rack-mini-profiler (~> 2.0)
+  rack-mini-profiler (~> 3.0)
   rack-timeout (~> 0.6)
   rails (~> 6.1.5)
   rails-controller-testing
@@ -554,6 +557,7 @@ DEPENDENCIES
   sinatra
   sitemap_generator
   spring
+  stackprof
   stripe-rails
   turbo-rails (~> 1.1)
   turnout (~> 2.5)
@@ -567,7 +571,7 @@ DEPENDENCIES
   will_paginate
 
 RUBY VERSION
-   ruby 3.0.0p0
+   ruby 2.6.6p146
 
 BUNDLED WITH
    2.1.4
