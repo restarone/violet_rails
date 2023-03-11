@@ -34,6 +34,23 @@ class Comfy::Admin::V2::DashboardControllerTest < ActionDispatch::IntegrationTes
     assert_response :success
   end
 
+  test "should render view even if video isn't properly loaded" do
+    @subdomain.update!(tracking_enabled: true)
+    visit = Ahoy::Visit.first
+    page_visit_event_1 = visit.events.create(name: 'comfy-cms-page-visit', user_id: @user.id, time: (Time.now.beginning_of_month - 4.days),  properties: {"label"=>"test_page_view", "page_id"=>@page.id, "category"=>"page_visit", "page_title"=>"lvh.me:5250"})
+    click_event_1 = visit.events.create(name: 'test-link-click', user_id: @user.id, time: (Time.now.beginning_of_month - 4.days), properties: {"tag"=>"BUTTON", "label"=>"test link", "page_id"=>@page.id, "category"=>"click"})
+    video_watch_event_1 = visit.events.create(name: 'test-video-watched', user_id: @user.id, time: (Time.now.beginning_of_month - 4.days),  properties: {"label"=>"watched_this_video", "page_id"=>@page.id, "category"=>"video_view", "watch_time"=>11891, "resource_id"=>@api_resource.id, "video_start"=>true, "total_duration"=>nil}) 
+
+    visit_1 = visit.dup
+    visit_1.save!
+
+    @user.update(can_manage_analytics: true)
+    sign_in(@user)
+
+    get v2_dashboard_url
+    assert_response :success
+  end
+
   test "#dashboard: should set correct data" do
     @subdomain.update!(tracking_enabled: true)
     visit = Ahoy::Visit.first
