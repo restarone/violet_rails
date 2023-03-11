@@ -56,31 +56,34 @@ $(window).on("load turbo:load", () => {
         var resourceId = this.dataset.violetResourceId;
         // Count paused and then played video as a single view.
         var isFirstPlay = true;
-
-        $(this).on("play", function() {
-            if (this.seeking) { return; }
     
-            startTime = Date.now();
-        });
+        $(this).on("loadedmetadata", function() {
+            $(this).on("play", function() {
+                if (this.seeking) { return; }
+        
+                startTime = Date.now();
+            });
 
-        $(this).on("pause ended", function(e) {
-            if (this.seeking) { return; }
+            $(this).on("pause ended", function(e) {
+                if (this.seeking) { return; }
+        
+                var watchTime = Date.now() - startTime;
+                ahoy.track(eventName, {
+                    category: VIOLET_EVENT_CATEGORIES.video_view,
+                    label: eventLabel,
+                    page_id: pageId,
+                    resource_id: resourceId,
+                    video_start: isFirstPlay,
+                    watch_time: watchTime,
+                    total_duration: this.duration * 1000
+                })
+
+                // replay counts as a new view event
+                isFirstPlay = e.type == 'ended'
+            });
+        });
+    });
     
-            var watchTime = Date.now() - startTime;
-            ahoy.track(eventName, {
-                category: VIOLET_EVENT_CATEGORIES.video_view,
-                label: eventLabel,
-                page_id: pageId,
-                resource_id: resourceId,
-                video_start: isFirstPlay,
-                watch_time: watchTime,
-                total_duration: this.duration * 1000
-            })
-
-            // replay counts as a new view event
-            isFirstPlay = e.type == 'ended'
-        });
-    })
 
     // track section views
     $('[data-violet-track-section-view="true"]').each(function() {
