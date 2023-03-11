@@ -91,7 +91,7 @@ class DashboardHelperTest < ActionView::TestCase
 
   test 'total watch time' do
     mock_video_view_events
-    assert_equal 30000, total_watch_time([@video_watch_event_1, @video_watch_event_2])
+    assert_equal 30000, total_watch_time(Ahoy::Event.where(id: [@video_watch_event_1, @video_watch_event_2].map(&:id)))
   end
 
   test 'to_minutes' do
@@ -100,18 +100,18 @@ class DashboardHelperTest < ActionView::TestCase
 
   test 'total_views' do
     mock_video_view_events
-    assert_equal 2, total_views([@video_watch_event_1, @video_watch_event_2, @video_watch_event_3])
+    assert_equal 2, total_views(Ahoy::Event.where(id: [@video_watch_event_1, @video_watch_event_2, @video_watch_event_3].map(&:id)))
   end
 
   test 'avg_view_duration' do
     assert_equal 0, avg_view_duration([])
     mock_video_view_events
-    assert_equal 25000.0, avg_view_duration([@video_watch_event_1, @video_watch_event_2, @video_watch_event_3])
+    assert_equal 25000.0, avg_view_duration(Ahoy::Event.where(id: [@video_watch_event_1, @video_watch_event_2, @video_watch_event_3].map(&:id)))
   end
 
   test 'avg_view_percentange' do
     mock_video_view_events
-    assert_equal 50.0, avg_view_percentage([@video_watch_event_1, @video_watch_event_2, @video_watch_event_3])
+    assert_equal 50.0, avg_view_percentage(Ahoy::Event.where(id: [@video_watch_event_1, @video_watch_event_2, @video_watch_event_3].map(&:id)))
   end
 
   private 
