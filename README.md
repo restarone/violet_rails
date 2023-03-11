@@ -56,11 +56,17 @@ Easily build funnels and data analytics systems with Violet Rails Data pipeline.
 Every Violet Rails app transition seamlessly between web (left) and iOS (right)
 <img width="1728" alt="Screen Shot 2022-06-26 at 1 46 32 PM" src="https://user-images.githubusercontent.com/35935196/175827355-b7d7e41b-c116-4d22-b9c2-226bd9ca0dad.png">
 
+iOS repository: https://github.com/restarone/violet_rails_ios_client
+
+
 #### Examples of inspirational ✨ apps 🗺️ built with Violet Rails 🚀
 
 1. Nikean Foundation: https://www.nikean.org
 2. Restarone Solutions Tech Support: https://support.restarone.solutions
 3. Restarone Software Solutions: https://restarone.com
+4. Marked Restaurant: http://markedrestaurant.com
+5. Opportunities at Restarone: http://contractors.restarone.solutions
+
 ***
 
 ### ✨ **Rich user management system with invites and granular permissions** 🧑‍🤝‍🧑
