@@ -31,6 +31,6 @@ module ApiNamespacesHelper
     end
 
     # sanitize the text to properly display
-    JSON.parse(custom_properties.to_json, object_class: OpenStruct).to_s.gsub(/=/,': ').gsub(/#<OpenStruct/,'{').gsub(/>/,'}').gsub("\\", "'").gsub(/"'"/,'"').gsub(/'""/,'"')
+    JSON.parse(custom_properties.to_json, object_class: OpenStruct).to_s.gsub(/=/,': ').gsub(/#<OpenStruct/,'{').gsub(/>/,' }').gsub("\\", "'").gsub(/"'"/,'"').gsub(/'""/,'"')
   end
 end
