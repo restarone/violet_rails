@@ -87,12 +87,15 @@ module DashboardHelper
   end
 
   def avg_view_percentage(video_view_events)
-    video_view_events.pluck(Arel.sql("((properties ->> 'watch_time')::float / (properties ->> 'total_duration')::float) * 100")).sum / (total_views(video_view_events).nonzero? || 1)
+    video_view_events
+    .where.not("properties ->> 'total_duration' IS NULL")
+    .pluck(Arel.sql("((properties ->> 'watch_time')::float / (properties ->> 'total_duration')::float) * 100")).sum / (total_views(video_view_events).nonzero? || 1)
   end
 
   def top_three_videos(video_view_events, previous_video_view_events)
     video_view_events
       .with_api_resource
+      .where.not("properties ->> 'total_duration' IS NULL")
       .group(:resource_id)
       .reorder("SUM(is_viewed) DESC", "total_watch_time DESC")
       .select(:resource_id,
