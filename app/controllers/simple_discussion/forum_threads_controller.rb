@@ -8,7 +8,11 @@ class SimpleDiscussion::ForumThreadsController < SimpleDiscussion::ApplicationCo
   after_action :broadcast_to_mods, only: [:create]
 
   def index
-    @forum_threads = ForumThread.pinned_first.sorted.includes(:user, :forum_category).paginate(page: page_number)
+    if params[:query].present?
+      @forum_threads = ForumThread.where("lower(title) LIKE ?", "#{params[:query].downcase}%").pinned_first.sorted.includes(:user, :forum_category).paginate(page: page_number)
+    else
+      @forum_threads = ForumThread.pinned_first.sorted.includes(:user, :forum_category).paginate(page: page_number)
+    end
   end
 
   def answered
