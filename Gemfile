@@ -31,7 +31,7 @@ gem 'ros-apartment', require: 'apartment'
 gem 'ros-apartment-sidekiq', require: 'apartment-sidekiq'
 gem 'apartment-activejob'
 gem 'devise'
-gem "comfortable_mexican_sofa",git: 'https://github.com/restarone/comfortable-mexican-sofa', tag: '3.4'
+gem "comfortable_mexican_sofa",git: 'https://github.com/restarone/comfortable-mexican-sofa', tag: '3.5'
 gem "comfy_blog", git: 'https://github.com/restarone/comfy-blog', branch: 'master'
 gem 'simple_discussion', git: 'https://github.com/restarone/simple_discussion', branch: 'master'
 gem 'gravatar_image_tag'
@@ -62,6 +62,13 @@ gem 'net-ssh', '>= 6.0.2'
 gem 'ed25519', '>= 1.2', '< 2.0'
 gem 'bcrypt_pbkdf', '>= 1.0', '< 2.0'
 
+# Display performance information such as SQL time and flame graphs for each request in your browser.
+# Can be configured to work on production as well see: https://github.com/MiniProfiler/rack-mini-profiler/blob/master/README.md
+gem 'rack-mini-profiler', '~> 3.0', require: false
+gem 'flamegraph'
+gem 'stackprof'
+gem 'memory_profiler'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
@@ -69,9 +76,6 @@ group :development, :test do
 end
 
 group :development do
-  # Display performance information such as SQL time and flame graphs for each request in your browser.
-  # Can be configured to work on production as well see: https://github.com/MiniProfiler/rack-mini-profiler/blob/master/README.md
-  gem 'rack-mini-profiler', '~> 2.0'
   gem 'listen', '~> 3.3'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
@@ -117,3 +121,5 @@ gem "redis-namespace", "~> 1.8"
 gem 'stripe-rails'
 
 gem 'devise-two-factor', "4.0.2"
+
+gem "rack-timeout", "~> 0.6"
