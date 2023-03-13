@@ -783,9 +783,9 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_select "b", {count: 1, text: "Form rendering snippet:"}
     assert_select "pre", {count: 1, text: @api_namespace.snippet}
     assert_select "b", {count: 1, text: "API HTML Renderer index snippet:"}
-    assert_select "pre", {count: 1, text: "{{ cms:helper render_api_namespace_resource_index '#{@api_namespace.slug}', scope: { properties: { arr: [1, 2, 3], obj: { a: \"b\", c: \"d\"}, title: \"Hello World\", test_id: 123, alpha_arr: [\"a\", \"b\"], published: true} } }}"}
+    assert_select "pre", {count: 1, text: "{{ cms:helper render_api_namespace_resource_index '#{@api_namespace.slug}', scope: { properties: { arr: [1, 2, 3], obj: { a: \"b\", c: \"d\" }, title: \"Hello World\", test_id: 123, alpha_arr: [\"a\", \"b\"], published: true } } }}"}
     assert_select "b", {count: 1, text: "API HTML Renderer show snippet:"}
-    assert_select "pre", {count: 1, text: "{{ cms:helper render_api_namespace_resource '#{@api_namespace.slug}', scope: { properties: { arr: [1, 2, 3], obj: { a: \"b\", c: \"d\"}, title: \"Hello World\", test_id: 123, alpha_arr: [\"a\", \"b\"], published: true} } }}"}
+    assert_select "pre", {count: 1, text: "{{ cms:helper render_api_namespace_resource '#{@api_namespace.slug}', scope: { properties: { arr: [1, 2, 3], obj: { a: \"b\", c: \"d\" }, title: \"Hello World\", test_id: 123, alpha_arr: [\"a\", \"b\"], published: true } } }}"}
   end
 
   ######## API Accessibility Tests - START #########
