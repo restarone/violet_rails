@@ -25,7 +25,7 @@ class ForumThread < ApplicationRecord
   scope :contains_body_skope, ->(query) { where("action_text_rich_texts.body  ILIKE ?", "%#{query}%") }
   scope :join_with_posts_and_rich_texts, -> {
     joins("INNER JOIN forum_posts ON forum_posts.forum_thread_id = forum_threads.id
-		   INNER JOIN action_text_rich_texts ON action_text_rich_texts.id = forum_posts.id")
+		   INNER JOIN action_text_rich_texts ON action_text_rich_texts.record_id = forum_posts.id")
   }
   scope :contains_body, ->(query) { join_with_posts_and_rich_texts.contains_body_skope(query).distinct }
   scope :contains_either_title_or_body, ->(query) {
