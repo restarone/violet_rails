@@ -786,6 +786,11 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_select "pre", {count: 1, text: "{{ cms:helper render_api_namespace_resource_index '#{@api_namespace.slug}', scope: { properties: { arr: [1, 2, 3], obj: { a: \"b\", c: \"d\" }, title: \"Hello World\", test_id: 123, alpha_arr: [\"a\", \"b\"], published: true } } }}"}
     assert_select "b", {count: 1, text: "API HTML Renderer show snippet:"}
     assert_select "pre", {count: 1, text: "{{ cms:helper render_api_namespace_resource '#{@api_namespace.slug}', scope: { properties: { arr: [1, 2, 3], obj: { a: \"b\", c: \"d\" }, title: \"Hello World\", test_id: 123, alpha_arr: [\"a\", \"b\"], published: true } } }}"}
+    # Dynamic renderer snippet for KEYWORDS based search
+    assert_select "b", {count: 1, text: "API HTML Renderer index snippet (KEYWORDS - works for array and string data type only):"}
+    assert_select "pre", {count: 1, text: "{{ cms:helper render_api_namespace_resource_index '#{@api_namespace.slug}', scope: { properties: { arr: { value: [1], option: \"KEYWORDS\" }, title: { value: \"Hello\", option: \"KEYWORDS\" }, alpha_arr: { value: [\"a\"], option: \"KEYWORDS\" } } } }}"}
+    assert_select "b", {count: 1, text: "API HTML Renderer show snippet (KEYWORDS - works for array and string data type only):"}
+    assert_select "pre", {count: 1, text: "{{ cms:helper render_api_namespace_resource '#{@api_namespace.slug}', scope: { properties: { arr: { value: [1], option: \"KEYWORDS\" }, title: { value: \"Hello\", option: \"KEYWORDS\" }, alpha_arr: { value: [\"a\"], option: \"KEYWORDS\" } } } }}"}
   end
 
   ######## API Accessibility Tests - START #########
