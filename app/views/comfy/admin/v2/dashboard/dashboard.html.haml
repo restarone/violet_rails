@@ -22,23 +22,23 @@
 
   %main{class: 'my-5'}
     %section.row.vr-analytics-section.vr-analytics-page-visit-events
-      .col{ class: @page_visit_events.load.any? ? "col-lg-9 mb-4" : "col-12" }
+      .col{ class: @page_visit_events.present? ? "col-lg-9 mb-4" : "col-12" }
         .d-flex.justify-content-between
           .vr-analytics-section-header.d-md-flex.justify-content-between.align-items-center
             .vr-analytics-sub-title
               = "#{page_name(params[:page])} visits"
-            - if @page_visit_events.load.any?
+            - if @page_visit_events.present?
               .d-flex.justify-content-between.align-items-center.mt-2.mt-md-0
                 .vr-analytics-count
-                  = @page_visit_events.size 
+                  = @page_visit_events[:events_count]
                   total visits
                 .vr-analytics-percent-change
-                  = display_percent_change(@page_visit_events.size, @previous_period_page_visit_events.size)
-                .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(@page_visit_events.size, @previous_period_page_visit_events.size, params[:interval], @start_date, @end_date) }
+                  = display_percent_change(@page_visit_events[:events_count], @page_visit_events[:previous_period_events_count])
+                .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(@page_visit_events[:events_count], @page_visit_events[:previous_period_events_count], params[:interval], @start_date, @end_date) }
                   ?
         .vr-analytics-section-body
-          - if @page_visit_events.load.any?
-            = column_chart page_visit_chart_data(@page_visit_events, @start_date, @end_date), colors: ["#88DAE3FF", "#D785E3FF", "#F7C85CFF"], library: { plugins: { legend: { position: "top", align: "end", labels: { padding: 24, boxWidth: 8, usePointStyle: true, font: { size: 16 } } } }  }
+          - if @page_visit_events.present?
+            = column_chart @page_visit_events[:column_chart_data], colors: ["#88DAE3FF", "#D785E3FF", "#F7C85CFF"], library: { plugins: { legend: { position: "top", align: "end", labels: { padding: 24, boxWidth: 8, usePointStyle: true, font: { size: 16 } } } }  }
           - else
             .vr-analytics-blank-states
               There are no page visit events within the selected date range. 
@@ -58,16 +58,18 @@
                 %br
                 :escaped
                   </main>
-      - if @page_visit_events.load.any?
+      - if @page_visit_events.present?
         .col.col-lg-3
           .vr-analytics-card.vr-analytics-page-visit-events-donut-chart
             %h5 Website visitors
-            = pie_chart visitors_chart_data(@page_visit_events), colors: ['#F7A47B', '#B5E69A'], donut: true, library: { cutout: 85, plugins: { legend: { position: "bottom",  align: 'start', labels: {boxWidth: 8, usePointStyle: true, font: { size: 16 } } } } }
+            = pie_chart @page_visit_events[:pie_chart_data], colors: ['#F7A47B', '#B5E69A'], donut: true, library: { cutout: 85, plugins: { legend: { position: "bottom",  align: 'start', labels: {boxWidth: 8, usePointStyle: true, font: { size: 16 } } } } }
 
   
     %hr.m-0
-    = render partial: 'events', locals: { events_exists: @click_events.load.any?, events_count: @click_events.size, label_grouped_event: @click_events.with_label.group(:label).pluck(:label, Arel.sql('json_agg(ahoy_events.name)')), previous_period_events_count: @previous_period_click_events.size, previous_grouped_events: @previous_period_click_events.with_label.group(:label).size, title: 'Clicks', type: 'clickables' }
-    - unless @click_events.load.any?
+    -# = render partial: 'events', locals: { events_exists: @click_events.load.any?, events_count: @click_events.size, label_grouped_event: @click_events.with_label.group(:label).pluck(:label, Arel.sql('json_agg(ahoy_events.name)')), previous_period_events_count: @previous_period_click_events.size, previous_grouped_events: @previous_period_click_events.with_label.group(:label).size, title: 'Clicks', type: 'clickables' }
+    -# - byebug
+    = render partial: 'events', locals: (@click_events.present? ? @click_events : { events_exists: false }).merge({ event_category: Ahoy::Event::EVENT_CATEGORIES[:click] })
+    - unless @click_events.present?
       .vr-analytics-blank-states
         There are no click events within the selected date range. 
         %br
@@ -86,49 +88,49 @@
           .vr-analytics-sub-title.col.col-12.col-md-2
             Watch time
 
-          - if @video_view_events.load.any? 
+          - if @video_view_events.present? 
             .col.col-md-10
               .row
-                - watch_time = total_watch_time(@video_view_events)
-                - previous_watch_time = total_watch_time(@previous_period_video_view_events)
+                -# - watch_time = total_watch_time(@video_view_events)
+                -# - previous_watch_time = total_watch_time(@previous_period_video_view_events)
                 .col.col-12.col-sm-4.d-flex.align-items-center.my-3.my-sm-0
                   .vr-analytics-count.ml-0
                     Total watch time
-                    = to_minutes(watch_time)
+                    = to_minutes(@video_view_events[:watch_time])
                   .vr-analytics-percent-change
-                    = display_percent_change(watch_time, previous_watch_time)
-                  .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(watch_time, previous_watch_time, params[:interval], @start_date, @end_date) }
+                    = display_percent_change(@video_view_events[:watch_time], @video_view_events[:previous_watch_time])
+                  .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(@video_view_events[:watch_time], @video_view_events[:previous_watch_time], params[:interval], @start_date, @end_date) }
                     ?
             
                 .col.col-12.col-sm-4.d-flex.align-items-center.mb-3.mb-sm-0
                   .vr-analytics-count.ml-0
                     Avg. view duration
-                    - view_duration = avg_view_duration(@video_view_events)
-                    - previous_view_duration = avg_view_duration(@previous_period_video_view_events)
-                    = to_minutes(view_duration)
+                    -# - view_duration = avg_view_duration(@video_view_events)
+                    -# - previous_view_duration = avg_view_duration(@previous_period_video_view_events)
+                    = to_minutes(@video_view_events[:avg_view_duration])
                   .vr-analytics-percent-change
-                    = display_percent_change(view_duration, previous_view_duration)
-                  .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(view_duration, previous_view_duration, params[:interval], @start_date, @end_date) }
+                    = display_percent_change(@video_view_events[:avg_view_duration], @video_view_events[:previous_avg_view_duration])
+                  .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(@video_view_events[:avg_view_duration], @video_view_events[:previous_avg_view_duration], params[:interval], @start_date, @end_date) }
                     ?
 
                 .col.col-12.col-sm-4.d-flex.align-items-center.mb-3.mb-sm-0
                   .vr-analytics-count.ml-0
                     Avg. view percentage
-                    - view_percent = avg_view_percentage(@video_view_events)
-                    - previous_view_percent = avg_view_percentage(@previous_period_video_view_events)
-                    = "#{view_percent.round(2)}%"
+                    -# - view_percent = avg_view_percentage(@video_view_events)
+                    -# - previous_view_percent = avg_view_percentage(@previous_period_video_view_events)
+                    = "#{@video_view_events[:avg_view_percent].round(2)}%"
                   .vr-analytics-percent-change
-                    = display_percent_change(view_percent, previous_view_percent)
-                  .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(view_percent, previous_view_percent, params[:interval], @start_date, @end_date) }
+                    = display_percent_change(@video_view_events[:avg_view_percent], @video_view_events[:previous_avg_view_percent])
+                  .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(@video_view_events[:avg_view_percent], @video_view_events[:previous_avg_view_percent], params[:interval], @start_date, @end_date) }
                     ?
-      - if @video_view_events.load.any? 
+      - if @video_view_events.present? 
         .vr-analytics-section-body
           .vr-analytics-event-label 
-            - top_videos = top_three_videos(@video_view_events, @previous_period_video_view_events)
-            = "Top #{top_videos.size} videos"
+            -# - top_videos = top_three_videos(@video_view_events, @previous_period_video_view_events)
+            = "Top #{@video_view_events[:top_videos].size} videos"
 
           .row.mt-4
-            - top_videos.each do |event|
+            - @video_view_events[:top_videos].each do |event|
               .col.col-12.col-lg-5.mb-4
                 .vr-analytics-card
                   = link_to '', dashboard_events_path(ahoy_event_type: event[:name])
@@ -184,8 +186,9 @@
           Please make sure 'data-violet-resource-id' is present and Analytics mapping is populated
         
     %hr.m-0
-    = render partial: 'events', locals: { events_exists: @form_submit_events.load.any?, events_count: @form_submit_events.size, label_grouped_event: @form_submit_events.with_label.group(:label).pluck(:label, Arel.sql('json_agg(ahoy_events.name)')), previous_period_events_count: @previous_period_form_submit_events.size, previous_grouped_events: @previous_period_form_submit_events.with_label.group(:label).size, title: 'Form Submissions', type: 'submitables' }
-    - unless @form_submit_events.load.any?
+    -# = render partial: 'events', locals: { events_exists: @form_submit_events.load.any?, events_count: @form_submit_events.size, label_grouped_event: @form_submit_events.with_label.group(:label).pluck(:label, Arel.sql('json_agg(ahoy_events.name)')), previous_period_events_count: @previous_period_form_submit_events.size, previous_grouped_events: @previous_period_form_submit_events.with_label.group(:label).size, title: 'Form Submissions', type: 'submitables' }
+    = render partial: 'events', locals: (@form_submit_events.present? ? @form_submit_events : { events_exists: false }).merge({ event_category: Ahoy::Event::EVENT_CATEGORIES[:form_submit] })
+    - unless @form_submit_events.present?
       .vr-analytics-blank-states
         There are no form submission events within the selected date range. 
         %br
@@ -217,8 +220,9 @@
             </form>
 
     %hr.m-0
-    = render partial: 'events', locals: { events_exists: @section_view_events.load.any?, events_count: @section_view_events.size, label_grouped_event: @section_view_events.with_label.group(:label).pluck(:label, Arel.sql('json_agg(ahoy_events.name)')), previous_period_events_count: @previous_period_section_view_events.size, previous_grouped_events: @previous_period_section_view_events.with_label.group(:label).size, title: 'Section Views', type: 'viewables' }
-    - unless @section_view_events.load.any?
+    -# = render partial: 'events', locals: { events_exists: @section_view_events.load.any?, events_count: @section_view_events.size, label_grouped_event: @section_view_events.with_label.group(:label).pluck(:label, Arel.sql('json_agg(ahoy_events.name)')), previous_period_events_count: @previous_period_section_view_events.size, previous_grouped_events: @previous_period_section_view_events.with_label.group(:label).size, title: 'Section Views', type: 'viewables' }
+    = render partial: 'events', locals: (@section_view_events.present? ? @section_view_events : { events_exists: false }).merge({ event_category: Ahoy::Event::EVENT_CATEGORIES[:section_view] })
+    - unless @section_view_events.present?
       .vr-analytics-blank-states
         There are no section view events within the selected date range. 
         %br
@@ -252,4 +256,5 @@
         By default, the threshold value is 0.75
 
     %hr.m-0
-    = render partial: 'events', locals: { events_exists: @legacy_and_system_events.load.any?, events_count: @legacy_and_system_events.size, label_grouped_event: @legacy_and_system_events.with_label.group(:label).pluck(:label, Arel.sql('json_agg(ahoy_events.name)')), previous_period_events_count: @previous_period_legacy_and_system_events.size, previous_grouped_events: @previous_period_legacy_and_system_events.with_label.group(:label).size, title: 'Events', type: 'events' }
+    -# = render partial: 'events', locals: { events_exists: @legacy_and_system_events.load.any?, events_count: @legacy_and_system_events.size, label_grouped_event: @legacy_and_system_events.with_label.group(:label).pluck(:label, Arel.sql('json_agg(ahoy_events.name)')), previous_period_events_count: @previous_period_legacy_and_system_events.size, previous_grouped_events: @previous_period_legacy_and_system_events.with_label.group(:label).size, title: 'Events', type: 'events' }
+    = render partial: 'events', locals: (@legacy_and_system_events.present? ? @legacy_and_system_events : { events_exists: false }).merge({ event_category: 'system_events' })
