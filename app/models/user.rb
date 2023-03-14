@@ -43,11 +43,14 @@ class User < ApplicationRecord
     :invitation_limit	,
     :invited_by_type,
     :invited_by_id,
-    :invitations_count
+    :invitations_count,
+    :global_admin,
+    :show_profiler,
   ]
 
   FULL_PERMISSIONS = {
     can_access_admin: true,
+    can_access_forum: true,
     can_manage_web: true,
     can_manage_analytics: true,
     can_manage_files: true,
@@ -57,7 +60,8 @@ class User < ApplicationRecord
     can_manage_subdomain_settings: true,
     api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}, api_keys: {full_access: 'true'}},
     can_view_restricted_pages: true,
-    moderator: true
+    moderator: true,
+    deliver_error_notifications: true,
   }
 
   SESSION_TIMEOUT = [
