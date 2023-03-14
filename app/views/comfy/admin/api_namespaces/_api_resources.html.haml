@@ -1,0 +1,90 @@
+      
+-# We show this only if the user has full_access or access related to api-resources
+- if has_access_to_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:read_api_resources_only], current_user, @api_namespace)
+  #api-resources-list.container-fluid
+    .d-flex.justify-content-between.py-2.page-header
+      %h2
+        Listing
+        =  @api_namespace.name.pluralize
+      %div
+        = link_to "Create new #{@api_namespace.name.singularize}", new_api_namespace_resource_path(api_namespace_id: @api_namespace.id), class: 'btn btn-primary'
+    = render partial: 'comfy/admin/api_resources/search_api_resource_filters', locals: { objects: @api_resources_q, path: api_namespace_path(@api_namespace) }
+    = render partial: 'pagination', locals: { objects: @api_resources }
+  
+  .table-responsive
+    %div#api-resources-table-container
+      %table#api-resources-table.table.table-striped 
+        %thead
+          %tr
+            %th.px-3= sort_link @api_resources_q, :id
+            %th.px-3= sort_link @api_resources_q, :created_at
+            %th.px-3= sort_link @api_resources_q, :updated_at
+            - dynamic_columns = @api_namespace.properties.keys
+            - @api_namespace.properties.keys.each do |dynamic_column|
+              %th.px-3= sort_link @api_resources_q, dynamic_column
+            %th.px-3
+            %th.px-3
+        %tbody
+          - @api_resources.each do |api_resource|
+            %tr
+              %td.px-3.py-2
+                = link_to api_resource.id, api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id)
+                .d-flex
+                  = link_to edit_api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), class: 'mr-3' do 
+                    %i.fas.fa-edit
+                  = link_to api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), method: :delete, data: { confirm: 'Are you sure?' } do
+                    %i.fas.fa-trash
+              %td.px-3.date-col= api_resource.created_at.strftime('%F %T')
+              %td.px-3.date-col= api_resource.updated_at.strftime('%F %T')
+              - dynamic_columns.each_with_index do |dynamic_column|
+                %td.px-3
+                  - if api_resource.properties[dynamic_column]&.is_a?(Array)
+                    - array = api_resource.properties[dynamic_column]
+                    - if array.length > 10
+                      = '[' + array.first(2).join(', ') + ', ... , ' + array.last(1).join + ']'
+                      = link_to "View #{dynamic_column}", '#',  class: 'd-block view-dynamic-column', data: { toggle: 'modal', target: "#myModal",id: api_resource.id, array: true, column: dynamic_column , value: api_resource.properties[dynamic_column].join(', ') }
+                    - else
+                      = array
+                  - else
+                    - value = api_resource.properties[dynamic_column].to_s
+                    - if value && value.length > 100
+                      = truncate(value, length: 100)
+                      = link_to "View #{dynamic_column}", '#' , class: 'd-block view-dynamic-column', data: { toggle: 'modal', target: "#myModal" , column: dynamic_column,id: api_resource.id, array: false, value: value }
+                    - else
+                      = value    
+
+
+  .modal.fade#myModal{tabindex: -1, role: "dialog", aria: {labelledby: "myModalLabel", hidden: true}}
+    .modal-dialog{role: "document"}
+      .modal-content
+        .modal-header
+          %h5.modal-title{id: "myModalLabel"} %p#dynamic_column_name
+          %button.close{type: "button", data: {dismiss: "modal"}, aria: {label: "Close"}}
+            %span{aria: {hidden: true}} &times;
+        .modal-body{style: "max-height: calc(100vh - 200px); overflow-y: auto;"}
+          %p#id
+          %pre#modal-body-content
+
+  :javascript
+    $(document).ready(function() {
+      $('.view-dynamic-column').on('click', function() {
+        var content = '';
+        var array = $(this).data('array');
+        if (array) {
+          content = '[' + $(this).data('value')  + ']';
+        } else {
+          content = $(this).data('value');
+        }
+        var dynamic_column_name = $(this).data('column');
+        $('#myModalLabel').text(dynamic_column_name);
+        var id = $(this).data('id');
+        $('#id').text('ID: ' + id);
+        $('#modal-body-content').text(content);
+        $('#myModal').modal('show');
+      });
+
+      $('#myModal').on('hidden.bs.modal', function() {
+        $('#modal-body-content').empty(); 
+        $('#id').empty(); 
+      });
+    });

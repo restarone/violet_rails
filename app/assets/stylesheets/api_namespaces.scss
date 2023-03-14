@@ -1,3 +1,37 @@
 // Place all the styles related to the ApiNamespaces controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: https://sass-lang.com/
+
+pre#modal-body-content {
+  white-space: break-spaces;
+}
+
+#api-resources-table {
+  font-size: 14px;
+  line-height: 17px;
+
+  td {
+    vertical-align: middle;
+  }
+
+  .date-col {
+    min-width: 130px;
+  }
+
+  .view-dynamic-column {
+    white-space: nowrap;
+  }
+}
+
+.api_resources_search_form {
+  .search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .search-action {
+      position: absolute;
+      right: 0;
+    }
+  }
+}
