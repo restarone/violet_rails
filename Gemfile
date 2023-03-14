@@ -122,4 +122,4 @@ gem 'stripe-rails'
 
 gem 'devise-two-factor', "4.0.2"
 
-gem "rack-timeout", "~> 0.6"
+gem "slowpoke"
