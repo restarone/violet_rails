@@ -22,10 +22,13 @@ module DashboardHelper
     "Visit (#{user_visit_count})"
   end
 
-  def page_visit_chart_data(page_visit_events, start_date, end_date)
+  # def page_visit_chart_data(page_visit_events, start_date, end_date)
+  def page_visit_chart_data(event_ids, start_date, end_date)
     period, format = split_into(start_date, end_date)
 
-    page_visit_events
+    Ahoy::Event
+      .joins(:visit)
+      .where(id: event_ids)
       .where.not(visit: {device_type: nil})
       .group("visit.device_type")
       .group_by_period(period, :time, range: start_date..end_date, format: format)
@@ -45,8 +48,9 @@ module DashboardHelper
     Comfy::Cms::Page.find_by(id: page_id)&.label
   end
 
-  def visitors_chart_data(visits)
-    visitors_by_token = visits.group(:visitor_token).size
+  # def visitors_chart_data(visits)
+  def visitors_chart_data(event_ids)
+    visitors_by_token = Ahoy::Event.joins(:visit).where(id: event_ids).group(:visitor_token).size
     recurring_visitors = visitors_by_token.values.count { |v| v > 1 }
     single_time_visitors = visitors_by_token.keys.count - recurring_visitors
     {"Single time visitor": single_time_visitors, "Recurring visitors" => recurring_visitors  }
@@ -70,28 +74,31 @@ module DashboardHelper
     "This is a #{percent_change.round(2).abs} % #{percent_change > 0 ? 'increase': 'decrease'} compared to the previous #{prev_interval}"
   end
 
-  def total_watch_time(video_view_events)
-    video_view_events.pluck(Arel.sql("SUM((#{Ahoy::Event.table_name}.properties ->> 'watch_time')::bigint)")).sum
+  def total_watch_time(video_event_ids)
+    Ahoy::Event.where(id: video_event_ids).pluck(Arel.sql("SUM((#{Ahoy::Event.table_name}.properties ->> 'watch_time')::bigint)")).sum
   end
 
   def to_minutes(time_in_milisecond)
     "#{number_with_delimiter((time_in_milisecond.to_f / (1000 * 60)).round(2) , :delimiter => ',')} min"
   end
 
-  def total_views(video_view_events)
-    video_view_events.pluck(Arel.sql("SUM(CASE WHEN (#{Ahoy::Event.table_name}.properties ->> 'video_start')::boolean THEN 1 ELSE 0 END)")).sum
+  def total_views(video_event_ids)
+    Ahoy::Event.where(id: video_event_ids).pluck(Arel.sql("SUM(CASE WHEN (#{Ahoy::Event.table_name}.properties ->> 'video_start')::boolean THEN 1 ELSE 0 END)")).sum
   end
 
-  def avg_view_duration(video_view_events)
-    total_watch_time(video_view_events).to_f / (total_views(video_view_events).nonzero? || 1)
+  def avg_view_duration(video_event_ids)
+    total_watch_time(video_event_ids).to_f / (total_views(video_event_ids).nonzero? || 1)
   end
 
-  def avg_view_percentage(video_view_events)
-    video_view_events.pluck(Arel.sql("((properties ->> 'watch_time')::float / (properties ->> 'total_duration')::float) * 100")).sum / (total_views(video_view_events).nonzero? || 1)
+  def avg_view_percentage(video_event_ids)
+    Ahoy::Event.where(id: video_event_ids).pluck(Arel.sql("((properties ->> 'watch_time')::float / (properties ->> 'total_duration')::float) * 100")).sum / (total_views(video_event_ids).nonzero? || 1)
   end
 
-  def top_three_videos(video_view_events, previous_video_view_events)
-    video_view_events
+  def top_three_videos(video_event_ids, previous_video_event_ids)
+    previous_video_events = Ahoy::Event.where(id: previous_video_event_ids).load
+
+    Ahoy::Event
+      .where(id: video_event_ids)
       .with_api_resource
       .group(:resource_id)
       .reorder("SUM(is_viewed) DESC", "total_watch_time DESC")
@@ -105,13 +112,13 @@ module DashboardHelper
       .as_json
       .map(&:with_indifferent_access)
       .each do |video_event|
-        previous_period_event = previous_video_view_events.jsonb_search(:properties, { resource_id: video_event[:resource_id] })
+        previous_period_event_ids = previous_video_events.jsonb_search(:properties, { resource_id: video_event[:resource_id] }).pluck(:id)
         api_resource = ApiResource.find_by(id: video_event[:resource_id])
 
         video_event[:name] = video_event[:names].uniq.first
         video_event[:namespace_id] = video_event[:namespace_ids].uniq.first
-        video_event[:previous_period_total_views] = total_views(previous_period_event)
-        video_event[:previous_period_total_watch_time] = total_watch_time(previous_period_event)
+        video_event[:previous_period_total_views] = total_views(previous_period_event_ids)
+        video_event[:previous_period_total_watch_time] = total_watch_time(previous_period_event_ids)
         video_event[:resource_title] = api_resource&.properties.dig(api_resource&.api_namespace.analytics_metadata&.dig("title")) || "Resource Id: #{video_event[:resource_id]}"
         video_event[:resource_author] = api_resource&.properties.dig(api_resource&.api_namespace.analytics_metadata&.dig("author"))
         video_event[:resource_image] = api_resource&.non_primitive_properties.find_by(field_type: "file", label: api_resource&.api_namespace.analytics_metadata&.dig("thumbnail"))&.file_url
@@ -120,6 +127,32 @@ module DashboardHelper
         video_event.delete(:namespace_ids)
         video_event.delete(:id)
       end
+  end
+
+  def event_title(event_category)
+    case event_category
+    when Ahoy::Event::EVENT_CATEGORIES[:click]
+      'Clicks'
+    when Ahoy::Event::EVENT_CATEGORIES[:form_submit]
+      'Form Submissions'
+    when Ahoy::Event::EVENT_CATEGORIES[:section_view]
+      'Section Views'
+    when 'system_events'
+      'Events'
+    end
+  end
+
+  def event_types(event_category)
+    case event_category
+    when Ahoy::Event::EVENT_CATEGORIES[:click]
+      'clickables'
+    when Ahoy::Event::EVENT_CATEGORIES[:form_submit]
+      'submitables'
+    when Ahoy::Event::EVENT_CATEGORIES[:section_view]
+      'viewables'
+    when 'system_events'
+      'events'
+    end
   end
 
   private
