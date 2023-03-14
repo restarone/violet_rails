@@ -71,6 +71,7 @@ module DashboardHelper
   end
 
   def total_watch_time(video_view_events)
+    return 0 if video_view_events.empty?
     video_view_events
     .where.not("properties ->> 'total_duration' IS NULL")
     .pluck(Arel.sql("SUM((#{Ahoy::Event.table_name}.properties ->> 'watch_time')::bigint)")).sum
@@ -81,6 +82,7 @@ module DashboardHelper
   end
 
   def total_views(video_view_events)
+    return 0 if video_view_events.empty?
     video_view_events
     .where.not("properties ->> 'total_duration' IS NULL")
     .pluck(Arel.sql("SUM(CASE WHEN (#{Ahoy::Event.table_name}.properties ->> 'video_start')::boolean THEN 1 ELSE 0 END)")).sum
