@@ -20,5 +20,6 @@ require("./tribute")
 require("./select2")
 require("./common")
 require("./turbo")
+require('bootstrap-daterangepicker')
 
 import "controllers"

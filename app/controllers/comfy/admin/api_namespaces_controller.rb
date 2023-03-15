@@ -54,9 +54,10 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
     @custom_properties = JSON.parse(@custom_properties.to_json, object_class: OpenStruct).to_s.gsub(/=/,': ').gsub(/#<OpenStruct/,'{').gsub(/>/,'}').gsub("\\", "'").gsub(/"'"/,'"').gsub(/'""/,'"')
     @image_options = @api_namespace.non_primitive_properties.select { |non_primitive_property| non_primitive_property.field_type == 'file' }.pluck(:label)
   
-    respond_to do |format|
-      format.html 
-      format.js 
+    if turbo_frame_request?
+      render partial: "comfy/admin/api_namespaces/api_resources/table", locals: { api_resources: @api_resources, api_resources_q: @api_resources_q, api_namespace: @api_namespace }
+    else
+      render :show
     end
   end
   

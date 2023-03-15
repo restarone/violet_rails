@@ -1,4 +1,4 @@
-= render partial: 'api_resources'
+= render partial: 'comfy/admin/api_namespaces/api_resources/index'
 
 %br
 %br
@@ -219,5 +219,3 @@
         = f.select 'api_namespace[analytics_metadata][thumbnail]', options_for_select(@image_options,(@api_namespace.analytics_metadata&.dig('thumbnail'))),{include_blank: "Choose an option"}, {class: 'form-control'}
       .form-group
         = f.submit "Submit", class: 'btn btn-primary'
-
-= javascript_include_tag 'comfy/admin/cms/api_namespace'
