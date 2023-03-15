@@ -109,6 +109,7 @@ module DashboardHelper
         api_resource = ApiResource.find_by(id: video_event[:resource_id])
 
         video_event[:name] = video_event[:names].uniq.first
+        video_event[:duration] = video_event[:duration] || 0
         video_event[:namespace_id] = video_event[:namespace_ids].uniq.first
         video_event[:previous_period_total_views] = total_views(previous_period_event)
         video_event[:previous_period_total_watch_time] = total_watch_time(previous_period_event)
