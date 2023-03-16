@@ -59,7 +59,7 @@ class Comfy::Admin::V2::DashboardControllerTest < ActionDispatch::IntegrationTes
     # default range should be current month and previous period should be last month
     assert_equal Date.today.beginning_of_month, assigns(:start_date)
     assert_equal Date.today.end_of_month, assigns(:end_date)
-  
+
     assert_equal [page_visit_event_1_page_2.id], assigns(:page_visit_events).pluck(:id)
     assert_equal [click_event_1_page_2.id], assigns(:click_events).pluck(:id)
     assert_equal [video_watch_event_1_page_2.id], assigns(:video_view_events).pluck(:id)
@@ -92,5 +92,67 @@ class Comfy::Admin::V2::DashboardControllerTest < ActionDispatch::IntegrationTes
     assert_empty assigns(:previous_period_page_visit_events)
     assert_equal [click_event_2.id], assigns(:previous_period_click_events).pluck(:id)
     assert_equal [video_watch_event_2.id], assigns(:previous_period_video_view_events).pluck(:id)
+  end
+
+  test "#dashboard: should show pie-chart data and last time-period comparision correctly" do
+    @subdomain.update!(tracking_enabled: true)
+    
+    recurring_visit = Ahoy::Visit.first
+    recurring_visit.update!(visit_token: 'visit_token_1', visitor_token: 'visitor_token_1')
+
+    single_time_visit_1 = recurring_visit.dup
+    single_time_visit_1.update!(visit_token: 'visit_token_2', visitor_token: 'visitor_token_2')
+
+    single_time_visit_2 = recurring_visit.dup
+    single_time_visit_2.update!(visit_token: 'visit_token_3', visitor_token: 'visitor_token_3')
+
+    recurring_current_page_visit_events_page_2 = (1..3).each do
+      recurring_visit.events.create(name: 'comfy-cms-page-visit', user_id: @user.id, time: Time.now,  properties: {"label"=>"test_page_view", "page_id"=>@page_2.id, "category"=>"page_visit", "page_title"=>"lvh.me:5250"})
+    end
+
+    single_time_current_page_visit_events_page_2 = [single_time_visit_1, single_time_visit_2].each do |visit|
+      visit.events.create(name: 'comfy-cms-page-visit', user_id: @user.id, time: Time.now,  properties: {"label"=>"test_page_view", "page_id"=>@page_2.id, "category"=>"page_visit", "page_title"=>"lvh.me:5250"})
+    end
+
+    recurring_visit.events.create(name: 'comfy-cms-page-visit', user_id: @user.id, time: (Time.now.beginning_of_month - 4.days),  properties: {"label"=>"test_page_view", "page_id"=>@page.id, "category"=>"page_visit", "page_title"=>"lvh.me:5250"})
+    single_time_previous_page_visit_events_page_1 = [single_time_visit_1, single_time_visit_2].each do |visit|
+      visit.events.create(name: 'comfy-cms-page-visit', user_id: @user.id, time: (Time.now.beginning_of_month - 4.days),  properties: {"label"=>"test_page_view", "page_id"=>@page.id, "category"=>"page_visit", "page_title"=>"lvh.me:5250"})
+    end
+
+    @user.update(can_manage_analytics: true)
+    sign_in(@user)  
+
+    get v2_dashboard_url
+
+    # default range should be current month and previous period should be last month
+    assert_equal Date.today.beginning_of_month, assigns(:start_date)
+    assert_equal Date.today.end_of_month, assigns(:end_date)
+
+    assert_select ".vr-analytics-page-visit-events-donut-chart script", { count: 1, text: /\"Single time visitor\",2\],\[\"Recurring visitors\",1/ }
+    assert_select ".vr-analytics-section-header .vr-analytics-percent-change .positive", { count: 1, text: /66.67 %/}
+  end
+
+  test "#dashboard: should not throw error if a video detail is missing in the ahoy_events" do
+    @subdomain.update!(tracking_enabled: true)
+    visit = Ahoy::Visit.first
+
+    video_watch_event_1 = visit.events.create(name: 'test-video-watched', user_id: @user.id, time: (Time.now.beginning_of_month - 4.days),  properties: {"label"=>"watched_this_video", "page_id"=>@page.id, "category"=>"video_view", "resource_id"=>@api_resource.id, "video_start"=>true, "total_duration"=>11944.444}) 
+    video_watch_event_2 = visit.events.create(name: 'test-video-watched', user_id: @user.id, time: (Time.now.beginning_of_month - 4.days),  properties: {"label"=>"watched_this_video", "page_id"=>@page.id, "category"=>"video_view", "watch_time"=>11891, "video_start"=>true, "total_duration"=>11944.444}) 
+    video_watch_event_3 = visit.events.create(name: 'test-video-watched', user_id: @user.id, time: (Time.now.beginning_of_month - 4.days),  properties: {"label"=>"watched_this_video", "page_id"=>@page.id, "category"=>"video_view", "watch_time"=>11891, "resource_id"=>@api_resource.id, "total_duration"=>11944.444}) 
+    video_watch_event_4 = visit.events.create(name: 'test-video-watched', user_id: @user.id, time: (Time.now.beginning_of_month - 4.days),  properties: {"label"=>"watched_this_video", "page_id"=>@page.id, "category"=>"video_view", "watch_time"=>11891, "resource_id"=>@api_resource.id, "video_start"=>true}) 
+
+    video_watch_event_1_page_2 = visit.events.create(name: 'test-video-watched', user_id: @user.id, time: Time.now,  properties: {"label"=>"watched_this_video", "page_id"=>@page_2.id, "category"=>"video_view", "resource_id"=>@api_resource.id, "video_start"=>true, "total_duration"=>11944.444})    
+    video_watch_event_2_page_2 = visit.events.create(name: 'test-video-watched', user_id: @user.id, time: Time.now,  properties: {"label"=>"watched_this_video", "page_id"=>@page_2.id, "category"=>"video_view", "watch_time"=>11891, "video_start"=>true, "total_duration"=>11944.444})    
+    video_watch_event_3_page_2 = visit.events.create(name: 'test-video-watched', user_id: @user.id, time: Time.now,  properties: {"label"=>"watched_this_video", "page_id"=>@page_2.id, "category"=>"video_view", "watch_time"=>11891, "resource_id"=>@api_resource.id, "total_duration"=>11944.444})    
+    video_watch_event_4_page_2 = visit.events.create(name: 'test-video-watched', user_id: @user.id, time: Time.now,  properties: {"label"=>"watched_this_video", "page_id"=>@page_2.id, "category"=>"video_view", "watch_time"=>11891, "resource_id"=>@api_resource.id, "video_start"=>true})    
+
+    @user.update(can_manage_analytics: true)
+    sign_in(@user)  
+
+    assert_nothing_raised do
+      get v2_dashboard_url
+    end
+
+    assert_response :success
   end
 end
