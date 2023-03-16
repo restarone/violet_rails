@@ -115,10 +115,16 @@
       %pre= @api_namespace.snippet
       %p
         %b API HTML Renderer index snippet:
-      %pre= "{{ cms:helper render_api_namespace_resource_index '#{@api_namespace.slug}', scope: { properties: #{@custom_properties} } }}"
+      %pre= "{{ cms:helper render_api_namespace_resource_index '#{@api_namespace.slug}', scope: { properties: #{api_html_renderer_dynamic_properties(@api_namespace)} } }}"
+      %p
+        %b API HTML Renderer index snippet (KEYWORDS - works for array and string data type only):
+      %pre= "{{ cms:helper render_api_namespace_resource_index '#{@api_namespace.slug}', scope: { properties: #{api_html_renderer_dynamic_properties(@api_namespace, 'KEYWORDS')} } }}"
       %p
         %b API HTML Renderer show snippet:
-      %pre= "{{ cms:helper render_api_namespace_resource '#{@api_namespace.slug}', scope: { properties: #{@custom_properties} } }}"
+      %pre= "{{ cms:helper render_api_namespace_resource '#{@api_namespace.slug}', scope: { properties: #{api_html_renderer_dynamic_properties(@api_namespace)} } }}"
+      %p
+        %b API HTML Renderer show snippet (KEYWORDS - works for array and string data type only):
+      %pre= "{{ cms:helper render_api_namespace_resource '#{@api_namespace.slug}', scope: { properties: #{api_html_renderer_dynamic_properties(@api_namespace, 'KEYWORDS')} } }}"
       %p
         .d-flex.justify-content-between
           %b Preview (outer border is present in preview only):

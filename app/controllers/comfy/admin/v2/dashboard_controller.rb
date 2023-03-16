@@ -57,6 +57,7 @@ class Comfy::Admin::V2::DashboardController < Comfy::Admin::Cms::BaseController
 
   def set_event_category_specific_analytics_data
     filtered_events = Ahoy::Event.joins(:visit)
+    filtered_events = filtered_events.jsonb_search(:properties, { page_id: params[:page] }) if params[:page].present?
 
     Ahoy::Event::EVENT_CATEGORIES.values.each do |event_category|
       if event_category == Ahoy::Event::EVENT_CATEGORIES[:page_visit]
@@ -64,7 +65,9 @@ class Comfy::Admin::V2::DashboardController < Comfy::Admin::Cms::BaseController
       else
         events = filtered_events.jsonb_search(:properties, { category: event_category })
       end
-      events = events.jsonb_search(:properties, { page_id: params[:page] }) if params[:page].present?
+
+      events = events.filter_records_with_video_details_missing if event_category == Ahoy::Event::EVENT_CATEGORIES[:video_view]
+
       instance_variable_set("@previous_period_#{event_category}_events", events.where(time: previous_period(params[:interval], @start_date, @end_date)))
       instance_variable_set("@#{event_category}_events", events.where(time: @start_date.beginning_of_day..@end_date.end_of_day))
 
