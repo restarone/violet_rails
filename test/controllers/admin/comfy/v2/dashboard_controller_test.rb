@@ -131,4 +131,28 @@ class Comfy::Admin::V2::DashboardControllerTest < ActionDispatch::IntegrationTes
     assert_select ".vr-analytics-page-visit-events-donut-chart script", { count: 1, text: /\"Single time visitor\",2\],\[\"Recurring visitors\",1/ }
     assert_select ".vr-analytics-section-header .vr-analytics-percent-change .positive", { count: 1, text: /66.67 %/}
   end
+
+  test "#dashboard: should not throw error if a video detail is missing in the ahoy_events" do
+    @subdomain.update!(tracking_enabled: true)
+    visit = Ahoy::Visit.first
+
+    video_watch_event_1 = visit.events.create(name: 'test-video-watched', user_id: @user.id, time: (Time.now.beginning_of_month - 4.days),  properties: {"label"=>"watched_this_video", "page_id"=>@page.id, "category"=>"video_view", "resource_id"=>@api_resource.id, "video_start"=>true, "total_duration"=>11944.444}) 
+    video_watch_event_2 = visit.events.create(name: 'test-video-watched', user_id: @user.id, time: (Time.now.beginning_of_month - 4.days),  properties: {"label"=>"watched_this_video", "page_id"=>@page.id, "category"=>"video_view", "watch_time"=>11891, "video_start"=>true, "total_duration"=>11944.444}) 
+    video_watch_event_3 = visit.events.create(name: 'test-video-watched', user_id: @user.id, time: (Time.now.beginning_of_month - 4.days),  properties: {"label"=>"watched_this_video", "page_id"=>@page.id, "category"=>"video_view", "watch_time"=>11891, "resource_id"=>@api_resource.id, "total_duration"=>11944.444}) 
+    video_watch_event_4 = visit.events.create(name: 'test-video-watched', user_id: @user.id, time: (Time.now.beginning_of_month - 4.days),  properties: {"label"=>"watched_this_video", "page_id"=>@page.id, "category"=>"video_view", "watch_time"=>11891, "resource_id"=>@api_resource.id, "video_start"=>true}) 
+
+    video_watch_event_1_page_2 = visit.events.create(name: 'test-video-watched', user_id: @user.id, time: Time.now,  properties: {"label"=>"watched_this_video", "page_id"=>@page_2.id, "category"=>"video_view", "resource_id"=>@api_resource.id, "video_start"=>true, "total_duration"=>11944.444})    
+    video_watch_event_2_page_2 = visit.events.create(name: 'test-video-watched', user_id: @user.id, time: Time.now,  properties: {"label"=>"watched_this_video", "page_id"=>@page_2.id, "category"=>"video_view", "watch_time"=>11891, "video_start"=>true, "total_duration"=>11944.444})    
+    video_watch_event_3_page_2 = visit.events.create(name: 'test-video-watched', user_id: @user.id, time: Time.now,  properties: {"label"=>"watched_this_video", "page_id"=>@page_2.id, "category"=>"video_view", "watch_time"=>11891, "resource_id"=>@api_resource.id, "total_duration"=>11944.444})    
+    video_watch_event_4_page_2 = visit.events.create(name: 'test-video-watched', user_id: @user.id, time: Time.now,  properties: {"label"=>"watched_this_video", "page_id"=>@page_2.id, "category"=>"video_view", "watch_time"=>11891, "resource_id"=>@api_resource.id, "video_start"=>true})    
+
+    @user.update(can_manage_analytics: true)
+    sign_in(@user)  
+
+    assert_nothing_raised do
+      get v2_dashboard_url
+    end
+
+    assert_response :success
+  end
 end

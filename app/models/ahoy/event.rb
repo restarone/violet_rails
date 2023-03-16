@@ -54,6 +54,16 @@ class Ahoy::Event < ApplicationRecord
     joins("INNER JOIN (#{subquery}) as api_resourced_events ON api_resourced_events.id = #{table_name}.id")
   }
 
+  scope :filter_records_with_video_details_missing, -> {
+    self
+      .where(
+        "(properties ->> 'watch_time') IS NOT NULL"\
+        " AND (properties ->> 'video_start') IS NOT NULL"\
+        " AND (properties ->> 'total_duration') IS NOT NULL"\
+        " AND (properties ->> 'resource_id') IS NOT NULL"
+      )
+  }
+
   # For events_list page, sorting on the grouped query
   # https://stackoverflow.com/a/35987240
   ransacker :count do
