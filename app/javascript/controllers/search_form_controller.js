@@ -1,6 +1,6 @@
+import { Controller } from "@hotwired/stimulus";
 import moment from "moment";
-import { Controller } from "@hotwired/stimulus"
-
+import 'daterangepicker';
 // Connects to data-controller="search-form"
 export default class extends Controller {
   ranges = {
