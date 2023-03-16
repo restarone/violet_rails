@@ -1,8 +1,11 @@
 
 = turbo_frame_tag 'api-resources' do
+  .digg_pagination.d-flex.justify-content-between.mb-4.pb-3
+    .page-info= page_entries_info @api_resources
+    .links= will_paginate @api_resources, container: false, renderer: TurboPaginateRenderer
   .table-responsive
-    %div#api-resources-table-container
-      %table#api-resources-table.table.table-striped 
+    %div.api-resources-table-container
+      %table#api-resources-table.table.table-striped.table-bordered
         %thead
           %tr
             %th.px-3= sort_link api_resources_q, :id
@@ -11,8 +14,7 @@
             - dynamic_columns = api_namespace.properties.keys
             - api_namespace.properties.keys.each do |dynamic_column|
               %th.px-3= sort_link api_resources_q, dynamic_column
-            %th.px-3
-            %th.px-3
+
         %tbody
           - api_resources.each do |api_resource|
             %tr
@@ -30,19 +32,19 @@
                   - if api_resource.properties[dynamic_column]&.is_a?(Array)
                     - array = api_resource.properties[dynamic_column]
                     - if array.length > 10
-                      = '[' + array.first(2).join(', ') + ', ... , ' + array.last(1).join + ']'
-                      = link_to "View #{dynamic_column}", '#',  class: 'd-block view-dynamic-column', data: { toggle: 'modal', target: "#myModal",id: api_resource.id, array: true, column: dynamic_column , value: api_resource.properties[dynamic_column].join(', ') }
+                      = "[#{array.first(2).join(', ')}, ... ,#{array.last(1).join}]"
+                      = link_to "View #{dynamic_column}", '#',  class: 'd-block view-dynamic-column', data: { toggle: 'modal', target: "#myModal", namespace_id: api_resource.api_namespace_id, id: api_resource.id, column: dynamic_column , value: "[#{api_resource.properties[dynamic_column].join(', ')}]", action: "click->api-resources#showModal" }
                     - else
                       = array
                   - else
                     - value = api_resource.properties[dynamic_column].to_s
                     - if value && value.length > 100
                       = truncate(value, length: 100)
-                      = link_to "View #{dynamic_column}", '#' , class: 'd-block view-dynamic-column', data: { toggle: 'modal', target: "#myModal" , column: dynamic_column,id: api_resource.id, array: false, value: value }
+                      = link_to "View #{dynamic_column}", '#' , class: 'd-block view-dynamic-column', data: { toggle: 'modal', target: "#myModal" , column: dynamic_column, namespace_id: api_resource.api_namespace_id, id: api_resource.id, value: value, action: "click->api-resources#showModal" }
                     - else
                       = value 
    
-  .modal.fade#myModal{tabindex: -1, role: "dialog", aria: {labelledby: "myModalLabel", hidden: true}}
+  .modal.fade#myModal{tabindex: -1, role: "dialog", aria: {labelledby: "myModalLabel", hidden: true}, data: { api_resources_target: 'modal' }}
     .modal-dialog{role: "document"}
       .modal-content
         .modal-header
@@ -50,6 +52,5 @@
           %button.close{type: "button", data: {dismiss: "modal"}, aria: {label: "Close"}}
             %span{aria: {hidden: true}} &times;
         .modal-body{style: "max-height: calc(100vh - 200px); overflow-y: auto;"}
-          %p#id
+          %p#modal-id
           %pre#modal-body-content
-  

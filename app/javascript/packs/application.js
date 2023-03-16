@@ -8,9 +8,11 @@ import Rails from "@rails/ujs"
 import "channels"
 import "bootstrap"
 import "chartkick/chart.js"
-
 import ahoy from "ahoy.js";
+import jQuery from 'jquery';
+
 window.ahoy = ahoy;
+global.$ = global.jQuery = jQuery;
 
 Rails.start()
 

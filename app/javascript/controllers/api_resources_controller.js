@@ -1,8 +1,10 @@
 import { Controller } from "@hotwired/stimulus";
 import moment from "moment";
 import 'daterangepicker';
-// Connects to data-controller="search-form"
+
 export default class extends Controller {
+  static targets = [ 'searchForm', 'modal' ]
+
   ranges = {
     'Last 7 days': [moment().subtract(6, 'days'), moment()],
     'Last 30 days': [moment().subtract(29, 'days'), moment()],
@@ -40,7 +42,7 @@ export default class extends Controller {
       $('#q_updated_at_end_of_day_lteq').val(end.format('YYYY-MM-DD')).trigger("input");
     });
 
-    $(this.element).on("input", (_event, _params) => {
+    $(this.searchFormTarget).on("input", (_event, _params) => {
       this.search();
     });
   }
@@ -48,13 +50,20 @@ export default class extends Controller {
   search() {
     clearTimeout(this.timeout)
     this.timeout = setTimeout(() => {
-      this.element.requestSubmit();
+      this.searchFormTarget.requestSubmit();
     }, 200)
   }
 
   clearText() {
-    const searchField = this.element.querySelector("input[type='search']")
-    searchField.value = ""
-    this.element.requestSubmit();
+    const searchField = this.searchFormTarget.querySelector("input[type='search']");
+    searchField.value = "";
+    this.searchFormTarget.requestSubmit();
+  }
+
+  showModal(e) {
+    const dataset = e.target.dataset;
+    this.modalTarget.querySelector('#myModalLabel').textContent = dataset['column'];
+    this.modalTarget.querySelector('#modal-id').innerHTML = `ID: <a href="/api_namespaces/${dataset['namespaceId']}/resources/${dataset['id']}">${dataset['id']}</a>`;
+    this.modalTarget.querySelector('#modal-body-content').textContent = dataset['value'];
   }
 }
