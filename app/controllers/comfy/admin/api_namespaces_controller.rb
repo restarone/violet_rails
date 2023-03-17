@@ -40,11 +40,15 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
     params[:q] ||= {}
     @api_resources_q = @api_namespace.api_resources.ransack(params[:q])
     @api_resources = @api_resources_q.result.paginate(page: params[:page], per_page: 10)
-
-    # field, direction = params[:q].key?(:s) ? params[:q][:s].split(" ") : [nil, nil]
+    
+    field, direction = params[:q].key?(:s) ? params[:q][:s].split(" ") : [nil, nil]
     fields_in_properties = @api_namespace.properties.keys
     @image_options = @api_namespace.non_primitive_properties.select { |non_primitive_property| non_primitive_property.field_type == 'file' }.pluck(:label)
-  
+    # check if we are sorting by a field inside properties jsonb column
+    if field && fields_in_properties.include?(field)
+      @api_resources = @api_resources.jsonb_order_pre({ "properties" => { "#{field}": "#{direction}" }})
+    end
+
     if turbo_frame_request?
       render partial: "comfy/admin/api_namespaces/api_resources/table", locals: { api_resources: @api_resources, api_resources_q: @api_resources_q, api_namespace: @api_namespace }
     else
