@@ -96,9 +96,15 @@
   </div>
 
   <div class="col-md-9 mb-3">
-
-    <div class="card card-body">
-      <%= yield %>
+  
+    <div class="card card-body">  
+      <%= form_with(url: request.path, method: :get, data: { turbo_frame: "forum-threads-results", turbo_action: "advance" }, class: "flex flex-col") do |form| %>
+          <%= form.text_field :query, class: "form-control-lg input-lg col-md-10", placeholder: "Search..."%>
+          <%= form.submit "Search", data: { disable_with: false }, class: "btn btn-primary btn-lg mb-1 ml-3" %>
+      <% end %>
+        <%= turbo_frame_tag "forum-threads-results" do %>
+          <%= yield %>
+        <% end %>
     </div>
 
   </div>
