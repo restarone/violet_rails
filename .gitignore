@@ -36,6 +36,5 @@ yarn-debug.log*
 .yarn-integrity
 
 /coverage
-.env.development
 
 public/sitemaps/
