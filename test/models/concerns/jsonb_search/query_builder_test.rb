@@ -43,6 +43,24 @@ class JsonbSearch::QueryBuilderTest < ActiveSupport::TestCase
     assert_equal "lower(properties ->> 'name') = lower('violet') AND lower(properties ->> 'age') = lower('20')", jsonb_query
   end
 
+  test 'query string - KEYWORDS: splits the provided value into words' do
+    query = { name: { value: 'violet rails development', option: 'KEYWORDS' } } 
+    jsonb_query = JsonbSearch::QueryBuilder.build_jsonb_query(:properties, query)
+
+    expected_query = "lower(properties ->> 'name') LIKE lower('%violet%') OR lower(properties ->> 'name') LIKE lower('%rails%') OR lower(properties ->> 'name') LIKE lower('%development%') OR lower(properties ->> 'name') LIKE lower('%violet rails development%')"
+
+    assert_equal expected_query, jsonb_query
+  end
+
+  test 'query string - KEYWORDS: splits the provided value into words by skipping the individual query for stopwords' do
+    query = { name: { value: 'a hope for future', option: 'KEYWORDS' } } 
+    jsonb_query = JsonbSearch::QueryBuilder.build_jsonb_query(:properties, query)
+
+    expected_query = "lower(properties ->> 'name') LIKE lower('%hope%') OR lower(properties ->> 'name') LIKE lower('%future%') OR lower(properties ->> 'name') LIKE lower('%a hope for future%')"
+
+    assert_equal expected_query, jsonb_query
+  end
+
   test 'query string - nested' do
     query = { foo: { bar: 'baz' }  } 
     jsonb_query = JsonbSearch::QueryBuilder.build_jsonb_query(:properties, query)
@@ -90,6 +108,20 @@ class JsonbSearch::QueryBuilderTest < ActiveSupport::TestCase
     jsonb_query = JsonbSearch::QueryBuilder.build_jsonb_query(:properties, query)
 
     assert_equal "properties -> 'array' ? '#{query[:array][:value][0]}' OR properties -> 'array' ? '#{query[:array][:value][1]}'", jsonb_query
+  end
+
+  test 'query array - KEYWORDS match ALL' do
+    query = { array: { value: ['hello world', 'bar'], option: 'KEYWORDS', match: 'ALL' } } 
+    jsonb_query = JsonbSearch::QueryBuilder.build_jsonb_query(:properties, query)
+
+    assert_equal "lower(properties ->> 'array'::text) LIKE lower('%hello%') AND lower(properties ->> 'array'::text) LIKE lower('%world%') AND lower(properties ->> 'array'::text) LIKE lower('%bar%')", jsonb_query
+  end
+
+  test 'query array - KEYWORDS match ANY' do
+    query = { array: { value: ['hello world', 'bar'], option: 'KEYWORDS', match: 'ANY' } } 
+    jsonb_query = JsonbSearch::QueryBuilder.build_jsonb_query(:properties, query)
+
+    assert_equal "lower(properties ->> 'array'::text) LIKE lower('%hello%') OR lower(properties ->> 'array'::text) LIKE lower('%world%') OR lower(properties ->> 'array'::text) LIKE lower('%bar%')", jsonb_query
   end
 
   test 'query array - nested' do

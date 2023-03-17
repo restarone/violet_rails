@@ -5,9 +5,9 @@ class PurgeUnattachedTaskTest < ActiveSupport::TestCase
   include Rake::DSL
 
   def setup
-    Rake.application.rake_require('tasks/active_storage')
-    Rake::Task.define_task(:environment)
     Sidekiq::Testing.fake!
+
+    Rails.application.load_tasks if Rake::Task.tasks.empty?
   end
 
   test "purges only unattached Active Storage blobs that are older than 1 day" do

@@ -1,9 +1,8 @@
 class ApplicationController < ActionController::Base
   include ActiveStorage::SetCurrent
 
-  before_action :prepare_exception_notifier
   before_action :store_user_location!, if: :storable_location?
-  before_action :set_current_user
+  before_action :prepare_profiler,:prepare_exception_notifier , :set_current_user
 
   def after_sign_in_path_for(resource)
     if session[:user_return_to] then return session[:user_return_to] end
@@ -39,6 +38,12 @@ class ApplicationController < ActionController::Base
       current_user: current_user,
       current_visit: current_visit
     }
+  end
+
+  def prepare_profiler
+    if current_user && current_user.can_access_admin? & current_user.show_profiler?
+      Rack::MiniProfiler.authorize_request
+    end
   end
 
   # Reference: https://github.com/heartcombo/devise/wiki/How-To:-Redirect-back-to-current-page-after-sign-in,-sign-out,-sign-up,-update#storelocation-to-the-rescue
