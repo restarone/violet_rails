@@ -1,6 +1,6 @@
 
 = turbo_frame_tag 'api-resources' do
-  .digg_pagination.d-flex.justify-content-between.mb-4.pb-3
+  .digg_pagination.d-sm-flex.justify-content-between.mb-4.pb-3
     .page-info= page_entries_info @api_resources
     .links= will_paginate @api_resources, container: false, renderer: TurboPaginateRenderer
   .table-responsive
@@ -8,19 +8,19 @@
       %table#api-resources-table.table.table-striped.table-bordered
         %thead
           %tr
-            %th.px-3= sort_link api_resources_q, :id
-            %th.px-3= sort_link api_resources_q, :created_at
-            %th.px-3= sort_link api_resources_q, :updated_at
+            %th.px-3= sort_link api_resources_q, :id, {}, data: { turbo: true, turbo_action: 'advance'}
+            %th.px-3= sort_link api_resources_q, :created_at, {}, data: { turbo: true, turbo_action: 'advance'}
+            %th.px-3= sort_link api_resources_q, :updated_at, {}, data: { turbo: true, turbo_action: 'advance'}
             - dynamic_columns = api_namespace.properties.keys
             - api_namespace.properties.keys.each do |dynamic_column|
-              %th.px-3= sort_link api_resources_q, dynamic_column
+              %th.px-3= sort_link api_resources_q, dynamic_column, {}, data: { turbo: true, turbo_action: 'advance'}
 
         %tbody
           - api_resources.each do |api_resource|
             %tr
               %td.px-3.py-2
                 = link_to api_resource.id, api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id)
-                .d-flex
+                .d-flex.mt-3
                   = link_to edit_api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), class: 'mr-3' do 
                     %i.fas.fa-edit
                   = link_to api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), method: :delete, data: { confirm: 'Are you sure?' } do
@@ -47,10 +47,10 @@
   .modal.fade#myModal{tabindex: -1, role: "dialog", aria: {labelledby: "myModalLabel", hidden: true}, data: { api_resources_target: 'modal' }}
     .modal-dialog{role: "document"}
       .modal-content
-        .modal-header
+        .modal-header.pb-0
           %h5.modal-title{id: "myModalLabel"} %p#dynamic_column_name
           %button.close{type: "button", data: {dismiss: "modal"}, aria: {label: "Close"}}
             %span{aria: {hidden: true}} &times;
         .modal-body{style: "max-height: calc(100vh - 200px); overflow-y: auto;"}
           %p#modal-id
-          %pre#modal-body-content
+          %pre#modal-body-content.p-3

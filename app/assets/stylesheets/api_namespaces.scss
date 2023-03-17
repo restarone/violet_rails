@@ -3,13 +3,19 @@
 // You can use Sass (SCSS) here: https://sass-lang.com/
 
 #api-resources-list{
+  a:not(.btn) {
+    color: #6F5AFE;
+  }
+
   .digg_pagination {
     border-bottom: 1px solid #343A4014;;
   }
 
   .api-resources-table-container {
-    height: 700px;
+    max-height: 700px;
     overflow: auto;
+    border-top: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
 
     #api-resources-table {
       font-size: 14px;
@@ -19,21 +25,18 @@
       thead tr th {
         position: sticky;
         top: 0;
-      }
-    
-      th {
-        // padding: 16px;
-        // padding-left: 15px;
-        // border-left: 1px dotted rgba(200, 209, 224, 0.6);
-        // border-bottom: 1px solid #e8e8e8;
+        height: 57px;
+        vertical-align: middle;
         border: 1px solid #dee2e6;
         background: #ffffff;
         text-align: center;
-        /* With border-collapse, we must use box-shadow or psuedo elements
-        for the header borders */
-        // box-shadow: 0px 0px 0 2px #e8e8e8;
+
+        a {
+          color: #495057;
+          font-weight: 500;
+        }
       }
-    
+
       td {
         vertical-align: middle;
       }
@@ -86,7 +89,41 @@
       cursor: pointer;
     }
   }
-}
-pre#modal-body-content {
-  white-space: break-spaces;
+
+  .modal {
+    .modal-header {
+      border-bottom: none;
+
+      .modal-title {
+        text-transform: capitalize;
+        font-size: 16px;
+        line-height: 19px;
+        font-weight: 600;
+      } 
+    }
+  
+    #modal-id {
+      font-size: 14px;
+      line-height: 17px;
+    }
+  
+    pre#modal-body-content {
+      white-space: break-spaces;
+      background-color: #343A400A;
+      font-size: 14px;
+      line-height: 17px;
+      border-radius: 6px;
+      font-family: inherit;
+    }
+  }
+
+
+  @media (max-width: 576px) {
+    .modal-dialog {
+      position: absolute;
+      bottom: 0;
+      margin: 0;
+      width: 100%
+    }
+  }
 }

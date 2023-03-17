@@ -1,11 +1,11 @@
 - if has_access_to_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:read_api_resources_only], current_user, @api_namespace)
-  #api-resources-list.container-fluid{data: {controller: "api-resources"}}
-    .d-flex.justify-content-between.py-2.page-header
+  #api-resources-list{data: {controller: "api-resources"}}
+    .d-sm-flex.justify-content-between.align-items-center.py-2.page-header
       %h2
         Listing
         =  @api_namespace.name.pluralize
       %div
-        = link_to "Create new #{@api_namespace.name.singularize}", new_api_namespace_resource_path(api_namespace_id: @api_namespace.id), class: 'btn btn-primary'
+        = link_to "Create new #{@api_namespace.name.singularize}", new_api_namespace_resource_path(api_namespace_id: @api_namespace.id), class: 'btn btn-primary w-100 w-md-auto my-2'
     = search_form_for @api_resources_q, url: api_namespace_path(@api_namespace.id), data: {api_resources_target: 'searchForm', turbo_frame: "api-resources", turbo_action: "advance"} do |f|
       .form-group
         = f.label "Search by properties", class: 'col-form-label'
