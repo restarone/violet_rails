@@ -179,6 +179,7 @@ class Ahoy::Event < ApplicationRecord
     #   .joins(:visit)
     #   .where(id: event_ids)
     self
+      .joins(:visit)
       .where.not(visit: {device_type: nil})
       .group("visit.device_type")
       .group_by_period(grouping_data[:period], :time, range: date_range, format: grouping_data[:format])
@@ -202,7 +203,7 @@ class Ahoy::Event < ApplicationRecord
 
   def self.visitors_chart_data_for_page_visit_events
     # visitors_by_token = Ahoy::Event.joins(:visit).where(id: event_ids).group(:visitor_token).size
-    visitors_by_token = self.group(:visitor_token).size
+    visitors_by_token = self.joins(:visit).group(:visitor_token).size
     recurring_visitors = visitors_by_token.values.count { |v| v > 1 }
     single_time_visitors = visitors_by_token.keys.count - recurring_visitors
     {"Single time visitor": single_time_visitors, "Recurring visitors" => recurring_visitors  }
