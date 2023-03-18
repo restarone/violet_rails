@@ -193,7 +193,7 @@ class Ahoy::Event < ApplicationRecord
     recurring_visitors = visitors_by_token.values.count { |v| v > 1 }
     single_time_visitors = visitors_by_token.keys.count - recurring_visitors
 
-    {"Single time visitor": single_time_visitors, "Recurring visitors" => recurring_visitors  }
+    {"Single time visitor" => single_time_visitors, "Recurring visitors" => recurring_visitors  }
   end
   # Methods for Page View related events analytics - END
 end
