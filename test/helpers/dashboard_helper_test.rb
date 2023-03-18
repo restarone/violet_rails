@@ -47,16 +47,16 @@ class DashboardHelperTest < ActionView::TestCase
       })
       
       # should split into days
-      assert_equal [{:name=>"Desktop", :data=>{"#{2.days.ago.strftime('%-d %^b %Y')}"=>0, "#{1.days.ago.strftime('%-d %^b %Y')}"=>1, "#{Time.now.strftime('%-d %^b %Y')}"=>1}}], page_visit_chart_data(Ahoy::Event.where(name: 'test-page-view').joins(:visit), 2.days.ago.to_date, Time.now.to_date)
+      assert_equal [{:name=>"Desktop", :data=>{"#{2.days.ago.strftime('%-d %^b %Y')}"=>0, "#{1.days.ago.strftime('%-d %^b %Y')}"=>1, "#{Time.now.strftime('%-d %^b %Y')}"=>1}}], Ahoy::Event.where(name: 'test-page-view').joins(:visit).page_visit_chart_data_for_page_visit_events(2.days.ago.to_date..Time.now.to_date, split_into(2.days.ago.to_date, Time.now.to_date))
 
       # should split into weeks
-      assert_equal [{:name=>"Desktop", :data=>{"#{4.weeks.ago.strftime('%V')}"=>0, "#{3.weeks.ago.strftime('%V')}"=>0, "#{2.weeks.ago.strftime('%V')}"=>0, "#{1.weeks.ago.strftime('%V')}"=>2, "#{Time.now.strftime('%V')}"=>0}}], page_visit_chart_data(Ahoy::Event.where(name: 'test-page-view').joins(:visit), Time.now.beginning_of_month.to_date, Time.now.end_of_month.to_date)
+      assert_equal [{:name=>"Desktop", :data=>{"#{4.weeks.ago.strftime('%V')}"=>0, "#{3.weeks.ago.strftime('%V')}"=>0, "#{2.weeks.ago.strftime('%V')}"=>0, "#{1.weeks.ago.strftime('%V')}"=>2, "#{Time.now.strftime('%V')}"=>0}}], Ahoy::Event.where(name: 'test-page-view').joins(:visit).page_visit_chart_data_for_page_visit_events(Time.now.beginning_of_month.to_date..Time.now.end_of_month.to_date, split_into(Time.now.beginning_of_month.to_date, Time.now.end_of_month.to_date))
 
       # should split into months
-      assert_equal [{:name=>"Desktop", :data=>{"#{2.months.ago.strftime('%^b %Y')}"=>1, "#{1.months.ago.strftime('%^b %Y')}"=>0, "#{Time.now.strftime('%^b %Y')}"=>2}}], page_visit_chart_data(Ahoy::Event.where(name: 'test-page-view').joins(:visit), 2.months.ago.to_date, Time.now.to_date)
+      assert_equal [{:name=>"Desktop", :data=>{"#{2.months.ago.strftime('%^b %Y')}"=>1, "#{1.months.ago.strftime('%^b %Y')}"=>0, "#{Time.now.strftime('%^b %Y')}"=>2}}], Ahoy::Event.where(name: 'test-page-view').joins(:visit).page_visit_chart_data_for_page_visit_events(2.months.ago.to_date..Time.now.to_date, split_into(2.months.ago.to_date, Time.now.to_date))
 
       # should split into years
-      assert_equal [{:name=>"Desktop", :data=>{"#{2.years.ago.strftime('%Y')}"=>1, "#{1.years.ago.strftime('%Y')}"=>2, "#{Time.now.strftime('%Y')}"=>2}}], page_visit_chart_data(Ahoy::Event.where(name: 'test-page-view').joins(:visit), 2.years.ago.to_date, Time.now.to_date)
+      assert_equal [{:name=>"Desktop", :data=>{"#{2.years.ago.strftime('%Y')}"=>1, "#{1.years.ago.strftime('%Y')}"=>2, "#{Time.now.strftime('%Y')}"=>2}}], Ahoy::Event.where(name: 'test-page-view').joins(:visit).page_visit_chart_data_for_page_visit_events(2.years.ago.to_date..Time.now.to_date, split_into(2.years.ago.to_date, Time.now.to_date))
     end
   end
 
@@ -91,7 +91,7 @@ class DashboardHelperTest < ActionView::TestCase
 
   test 'total watch time' do
     mock_video_view_events
-    assert_equal 30000, total_watch_time(Ahoy::Event.where(id: [@video_watch_event_1, @video_watch_event_2].map(&:id)))
+    assert_equal 30000, Ahoy::Event.where(id: [@video_watch_event_1, @video_watch_event_2].map(&:id)).total_watch_time_for_video_events
   end
 
   test 'to_minutes' do
@@ -100,18 +100,17 @@ class DashboardHelperTest < ActionView::TestCase
 
   test 'total_views' do
     mock_video_view_events
-    assert_equal 2, total_views(Ahoy::Event.where(id: [@video_watch_event_1, @video_watch_event_2, @video_watch_event_3].map(&:id)))
+    assert_equal 2, Ahoy::Event.where(id: [@video_watch_event_1, @video_watch_event_2, @video_watch_event_3].map(&:id)).total_views_for_video_events
   end
 
   test 'avg_view_duration' do
-    assert_equal 0, avg_view_duration([])
     mock_video_view_events
-    assert_equal 25000.0, avg_view_duration(Ahoy::Event.where(id: [@video_watch_event_1, @video_watch_event_2, @video_watch_event_3].map(&:id)))
+    assert_equal 25000.0, Ahoy::Event.where(id: [@video_watch_event_1, @video_watch_event_2, @video_watch_event_3].map(&:id)).avg_view_duration_for_video_events
   end
 
   test 'avg_view_percentange' do
     mock_video_view_events
-    assert_equal 50.0, avg_view_percentage(Ahoy::Event.where(id: [@video_watch_event_1, @video_watch_event_2, @video_watch_event_3].map(&:id)))
+    assert_equal 50.0, Ahoy::Event.where(id: [@video_watch_event_1, @video_watch_event_2, @video_watch_event_3].map(&:id)).avg_view_percentage_for_video_events
   end
 
   private 
