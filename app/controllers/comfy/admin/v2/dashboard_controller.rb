@@ -6,30 +6,8 @@ class Comfy::Admin::V2::DashboardController < Comfy::Admin::Cms::BaseController
   def dashboard
     @start_date = params[:start_date]&.to_date || Date.today.beginning_of_month
     @end_date = params[:end_date]&.to_date || Date.today.end_of_month
-    date_range = @start_date.beginning_of_day..@end_date.end_of_day
-
-    # @visits = Ahoy::Visit.where(started_at: date_range)
-
-    # filtered_events = Ahoy::Event.joins(:visit)
 
     set_event_category_specific_analytics_data
-
-    # Ahoy::Event::EVENT_CATEGORIES.values.each do |event_category|
-    #   if event_category == Ahoy::Event::EVENT_CATEGORIES[:page_visit]
-    #     events = filtered_events.where(name: 'comfy-cms-page-visit')
-    #   else
-    #     events = filtered_events.jsonb_search(:properties, { category: event_category })
-    #   end
-    #   events = events.jsonb_search(:properties, { page_id: params[:page] }) if params[:page].present?
-    #   instance_variable_set("@previous_period_#{event_category}_events", events.where(time: previous_period(params[:interval], @start_date, @end_date)))
-    #   instance_variable_set("@#{event_category}_events", events.where(time: date_range))
-    # end
-
-    # # legacy and system events does not have category 
-    # # separating out 'comfy-cms-page-visit' event since we have a seprate section
-    # @legacy_and_system_events = filtered_events.where.not('properties::jsonb ? :key', key: 'category').where.not(name: 'comfy-cms-page-visit')
-    # @previous_period_legacy_and_system_events = @legacy_and_system_events.where(time: previous_period(params[:interval], @start_date, @end_date))
-    # @legacy_and_system_events = @legacy_and_system_events.where(time: date_range)
   end
 
 
@@ -56,39 +34,17 @@ class Comfy::Admin::V2::DashboardController < Comfy::Admin::Cms::BaseController
   end
 
   def set_event_category_specific_analytics_data
-    # GC.start(full_mark: true)
-    # filtered_events = Ahoy::Event.joins(:visit)
-    # filtered_events = filtered_events.jsonb_search(:properties, { page_id: params[:page] }) if params[:page].present?
-
     Ahoy::Event::EVENT_CATEGORIES.values.each do |event_category|
       if event_category == Ahoy::Event::EVENT_CATEGORIES[:page_visit]
-        # events = filtered_events.where(name: 'comfy-cms-page-visit')
         current_events_sql = params[:page].present? ? Ahoy::Event.joins(:visit).jsonb_search(:properties, { page_id: params[:page] }).where(name: 'comfy-cms-page-visit').where(time: @start_date.beginning_of_day..@end_date.end_of_day).to_sql : Ahoy::Event.joins(:visit).where(name: 'comfy-cms-page-visit').where(time: @start_date.beginning_of_day..@end_date.end_of_day).to_sql
         previous_events_sql = params[:page].present? ? Ahoy::Event.joins(:visit).jsonb_search(:properties, { page_id: params[:page] }).where(name: 'comfy-cms-page-visit').where(time: previous_period(params[:interval], @start_date, @end_date)).to_sql : Ahoy::Event.joins(:visit).where(name: 'comfy-cms-page-visit').where(time: previous_period(params[:interval], @start_date, @end_date)).to_sql
       elsif event_category == Ahoy::Event::EVENT_CATEGORIES[:video_view]
-        # events = filtered_events.jsonb_search(:properties, { category: event_category }).filter_records_with_video_details_missing
         current_events_sql = params[:page].present? ? Ahoy::Event.joins(:visit).jsonb_search(:properties, { page_id: params[:page] }).jsonb_search(:properties, { category: event_category }).filter_records_with_video_details_missing.where(time: @start_date.beginning_of_day..@end_date.end_of_day).to_sql : Ahoy::Event.joins(:visit).jsonb_search(:properties, { category: event_category }).filter_records_with_video_details_missing.where(time: @start_date.beginning_of_day..@end_date.end_of_day).to_sql
         previous_events_sql = params[:page].present? ? Ahoy::Event.joins(:visit).jsonb_search(:properties, { page_id: params[:page] }).jsonb_search(:properties, { category: event_category }).filter_records_with_video_details_missing.where(time: previous_period(params[:interval], @start_date, @end_date)).to_sql : Ahoy::Event.joins(:visit).jsonb_search(:properties, { category: event_category }).filter_records_with_video_details_missing.where(time: previous_period(params[:interval], @start_date, @end_date)).to_sql
       else
-        # events = filtered_events.jsonb_search(:properties, { category: event_category })
         current_events_sql = params[:page].present? ? Ahoy::Event.joins(:visit).jsonb_search(:properties, { page_id: params[:page] }).jsonb_search(:properties, { category: event_category }).where(time: @start_date.beginning_of_day..@end_date.end_of_day).to_sql : Ahoy::Event.joins(:visit).jsonb_search(:properties, { category: event_category }).where(time: @start_date.beginning_of_day..@end_date.end_of_day).to_sql
         previous_events_sql = params[:page].present? ? Ahoy::Event.joins(:visit).jsonb_search(:properties, { page_id: params[:page] }).jsonb_search(:properties, { category: event_category }).where(time: previous_period(params[:interval], @start_date, @end_date)).to_sql : Ahoy::Event.joins(:visit).jsonb_search(:properties, { category: event_category }).where(time: previous_period(params[:interval], @start_date, @end_date)).to_sql
       end
-
-      # events = events.filter_records_with_video_details_missing if event_category == Ahoy::Event::EVENT_CATEGORIES[:video_view]
-
-      # instance_variable_set("@previous_period_#{event_category}_events", events.where(time: previous_period(params[:interval], @start_date, @end_date)))
-      # instance_variable_set("@#{event_category}_events", events.where(time: @start_date.beginning_of_day..@end_date.end_of_day))
-
-      # current_event_ids = events.where(time: @start_date.beginning_of_day..@end_date.end_of_day).pluck(:id)
-      # current_events = events.where(time: @start_date.beginning_of_day..@end_date.end_of_day).load
-
-      # If no events are present for the category, further calculations are skipped.
-      # next if current_event_ids.empty?
-      # next if current_events.empty?
-
-      # previous_period_event_ids = events.where(time: previous_period(params[:interval], @start_date, @end_date)).pluck(:id)
-      # previous_period_events = events.where(time: previous_period(params[:interval], @start_date, @end_date)).load
 
       if event_category == Ahoy::Event::EVENT_CATEGORIES[:page_visit]
         instance_variable_set("@#{event_category}_events", {
@@ -128,26 +84,17 @@ class Comfy::Admin::V2::DashboardController < Comfy::Admin::Cms::BaseController
 
     # legacy and system events does not have category 
     # separating out 'comfy-cms-page-visit' event since we have a seprate section
-    # legacy_and_system_events = Ahoy::Event.joins(:visit).where.not('properties::jsonb ? :key', key: 'category').where.not(name: 'comfy-cms-page-visit')
-    # current_event_ids = legacy_and_system_events.where(time: @start_date.beginning_of_day..@end_date.end_of_day).pluck(:id)
-    # current_events = legacy_and_system_events.where(time: @start_date.beginning_of_day..@end_date.end_of_day).load
     current_events_sql = Ahoy::Event.joins(:visit).where.not('properties::jsonb ? :key', key: 'category').where.not(name: 'comfy-cms-page-visit').where(time: @start_date.beginning_of_day..@end_date.end_of_day).to_sql
+    previous_events_sql = Ahoy::Event.joins(:visit).where.not('properties::jsonb ? :key', key: 'category').where.not(name: 'comfy-cms-page-visit').where(time: previous_period(params[:interval], @start_date, @end_date)).to_sql
 
-    # if current_events.any?
-      # previous_period_event_ids = legacy_and_system_events.where(time: previous_period(params[:interval], @start_date, @end_date)).pluck(:id)
-      # previous_period_events = legacy_and_system_events.where(time: previous_period(params[:interval], @start_date, @end_date)).load
-      previous_events_sql = Ahoy::Event.joins(:visit).where.not('properties::jsonb ? :key', key: 'category').where.not(name: 'comfy-cms-page-visit').where(time: previous_period(params[:interval], @start_date, @end_date)).to_sql
-
-      @legacy_and_system_events = {
-        events_exists: Ahoy::Event.from("(#{current_events_sql}) as ahoy_events").size > 0,
-        events_count: Ahoy::Event.from("(#{current_events_sql}) as ahoy_events").size,
-        label_grouped_events: Ahoy::Event.from("(#{current_events_sql}) as ahoy_events").with_label.group(:label).size,
-        previous_period_events_count: Ahoy::Event.from("(#{previous_events_sql}) as ahoy_events").size,
-        previous_label_grouped_events: Ahoy::Event.from("(#{previous_events_sql}) as ahoy_events").with_label.group(:label).size
-      }
-    # end
+    @legacy_and_system_events = {
+      events_exists: Ahoy::Event.from("(#{current_events_sql}) as ahoy_events").size > 0,
+      events_count: Ahoy::Event.from("(#{current_events_sql}) as ahoy_events").size,
+      label_grouped_events: Ahoy::Event.from("(#{current_events_sql}) as ahoy_events").with_label.group(:label).size,
+      previous_period_events_count: Ahoy::Event.from("(#{previous_events_sql}) as ahoy_events").size,
+      previous_label_grouped_events: Ahoy::Event.from("(#{previous_events_sql}) as ahoy_events").with_label.group(:label).size
+    }
 
     GC.start
-    # GC.start(full_mark: true)
   end
 end

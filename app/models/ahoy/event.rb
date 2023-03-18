@@ -104,6 +104,7 @@ class Ahoy::Event < ApplicationRecord
     end
   end
 
+  # Methods for Video related events analytics - START
   def self.total_watch_time_for_video_events
     self.pluck(Arel.sql("SUM((#{Ahoy::Event.table_name}.properties ->> 'watch_time')::bigint)")).sum
   end
@@ -121,10 +122,6 @@ class Ahoy::Event < ApplicationRecord
   end
 
   def self.top_three_videos_details
-    # previous_video_events = Ahoy::Event.where(id: previous_video_event_ids).load
-
-    # Ahoy::Event
-    #   .where(id: video_event_ids)
     self
       .with_api_resource
       .group(:resource_id)
@@ -139,14 +136,11 @@ class Ahoy::Event < ApplicationRecord
       .as_json
       .map(&:with_indifferent_access)
       .each do |video_event|
-        # previous_period_event_ids = previous_video_events.jsonb_search(:properties, { resource_id: video_event[:resource_id] }).pluck(:id)
         api_resource = ApiResource.find_by(id: video_event[:resource_id])
 
         video_event[:name] = video_event[:names].uniq.first
         video_event[:duration] = video_event[:duration] || 0
         video_event[:namespace_id] = video_event[:namespace_ids].uniq.first
-        # video_event[:previous_period_total_views] = total_views(previous_period_event_ids)
-        # video_event[:previous_period_total_watch_time] = total_watch_time(previous_period_event_ids)
         video_event[:resource_title] = api_resource&.properties.dig(api_resource&.api_namespace.analytics_metadata&.dig("title")) || "Resource Id: #{video_event[:resource_id]}"
         video_event[:resource_author] = api_resource&.properties.dig(api_resource&.api_namespace.analytics_metadata&.dig("author"))
         video_event[:resource_image] = api_resource&.non_primitive_properties.find_by(field_type: "file", label: api_resource&.api_namespace.analytics_metadata&.dig("thumbnail"))&.file_url
@@ -157,8 +151,9 @@ class Ahoy::Event < ApplicationRecord
       end
   end
 
+  # Argument resource_ids are derived from the above top_three_videos_details methods.
+  # Thus, the array of resource_ids will be a maximum size of 3.
   def self.total_views_and_watch_time_detals_for_previous_video_events(resource_ids)
-    # byebug
     self
       .with_api_resource
       .where('api_resourced_events.resource_id': resource_ids)
@@ -170,14 +165,12 @@ class Ahoy::Event < ApplicationRecord
       .as_json
       .map(&:with_indifferent_access)
   end
+  # Methods for Video related events analytics - END
 
+  # Methods for Page View related events analytics - START
   def self.page_visit_chart_data_for_page_visit_events(date_range, grouping_data)
-    # period, format = split_into(start_date, end_date)
     chart_data = []
 
-    # Ahoy::Event
-    #   .joins(:visit)
-    #   .where(id: event_ids)
     self
       .joins(:visit)
       .where.not(visit: {device_type: nil})
@@ -191,21 +184,16 @@ class Ahoy::Event < ApplicationRecord
           data: v.map {|item| [item.first.last, item.last]}.to_h
         }
       end
-      # .map do |k,  v| 
-      #   {
-      #     name: k,
-      #     data: v.map {|item| [item.first.last, item.last]}.to_h
-      #   }
-      # end 
 
-      chart_data
+    chart_data
   end 
 
   def self.visitors_chart_data_for_page_visit_events
-    # visitors_by_token = Ahoy::Event.joins(:visit).where(id: event_ids).group(:visitor_token).size
     visitors_by_token = self.joins(:visit).group(:visitor_token).size
     recurring_visitors = visitors_by_token.values.count { |v| v > 1 }
     single_time_visitors = visitors_by_token.keys.count - recurring_visitors
+
     {"Single time visitor": single_time_visitors, "Recurring visitors" => recurring_visitors  }
   end
+  # Methods for Page View related events analytics - END
 end
