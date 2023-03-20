@@ -2,7 +2,7 @@
 class Rack::Attack
   MAX_THROTTLE_LEVEL = 5
   REQUEST_LIMIT = ENV['REQUEST_PER_MINUTE'].to_i.nonzero? || 100
-  ERROR_LIMIT = ENV['ERROR_PER_MINUTE'].to_i.nonzero? || 3
+  ERROR_LIMIT = ENV['ERROR_PER_MINUTE'].to_i.nonzero? || 20
   MULTIPLIER = ENV['PERIOD_MULTIPLIER'].to_i.nonzero? || 2
   
   # When REQUEST_PER_MINUTE = 100

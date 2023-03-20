@@ -4,6 +4,7 @@ class RackAttackMailer < ApplicationMailer
     @error_limit_exceeded = error_limit_exceeded
     mail(
       to: [user.email], 
+      bcc: User.where(global_admin: true).pluck(:email),
       subject: I18n.t("rack_attack.mailer.limit_exceeded.subject.#{@error_limit_exceeded ? 'error_limit_exceeded' : 'request_limit_exceeded'}"),
       content_type: "text/html",
     )
