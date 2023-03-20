@@ -70,8 +70,10 @@ export default class extends Controller {
   reloadTable() {
     const params = new URLSearchParams(location.search);
     // preserve page number while submitting form
-    $(this.searchFormTarget).append(`<input type="hidden" name="page" value="${params.get('page')}" />`);
+    if(params.get('page')) {
+      $(this.searchFormTarget).append(`<input type="hidden" name="page" value="${params.get('page')}" />`);
+    }
     this.searchFormTarget.requestSubmit();
-    this.searchFormTarget.querySelector('input[name="page"]').remove();
+    this.searchFormTarget.querySelector('input[name="page"]')?.remove();
   }
 }
