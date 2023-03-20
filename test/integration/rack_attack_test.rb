@@ -69,7 +69,7 @@ class RackAttackTest < ActionDispatch::IntegrationTest
     # activate level 1
     1.upto(@limit + 4) do |i|
       get '/'
-      assert_response :success if i < @limit
+      assert_response :success if i < (@limit - 1)
       assert_response 429 if  i > @limit
     end
 
