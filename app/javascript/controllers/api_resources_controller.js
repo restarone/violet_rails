@@ -66,4 +66,12 @@ export default class extends Controller {
     this.modalTarget.querySelector('#modal-id').innerHTML = `ID: <a href="/api_namespaces/${dataset['namespaceId']}/resources/${dataset['id']}">${dataset['id']}</a>`;
     this.modalTarget.querySelector('#modal-body-content').textContent = dataset['value'];
   }
+
+  reloadTable() {
+    const params = new URLSearchParams(location.search);
+    // preserve page number while submitting form
+    $(this.searchFormTarget).append(`<input type="hidden" name="page" value="${params.get('page')}" />`);
+    this.searchFormTarget.requestSubmit();
+    this.searchFormTarget.querySelector('input[name="page"]').remove();
+  }
 }

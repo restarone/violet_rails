@@ -23,7 +23,7 @@
                 .d-flex.mt-3
                   = link_to edit_api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), class: 'mr-3' do 
                     %i.fas.fa-edit
-                  = link_to api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), method: :delete, data: { confirm: 'Are you sure?' } do
+                  = link_to api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), remote: true, method: :delete, data: { confirm: 'Are you sure?', page: params[:page], action: "ajax:success->api-resources#reloadTable" } do
                     %i.fas.fa-trash
               %td.px-3.date-col= api_resource.created_at.strftime('%F %T')
               %td.px-3.date-col= api_resource.updated_at.strftime('%F %T')
