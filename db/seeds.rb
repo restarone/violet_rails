@@ -173,3 +173,7 @@ email_thread.messages.create(content: "I really like your site!<br/>#{maybe_imag
   visit.events.create(name: 'button-click', properties: { target: 'checkbox-two' }, time: Time.now - 4.minutes)
   visit.events.create(name: 'button-click', properties: { target: 'submit' }, time: Time.now - 3.minutes)
 end
+
+# Populate event analytics in mass
+# docker-compose run -e SEED_ANALYTICS=true --rm solutions_app rails db:seed
+VioletSeeds.populate_event_analytics_data if ENV['SEED_ANALYTICS'] == 'true'
