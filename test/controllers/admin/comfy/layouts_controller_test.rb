@@ -66,6 +66,16 @@ class Comfy::Admin::Cms::LayoutsControllerTest < ActionDispatch::IntegrationTest
     assert_select "form[action='/admin/sites/#{site.id}/layouts']"
   end
 
+  test "default website layout should be used if a newly-created layout has no app_layout and parent" do
+    @user.update(can_access_admin: true, can_manage_web: true)
+    sign_in(@user)
+    get new_comfy_admin_cms_site_layout_url(subdomain: @restarone_subdomain, site_id: @site.id)
+
+    assert_response :success
+    assert assigns(:layout)
+    assert_equal "website", assigns(:layout).app_layout
+  end
+
   test 'denies #new if not permissioned' do
     sign_in(@user)
     get new_comfy_admin_cms_site_layout_url(subdomain: @restarone_subdomain, site_id: @site.id)
