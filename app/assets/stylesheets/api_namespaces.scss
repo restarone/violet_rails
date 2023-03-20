@@ -39,6 +39,24 @@
 
       td {
         vertical-align: middle;
+
+        .td-content {
+          height: 80px;
+          max-height: 80px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 80px;
+        }
+
+        .clamp-content {
+          display: -webkit-box;
+          max-width: 300px;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          min-width: 180px;
+        }
       }
     
       .date-col {

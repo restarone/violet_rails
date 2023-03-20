@@ -19,30 +19,40 @@
           - api_resources.each do |api_resource|
             %tr
               %td.px-3.py-2
-                = link_to api_resource.id, api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id)
-                .d-flex.mt-3
-                  = link_to edit_api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), class: 'mr-3' do 
-                    %i.fas.fa-edit
-                  = link_to api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), remote: true, method: :delete, data: { confirm: 'Are you sure?', page: params[:page], action: "ajax:success->api-resources#reloadTable" } do
-                    %i.fas.fa-trash
-              %td.px-3.date-col= api_resource.created_at.strftime('%F %T')
-              %td.px-3.date-col= api_resource.updated_at.strftime('%F %T')
+                .td-content
+                  %div
+                    = link_to api_resource.id, api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id)
+                    .d-flex.mt-3
+                      = link_to edit_api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), class: 'mr-3' do 
+                        %i.fas.fa-edit
+                      = link_to api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), remote: true, method: :delete, data: { confirm: 'Are you sure?', page: params[:page], action: "ajax:success->api-resources#reloadTable" } do
+                        %i.fas.fa-trash
+              %td.px-3.date-col
+                .td-content
+                  = api_resource.created_at.strftime('%F %T')
+              %td.px-3.date-col
+                .td-content
+                  = api_resource.updated_at.strftime('%F %T')
               - dynamic_columns.each_with_index do |dynamic_column|
                 %td.px-3
-                  - if api_resource.properties[dynamic_column]&.is_a?(Array)
-                    - array = api_resource.properties[dynamic_column]
-                    - if array.length > 10
-                      = "[#{array.first(2).join(', ')}, ... ,#{array.last(1).join}]"
-                      = link_to "View #{dynamic_column}", '#',  class: 'd-block view-dynamic-column', data: { toggle: 'modal', target: "#myModal", namespace_id: api_resource.api_namespace_id, id: api_resource.id, column: dynamic_column , value: "[#{api_resource.properties[dynamic_column].join(', ')}]", action: "click->api-resources#showModal" }
-                    - else
-                      = array
-                  - else
-                    - value = api_resource.properties[dynamic_column].to_s
-                    - if value && value.length > 100
-                      = truncate(value, length: 100)
-                      = link_to "View #{dynamic_column}", '#' , class: 'd-block view-dynamic-column', data: { toggle: 'modal', target: "#myModal" , column: dynamic_column, namespace_id: api_resource.api_namespace_id, id: api_resource.id, value: value, action: "click->api-resources#showModal" }
-                    - else
-                      = value 
+                  .td-content
+                    %div
+                      - if api_resource.properties[dynamic_column]&.is_a?(Array)
+                        - array = api_resource.properties[dynamic_column]
+                        - if array.length > 10
+                          .clamp-content
+                            = "[#{array.first(2).join(', ')}, ... ,#{array.last(1).join}]"
+                          = link_to "View #{dynamic_column}", '#',  class: 'd-block view-dynamic-column', data: { toggle: 'modal', target: "#myModal", namespace_id: api_resource.api_namespace_id, id: api_resource.id, column: dynamic_column , value: "[#{api_resource.properties[dynamic_column].join(', ')}]", action: "click->api-resources#showModal" }
+                        - else
+                          = array
+                      - else
+                        - value = api_resource.properties[dynamic_column].to_s
+                        - if value && value.length > 100
+                          .clamp-content
+                            = truncate(value, length: 100)
+                          = link_to "View #{dynamic_column}", '#' , class: 'd-block view-dynamic-column', data: { toggle: 'modal', target: "#myModal" , column: dynamic_column, namespace_id: api_resource.api_namespace_id, id: api_resource.id, value: value, action: "click->api-resources#showModal" }
+                        - else
+                          = value 
    
   .modal.fade#myModal{tabindex: -1, role: "dialog", aria: {labelledby: "myModalLabel", hidden: true}, data: { api_resources_target: 'modal' }}
     .modal-dialog{role: "document"}
