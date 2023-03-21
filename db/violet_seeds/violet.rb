@@ -1403,9 +1403,9 @@ CONTENT
             visit.events.create!(
               visit_id: visit.id,
               user_id: user.id,
-              name: resource.api_namespace.slug.concat('_video_view'),
+              name: "#{resource.api_namespace.slug}-video-view-event",
               properties: {
-                label: resource.api_namespace.name.concat(' Video Resource ID: ', resource.id),
+                label: "#{resource.api_namespace.name} Video Resource ID: #{resource.id}",
                 page_id: page.id,
                 category: 'video_view',
                 watch_time: rand(100..90000),
@@ -1420,9 +1420,9 @@ CONTENT
             visit.events.create!(
               visit_id: visit.id,
               user_id: user.id,
-              name: resource.api_namespace.slug.concat('-page-click-event'),
+              name: "#{resource.api_namespace.slug}-page-click-event",
               properties: {
-                label: resource.api_namespace.name.concat(' Click Resource ID: ', resource.id),
+                label: "#{resource.api_namespace.name} Click Resource ID: #{resource.id}",
                 page_id: page.id,
                 category: 'click',
                 tag: 'A',
@@ -1435,9 +1435,9 @@ CONTENT
             visit.events.create!(
               visit_id: visit.id,
               user_id: user.id,
-              name: resource.api_namespace.slug.concat('-form-submit-event'),
+              name: "#{resource.api_namespace.slug}-form-submit-event",
               properties: {
-                label: resource.api_namespace.name.concat(' Form Submit Resource ID: ', resource.id),
+                label: "#{resource.api_namespace.name} Form Resource ID: #{resource.id}",
                 page_id: page.id,
                 category: 'form_submit'
               },
@@ -1448,9 +1448,9 @@ CONTENT
             visit.events.create!(
               visit_id: visit.id,
               user_id: user.id,
-              name: resource.api_namespace.slug.concat('-section-view-event'),
+              name: "#{resource.api_namespace.slug}-section-view-event",
               properties: {
-                label: resource.api_namespace.name.concat(' Section View Resource ID: ', resource.id),
+                label: "#{resource.api_namespace.name} Section Resource ID: #{resource.id}",
                 page_id: page.id,
                 category: 'section_view'
               },
@@ -1500,7 +1500,7 @@ CONTENT
 
       events_data = week_long_events_data.map { |event_data| event_data.except('id', 'time').merge({ 'time'=> current_time })  }
 
-      Ahoy::Event.create!(events_data)
+      Ahoy::Event.insert_all(events_data)
     end
     puts 'Populating analytics records for a month - END'
 
