@@ -69,11 +69,17 @@ export default class extends Controller {
 
   reloadTable() {
     const params = new URLSearchParams(location.search);
-    // preserve page number while submitting form
-    if(params.get('page')) {
+    // preserve page and sort order number while submitting form
+    if (params.get('page')) {
       $(this.searchFormTarget).append(`<input type="hidden" name="page" value="${params.get('page')}" />`);
     }
+
+    if (params.get('q[s]')) {
+      $(this.searchFormTarget).append(`<input type="hidden" name="q[s]" value="${params.get('q[s]')}" />`);
+    }
     this.searchFormTarget.requestSubmit();
+
     this.searchFormTarget.querySelector('input[name="page"]')?.remove();
+    this.searchFormTarget.querySelector('input[name="q[s]"]')?.remove();
   }
 }
