@@ -113,6 +113,26 @@ module DashboardHelper
     end
   end
 
+  def previous_time_interval_range(interval, start_date, end_date)
+    today = Date.current
+    interval = interval || today.strftime('%B %Y')
+
+    case interval
+    when "#{today.strftime('%B %Y')}"
+      today.prev_month.beginning_of_month.beginning_of_day..today.prev_month.end_of_month.end_of_day
+    when "3 months"
+      (start_date - 3.months).beginning_of_month.beginning_of_day..(start_date - 1.month).end_of_month.end_of_day
+    when "6 months"
+      (today - 6.months).beginning_of_month.beginning_of_day..(start_date - 1.month).end_of_month.end_of_day
+    when "1 year"
+      (today - 12.months).beginning_of_month.beginning_of_day..(start_date - 1.month).end_of_month.end_of_day
+    else
+
+      days_diff = (end_date - start_date).to_i
+      (start_date - (days_diff + 1).days).beginning_of_day..(start_date - 1.day).end_of_day
+    end
+  end
+
   def percent_change(current_count, prev_count)
     ((current_count - prev_count).to_f / prev_count) * 100
   end
