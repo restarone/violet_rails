@@ -98,21 +98,6 @@ module DashboardHelper
     end
   end
 
-  private
-  def previous_interval(interval, start_date, end_date)
-    today = Date.current
-    interval = interval || today.strftime('%B %Y')
-
-    case interval
-    when "3 months", "6 months", "1 year"
-      interval
-    when "#{today.strftime('%B %Y')}"
-      "month"
-    else
-      "#{ (end_date - start_date).to_i } days"
-    end
-  end
-
   def previous_time_interval_range(interval, start_date, end_date)
     today = Date.current
     interval = interval || today.strftime('%B %Y')
@@ -130,6 +115,21 @@ module DashboardHelper
 
       days_diff = (end_date - start_date).to_i
       (start_date - (days_diff + 1).days).beginning_of_day..(start_date - 1.day).end_of_day
+    end
+  end
+
+  private
+  def previous_interval(interval, start_date, end_date)
+    today = Date.current
+    interval = interval || today.strftime('%B %Y')
+
+    case interval
+    when "3 months", "6 months", "1 year"
+      interval
+    when "#{today.strftime('%B %Y')}"
+      "month"
+    else
+      "#{ (end_date - start_date).to_i } days"
     end
   end
 
