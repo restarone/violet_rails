@@ -12,9 +12,8 @@ const config = environment.toWebpackConfig();
 
 
 config.resolve.alias = {
-  jquery: 'jquery/src/jquery'
+  jquery: require.resolve('jquery'),
  };
-// bootstrap jquery setup
 
 
 environment.loaders.prepend('erb', erb)
