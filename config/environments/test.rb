@@ -63,5 +63,9 @@ Rails.application.configure do
   config.action_view.raise_on_missing_translations = true
 
   # Timeout long running requests
-  config.slowpoke.timeout = ENV['VIOLET_SERVICE_TIMEOUT'].to_i.nonzero? || 15
+  config.slowpoke.timeout = lambda do |env|
+    request = Rack::Request.new(env)
+    # disable timeout for ember routes
+    request.path.start_with?("/app") ? 0 : ENV['VIOLET_SERVICE_TIMEOUT'].to_i.nonzero? || 15
+  end
 end
