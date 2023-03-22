@@ -8,15 +8,18 @@ import Rails from "@rails/ujs"
 import "channels"
 import "bootstrap"
 import "chartkick/chart.js"
-
 import ahoy from "ahoy.js";
+import jQuery from 'jquery';
+
 window.ahoy = ahoy;
+global.$ = global.jQuery = jQuery;
 
 Rails.start()
 
-require("jquery")
 require("./trix")
 require("./tribute")
 require("./select2")
 require("./common")
 require("./turbo")
+
+import "controllers"
