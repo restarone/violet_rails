@@ -1341,7 +1341,9 @@ CONTENT
   def self.populate_event_analytics_data
     puts 'Fetching initials records - START'
     # Fetch a user
+    User.skip_callback(:create, :after, :enable_two_factor!)
     user = User.where(email: 'violet@restarone.com').first_or_create(email: 'violet@rails.com', name: 'Violet Rails Admin', password: '123456', password_confirmation: '123456', global_admin: true, confirmed_at: Time.now)
+    User.set_callback(:create, :after, :enable_two_factor!)
 
     # CMS::Pages
     site = Comfy::Cms::Site.first
