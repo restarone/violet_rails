@@ -17,6 +17,10 @@ end
 # set a deterministic seed
 Faker::Config.random = Random.new(123)
 
+Subdomain.unsafe_bootstrap_www_subdomain
+
+# Users
+User.skip_callback(:create, :after, :enable_two_factor!)
 # admin
 user_violet = User.create!(
   email: 'violet@rails.com', 
@@ -27,8 +31,6 @@ user_violet = User.create!(
   confirmed_at: Time.now
 )
 user_violet.update!(User::FULL_PERMISSIONS)
-
-Subdomain.unsafe_bootstrap_www_subdomain
 
 # other users
 users = []
@@ -44,6 +46,8 @@ users = []
   new_user.update!(User::FULL_PERMISSIONS)
   users.push new_user
 end
+
+User.set_callback(:create, :after, :enable_two_factor!)
 
 # Site
 # ----
