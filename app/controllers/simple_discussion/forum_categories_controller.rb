@@ -3,7 +3,9 @@ class SimpleDiscussion::ForumCategoriesController < SimpleDiscussion::Applicatio
   before_action :require_mod!, only: [:new, :create, :destroy, :update]
 
   def index
-    @forum_threads = ForumThread.where(forum_category: @category) if @category.present?
+    @forum_threads = ForumThread.where("1=1")
+    @forum_threads = @forum_threads.contains_either_title_or_body(params[:query]) if params[:query].present?
+    @forum_threads = @forum_threads.where(forum_category: @category) if @category.present?
     @forum_threads = @forum_threads.pinned_first.sorted.includes(:user, :forum_category).paginate(per_page: 10, page: page_number)
     render "simple_discussion/forum_threads/index"
   end
