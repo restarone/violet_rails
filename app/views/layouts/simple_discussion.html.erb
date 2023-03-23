@@ -98,7 +98,12 @@
   <div class="col-md-9 mb-3">
 
     <div class="card card-body">
-      <%= yield %>
+      <%= form_with(url: request.path, method: :get, data: { turbo_frame: "results", turbo_action: "advance", controller: "form", action: "input->form#submit" }, class: "flex flex-col") do |form| %>
+        <%= form.text_field :query, class: "form-control-lg input-lg col-md-12", placeholder: "Search..."%>
+      <% end %>
+      <%= turbo_frame_tag "results" do %>
+        <%= yield %>
+      <% end %>
     </div>
 
   </div>
