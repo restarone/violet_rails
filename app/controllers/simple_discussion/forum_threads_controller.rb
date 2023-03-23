@@ -2,32 +2,33 @@ class SimpleDiscussion::ForumThreadsController < SimpleDiscussion::ApplicationCo
   before_action :authenticate_user!, only: [:mine, :participating, :new, :create]
   before_action :require_mod_or_can_access_forum!, only: [ :new, :create]
   before_action :set_forum_thread, only: [:show, :edit, :update, :destroy]
+  before_action :set_forum_threads, only: [:index, :answered, :unanswered, :mine, :participating]
   before_action :require_mod_or_author_for_thread!, only: [:edit, :update, :destroy]
   before_action :set_users_for_mention
 
   after_action :broadcast_to_mods, only: [:create]
 
   def index
-    @forum_threads = ForumThread.pinned_first.sorted.includes(:user, :forum_category).paginate(page: page_number)
+    @forum_threads = @forum_threads.pinned_first.sorted.includes(:user, :forum_category).paginate(page: page_number)
   end
 
   def answered
-    @forum_threads = ForumThread.solved.sorted.includes(:user, :forum_category).paginate(page: page_number)
+    @forum_threads = @forum_threads.solved.sorted.includes(:user, :forum_category).paginate(page: page_number)
     render action: :index
   end
 
   def unanswered
-    @forum_threads = ForumThread.unsolved.sorted.includes(:user, :forum_category).paginate(page: page_number)
+    @forum_threads = @forum_threads.unsolved.sorted.includes(:user, :forum_category).paginate(page: page_number)
     render action: :index
   end
 
   def mine
-    @forum_threads = ForumThread.where(user: current_user).sorted.includes(:user, :forum_category).paginate(page: page_number)
+    @forum_threads = @forum_threads.where(user: current_user).sorted.includes(:user, :forum_category).paginate(page: page_number)
     render action: :index
   end
 
   def participating
-    @forum_threads = ForumThread.includes(:user, :forum_category).joins(:forum_posts).where(forum_posts: {user_id: current_user.id}).distinct(forum_posts: :id).sorted.paginate(page: page_number)
+    @forum_threads = @forum_threads.includes(:user, :forum_category).joins(:forum_posts).where(forum_posts: {user_id: current_user.id}).distinct(forum_posts: :id).sorted.paginate(page: page_number)
     render action: :index
   end
 
@@ -96,5 +97,10 @@ class SimpleDiscussion::ForumThreadsController < SimpleDiscussion::ApplicationCo
 
   def forum_thread_params
     params.require(:forum_thread).permit(:title, :forum_category_id, forum_posts_attributes: [:body])
+  end
+
+  def set_forum_threads
+    @forum_threads = ForumThread.where("1=1")
+    @forum_threads = @forum_threads.search(params[:query]) if params[:query].present?
   end
 end

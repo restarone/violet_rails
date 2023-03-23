@@ -21,6 +21,24 @@ class ForumThread < ApplicationRecord
   scope :sorted, -> { order(updated_at: :desc) }
   scope :unpinned, -> { where.not(pinned: true) }
   scope :unsolved, -> { where.not(solved: true) }
+  scope :contains_title, ->(query) { where("title ILIKE ?", "%#{query}%") }
+  scope :contains_body_scope, ->(query) { where("action_text_rich_texts.body  ILIKE ?", "%#{query}%") }
+  scope :join_with_posts_and_rich_texts, -> {
+    joins("INNER JOIN forum_posts ON forum_posts.forum_thread_id = forum_threads.id
+		   INNER JOIN action_text_rich_texts ON action_text_rich_texts.record_id = forum_posts.id")
+  }
+  scope :contains_body, ->(query) { join_with_posts_and_rich_texts.contains_body_scope(query).distinct }
+  scope :contains_either_title_or_body, ->(query) {
+    join_with_posts_and_rich_texts.contains_body_scope(query).or(contains_title(query)).distinct
+  }
+
+  def self.search(query)
+    if query.present?
+      contains_either_title_or_body(query).sorted.pinned_first.includes(:user, :forum_category)
+    else
+      all.sorted.pinned_first.includes(:user, :forum_category)
+    end
+  end
   
   def mentioned_users
     forum_posts.map { |forum_post| forum_post.body.body.attachments.select{ |a| a.attachable.class == User }.map(&:attachable) }.flatten.uniq
