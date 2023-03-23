@@ -1,5 +1,11 @@
 <%= cms_snippet_render('navbar').html_safe unless mobile? %>
 
+<% if request.referer.present? %>
+  <%= @query_params_forum_search = '?' + request.referer.partition('?').last %>
+<% else %>
+  <%= @query_params_forum_search = "" %>
+<% end %>
+
 <div class="row col-md-12">
   <h1>
     <%= forum_title(Subdomain.current) %>
@@ -20,32 +26,32 @@
           </strong>
         </h5>
         <div>
-          <%= forum_link_to simple_discussion.forum_threads_path, exact: true do %>
+          <%= forum_link_to "#{simple_discussion.forum_threads_path}#{@query_params_forum_search}", exact: true do %>
             <%= icon "fa-fw fas", "bars" %>
             <%= t('.all_threads') %>
           <% end %>
         </div>
         <% if user_signed_in? %>
           <div>
-            <%= forum_link_to simple_discussion.mine_forum_threads_path do %><%= icon "fa-fw far", "user-circle" %>
+            <%= forum_link_to "#{simple_discussion.mine_forum_threads_path}#{@query_params_forum_search}" do %><%= icon "fa-fw far", "user-circle" %>
               <%= t('.my_questions') %>
             <% end %>
           </div>
           <div>
-            <%= forum_link_to simple_discussion.participating_forum_threads_path do %>
+            <%= forum_link_to "#{simple_discussion.participating_forum_threads_path}#{@query_params_forum_search}" do %>
               <%= icon "fa-fw far", "comments" %>
               <%= t('.participating') %>
             <% end %>
           </div>
         <% end %>
         <div>
-          <%= forum_link_to simple_discussion.answered_forum_threads_path do %>
+          <%= forum_link_to "#{simple_discussion.answered_forum_threads_path}#{@query_params_forum_search}" do %>
             <%= icon "fa-fw fas", "check" %>
             <%= t('.answered') %>
           <% end %>
         </div>
         <div>
-          <%= forum_link_to simple_discussion.unanswered_forum_threads_path do %>
+          <%= forum_link_to "#{simple_discussion.unanswered_forum_threads_path}#{@query_params_forum_search}" do %>
             <%= icon "fa-fw fas", "question" %>
             <%= t('.unanswered') %>
           <% end %>
@@ -98,13 +104,13 @@
   <div class="col-md-9 mb-3">
   
     <div class="card card-body">  
-      <%= form_with(url: request.path, method: :get, data: { turbo_frame: "forum-threads-results", turbo_action: "advance"}, class: "d-flex align-items-center") do |form| %>
-          <%= form.text_field :query, class: "form-control-lg input-lg col-md-10 mr-2", placeholder: "Search..."%>
-          <%= form.submit "Search", data: { disable_with: false }, class: "btn btn-primary btn-md"%>
-          <% end %>
-        <%= turbo_frame_tag "forum-threads-results" do %>
-          <%= yield %>
-        <% end %>
+      <%= form_with(url: request.fullpath, method: :get, data: { turbo_frame: "forum-threads-results", turbo_action: "advance"}, class: "d-flex align-items-center") do |form| %>
+        <%= form.text_field :query, class: "form-control-lg input-lg col-md-10 mr-2", placeholder: "Search..."%>
+        <%= form.submit "Search", data: { disable_with: false }, class: "btn btn-primary btn-md"%>
+      <% end %>
+      <%= turbo_frame_tag "forum-threads-results" do %>
+        <%= yield %>
+      <% end %>
     </div>
 
   </div>
