@@ -98,10 +98,10 @@
   <div class="col-md-9 mb-3">
   
     <div class="card card-body">  
-      <%= form_with(url: request.path, method: :get, data: { turbo_frame: "forum-threads-results", turbo_action: "advance" }) do |form| %>
-          <%= form.text_field :query, class: "form-control-lg input-lg col-md-10 mr-3", placeholder: "Search..."%>
-          <%= form.submit "Search", data: { disable_with: false }, class: "btn btn-primary btn-md" %>
-      <% end %>
+      <%= form_with(url: request.path, method: :get, data: { turbo_frame: "forum-threads-results", turbo_action: "advance"}, class: "d-flex align-items-center") do |form| %>
+          <%= form.text_field :query, class: "form-control-lg input-lg col-md-10 mr-2", placeholder: "Search..."%>
+          <%= form.submit "Search", data: { disable_with: false }, class: "btn btn-primary btn-md"%>
+          <% end %>
         <%= turbo_frame_tag "forum-threads-results" do %>
           <%= yield %>
         <% end %>
