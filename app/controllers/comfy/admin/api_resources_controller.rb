@@ -67,6 +67,7 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
     respond_to do |format|
       format.html { redirect_to api_namespace_path(id: @api_namespace.id), notice: "Api resource was successfully destroyed." }
       format.json { head :no_content }
+      format.js
     end
   end
 

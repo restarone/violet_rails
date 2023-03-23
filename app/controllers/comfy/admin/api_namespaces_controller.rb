@@ -48,7 +48,15 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
     if field && fields_in_properties.include?(field)
       @api_resources = @api_resources.jsonb_order_pre({ "properties" => { "#{field}": "#{direction}" }})
     end
+
+    if turbo_frame_request?
+      render partial: "comfy/admin/api_namespaces/api_resources/table", locals: { api_resources: @api_resources, api_resources_q: @api_resources_q, api_namespace: @api_namespace }
+    else
+      render :show
+    end
   end
+  
+  
 
   # GET /api_namespaces/new
   def new

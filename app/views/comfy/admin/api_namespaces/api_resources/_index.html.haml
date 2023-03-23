@@ -1,0 +1,28 @@
+- if has_access_to_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:read_api_resources_only], current_user, @api_namespace)
+  #api-resources-list.mb-5{data: {controller: "api-resources"}}
+    .d-sm-flex.justify-content-between.align-items-center.py-2.page-header
+      %h2
+        Listing
+        =  @api_namespace.name.pluralize
+      %div
+        = link_to "Create new #{@api_namespace.name.singularize}", new_api_namespace_resource_path(api_namespace_id: @api_namespace.id), class: 'btn btn-primary w-100 w-md-auto my-2'
+    = search_form_for @api_resources_q, url: api_namespace_path(@api_namespace.id), data: {api_resources_target: 'searchForm', turbo_frame: "api-resources", turbo_action: "advance"} do |f|
+      .form-group
+        = f.label "Search by properties", class: 'col-form-label'
+        .search-box
+          = f.search_field :properties_cont, value: params[:q][:properties_cont], class: 'form-control', placeholder: 'Enter the value of properties'
+      .form-group.mt-4.mb-2.d-flex.justify-content-between 
+        .label Filter by date:
+        .d-flex
+          = f.hidden_field :created_at_gteq
+          = f.hidden_field :created_at_end_of_day_lteq
+          = f.hidden_field :updated_at_gteq
+          = f.hidden_field :updated_at_end_of_day_lteq
+          #created-at-filter.mr-3 
+            Created at
+            %i.fas.fa-caret-down.ml-1
+          #updated-at-filter
+            Updated at
+            %i.fas.fa-caret-down.ml-1
+    .mt-3
+      = render "comfy/admin/api_namespaces/api_resources/table", api_resources: @api_resources, api_resources_q: @api_resources_q, api_namespace: @api_namespace

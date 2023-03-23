@@ -55,8 +55,15 @@ protected
   def build_layout
     @layout = @site.layouts.new(layout_params)
     @layout.parent      ||= ::Comfy::Cms::Layout.find_by_id(params[:parent_id])
-    @layout.app_layout  ||= @layout.parent.try(:app_layout)
     @layout.content     ||= "{{ cms:wysiwyg content }}"
+
+    if !@layout.app_layout.blank?
+      @layout.app_layout = @layout.app_layout
+    elsif !@layout.parent.nil?
+      @layout.app_layout = @layout.parent.app_layout
+    else
+      @layout.app_layout = "website"
+    end
   end
 
   def load_layout

@@ -1,4 +1,9 @@
 import Sortable from 'sortablejs';
+import jQuery from 'jquery';
+import "controllers"
+
+global.$ = global.jQuery = jQuery;
+
 window.addEventListener('DOMContentLoaded', (event) => {
 
     $('.js-sortable').each(function() {
