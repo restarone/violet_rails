@@ -1,0 +1,14 @@
+.card.p-3.mb-4
+  = form_with(method: :patch, model: api_namespace, url: settings_api_namespace_path(@api_namespace))  do |f|
+    .form-group
+      = f.label :purge_resources_older_than
+      = f.select :purge_resources_older_than, options_for_select(ApiNamespace::RESOURCES_PURGE_INTERVAL_MAPPING, api_namespace.purge_resources_older_than), {}, {class: 'form-control'}
+    .form-group.mb-0
+      = f.submit "Submit", class: 'btn btn-primary'
+
+.my-3
+  = link_to 'Delete', api_namespace, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'
+.my-3
+  = link_to 'Duplicate with associations', duplicate_with_associations_api_namespace_path(id: api_namespace.id), method: :post, target: '_blank', class: 'btn btn-primary'
+.my-3
+  = link_to 'Duplicate without associations', duplicate_without_associations_api_namespace_path(id: api_namespace.id), method: :post, target: '_blank', class: 'btn btn-primary'

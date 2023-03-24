@@ -243,7 +243,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,#{api_namespace.social_share_metadata}\nanalytics_metadata,#{api_namespace.analytics_metadata}\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,#{api_namespace.social_share_metadata}\nanalytics_metadata,#{api_namespace.analytics_metadata}\npurge_resources_older_than,never\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -2289,7 +2289,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -2303,7 +2303,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -2317,7 +2317,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -2348,7 +2348,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -2364,7 +2364,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -2380,7 +2380,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -2394,7 +2394,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -2927,7 +2927,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
       assert_response :redirect
 
       expected_message = 'Social Share Metadata successfully updated.'
-      assert_equal expected_message, flash[:notice]
+      assert_equal expected_message, flash[:success]
       assert_equal payload[:api_namespace]['social_share_metadata'], @api_namespace.reload.social_share_metadata
     end
   end
@@ -2967,7 +2967,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
       assert_response :redirect
 
       expected_message = 'Social Share Metadata successfully updated.'
-      assert_equal expected_message, flash[:notice]
+      assert_equal expected_message, flash[:success]
       assert_equal payload[:api_namespace]['social_share_metadata'], @api_namespace.reload.social_share_metadata
     end
   end
@@ -3006,7 +3006,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
       assert_response :redirect
 
       expected_message = 'Social Share Metadata successfully updated.'
-      assert_equal expected_message, flash[:notice]
+      assert_equal expected_message, flash[:success]
       assert_equal payload[:api_namespace]['social_share_metadata'], @api_namespace.reload.social_share_metadata
     end
   end
@@ -3032,6 +3032,126 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     end
   end
 
+  # API NAMESPACE SETTINGS
+  # API access for all_namespaces
+  test '#settings should return success when the user has full_access/full_access_for_api_namespace_only/allow_settings for all_namespaces' do
+    ['full_access', 'full_access_api_namespace_only', 'allow_settings'].each do |access_name|
+      access = {api_namespaces: {all_namespaces: {}}}
+      access[:api_namespaces][:all_namespaces][access_name] = 'true'
+      @user.update!(api_accessibility: access)
+
+      payload = {api_namespace: {"purge_resources_older_than"=>"1.week"}}
+
+      sign_in(@user)
+      patch settings_api_namespace_url(@api_namespace), params: payload
+      assert_response :redirect
+
+      expected_message = 'Api namespace setting was successfully updated.'
+      assert_equal expected_message, flash[:success]
+      assert_equal payload[:api_namespace]['purge_resources_older_than'], @api_namespace.reload.purge_resources_older_than
+    end
+  end
+
+  test '#settings should deny when the user has other access like full_read_access/delete_access_api_namespace_only/allow_exports/allow_duplication/full_access_for_api_resources_only/full_access_for_api_actions_only/full_access_for_external_api_connections_only/full_access_for_api_clients_only/full_access_for_api_form_only for all_namespaces' do
+    ['full_read_access', 'delete_access_api_namespace_only', 'allow_exports', 'allow_duplication', 'full_access_for_api_resources_only', 'full_access_for_api_actions_only', 'full_access_for_external_api_connections_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
+      access = {api_namespaces: {all_namespaces: {}}}
+      access[:api_namespaces][:all_namespaces][access_name] = 'true'
+      @user.update!(api_accessibility: access)
+
+      payload = {api_namespace: {"purge_resources_older_than"=>"1.week"}}
+
+      sign_in(@user)
+      patch settings_api_namespace_url(@api_namespace), params: payload
+      assert_response :redirect
+
+      expected_message = 'You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or allow_settings are allowed to perform that action.'
+      assert_equal expected_message, flash[:danger]
+      refute_equal payload[:api_namespace]['purge_resources_older_than'], @api_namespace.reload.purge_resources_older_than
+    end
+  end
+
+  # API access by category
+  test '#settings should return success when the user has category-specific full_access/full_access_for_api_namespace_only/allow_settings for a namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+
+    ['full_access', 'full_access_api_namespace_only', 'allow_settings'].each do |access_name|
+      access = {api_namespaces: {namespaces_by_category: {"#{category.label}": {}}}}
+      access[:api_namespaces][:namespaces_by_category][:"#{category.label}"][access_name] = 'true'
+      @user.update!(api_accessibility: access)
+
+      payload = {api_namespace: {"purge_resources_older_than"=>"1.week"}}
+
+      sign_in(@user)
+      patch settings_api_namespace_url(@api_namespace), params: payload
+      assert_response :redirect
+
+      expected_message = 'Api namespace setting was successfully updated.'
+      assert_equal expected_message, flash[:success]
+      assert_equal payload[:api_namespace]['purge_resources_older_than'], @api_namespace.reload.purge_resources_older_than
+    end
+  end
+
+  test '#settings should deny when the user has other category-specific access like full_read_access/delete_access_api_namespace_only/allow_exports/allow_duplication/full_access_for_api_resources_only/full_access_for_api_actions_only/full_access_for_external_api_connections_only/full_access_for_api_clients_only/full_access_for_api_form_only for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+
+    ['full_read_access', 'delete_access_api_namespace_only', 'allow_exports', 'allow_duplication', 'full_access_for_api_resources_only', 'full_access_for_api_actions_only', 'full_access_for_external_api_connections_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
+      access = {api_namespaces: {namespaces_by_category: {"#{category.label}": {}}}}
+      access[:api_namespaces][:namespaces_by_category][:"#{category.label}"][access_name] = 'true'
+      @user.update!(api_accessibility: access)
+
+      payload = {api_namespace: {"purge_resources_older_than"=>"1.week"}}
+
+      sign_in(@user)
+      patch settings_api_namespace_url(@api_namespace), params: payload
+      assert_response :redirect
+
+      expected_message = 'You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or allow_settings are allowed to perform that action.'
+      assert_equal expected_message, flash[:danger]
+      refute_equal payload[:api_namespace]['purge_resources_older_than'], @api_namespace.reload.purge_resources_older_than
+    end
+  end
+
+  test '#settings should return success when the user has uncategorized full_access/full_access_for_api_namespace_only/allow_settings for a namespace' do
+    ['full_access', 'full_access_api_namespace_only', 'allow_settings'].each do |access_name|
+      access = {api_namespaces: {namespaces_by_category: {uncategorized: {}}}}
+      access[:api_namespaces][:namespaces_by_category][:uncategorized][access_name] = 'true'
+      @user.update!(api_accessibility: access)
+
+      payload = {api_namespace: {"purge_resources_older_than"=>"1.week"}}
+
+      sign_in(@user)
+      patch settings_api_namespace_url(@api_namespace), params: payload
+      assert_response :redirect
+
+      expected_message = 'Api namespace setting was successfully updated.'
+      assert_equal expected_message, flash[:success]
+      assert_equal payload[:api_namespace]['purge_resources_older_than'], @api_namespace.reload.purge_resources_older_than
+    end
+  end
+
+  test '#settings should deny when the user has other uncategorized access like full_read_access/delete_access_api_namespace_only/allow_exports/allow_duplication/full_access_for_api_resources_only/full_access_for_api_actions_only/full_access_for_external_api_connections_only/full_access_for_api_clients_only/full_access_for_api_form_only for the namespace' do
+    category = comfy_cms_categories(:api_namespace_1)
+    @api_namespace.update(category_ids: [category.id])
+
+    ['full_read_access', 'delete_access_api_namespace_only', 'allow_exports', 'allow_duplication', 'full_access_for_api_resources_only', 'full_access_for_api_actions_only', 'full_access_for_external_api_connections_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'].each do |access_name|
+      access = {api_namespaces: {namespaces_by_category: {uncategorized: {}}}}
+      access[:api_namespaces][:namespaces_by_category][:uncategorized][access_name] = 'true'
+      @user.update!(api_accessibility: access)
+
+      payload = {api_namespace: {"purge_resources_older_than"=>"1.week"}}
+
+      sign_in(@user)
+      patch settings_api_namespace_url(@api_namespace), params: payload
+      assert_response :redirect
+
+      expected_message = 'You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or allow_settings are allowed to perform that action.'
+      assert_equal expected_message, flash[:danger]
+      refute_equal payload[:api_namespace]['purge_resources_older_than'], @api_namespace.reload.purge_resources_older_than
+    end
+  end
+
   ######## API Accessibility Tests - END #########
 
   # ANALYTICS METADATA
@@ -3044,7 +3164,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_response :redirect
 
     expected_message = 'Analytics Metadata successfully updated.'
-    assert_equal expected_message, flash[:notice]
+    assert_equal expected_message, flash[:success]
     assert_equal payload[:api_namespace]['analytics_metadata'], @api_namespace.reload.analytics_metadata
   end
 

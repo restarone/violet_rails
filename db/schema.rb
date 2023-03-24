@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_03_10_222034) do
+ActiveRecord::Schema.define(version: 2023_03_24_080541) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -190,6 +190,7 @@ ActiveRecord::Schema.define(version: 2023_03_10_222034) do
     t.datetime "updated_at", precision: 6, null: false
     t.jsonb "social_share_metadata"
     t.jsonb "analytics_metadata"
+    t.string "purge_resources_older_than", default: "never"
     t.index ["properties"], name: "index_api_namespaces_on_properties", opclass: :jsonb_path_ops, using: :gin
   end
 

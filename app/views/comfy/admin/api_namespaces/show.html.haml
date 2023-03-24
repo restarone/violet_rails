@@ -136,12 +136,7 @@
         .card.p-3
           = render_form @api_namespace.api_form.id
     #settings.tab-pane.fade{"aria-labelledby" => "settings-tab", :role => "tabpanel"} 
-      .my-3
-        = link_to 'Delete', @api_namespace, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'
-      .my-3
-        = link_to 'Duplicate with associations', duplicate_with_associations_api_namespace_path(id: @api_namespace.id), method: :post, target: '_blank', class: 'btn btn-primary'
-      .my-3
-        = link_to 'Duplicate without associations', duplicate_without_associations_api_namespace_path(id: @api_namespace.id), method: :post, target: '_blank', class: 'btn btn-primary'
+      = render partial: 'settings', locals: { api_namespace: @api_namespace }
     #export.tab-pane.fade{"aria-labelledby" => "export-tab", :role => "tabpanel"} 
       .my-3
         = link_to 'Download API Namespace as CSV', export_api_namespace_path(@api_namespace, format: :csv), class: 'btn btn-warning'
