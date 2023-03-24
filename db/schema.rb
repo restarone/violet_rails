@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_03_10_222034) do
+ActiveRecord::Schema.define(version: 2023_03_23_050938) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -183,14 +183,13 @@ ActiveRecord::Schema.define(version: 2023_03_10_222034) do
     t.string "name", null: false
     t.string "slug", null: false
     t.integer "version", null: false
-    t.jsonb "properties"
+    t.json "properties"
     t.boolean "requires_authentication", default: false
     t.string "namespace_type", default: "create-read-update-delete", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.jsonb "social_share_metadata"
     t.jsonb "analytics_metadata"
-    t.index ["properties"], name: "index_api_namespaces_on_properties", opclass: :jsonb_path_ops, using: :gin
   end
 
   create_table "api_resources", force: :cascade do |t|

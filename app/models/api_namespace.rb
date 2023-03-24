@@ -97,7 +97,16 @@ class ApiNamespace < ApplicationRecord
     else
       self.none
     end
-   }
+  }
+
+  # https://github.com/rails/rails/issues/17706
+  scope :for_category, ->(*categories) {
+    if (categories = [categories].flatten.compact).present?
+      select("DISTINCT ON (#{table.name}.id) #{table.name}.*")
+      .joins(categorizations: :category)
+      .where("comfy_cms_categories.label" => categories)
+    end
+  }
 
   def update_api_form
     if has_form == '1'

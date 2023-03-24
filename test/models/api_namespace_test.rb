@@ -368,4 +368,20 @@ class ApiNamespaceTest < ActiveSupport::TestCase
     assert_includes associations, layout
     assert_includes associations, snippet
   end
+
+  test "should preserve order of keys in properties column" do
+    props_1 = { aa: 'abc', bbb: 'bcde' }
+    props_2 = { bbb: 'bcde', aa: 'abc' }
+
+    api_namespace_1 = ApiNamespace.create(name: 'test_order', slug: 'test_order', version: 1, properties: props_1)
+    api_namespace_2 = ApiNamespace.create(name: 'test_order', slug: 'test_order', version: 2, properties: props_2)
+
+    # should save properties in the order they were provided
+    assert_equal props_1.to_json, api_namespace_1.reload.properties.to_json
+    assert_equal props_2.to_json, api_namespace_2.reload.properties.to_json
+
+    # should be able to update order of keys
+    api_namespace_2.update(properties: props_1)
+    assert_equal props_1.to_json, api_namespace_2.reload.properties.to_json
+  end
 end
