@@ -99,6 +99,7 @@ class ApiNamespace < ApplicationRecord
     end
   }
 
+  # https://github.com/rails/rails/issues/17706
   scope :for_category, ->(*categories) {
     if (categories = [categories].flatten.compact).present?
       select("DISTINCT ON (#{table.name}.id) #{table.name}.*")
