@@ -61,7 +61,7 @@ class ApiNamespace < ApplicationRecord
   }
 
   validates :purge_resources_older_than, inclusion: { in: RESOURCES_PURGE_INTERVAL_MAPPING.values,
-  message: "purge_resources_older_than is not valid" }
+  message: "purge_resources_older_than is not valid" }, if: -> { attributes.key?('purge_resources_older_than') }
 
   REGISTERED_PLUGINS = {
     subdomain_events: {
