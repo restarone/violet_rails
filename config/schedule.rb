@@ -42,4 +42,5 @@ end
 every 1.day do
   rake "maintenance:clear_discarded_api_actions"
   rake "active_storage:purge_unattached"
+  rake "maintenance:purge_old_api_resources"
 end

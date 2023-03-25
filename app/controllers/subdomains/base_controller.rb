@@ -117,6 +117,13 @@ class Subdomains::BaseController < ApplicationController
     end
   end
 
+  def ensure_authority_for_allow_settings_in_api
+    unless user_authorized_for_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:allow_settings])
+      flash[:danger] = "You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or allow_settings are allowed to perform that action."
+      redirect_back(fallback_location: root_url)
+    end
+  end
+
   def ensure_authority_for_read_api_actions_only_in_api
     unless user_authorized_for_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:read_api_actions_only])
       flash.alert = "You do not have the permission to do that. Only users with full_access or full_read_access or full_access_for_api_actions_only or read_api_actions_only are allowed to perform that action."
