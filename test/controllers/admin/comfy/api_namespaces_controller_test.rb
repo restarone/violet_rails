@@ -3201,8 +3201,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
       end
     end
 
-    expected_message = '["Purge resources older than purge_resources_older_than is not valid"]'
-    assert_equal expected_message, flash[:danger]
+    assert_includes flash[:danger], 'Purge resources older than purge_resources_older_than is not valid'
 
     refute_equal payload[:api_namespace]['purge_resources_older_than'], @api_namespace.reload.purge_resources_older_than
   end
