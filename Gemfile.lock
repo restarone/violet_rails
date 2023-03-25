@@ -317,6 +317,8 @@ GEM
     rack (2.2.3.1)
     rack-accept (0.4.5)
       rack (>= 0.4)
+    rack-attack (6.6.1)
+      rack (>= 1.0, < 3)
     rack-cors (1.1.1)
       rack (>= 2.0.0)
     rack-mini-profiler (3.0.0)
@@ -546,6 +548,7 @@ DEPENDENCIES
   pg (~> 1.1)
   pry
   puma (~> 5.6)
+  rack-attack
   rack-cors
   rack-mini-profiler (~> 3.0)
   rails (~> 6.1.5)

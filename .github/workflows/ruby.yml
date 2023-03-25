@@ -19,6 +19,8 @@ jobs:
     env:
       RUBY_BUILD: ${{ matrix.ruby_version }}
       SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+      REQUEST_PER_MINUTE: 5
+      ERROR_PER_MINUTE: 3
     services:
       db:
         image: postgres:12.3-alpine

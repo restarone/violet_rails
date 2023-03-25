@@ -32,3 +32,16 @@
 en:
   hello: "Hello world"
   receiving_notifications_because_mentioned: "You're receiving notifications because you've been mentioned in this thread."
+  rack_attack:
+    mailer:
+      limit_exceeded:
+        greeting: "Dear %{user},"
+        unblock_instructions: "To unblock your account, please refrain from sending any further requests until the ban time is over."
+        closing: "Thank you for your cooperation."
+        regards: "Best regards,"
+        message:
+          error_limit_exceeded: "Your account has been temporarily blocked for %{time} due to exceeding the limit of errors multiple times allowed on our platform. We apologize for any inconvenience caused."
+          request_limit_exceeded: "Your account has been temporarily blocked for %{time} due to exceeding the limit of requests multiple times allowed on our platform. We apologize for any inconvenience caused."
+        subject: 
+          error_limit_exceeded: "Error limit exceeded"
+          request_limit_exceeded: "Request limit exceeded"
