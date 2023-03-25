@@ -45,7 +45,7 @@
           </div>
         <% end %>
         <div>
-          <%= forum_link_to "#{simple_discussion.answered_forum_threads_path}#{@query_params_forum_search}" do %>
+          <%= forum_link_to simple_discussion.answered_forum_threads_path(query: params[:query]) do %>
             <%= icon "fa-fw fas", "check" %>
             <%= t('.answered') %>
           <% end %>
@@ -104,13 +104,7 @@
   <div class="col-md-9 mb-3">
   
     <div class="card card-body">  
-      <%= form_with(url: request.fullpath, method: :get, data: { turbo_frame: "forum-threads-results", turbo_action: "advance"}, class: "d-flex align-items-center") do |form| %>
-        <%= form.text_field :query, class: "form-control-lg input-lg col-md-10 mr-2", placeholder: "Search..."%>
-        <%= form.submit "Search", data: { disable_with: false }, class: "btn btn-primary btn-md"%>
-      <% end %>
-      <%= turbo_frame_tag "forum-threads-results" do %>
-        <%= yield %>
-      <% end %>
+      <%= yield %>
     </div>
 
   </div>

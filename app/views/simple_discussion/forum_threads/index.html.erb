@@ -16,6 +16,10 @@
 <% else %>
 
 
+    <%= form_with(url: request.fullpath, method: :get, data: { turbo_frame: "forum-threads-results", turbo_action: "advance"}, class: "d-flex align-items-center mb-4") do |form| %>
+      <%= form.text_field :query, class: "form-control-lg input-lg col-md-10 mr-2", placeholder: "Search..."%>
+      <%= form.submit "Search", data: { disable_with: false }, class: "btn btn-primary btn-md"%>
+    <% end %>
 
     <%= render partial: "simple_discussion/forum_threads/forum_thread", collection: @forum_threads, spacer_template: "shared/spacer" %>
 
