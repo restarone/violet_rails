@@ -1,10 +1,15 @@
-.card.p-3.mb-4
-  = form_with(method: :patch, model: api_namespace, url: settings_api_namespace_path(@api_namespace))  do |f|
-    .form-group
-      = f.label :purge_resources_older_than
-      = f.select :purge_resources_older_than, options_for_select(ApiNamespace::RESOURCES_PURGE_INTERVAL_MAPPING, api_namespace.purge_resources_older_than), {}, {class: 'form-control'}
-    .form-group.mb-0
-      = f.submit "Submit", class: 'btn btn-primary', data: { confirm: 'This will trigger a purge job that will delete all API resources older than the selected interval.' }
+- has_full_read_access = has_access_to_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:full_read_access], current_user, api_namespace)
+- has_allow_settings_access = has_access_to_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:allow_settings], current_user, api_namespace)
+- if has_allow_settings_access || has_full_read_access
+  .card.p-3.mb-4
+    = form_with(method: :patch, model: api_namespace, url: settings_api_namespace_path(api_namespace))  do |f|
+      .form-group
+        = f.label :purge_resources_older_than
+        = f.select :purge_resources_older_than, options_for_select(ApiNamespace::RESOURCES_PURGE_INTERVAL_MAPPING, api_namespace.purge_resources_older_than), { }, {class: 'form-control', disabled: !has_allow_settings_access}
+      
+      - if has_allow_settings_access
+        .form-group.mb-0
+          = f.submit "Submit", class: 'btn btn-primary', data: { confirm: 'This will trigger a purge job that will delete all API resources older than the selected interval.' }
 
 .my-3
   = link_to 'Delete', api_namespace, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'
