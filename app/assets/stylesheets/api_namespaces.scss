@@ -2,6 +2,46 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: https://sass-lang.com/
 
+.api-namespace-show {
+  background-color: #FCFEFF;
+
+  .nav-link-container {
+    overflow-x: auto;
+    background: #49505714;
+    padding: 12px;
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none; 
+    margin: 30px 0;
+  
+    .nav.nav-tabs {
+      width: max-content;
+      border-bottom: none;
+
+      .nav-link {
+        font-size: 14px;
+        color: #495057;
+        border: none;
+
+        &.active {
+          border: 1px solid #49505714;
+          box-shadow: 0px 8px 10px #0108150A;
+          border-radius: 4px;
+          color: #705AFE;
+          font-weight: 600;
+        }
+      }
+    }
+
+    &::-webkit-scrollbar { 
+        display: none;  /* Safari and Chrome */
+    }
+  }
+
+  .tab-content {
+    margin: 30px 0;
+  }
+}
+
 #api-resources-list{
   a:not(.btn) {
     color: #6F5AFE;
