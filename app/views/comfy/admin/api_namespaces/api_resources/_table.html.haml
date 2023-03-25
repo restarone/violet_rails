@@ -3,7 +3,7 @@
   .digg_pagination.d-sm-flex.justify-content-between.mb-4.pb-3
     .page-info= page_entries_info @api_resources
     .links= will_paginate @api_resources, container: false, renderer: TurboPaginateRenderer
-  .table-responsive
+  .table-responsive.bg-white
     %div.api-resources-table-container
       %table#api-resources-table.table.table-striped.table-bordered
         %thead
