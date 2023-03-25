@@ -393,4 +393,8 @@ class ApiNamespace < ApplicationRecord
 
     associations.uniq
   end
+
+  def destroy_old_api_resources_in_batches
+    api_resources.where("created_at < ?", eval("#{purge_resources_older_than}.ago")).in_batches(&:destroy_all)
+  end
 end

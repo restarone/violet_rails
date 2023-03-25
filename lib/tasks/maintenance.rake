@@ -38,13 +38,8 @@ namespace :maintenance do
     Subdomain.all_with_public_schema.each do |subdomain|
       Apartment::Tenant.switch subdomain.name do
         ApiNamespace.where.not(purge_resources_older_than: ApiNamespace::RESOURCES_PURGE_INTERVAL_MAPPING[:never]).each do |api_namespace|
-          api_resources = api_namespace.api_resources.where("created_at < ?", eval("#{api_namespace.purge_resources_older_than}.ago"))
-          next unless api_resources.present?
-
-          p "clearing #{api_resources.size} outdated #{api_namespace.name.pluralize} for [#{subdomain.name}] and  @ #{Time.now}"
-          api_resources.in_batches do |batch|
-            batch.destroy_all
-          end
+          p "clearing outdated #{api_namespace.name.pluralize} for [#{subdomain.name}] and  @ #{Time.now}"
+          api_namespace.destroy_old_api_resources_in_batches
           p "cleared old api_resources @ #{Time.now}"
         end
       end

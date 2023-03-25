@@ -3152,6 +3152,61 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     end
   end
 
+  test '#settings: should run purge job on old api_resources' do
+    @user.update!(api_accessibility: {api_namespaces: {all_namespaces: { 'allow_settings': 'true' }}})
+    ApiResource.create(api_namespace: @api_namespace, created_at: 2.weeks.ago )
+    payload = {api_namespace: {"purge_resources_older_than"=>"1.week"}}
+
+    sign_in(@user)
+
+    perform_enqueued_jobs do
+      assert_difference '@api_namespace.reload.api_resources.count', -1 do
+        patch settings_api_namespace_url(@api_namespace), params: payload
+        Sidekiq::Worker.drain_all
+      end
+    end
+  end
+
+  test '#settings: should not run purge job on old api_resources if update is unsuccessful because of permission' do
+    @user.update!(api_accessibility: {api_namespaces: {all_namespaces: { 'full_read_access': 'true' }}})
+    ApiResource.create(api_namespace: @api_namespace, created_at: 2.weeks.ago )
+    payload = {api_namespace: {"purge_resources_older_than"=>"1.week"}}
+
+    sign_in(@user)
+
+    perform_enqueued_jobs do
+      assert_no_difference '@api_namespace.reload.api_resources.count'  do
+        patch settings_api_namespace_url(@api_namespace), params: payload
+        Sidekiq::Worker.drain_all
+      end
+    end
+
+    expected_message = 'You do not have the permission to do that. Only users with full_access or full_access_api_namespace_only or allow_settings are allowed to perform that action.'
+    assert_equal expected_message, flash[:danger]
+
+    refute_equal payload[:api_namespace]['purge_resources_older_than'], @api_namespace.reload.purge_resources_older_than
+  end
+
+  test '#settings: should not run purge job on old api_resources if update is unsuccessful' do
+    @user.update!(api_accessibility: {api_namespaces: {all_namespaces: { 'allow_settings': 'true' }}})
+    ApiResource.create(api_namespace: @api_namespace, created_at: 2.weeks.ago )
+    payload = {api_namespace: {"purge_resources_older_than"=>"not_a_valid_value"}}
+
+    sign_in(@user)
+
+    perform_enqueued_jobs do
+      assert_no_difference '@api_namespace.reload.api_resources.count'  do
+        patch settings_api_namespace_url(@api_namespace), params: payload
+        Sidekiq::Worker.drain_all
+      end
+    end
+
+    expected_message = '["Purge resources older than purge_resources_older_than is not valid"]'
+    assert_equal expected_message, flash[:danger]
+
+    refute_equal payload[:api_namespace]['purge_resources_older_than'], @api_namespace.reload.purge_resources_older_than
+  end
+
   ######## API Accessibility Tests - END #########
 
   # ANALYTICS METADATA

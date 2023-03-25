@@ -15,6 +15,7 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
   before_action :ensure_authority_for_allow_settings_in_api, only: :update_settings
   before_action :ensure_authority_to_manage_analytics, only: :analytics_metadata
   before_action :ensure_authority_for_full_access_for_api_actions_only_in_api, only: %i[ api_action_workflow discard_failed_api_actions rerun_failed_api_actions ]
+  after_action  :destroy_old_api_resources, only: :update_settings
 
   # GET /api_namespaces or /api_namespaces.json
   def index
@@ -284,5 +285,11 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
 
     def api_namespace_settings_params
       params.require(:api_namespace).permit(:purge_resources_older_than)
+    end
+
+    def destroy_old_api_resources
+      return if @api_namespace.errors.present? || @api_namespace.purge_resources_older_than == ApiNamespace::RESOURCES_PURGE_INTERVAL_MAPPING[:never]
+        
+      PurgeOldApiResourcesJob.perform_async(@api_namespace.id)
     end
 end
