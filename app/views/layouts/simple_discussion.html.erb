@@ -51,7 +51,7 @@
           <% end %>
         </div>
         <div>
-          <%= forum_link_to "#{simple_discussion.unanswered_forum_threads_path}#{@query_params_forum_search}" do %>
+          <%= forum_link_to simple_discussion.unanswered_forum_threads_path(request.query_parameters) do %>
             <%= icon "fa-fw fas", "question" %>
             <%= t('.unanswered') %>
           <% end %>
