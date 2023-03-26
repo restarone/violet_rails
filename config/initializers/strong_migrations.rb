@@ -1,6 +1,5 @@
 # Mark existing migrations as safe
-StrongMigrations.start_after = 20230326152018
-
+StrongMigrations.start_after = 20230326151717
 # Set timeouts for migrations
 # If you use PgBouncer in transaction mode, delete these lines and set timeouts on the database user
 StrongMigrations.lock_timeout = 10.seconds
@@ -23,4 +22,4 @@ StrongMigrations.auto_analyze = true
 
 # Make some operations safe by default
 # See https://github.com/ankane/strong_migrations#safe-by-default
-# StrongMigrations.safe_by_default = true
+StrongMigrations.safe_by_default = true
