@@ -8,6 +8,8 @@ class ApiNamespace < ApplicationRecord
   attr_accessor :has_form
 
   after_save :update_api_form
+
+  before_save :save_to_temp_properties
   
   has_many :api_resources, dependent: :destroy
   accepts_nested_attributes_for :api_resources
@@ -396,5 +398,9 @@ class ApiNamespace < ApplicationRecord
 
   def destroy_old_api_resources_in_batches
     api_resources.where("created_at < ?", eval("#{purge_resources_older_than}.ago")).in_batches(&:destroy_all)
+  end
+
+  def save_to_temp_properties
+    self.temp_properties = properties
   end
 end
