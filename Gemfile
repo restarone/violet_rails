@@ -123,3 +123,5 @@ gem 'stripe-rails'
 gem 'devise-two-factor', "4.0.2"
 
 gem "slowpoke"
+
+gem "strong_migrations"
