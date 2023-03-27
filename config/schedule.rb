@@ -29,6 +29,7 @@ end
 
 every 1.minute do
   rake "external_api_client:drive_cron_jobs"
+  rake "ahoy:fill_empty_location_entries"
 end
 
 every 1.day do
