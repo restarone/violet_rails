@@ -387,7 +387,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "should export api_namespace without associations as JSON" do
     sign_in(@user)
     get export_without_associations_as_json_api_namespace_url(@api_namespace)
-    expected_output = @api_namespace.to_json(root: 'api_namespace')
+    expected_output = @api_namespace.to_json(root: 'api_namespace', except: :temp_properties)
     assert_response :success
     assert_equal response.body, expected_output
   end
@@ -404,6 +404,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     get export_with_associations_as_json_api_namespace_url(@api_namespace)
     expected_output = @api_namespace.to_json(
       root: 'api_namespace',
+      except: :temp_properties,
       include: [
         :api_form,
         :external_api_clients,

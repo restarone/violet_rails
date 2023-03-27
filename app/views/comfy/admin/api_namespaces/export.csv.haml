@@ -1,4 +1,4 @@
-- headers = ApiNamespace.column_names
+- headers = ApiNamespace.column_names - ['temp_properties']
 - headers.each do |header|
   - data = @api_namespace.send(header)
   - if header == 'properties'

@@ -115,6 +115,15 @@ class ApiNamespace < ApplicationRecord
     end
    }
 
+  # https://github.com/rails/rails/issues/17706
+  scope :for_category, ->(*categories) {
+    if (categories = [categories].flatten.compact).present?
+      select("DISTINCT ON (#{table.name}.id) #{table.name}.*")
+      .joins(categorizations: :category)
+      .where("comfy_cms_categories.label" => categories)
+    end
+  }
+
   def update_api_form
     if has_form == '1'
       if api_form.present? 
@@ -223,6 +232,7 @@ class ApiNamespace < ApplicationRecord
     if include_associations
       self.to_json(
         root: 'api_namespace',
+        except: :temp_properties,
         include: [
           :api_form,
           :external_api_clients,
@@ -254,7 +264,7 @@ class ApiNamespace < ApplicationRecord
         ]
       )
     else
-      self.to_json(root: 'api_namespace')
+      self.to_json(root: 'api_namespace', except: :temp_properties)
     end
   end
 
@@ -265,7 +275,7 @@ class ApiNamespace < ApplicationRecord
           api_action: ['id', 'created_at', 'updated_at', 'encrypted_bearer_token', 'salt', 'api_namespace_id', 'api_resource_id'],
           api_key: ['id', 'created_at', 'updated_at', 'api_namespace_id', 'token'],
           api_form: ['id', 'created_at', 'updated_at', 'api_namespace_id'],
-          api_namespace: ['id', 'created_at', 'updated_at', 'slug'],
+          api_namespace: ['id', 'created_at', 'updated_at', 'slug', 'temp_properties'],
           api_resource: ['id', 'created_at', 'updated_at', 'api_namespace_id'],
           external_api_client: ['id', 'created_at', 'updated_at', 'slug', 'api_namespace_id'],
           non_primitive_property: ['id', 'created_at', 'updated_at', 'api_resource_id', 'api_namespace_id'],
