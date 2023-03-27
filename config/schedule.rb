@@ -29,7 +29,6 @@ end
 
 every 1.minute do
   rake "external_api_client:drive_cron_jobs"
-  rake "ahoy:fill_empty_location_entries"
 end
 
 every 1.day do
@@ -43,4 +42,5 @@ end
 every 1.day do
   rake "maintenance:clear_discarded_api_actions"
   rake "active_storage:purge_unattached"
+  rake "ahoy:fill_empty_location_entries"
 end
