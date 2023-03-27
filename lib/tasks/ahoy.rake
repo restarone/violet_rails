@@ -3,7 +3,7 @@ namespace :ahoy do
 
   task fill_empty_location_entries: :environment do
     # Gather all visits with nil longitude, this should suffice.
-    visits = Ahoy::Visit.where(:longitude => nil)
+    visits = Ahoy::Visit.where(:longitude => nil).find_each(batch_size: 1000)
 
     # Iterate over each visit in visits and queue the GeocodeJob to get the geodata and update the record.
     visits.each do |visit|
