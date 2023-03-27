@@ -8,8 +8,6 @@ class ApiNamespace < ApplicationRecord
   attr_accessor :has_form
 
   after_save :update_api_form
-
-  before_save :save_to_temp_properties
   
   has_many :api_resources, dependent: :destroy
   accepts_nested_attributes_for :api_resources
@@ -410,7 +408,50 @@ class ApiNamespace < ApplicationRecord
     api_resources.where("created_at < ?", eval("#{purge_resources_older_than}.ago")).in_batches(&:destroy_all)
   end
 
-  def save_to_temp_properties
-    self.temp_properties = properties
+  ############# Temporary methods ###########
+
+  # Reading data
+  def properties
+    self[:temp_properties] || self[:_properties] || super
+  end
+
+  # Writing data
+  def properties=(value)
+    self[:temp_properties] = parsed_value(value) if temp_properties_column_exists?
+    self[:_properties]     = parsed_value(value) if _properties_column_exists?
+
+    super if properties_column_exists?
+  end
+
+  def temp_properties=(value)
+    self.properties = parsed_value(value)
+  end
+
+  def _properties=(value)
+    self.properties = parsed_value(value)
+  end
+
+  private
+  # temp methods
+  def temp_properties_column_exists?
+    ActiveRecord::Base.connection.column_exists?(:api_namespaces, :temp_properties)
+  end
+
+  def _properties_column_exists?
+    ActiveRecord::Base.connection.column_exists?(:api_namespaces, :_properties)
+  end
+
+  def properties_column_exists?
+    ActiveRecord::Base.connection.column_exists?(:api_namespaces, :properties)
+  end
+
+  def parsed_value(value)
+    return value if value.is_a?(Enumerable) || value.blank?
+
+    begin 
+      return JSON.parse(value)
+    rescue JSON::ParserError => e
+      errors.add(field, 'Invalid Json Format')
+    end
   end
 end
