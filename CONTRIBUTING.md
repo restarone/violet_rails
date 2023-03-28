@@ -10,7 +10,7 @@ Fork the repository and work on your feature!
 
 ## Open a pull request 
 Open a pull request targeting `restarone/violet_rails:master` 
-example: https://github.com/restarone/violet_rails/pull/1480
+example: https://github.com/restarone/violet_rails/pull/1461
 
 ### Pull Request Checklist
 
