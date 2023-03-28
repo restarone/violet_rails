@@ -12,7 +12,6 @@ class FillEmptyLocationEntriesTaks < ActiveSupport::TestCase
       device_type: 'Desktop', 
       user_agent: Faker::Internet.user_agent, 
       landing_page: 'http://localhost:5250/',
-      landing_page: 'http://localhost:5250/',
       visit_token: 'random_hash'
     )
     Rails.application.load_tasks if Rake::Task.tasks.empty?
