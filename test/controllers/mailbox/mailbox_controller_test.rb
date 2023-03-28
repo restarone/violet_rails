@@ -10,9 +10,9 @@ class Mailbox::MailboxControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "denies #show if not logged in" do
-    get mailbox_url(subdomain: @subdomain.name)
+    get mailbox_url
     assert_response :redirect
-    assert_redirected_to new_user_session_url(subdomain: @subdomain.name)
+    assert_redirected_to new_user_session_url
   end
 
   test "denies #show if user doesnt belong to subdomain" do
@@ -20,7 +20,7 @@ class Mailbox::MailboxControllerTest < ActionDispatch::IntegrationTest
     get mailbox_url(subdomain: @restarone_subdomain)
     assert_response :redirect
     assert flash.alert
-    assert_redirected_to root_url
+    assert_redirected_to root_url(subdomain: @restarone_subdomain)
   end
 
   test "denies #show if user cant manage email" do

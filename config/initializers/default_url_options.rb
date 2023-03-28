@@ -9,6 +9,8 @@ module ActionDispatch::Routing
     #    }
     #
     def url_for(options, route_name = nil, url_strategy = ActionDispatch::Routing::RouteSet::UNKNOWN, method_name = nil, reserved = ActionDispatch::Routing::RouteSet::RESERVED_OPTIONS)
+      options[:subdomain] = options[:subdomain].call if options[:subdomain].respond_to? :call
+
       if Rails.application.routes.default_url_options[:subdomain].respond_to? :call
         options[:subdomain] ||= Rails.application.routes.default_url_options[:subdomain].call
       end
