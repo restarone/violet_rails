@@ -18,7 +18,7 @@ class FillEmptyLocationEntriesTaks < ActiveSupport::TestCase
   
   test 'populate location of a new created entry' do
     Ahoy::Visit.any_instance.stubs(:ip).returns(@new_visit.ip)
-    pp @new_visit
+
     assert_equal @new_visit.country.nil?, true
     assert_equal @new_visit.region.nil?, true
     assert_equal @new_visit.city.nil?, true
