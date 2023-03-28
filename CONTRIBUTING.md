@@ -27,4 +27,4 @@ example: https://github.com/restarone/violet_rails/pull/1480
 Changes should include automated tests, Restarone Solutions Inc. reserves the right to deny any code change that may risk production Violet Rails applications.
 
 ## Testing and deployment
-Once your pull request has a matching base branch on this repository, automated tests will run and the change will be deployed to Heroku. After manual testing, the change will be included in a release candidate which will be deployed to `restarone.solutions` for internal testing. Once internal testing and monitoring is complete, it will be merged to master.
+Once your pull request has a matching base branch on this repository, automated tests will run. If the automated tests are passing, we will launch a review app (which is a one-off ephemeral environment for testing your change in isolation) and evaluate the difference. If the change looks good on the review app, the change will be included in a release candidate which will be deployed to `restarone.solutions` for internal testing. Once internal testing and monitoring is complete, it will be merged to master.
