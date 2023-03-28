@@ -4,9 +4,10 @@ require 'faker'
 
 class FillEmptyLocationEntriesTaks < ActiveSupport::TestCase
   setup do
+    @ip = Faker::Internet.ip_v4_address
     @new_visit = Ahoy::Visit.create!(
       started_at: Time.now,
-      ip: Faker::Internet.ip_v4_address, 
+      ip: @ip, 
       os: 'GNU/Linux', 
       browser: 'Firefox', 
       device_type: 'Desktop', 
@@ -18,7 +19,14 @@ class FillEmptyLocationEntriesTaks < ActiveSupport::TestCase
   end
   
   test 'populate location of a new created entry' do
-
+    stub_request(:get, "http://ipinfo.io/#{@ip}/geo").
+      with(
+        headers: {
+        'Accept'=>'*/*',
+        'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+        'User-Agent'=>'Ruby'
+        }).
+      to_return(status: 200, body: "", headers: {})
     assert_equal @new_visit.country.nil?, true
     assert_equal @new_visit.region.nil?, true
     assert_equal @new_visit.city.nil?, true
