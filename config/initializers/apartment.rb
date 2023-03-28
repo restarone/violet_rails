@@ -115,7 +115,7 @@ end
 # }
 
 # Rails.application.config.middleware.use Apartment::Elevators::Domain
-Rails.application.config.middleware.use Apartment::Elevators::Generic,
+Rails.application.config.middleware.insert_before Warden::Manager, Apartment::Elevators::Generic,
                       Proc.new { |request|
                         hostname = request.host.split('.')[0]
                         Apartment.tenant_names.include?(hostname) ? hostname : 'public'
