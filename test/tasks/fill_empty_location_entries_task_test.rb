@@ -25,6 +25,9 @@ class FillEmptyLocationEntriesTaks < ActiveSupport::TestCase
 
     Rake::Task["ahoy:fill_empty_location_entries"].invoke
 
+    sleep 2
+
+    @new_visit.reload
     assert_equal @new_visit.country.nil?, false
     assert_equal @new_visit.region.nil?, false
     assert_equal @new_visit.city.nil?, false
