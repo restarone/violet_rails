@@ -1,5 +1,6 @@
 require "test_helper"
 require "rake"
+require 'faker'
 
 class FillEmptyLocationEntriesTaks < ActiveSupport::TestCase
   setup do
