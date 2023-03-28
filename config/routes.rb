@@ -66,6 +66,7 @@ Rails.application.routes.draw do
       patch 'social_share_metadata'
       patch 'analytics_metadata'
       patch 'api_action_workflow'
+      patch 'settings', to: 'comfy/admin/api_namespaces#update_settings'
     end
 
     resources :resources, except: [:index], controller: 'comfy/admin/api_resources'
