@@ -14,16 +14,19 @@ class FillEmptyLocationEntriesTaks < ActiveSupport::TestCase
       landing_page: 'http://localhost:5250/'
     )
     Rails.application.load_tasks if Rake::Task.tasks.empty?
+    Sidekiq::Testing.fake!
   end
   
   test 'populate location of a new created entry' do
-    Ahoy::Visit.any_instance.stubs(:ip).returns(@new_visit.ip)
 
     assert_equal @new_visit.country.nil?, true
     assert_equal @new_visit.region.nil?, true
     assert_equal @new_visit.city.nil?, true
 
-    Rake::Task["ahoy:fill_empty_location_entries"].invoke
+    perform_enqueued_jobs do
+      Rake::Task["ahoy:fill_empty_location_entries"].invoke
+      Sidekiq::Worker.drain_all
+    end
 
     sleep 2
 
