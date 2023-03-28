@@ -122,7 +122,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     if after_sign_up_path
       return after_sign_up_path
     else
-      return root_url(subdomain: Apartment::Tenant.current)
+      return root_url
     end
   end
 

@@ -1,7 +1,7 @@
 # Utitlity class for external API connection plugins
 class Violet::Connection
     def get_blob_url(attachment)
-        Rails.application.routes.url_helpers.rails_blob_url(attachment, subdomain: Apartment::Tenant.current, host: ENV['APP_HOST'])
+        Rails.application.routes.url_helpers.rails_blob_url(attachment)
     end
 
     def get_subdomain_email_address

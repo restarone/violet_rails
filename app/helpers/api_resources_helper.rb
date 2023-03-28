@@ -2,7 +2,7 @@ module ApiResourcesHelper
   def show_file(file, label)
     return unless file.attached?
 
-    file_url = rails_blob_url(file, subdomain: Apartment::Tenant.current)
+    file_url = rails_blob_url(file)
     output = ''
     output << <<-HTML
     #{image_tag (file.content_type.include?('image') ? file_url : ''), id: "#{label.parameterize.underscore}_preview_img", class: 'preview-media', style: "display: #{file.content_type.include?('image') ? 'block' : 'none'};"}

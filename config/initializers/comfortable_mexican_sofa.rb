@@ -5,7 +5,7 @@ module RSolutions::DeviseAuth
       return true
     else
       flash.alert = "You do not have the permission to do that. Only users who can_access_admin are allowed to perform that action."
-      redirect_to root_url(subdomain: Apartment::Tenant.current)
+      redirect_to root_url
     end
   end
 end
