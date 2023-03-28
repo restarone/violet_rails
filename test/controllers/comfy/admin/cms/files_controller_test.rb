@@ -63,9 +63,10 @@ class Comfy::Admin::Cms::FilesControllerTest < ActionDispatch::IntegrationTest
           file:        fixture_file_upload("fixture_image.png", "image/jpeg")
         } }, headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
       end
+
+      assert_response :redirect
+      assert_redirected_to action: :edit, site_id: @site, id: @file
     end
-    assert_response :redirect
-    assert_redirected_to action: :edit, site_id: @site, id: @file
   end
 
   test 'does not track file update (if tracking is disabled)' do
@@ -81,9 +82,10 @@ class Comfy::Admin::Cms::FilesControllerTest < ActionDispatch::IntegrationTest
           file:        fixture_file_upload("fixture_image.png", "image/jpeg")
         } }
       end
+
+      assert_response :redirect
+      assert_redirected_to action: :edit, site_id: @site, id: @file
     end
-    assert_response :redirect
-    assert_redirected_to action: :edit, site_id: @site, id: @file
   end
 
   test 'does not track file update (if tracking is disabled but cookies accepted)' do
@@ -99,9 +101,10 @@ class Comfy::Admin::Cms::FilesControllerTest < ActionDispatch::IntegrationTest
           file:        fixture_file_upload("fixture_image.png", "image/jpeg")
         } }, headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
       end
+
+      assert_response :redirect
+      assert_redirected_to action: :edit, site_id: @site, id: @file
     end
-    assert_response :redirect
-    assert_redirected_to action: :edit, site_id: @site, id: @file
   end
 
   test 'does not track file update (if tracking is enabled but cookies rejected)' do
@@ -117,9 +120,10 @@ class Comfy::Admin::Cms::FilesControllerTest < ActionDispatch::IntegrationTest
           file:        fixture_file_upload("fixture_image.png", "image/jpeg")
         } }, headers: {"HTTP_COOKIE" => "cookies_accepted=false;"}
       end
+
+      assert_response :redirect
+      assert_redirected_to action: :edit, site_id: @site, id: @file
     end
-    assert_response :redirect
-    assert_redirected_to action: :edit, site_id: @site, id: @file
   end
 
   test 'does not track file update (if tracking is enabled but cookies not consented)' do
@@ -135,9 +139,10 @@ class Comfy::Admin::Cms::FilesControllerTest < ActionDispatch::IntegrationTest
           file:        fixture_file_upload("fixture_image.png", "image/jpeg")
         } }
       end
+
+      assert_response :redirect
+      assert_redirected_to action: :edit, site_id: @site, id: @file
     end
-    assert_response :redirect
-    assert_redirected_to action: :edit, site_id: @site, id: @file
   end
 
   test 'should deny files#update if not permissioned' do
@@ -150,12 +155,12 @@ class Comfy::Admin::Cms::FilesControllerTest < ActionDispatch::IntegrationTest
         description: "Updated Description",
         file:        fixture_file_upload("fixture_image.png", "image/jpeg")
       } }
-    end
 
-    assert_response :redirect
-    expected_message = "You do not have the permission to do that. Only users who can_manage_files are allowed to perform that action."
-    assert_match expected_message, request.flash[:alert]
-    assert_redirected_to root_url
+      assert_response :redirect
+      expected_message = "You do not have the permission to do that. Only users who can_manage_files are allowed to perform that action."
+      assert_match expected_message, request.flash[:alert]
+      assert_redirected_to root_url
+    end
   end
 
   test 'should deny files#delete if not permissioned' do
@@ -164,12 +169,12 @@ class Comfy::Admin::Cms::FilesControllerTest < ActionDispatch::IntegrationTest
       sign_in(@restarone_user)
 
       delete comfy_admin_cms_site_file_url(subdomain: @restarone_subdomain.name, site_id: @site, id: @file)
-    end
 
-    assert_response :redirect
-    expected_message = "You do not have the permission to do that. Only users who can_manage_files are allowed to perform that action."
-    assert_match expected_message, request.flash[:alert]
-    assert_redirected_to root_url
+      assert_response :redirect
+      expected_message = "You do not have the permission to do that. Only users who can_manage_files are allowed to perform that action."
+      assert_match expected_message, request.flash[:alert]
+      assert_redirected_to root_url
+    end
   end
 
   test 'files#delete: should successfully delete if permissioned' do
@@ -178,12 +183,12 @@ class Comfy::Admin::Cms::FilesControllerTest < ActionDispatch::IntegrationTest
       sign_in(@restarone_user)
 
       delete comfy_admin_cms_site_file_url(subdomain: @restarone_subdomain.name, site_id: @site, id: @file)
-    end
 
-    assert_response :redirect
-    expected_message = "File deleted"
-    assert_match expected_message, request.flash[:success]
-    assert_redirected_to comfy_admin_cms_site_files_url(subdomain: @restarone_subdomain.name, site_id: @site)
+      assert_response :redirect
+      expected_message = "File deleted"
+      assert_match expected_message, request.flash[:success]
+      assert_redirected_to comfy_admin_cms_site_files_url(subdomain: @restarone_subdomain.name, site_id: @site)
+    end
   end
 
   test 'files#create: should deny if not permissioned' do
