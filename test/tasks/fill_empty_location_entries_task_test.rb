@@ -3,7 +3,15 @@ require "rake"
 
 class FillEmptyLocationEntriesTaks < ActiveSupport::TestCase
   setup do
-    new_visit = Ahoy::Visit.create(ip: '101.33.22.0')
+    new_visit = Ahoy::Visit.create!(
+      started_at: Time.now,
+      ip: Faker::Internet.ip_v4_address, 
+      os: 'GNU/Linux', 
+      browser: 'Firefox', 
+      device_type: 'Desktop', 
+      user_agent: Faker::Internet.user_agent, 
+      landing_page: 'http://localhost:5250/'
+    )
   end
 
   test 'populate location of a new created entry' do
