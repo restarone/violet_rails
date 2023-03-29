@@ -33,4 +33,16 @@ namespace :maintenance do
     end
     p "cleared old discarded api_actions @ #{Time.now}"
   end
+
+  task :purge_old_api_resources => [:environment] do 
+    Subdomain.all_with_public_schema.each do |subdomain|
+      Apartment::Tenant.switch subdomain.name do
+        ApiNamespace.where.not(purge_resources_older_than: ApiNamespace::RESOURCES_PURGE_INTERVAL_MAPPING[:never]).each do |api_namespace|
+          p "clearing outdated #{api_namespace.name.pluralize} for [#{subdomain.name}] and  @ #{Time.now}"
+          api_namespace.destroy_old_api_resources_in_batches
+          p "cleared old api_resources @ #{Time.now}"
+        end
+      end
+    end
+  end
 end

@@ -50,6 +50,19 @@ class ApiNamespace < ApplicationRecord
     Arel.sql("api_namespaces.properties::text") 
   end
 
+  RESOURCES_PURGE_INTERVAL_MAPPING = {
+    '1 week': '1.week',
+    '2 weeks': '2.weeks',
+    '1 month': '1.month',
+    '3 months': '3.months',
+    '6 months': '6.months',
+    '1 year': '1.year',
+    'never': 'never'
+  }
+
+  validates :purge_resources_older_than, inclusion: { in: RESOURCES_PURGE_INTERVAL_MAPPING.values,
+  message: "purge_resources_older_than is not valid" }, if: -> { attributes.key?('purge_resources_older_than') }
+
   REGISTERED_PLUGINS = {
     subdomain_events: {
       slug: 'subdomain_events',
@@ -60,12 +73,13 @@ class ApiNamespace < ApplicationRecord
   API_ACCESSIBILITIES = {
     full_access: ['full_access'],
     full_read_access: ['full_access', 'full_read_access'],
-    full_read_access_in_api_namespace: ['full_access', 'full_read_access', 'delete_access_api_namespace_only', 'allow_exports', 'allow_duplication', 'allow_social_share_metadata', 'full_access_api_namespace_only', 'read_api_resources_only', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'],
+    full_read_access_in_api_namespace: ['full_access', 'full_read_access', 'delete_access_api_namespace_only', 'allow_exports', 'allow_duplication', 'allow_social_share_metadata', 'allow_settings', 'full_access_api_namespace_only', 'read_api_resources_only', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only', 'read_api_actions_only', 'full_access_for_api_actions_only', 'read_external_api_connections_only', 'full_access_for_external_api_connections_only', 'read_api_clients_only', 'full_access_for_api_clients_only', 'full_access_for_api_form_only'],
     full_access_api_namespace_only: ['full_access', 'full_access_api_namespace_only'],
     delete_access_api_namespace_only: ['full_access', 'full_access_api_namespace_only', 'delete_access_api_namespace_only'],
     allow_exports: ['full_access', 'full_access_api_namespace_only', 'allow_exports'],
     allow_duplication: ['full_access', 'full_access_api_namespace_only', 'allow_duplication'],
     allow_social_share_metadata: ['full_access', 'full_access_api_namespace_only', 'allow_social_share_metadata'],
+    allow_settings: ['full_access', 'full_access_api_namespace_only', 'allow_settings'],
     read_api_resources_only: ['full_access', 'full_read_access', 'full_access_for_api_resources_only', 'read_api_resources_only', 'delete_access_for_api_resources_only'],
     full_access_for_api_resources_only: ['full_access', 'full_access_for_api_resources_only'],
     delete_access_for_api_resources_only: ['full_access', 'full_access_for_api_resources_only', 'delete_access_for_api_resources_only'],
@@ -378,5 +392,9 @@ class ApiNamespace < ApplicationRecord
     end
 
     associations.uniq
+  end
+
+  def destroy_old_api_resources_in_batches
+    api_resources.where("created_at < ?", eval("#{purge_resources_older_than}.ago")).in_batches(&:destroy_all)
   end
 end
