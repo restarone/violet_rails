@@ -68,7 +68,7 @@ class Comfy::Admin::V2::DashboardControllerTest < ActionDispatch::IntegrationTes
     assert_equal Date.today.beginning_of_month, assigns(:start_date)
     assert_equal Date.today.end_of_month, assigns(:end_date)
 
-    current_time_range = assigns(:start_date)..assigns(:end_date)
+    current_time_range = assigns(:start_date).beginning_of_day..assigns(:end_date).end_of_day
     previous_time_range = previous_time_interval_range(@controller.params[:interval], assigns(:start_date), assigns(:end_date))
 
     # Page Visit Events
@@ -108,7 +108,7 @@ class Comfy::Admin::V2::DashboardControllerTest < ActionDispatch::IntegrationTes
     assert_equal (Time.now.beginning_of_month - 2.months).to_date, assigns(:start_date)
     assert_equal Time.now.end_of_month.to_date, assigns(:end_date)
 
-    current_time_range = (Time.now.beginning_of_month - 2.months).to_date..Time.now.end_of_month.to_date
+    current_time_range = (Time.now.beginning_of_month - 2.months).to_date.beginning_of_day..Time.now.end_of_month.to_date.end_of_day
     previous_time_range = previous_time_interval_range(@controller.params[:interval], (Time.now.beginning_of_month - 2.months).to_date, Time.now.end_of_month.to_date)
   
     # Page Visit Events
@@ -147,7 +147,7 @@ class Comfy::Admin::V2::DashboardControllerTest < ActionDispatch::IntegrationTes
     # When page params present, it should filter by page
     get v2_dashboard_url, params: {start_date: (Time.now.beginning_of_month - 2.months).strftime('%Y-%m-%d'), end_date: Time.now.end_of_month.strftime('%Y-%m-%d'), interval: "3 months", page: @page.id }
 
-    current_time_range = assigns(:start_date)..assigns(:end_date)
+    current_time_range = assigns(:start_date).beginning_of_day..assigns(:end_date).end_of_day
     previous_time_range = previous_time_interval_range(@controller.params[:interval], assigns(:start_date), assigns(:end_date))
 
     # Page Visit Events
