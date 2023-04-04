@@ -181,6 +181,9 @@ GEM
     crack (0.4.5)
       rexml
     crass (1.0.6)
+    data_migrate (9.0.0)
+      activerecord (>= 6.0)
+      railties (>= 6.0)
     device_detector (1.0.5)
     devise (4.7.3)
       bcrypt (~> 3.0)
@@ -451,6 +454,8 @@ GEM
       rails (>= 5.1)
       responders
       stripe (>= 3.15.0)
+    strong_migrations (1.4.4)
+      activerecord (>= 5.2)
     temple (0.10.0)
     thor (1.2.1)
     tilt (2.0.10)
@@ -519,6 +524,7 @@ DEPENDENCIES
   chartkick
   comfortable_mexican_sofa!
   comfy_blog!
+  data_migrate
   devise
   devise-two-factor (= 4.0.2)
   devise_invitable
@@ -565,6 +571,7 @@ DEPENDENCIES
   spring
   stackprof
   stripe-rails
+  strong_migrations
   turbo-rails (~> 1.1)
   turnout (~> 2.5)
   tzinfo-data

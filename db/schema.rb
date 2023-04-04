@@ -344,6 +344,9 @@ ActiveRecord::Schema.define(version: 2023_03_24_080541) do
     t.index ["page_id"], name: "index_comfy_cms_translations_on_page_id"
   end
 
+  create_table "data_migrations", primary_key: "version", id: :string, force: :cascade do |t|
+  end
+
   create_table "external_api_clients", force: :cascade do |t|
     t.bigint "api_namespace_id", null: false
     t.string "slug", null: false
