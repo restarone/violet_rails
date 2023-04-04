@@ -49,4 +49,70 @@ class Rack::MiniProfilerTest < ActionDispatch::IntegrationTest
       refute response.body.include?('/mini-profiler-resources/includes.js')
     end
   end
+
+  # pp=env - START
+  test "should show env details only if the user is properly permissioned and also a global_admin" do
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_user.update(can_access_admin: true, show_profiler: true, global_admin: true)
+
+      sign_in(@restarone_user)
+      get v2_dashboard_url(subdomain: @restarone_subdomain.name), params: { pp: 'env' }
+
+      assert_response :success
+      assert response.headers['Content-Type'].include?('text/plain')
+      assert_match 'QUERY_STRING', response.body
+      assert_match "Rack Environment\n---------------", response.body
+    end
+  end
+
+  test "should not show env details if the user is properly permissioned but not a global_admin" do
+    # In unhappy case, the cookies are invalid.
+    Rack::MiniProfiler::ClientSettings.any_instance.stubs(:has_valid_cookie?).returns(false)
+
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_user.update(can_access_admin: true, show_profiler: true, global_admin: false)
+
+      sign_in(@restarone_user)
+      get v2_dashboard_url(subdomain: @restarone_subdomain.name), params: { pp: 'env' }
+
+      assert_response :success
+      refute response.headers['Content-Type'].include?('text/plain')
+      refute_match 'QUERY_STRING', response.body
+      refute_match "Rack Environment\n---------------", response.body
+      refute response.headers.has_key?('X-MiniProfiler-Ids')
+      refute response.body.include?('/mini-profiler-resources/includes.js')
+    end
+  end
+
+  test "should not show env details if the user is global_admin but not properly permissioned" do
+    # In unhappy case, the cookies are invalid.
+    Rack::MiniProfiler::ClientSettings.any_instance.stubs(:has_valid_cookie?).returns(false)
+
+    Apartment::Tenant.switch @restarone_subdomain.name do
+      @restarone_user.update(can_access_admin: true, show_profiler: false, global_admin: true)
+
+      sign_in(@restarone_user)
+      get v2_dashboard_url(subdomain: @restarone_subdomain.name), params: { pp: 'env' }
+
+      assert_response :success
+      refute response.headers['Content-Type'].include?('text/plain')
+      refute_match 'QUERY_STRING', response.body
+      refute_match "Rack Environment\n---------------", response.body
+      refute response.headers.has_key?('X-MiniProfiler-Ids')
+      refute response.body.include?('/mini-profiler-resources/includes.js')
+
+      @restarone_user.update(can_access_admin: false, show_profiler: true, global_admin: true)
+
+      sign_in(@restarone_user)
+      get v2_dashboard_url(subdomain: @restarone_subdomain.name), params: { pp: 'env' }
+
+      assert_response :redirect
+      refute response.headers['Content-Type'].include?('text/plain')
+      refute_match 'QUERY_STRING', response.body
+      refute_match "Rack Environment\n---------------", response.body
+      refute response.headers.has_key?('X-MiniProfiler-Ids')
+      refute response.body.include?('/mini-profiler-resources/includes.js')
+    end
+  end
+  # pp=env - END
 end
