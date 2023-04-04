@@ -124,6 +124,4 @@ gem 'devise-two-factor', "4.0.2"
 
 gem "slowpoke"
 
-gem 'data_migrate'
-
 gem "strong_migrations"

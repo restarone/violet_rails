@@ -181,9 +181,6 @@ GEM
     crack (0.4.5)
       rexml
     crass (1.0.6)
-    data_migrate (9.0.0)
-      activerecord (>= 6.0)
-      railties (>= 6.0)
     device_detector (1.0.5)
     devise (4.7.3)
       bcrypt (~> 3.0)
@@ -524,7 +521,6 @@ DEPENDENCIES
   chartkick
   comfortable_mexican_sofa!
   comfy_blog!
-  data_migrate
   devise
   devise-two-factor (= 4.0.2)
   devise_invitable
