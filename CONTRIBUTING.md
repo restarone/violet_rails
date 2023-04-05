@@ -31,6 +31,22 @@ Any new code paths added should be exercised with tests
 Merge conflicts should be resolved and the branch should be up-to-date with `master`
 <img width="723" alt="Screen Shot 2023-03-28 at 6 50 34 AM" src="https://user-images.githubusercontent.com/35935196/228213563-04cde3df-050e-4ec3-bc41-f000e554f5e3.png">
 
+## Troubleshooting common dev issues
+
+### Got failing tests?
+Tests can sometimes be flaky. If you see a failure unrelated to your changes, dont fret! You can re-run CI at a push of a button. To re-run any CI job, click on details, 
+<img width="726" alt="Screen Shot 2023-04-01 at 8 37 37 AM" src="https://user-images.githubusercontent.com/35935196/229289262-26c1f07e-d84d-4eba-a380-2fac1f712c1c.png">
+
+and hit re-run:
+
+<img width="1728" alt="Screen Shot 2023-04-01 at 8 38 13 AM" src="https://user-images.githubusercontent.com/35935196/229289281-22bac08b-9800-4108-8893-6ba714c42ca8.png">
+
+### Review app didnt launch? 
+You can launch a review app for your PR to evaluate your changes on a live production environment (isolated to you of course). Sometimes the CD job that handles deployment fails. To re-run it, select it from Github Actions and click on re-run
+
+<img width="1728" alt="Screen Shot 2023-04-01 at 8 38 49 AM" src="https://user-images.githubusercontent.com/35935196/229289350-bac12a5e-f501-4d22-9e3e-f3d4ba27ac7e.png">
+
+
 ## Code standards
 Changes should include automated tests, Restarone Solutions Inc. reserves the right to deny any code change that may risk production Violet Rails applications.
 
