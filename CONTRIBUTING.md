@@ -49,6 +49,10 @@ and downloading and opening the index.html file with your browser:
 🎉 test coverage is a static HTML web page!
 <img width="1728" alt="Screen Shot 2023-04-06 at 6 24 45 PM" src="https://user-images.githubusercontent.com/35935196/230504764-9598aa11-f612-463f-a6e7-5c8d2913d341.png">
 
+#### Want to generate the Test coverage report locally? 
+Run any of the test commands to completion and you will see a report generated: https://github.com/restarone/violet_rails/wiki/Getting-started-(development-cheatsheet)#test-commands
+
+
 ### Enable profiling ⏱️
 It should be easy to find performance bottlenecks and inefficient code. To enable profiling, ensure that your user has the profiling privilege (reserved for system owners and admins):
 
