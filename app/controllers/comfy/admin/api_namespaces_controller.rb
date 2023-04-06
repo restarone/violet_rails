@@ -35,6 +35,12 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
     else
       @api_namespaces = @api_namespaces_q.result.paginate(page: params[:page], per_page: 10)
     end
+
+    if turbo_frame_request?
+      render partial: 'table', locals: { api_namespaces: @api_namespaces, api_namespaces_q: @api_namespaces_q }
+    else
+      render :index
+    end
   end
 
   # GET /api_namespaces/1 or /api_namespaces/1.json
@@ -95,6 +101,7 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
     respond_to do |format|
       format.html { redirect_to api_namespaces_url, notice: "Api namespace was successfully destroyed." }
       format.json { head :no_content }
+      format.js
     end
   end
 

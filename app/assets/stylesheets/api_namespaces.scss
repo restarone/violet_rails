@@ -42,6 +42,130 @@
   }
 }
 
+.list-view {
+  --base-line-height: 17px;
+  --base-font-size: 14px;
+  .col-form-label {
+    font-weight: 500;
+  }
+  .digg_pagination {
+    border-bottom: 1px solid #343A4014;;
+  }
+
+  a:not(.btn) {
+    color: #6F5AFE;
+  }
+
+  &__table-container {
+    max-height: 700px;
+    overflow: auto;
+    border-top: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+  }
+
+  &__status-text {
+    padding: 2px 10px 4px;
+    border-radius: 6px;
+    font-weight: 500;
+
+    &--success {
+      background-color: #DEF7EC;
+      color: #03543F;
+    }
+
+    &--failure {
+      background-color: #FEEEEB;
+      color: #C6444A;
+    }
+  }
+
+  .table {
+    font-size: var(--base-font-size);
+    border-collapse: collapse;
+
+    thead tr th {
+      position: sticky;
+      top: 0;
+      height: 57px;
+      vertical-align: middle;
+      border: 1px solid #dee2e6;
+      background: #ffffff;
+      text-align: center;
+
+      a {
+        color: #495057;
+        font-weight: 500;
+      }
+    }
+
+    td {
+      vertical-align: middle;
+
+      .td-content {
+        height: 80px;
+        max-height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 80px;
+      }
+
+      .clamp-content {
+        display: -webkit-box;
+        max-width: 300px;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-width: 180px;
+      }
+    }
+  }
+
+  .modal-header {
+    border-bottom: none;
+  }
+
+  .modal-title {
+    text-transform: capitalize;
+    font-size: calc(var(--base-font-size) + 2px);
+    line-height: calc(var(--base-line-height) + 2px);
+    font-weight: 600;
+  }
+
+  .modal-subtitle {
+    font-size: var(--base-font-size);
+    line-height: var(--base-line-height);
+  }
+
+  .modal {
+    pre.modal-body-content {
+      white-space: break-spaces;
+      background-color: #343A400A;
+      font-size: var(--base-font-size);
+      border-radius: 6px;
+      font-family: inherit;
+    }
+  }
+
+  @media (min-width: 576px) {
+    .modal-dialog-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  @media (max-width: 576px) {
+    .modal-dialog {
+      position: absolute;
+      bottom: 0;
+      margin: 0;
+      width: 100%
+    }
+  }
+}
+
 #api-resources-list{
   a:not(.btn) {
     color: #6F5AFE;
