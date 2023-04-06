@@ -63,8 +63,8 @@ export default class extends Controller {
   showModal(e) {
     const dataset = e.target.dataset;
     this.modalTarget.querySelector('#myModalLabel').textContent = dataset['column'];
-    this.modalTarget.querySelector('#modal-id').innerHTML = `ID: <a href="/api_namespaces/${dataset['namespaceId']}/resources/${dataset['id']}">${dataset['id']}</a>`;
-    this.modalTarget.querySelector('#modal-body-content').textContent = dataset['value'];
+    this.modalTarget.querySelector('#myModal .modal-subtitle').innerHTML = `ID: <a href="/api_namespaces/${dataset['namespaceId']}/resources/${dataset['id']}">${dataset['id']}</a>`;
+    this.modalTarget.querySelector('#myModal .modal-body-content').textContent = dataset['value'];
   }
 
   reloadTable() {
