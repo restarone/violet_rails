@@ -1511,15 +1511,15 @@ CONTENT
     month_long_events_data = Ahoy::Event.all.as_json
     12.times do |n|
       a = n
-      puts "Populating analytics records for month: #{Date::MONTHNAMES[a.months.ago.month]} - START"
+      puts "Populating analytics records for year: #{a.months.ago.year} month: #{Date::MONTHNAMES[a.months.ago.month]} - START"
       
       current_time = Time.now - a.months
       events_data = month_long_events_data.map { |event_data| event_data.except('id', 'time').merge({ 'time'=> current_time })  }
 
-      2.times do
+      3.times do
         Ahoy::Event.insert_all(events_data)
       end
-      puts "Populating analytics records for month: #{Date::MONTHNAMES[a.months.ago.month]} - END"
+      puts "Populating analytics records for year: #{a.months.ago.year} month: #{Date::MONTHNAMES[a.months.ago.month]} - END"
     end
     puts 'Populating analytics records for a year - END'
   end
