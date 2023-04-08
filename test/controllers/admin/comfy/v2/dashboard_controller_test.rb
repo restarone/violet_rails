@@ -1,6 +1,8 @@
 require "test_helper"
 
 class Comfy::Admin::V2::DashboardControllerTest < ActionDispatch::IntegrationTest
+  include DashboardHelper
+
   setup do
     @user = users(:public)
     @subdomain = subdomains(:public)
@@ -60,38 +62,121 @@ class Comfy::Admin::V2::DashboardControllerTest < ActionDispatch::IntegrationTes
     assert_equal Date.today.beginning_of_month, assigns(:start_date)
     assert_equal Date.today.end_of_month, assigns(:end_date)
 
-    assert_equal [page_visit_event_1_page_2.id], assigns(:page_visit_events).pluck(:id)
-    assert_equal [click_event_1_page_2.id], assigns(:click_events).pluck(:id)
-    assert_equal [video_watch_event_1_page_2.id], assigns(:video_view_events).pluck(:id)
+    current_time_range = assigns(:start_date).beginning_of_day..assigns(:end_date).end_of_day
+    previous_time_range = previous_time_interval_range(@controller.params[:interval], assigns(:start_date), assigns(:end_date))
 
-    assert_equal [page_visit_event_1.id], assigns(:previous_period_page_visit_events).pluck(:id)
-    assert_equal [click_event_1.id], assigns(:previous_period_click_events).pluck(:id)
-    assert_equal [video_watch_event_1.id], assigns(:previous_period_video_view_events).pluck(:id)
+    # Page Visit Events
+    page_visit_data = assigns(:page_visit_events)
+    current_events = Ahoy::Event.jsonb_search(:properties, { category: 'page_visit' }).where(time: current_time_range)
+    previous_events = Ahoy::Event.jsonb_search(:properties, { category: 'page_visit' }).where(time: previous_time_range)
+    assert_equal current_events.size, page_visit_data[:events_count]
+    assert_equal previous_events.size, page_visit_data[:previous_period_events_count]
+    assert_equal current_events.visitors_chart_data_for_page_visit_events['Single time visitor'], page_visit_data[:pie_chart_data]['Single time visitor']
+    assert_equal current_events.visitors_chart_data_for_page_visit_events['Recurring visitors'], page_visit_data[:pie_chart_data]['Recurring visitors']
+
+    # Click Events
+    click_event_data = assigns(:click_events)
+    current_events = Ahoy::Event.jsonb_search(:properties, { category: 'click' }).where(time: current_time_range)
+    previous_events = Ahoy::Event.jsonb_search(:properties, { category: 'click' }).where(time: previous_time_range)
+    assert_equal current_events.size, click_event_data[:events_count]
+    assert_equal previous_events.size, click_event_data[:previous_period_events_count]
+    assert click_event_data[:label_grouped_events].keys.include?(click_event_1.label)
+    assert click_event_data[:previous_label_grouped_events].keys.include?(click_event_2.label)
+
+    # Video View Events
+    video_view_event_data = assigns(:video_view_events)
+    current_events = Ahoy::Event.jsonb_search(:properties, { category: 'video_view' }).where(time: current_time_range)
+    previous_events = Ahoy::Event.jsonb_search(:properties, { category: 'video_view' }).where(time: previous_time_range)
+    assert_equal current_events.size, video_view_event_data[:events_count]
+    assert_equal previous_events.size, video_view_event_data[:previous_period_events_count]
+    assert_equal video_view_event_data[:watch_time], Ahoy::Event.where(id: video_watch_event_1_page_2.id).total_watch_time_for_video_events
+    assert_equal video_view_event_data[:previous_watch_time], Ahoy::Event.where(id: video_watch_event_1.id).total_watch_time_for_video_events
+    assert_equal video_view_event_data[:avg_view_duration], Ahoy::Event.where(id: video_watch_event_1_page_2.id).avg_view_duration_for_video_events
+    assert_equal video_view_event_data[:previous_avg_view_duration], Ahoy::Event.where(id: video_watch_event_1.id).avg_view_duration_for_video_events
+    assert_equal video_view_event_data[:avg_view_percent], Ahoy::Event.where(id: video_watch_event_1_page_2.id).avg_view_percentage_for_video_events
+    assert_equal video_view_event_data[:previous_avg_view_percent], Ahoy::Event.where(id: video_watch_event_1.id).avg_view_percentage_for_video_events
 
     # When range params is present
     get v2_dashboard_url, params: {start_date: (Time.now.beginning_of_month - 2.months).strftime('%Y-%m-%d'), end_date: Time.now.end_of_month.strftime('%Y-%m-%d'), interval: "3 months" }
 
     assert_equal (Time.now.beginning_of_month - 2.months).to_date, assigns(:start_date)
     assert_equal Time.now.end_of_month.to_date, assigns(:end_date)
-  
-    assert_equal [page_visit_event_1.id, page_visit_event_1_page_2.id].sort, assigns(:page_visit_events).pluck(:id).sort
-    assert_equal [click_event_1.id, click_event_1_page_2.id].sort, assigns(:click_events).pluck(:id).sort
-    assert_equal [video_watch_event_1.id, video_watch_event_1_page_2.id].sort, assigns(:video_view_events).pluck(:id).sort
 
-    assert_equal [page_visit_event_2.id], assigns(:previous_period_page_visit_events).pluck(:id)
-    assert_equal [click_event_2.id], assigns(:previous_period_click_events).pluck(:id)
-    assert_equal [video_watch_event_2.id], assigns(:previous_period_video_view_events).pluck(:id)
+    current_time_range = (Time.now.beginning_of_month - 2.months).to_date.beginning_of_day..Time.now.end_of_month.to_date.end_of_day
+    previous_time_range = previous_time_interval_range(@controller.params[:interval], (Time.now.beginning_of_month - 2.months).to_date, Time.now.end_of_month.to_date)
+  
+    # Page Visit Events
+    page_visit_data = assigns(:page_visit_events)
+    current_events = Ahoy::Event.jsonb_search(:properties, { category: 'page_visit' }).where(time: current_time_range)
+    previous_events = Ahoy::Event.jsonb_search(:properties, { category: 'page_visit' }).where(time: previous_time_range)
+    assert_equal current_events.size, page_visit_data[:events_count]
+    assert_equal previous_events.size, page_visit_data[:previous_period_events_count]
+    assert_equal current_events.visitors_chart_data_for_page_visit_events['Single time visitor'], page_visit_data[:pie_chart_data]['Single time visitor']
+    assert_equal current_events.visitors_chart_data_for_page_visit_events['Recurring visitors'], page_visit_data[:pie_chart_data]['Recurring visitors']
+
+    # Click Events
+    click_event_data = assigns(:click_events)
+    current_events = Ahoy::Event.jsonb_search(:properties, { category: 'click' }).where(time: current_time_range)
+    previous_events = Ahoy::Event.jsonb_search(:properties, { category: 'click' }).where(time: previous_time_range)
+    assert_equal current_events.size, click_event_data[:events_count]
+    assert_equal previous_events.size, click_event_data[:previous_period_events_count]
+    assert click_event_data[:label_grouped_events].keys.include?(click_event_1.label)
+    assert_equal current_events.with_label.group(:label).size[click_event_1.label], click_event_data[:label_grouped_events][click_event_1.label]
+    assert click_event_data[:previous_label_grouped_events].keys.include?(click_event_2.label)
+    assert_equal previous_events.with_label.group(:label).size[click_event_2.label], click_event_data[:previous_label_grouped_events][click_event_2.label]
+
+    # Video View Events
+    video_view_event_data = assigns(:video_view_events)
+    current_events = Ahoy::Event.jsonb_search(:properties, { category: 'video_view' }).where(time: current_time_range)
+    previous_events = Ahoy::Event.jsonb_search(:properties, { category: 'video_view' }).where(time: previous_time_range)
+    assert_equal current_events.size, video_view_event_data[:events_count]
+    assert_equal previous_events.size, video_view_event_data[:previous_period_events_count]
+    assert_equal video_view_event_data[:watch_time], Ahoy::Event.where(id: [video_watch_event_1.id, video_watch_event_1_page_2.id]).total_watch_time_for_video_events
+    assert_equal video_view_event_data[:previous_watch_time], Ahoy::Event.where(id: video_watch_event_2.id).total_watch_time_for_video_events
+    assert_equal video_view_event_data[:avg_view_duration], Ahoy::Event.where(id: [video_watch_event_1.id, video_watch_event_1_page_2.id]).avg_view_duration_for_video_events
+    assert_equal video_view_event_data[:previous_avg_view_duration], Ahoy::Event.where(id: video_watch_event_2.id).avg_view_duration_for_video_events
+    assert_equal video_view_event_data[:avg_view_percent], Ahoy::Event.where(id: [video_watch_event_1.id, video_watch_event_1_page_2.id]).avg_view_percentage_for_video_events
+    assert_equal video_view_event_data[:previous_avg_view_percent], Ahoy::Event.where(id: video_watch_event_2.id).avg_view_percentage_for_video_events
 
     # When page params present, it should filter by page
     get v2_dashboard_url, params: {start_date: (Time.now.beginning_of_month - 2.months).strftime('%Y-%m-%d'), end_date: Time.now.end_of_month.strftime('%Y-%m-%d'), interval: "3 months", page: @page.id }
-  
-    assert_equal [page_visit_event_1.id], assigns(:page_visit_events).pluck(:id)
-    assert_equal [click_event_1.id], assigns(:click_events).pluck(:id)
-    assert_equal [video_watch_event_1.id], assigns(:video_view_events).pluck(:id)
 
-    assert_empty assigns(:previous_period_page_visit_events)
-    assert_equal [click_event_2.id], assigns(:previous_period_click_events).pluck(:id)
-    assert_equal [video_watch_event_2.id], assigns(:previous_period_video_view_events).pluck(:id)
+    current_time_range = assigns(:start_date).beginning_of_day..assigns(:end_date).end_of_day
+    previous_time_range = previous_time_interval_range(@controller.params[:interval], assigns(:start_date), assigns(:end_date))
+
+    # Page Visit Events
+    page_visit_data = assigns(:page_visit_events)
+    current_events = Ahoy::Event.jsonb_search(:properties, { page_id: @page.id }).jsonb_search(:properties, { category: 'page_visit' }).where(time: current_time_range)
+    previous_events = Ahoy::Event.jsonb_search(:properties, { page_id: @page.id }).jsonb_search(:properties, { category: 'page_visit' }).where(time: previous_time_range)
+    assert_equal current_events.size, page_visit_data[:events_count]
+    assert_equal previous_events.size, page_visit_data[:previous_period_events_count]
+    assert_equal current_events.visitors_chart_data_for_page_visit_events['Single time visitor'], page_visit_data[:pie_chart_data]['Single time visitor']
+    assert_equal current_events.visitors_chart_data_for_page_visit_events['Recurring visitors'], page_visit_data[:pie_chart_data]['Recurring visitors']
+
+    # Click Events
+    click_event_data = assigns(:click_events)
+    current_events = Ahoy::Event.jsonb_search(:properties, { page_id: @page.id }).jsonb_search(:properties, { category: 'click' }).where(time: current_time_range)
+    previous_events = Ahoy::Event.jsonb_search(:properties, { page_id: @page.id }).jsonb_search(:properties, { category: 'click' }).where(time: previous_time_range)
+    assert_equal current_events.size, click_event_data[:events_count]
+    assert_equal previous_events.size, click_event_data[:previous_period_events_count]
+    assert click_event_data[:label_grouped_events].keys.include?(click_event_1.label)
+    assert_equal current_events.with_label.group(:label).size[click_event_1.label], click_event_data[:label_grouped_events][click_event_1.label]
+    assert click_event_data[:previous_label_grouped_events].keys.include?(click_event_2.label)
+    assert_equal previous_events.with_label.group(:label).size[click_event_2.label], click_event_data[:previous_label_grouped_events][click_event_2.label]
+
+    # Video View Events
+    video_view_event_data = assigns(:video_view_events)
+    current_events = Ahoy::Event.jsonb_search(:properties, { page_id: @page.id }).jsonb_search(:properties, { category: 'video_view' }).where(time: current_time_range)
+    previous_events = Ahoy::Event.jsonb_search(:properties, { page_id: @page.id }).jsonb_search(:properties, { category: 'video_view' }).where(time: previous_time_range)
+    assert_equal current_events.size, video_view_event_data[:events_count]
+    assert_equal previous_events.size, video_view_event_data[:previous_period_events_count]
+    assert_equal video_view_event_data[:previous_period_events_count], 1
+    assert_equal video_view_event_data[:watch_time], Ahoy::Event.where(id: video_watch_event_1.id).total_watch_time_for_video_events
+    assert_equal video_view_event_data[:previous_watch_time], Ahoy::Event.where(id: video_watch_event_2.id).total_watch_time_for_video_events
+    assert_equal video_view_event_data[:avg_view_duration], Ahoy::Event.where(id: video_watch_event_1.id).avg_view_duration_for_video_events
+    assert_equal video_view_event_data[:previous_avg_view_duration], Ahoy::Event.where(id: video_watch_event_2.id).avg_view_duration_for_video_events
+    assert_equal video_view_event_data[:avg_view_percent], Ahoy::Event.where(id: video_watch_event_1.id).avg_view_percentage_for_video_events
+    assert_equal video_view_event_data[:previous_avg_view_percent], Ahoy::Event.where(id: video_watch_event_2.id).avg_view_percentage_for_video_events
   end
 
   test "#dashboard: should show pie-chart data and last time-period comparision correctly" do

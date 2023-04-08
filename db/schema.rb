@@ -69,7 +69,9 @@ ActiveRecord::Schema.define(version: 2023_03_24_080541) do
     t.jsonb "properties"
     t.datetime "time"
     t.index ["name", "time"], name: "index_ahoy_events_on_name_and_time"
+    t.index ["name"], name: "index_ahoy_events_on_name"
     t.index ["properties"], name: "index_ahoy_events_on_properties", opclass: :jsonb_path_ops, using: :gin
+    t.index ["time"], name: "index_ahoy_events_on_time"
     t.index ["user_id"], name: "index_ahoy_events_on_user_id"
     t.index ["visit_id"], name: "index_ahoy_events_on_visit_id"
   end

@@ -1232,4 +1232,295 @@ CONTENT
     </div>
 </footer>
 CONTENT
+
+  API_DATA = [
+    {
+      api_namespace: {
+        name: 'university',
+        slug: 'university',
+        version: 1,
+        namespace_type: 'create-read-update-delete',
+        requires_authentication: false,
+        social_share_metadata: nil,
+        analytics_metadata: nil,
+        properties: {
+          name: 'Restarone University',
+          address: 'GTA, Toronto, Canada',
+          boolean: true,
+          subject: 'Computer Science'
+          },
+        },
+      api_resources: [
+        {
+          properties: {
+            name: 'University of Toronto',
+            address: 'Toronto, Canada',
+            boolean: false,
+            subject: 'Master of Applied Computing'
+          }
+        }, 
+        {
+          properties: {
+            name: 'University of Winnipeg',
+            address: 'Winnipeg, Canada',
+            boolean: false,
+            subject: 'Master of Applied Computing and Society'
+          }
+        }, 
+        {
+          properties: {
+            name: 'University of Memphis',
+            address: 'Memphis, Tenesse, USA',
+            boolean: false,
+            subject: 'Master of Computer Science'
+          }
+        }, 
+        {
+          properties: {
+            name: 'University of Kentucky',
+            address: 'Lexington, Kentucky, USA',
+            boolean: false,
+            subject: 'Master of Computer Science'
+          }
+        }
+      ]
+    },
+    {
+      api_namespace: {
+        name: 'consultant',
+        slug: 'consultant',
+        version: 1,
+        namespace_type: 'create-read-update-delete',
+        requires_authentication: false,
+        social_share_metadata: nil,
+        analytics_metadata: nil,
+        properties: {
+          name: 'your name please',
+          rate: '0',
+          email: 'your email please',
+          active: false
+        }
+      },
+      api_resources: [
+        {
+          properties: {
+            name: 'John Doe',
+            rate: '15',
+            email: 'john@restarone.com',
+            active: true
+          }
+        }, 
+        {
+          properties: {
+            name: 'Siddartha Gautam',
+            rate: '25',
+            email: 'siddartha@restarone.com',
+            active: true
+          }
+        }, 
+        {
+          properties: {
+            name: 'Sita Maataa',
+            rate: '20',
+            email: 'sita@restarone.com',
+            active: true
+          }
+        }, 
+        {
+          properties: {
+            name: 'Hanuman',
+            rate: '30',
+            email: 'hanuman@restarone.com',
+            active: true
+          }
+        }
+      ]
+    }
+  ]
+
+  def self.populate_event_analytics_data
+    puts 'Fetching initials records - START'
+    # Fetch a user
+    User.skip_callback(:create, :after, :enable_two_factor!)
+    user = User.where(email: 'violet@restarone.com').first_or_create(email: 'violet@rails.com', name: 'Violet Rails Admin', password: '123456', password_confirmation: '123456', global_admin: true, confirmed_at: Time.now)
+    User.set_callback(:create, :after, :enable_two_factor!)
+
+    # CMS::Pages
+    site = Comfy::Cms::Site.first
+    layout = site.layouts.find_by(identifier: 'default')
+    page_1 = site.pages.where(layout: layout, label: 'first analytics page', slug: 'first-analytics-page').first_or_create(label:  'first analytics page', slug: 'first-analytics-page')
+    page_1.fragments.create(
+      content: VioletSeeds::LANDING_PAGE_CONTENT
+      )
+    page_2 = site.pages.where(layout: layout, label: 'second analytics page', slug: 'second-analytics-page').first_or_create(label:  'second analytics page', slug: 'second-analytics-page')
+    page_2.fragments.create(
+      content: VioletSeeds::LANDING_PAGE_CONTENT
+      )
+    page_3 = site.pages.where(layout: layout, label: 'third analytics page', slug: 'third-analytics-page').first_or_create(label:  'third analytics page', slug: 'third-analytics-page')
+    page_3.fragments.create(
+      content: VioletSeeds::LANDING_PAGE_CONTENT
+      )
+    page_4 = site.pages.where(layout: layout, label: 'fourth analytics page', slug: 'fourth-analytics-page').first_or_create(label:  'fourth analytics page', slug: 'fourth-analytics-page')
+    page_4.fragments.create(
+      content: VioletSeeds::LANDING_PAGE_CONTENT
+      )
+
+    pages = [page_1, page_2, page_3, page_4]
+    puts 'Fetching initials records - END'
+
+    puts 'Populating analytics records for a week - START'
+    API_DATA.each do |api_data|
+      # Fetch api_namespace
+      api_namespace = ApiNamespace.where(slug: api_data[:api_namespace][:slug]).first_or_create(api_data[:api_namespace])
+      api_resources = api_namespace.api_resources.presence || api_namespace.api_resources.create(
+        api_data[:api_resources].map { |resource_data| resource_data.merge({ user_id: user.id }) }
+      )
+
+      # Creating the events for a week
+      7.times do |n|
+        current_time = Time.now - n.days
+
+        visit = Ahoy::Visit.create!(
+          started_at: current_time,
+          ip: Faker::Internet.ip_v4_address, 
+          os: 'GNU/Linux', 
+          browser: 'Firefox', 
+          device_type: 'Desktop', 
+          user_agent: Faker::Internet.user_agent, 
+          landing_page: 'http://localhost:5250/'
+        )
+
+        pages.each do |page|
+          # Creating Page Visit Events
+          visit.events.create!(
+            visit_id: visit.id,
+            user_id: user.id,
+            name: 'comfy-cms-page-visit',
+            properties: { page_id: page.id, user_id: user.id, visit_id: visit.id },
+            time: current_time
+          )
+
+          api_resources.each do |resource|
+            # Creating Video View Events
+            visit.events.create!(
+              visit_id: visit.id,
+              user_id: user.id,
+              name: "#{resource.api_namespace.slug}-video-view-event",
+              properties: {
+                label: "#{resource.api_namespace.name} Video Resource ID: #{resource.id}",
+                page_id: page.id,
+                category: 'video_view',
+                watch_time: rand(100..90000),
+                resource_id: resource.id,
+                video_start: true,
+                total_duration: 300000
+              },
+              time: current_time
+            )
+
+            # Creating Click Events
+            visit.events.create!(
+              visit_id: visit.id,
+              user_id: user.id,
+              name: "#{resource.api_namespace.slug}-page-click-event",
+              properties: {
+                label: "#{resource.api_namespace.name} Click Resource ID: #{resource.id}",
+                page_id: page.id,
+                category: 'click',
+                tag: 'A',
+                href: ''
+              },
+              time: current_time
+            )
+
+            # Creating Form Submit Events
+            visit.events.create!(
+              visit_id: visit.id,
+              user_id: user.id,
+              name: "#{resource.api_namespace.slug}-form-submit-event",
+              properties: {
+                label: "#{resource.api_namespace.name} Form Resource ID: #{resource.id}",
+                page_id: page.id,
+                category: 'form_submit'
+              },
+              time: current_time
+            )
+            
+            # Creating Section View Events
+            visit.events.create!(
+              visit_id: visit.id,
+              user_id: user.id,
+              name: "#{resource.api_namespace.slug}-section-view-event",
+              properties: {
+                label: "#{resource.api_namespace.name} Section Resource ID: #{resource.id}",
+                page_id: page.id,
+                category: 'section_view'
+              },
+              time: current_time
+            )
+          end
+
+          # Creating legacy and system events
+          20.times do |n|
+            # api-resource-create events
+            visit.events.create!(
+              visit_id: visit.id,
+              user_id: user.id,
+              name: 'api-resource-create',
+              properties: { user_id: user.id, visit_id: visit.id, api_resource_id: api_resources.first.id, api_namespace_id: api_resources.first.api_namespace_id },
+              time: current_time
+            )
+
+            # comfy-cms-page-update events
+            visit.events.create!(
+              visit_id: visit.id,
+              user_id: user.id,
+              name: 'comfy-cms-page-update',
+              properties: { user_id: user.id, visit_id: visit.id, page_id: pages[n % 4] },
+              time: current_time
+            )
+            
+            # subdomain-user-update events
+            visit.events.create!(
+              visit_id: visit.id,
+              user_id: user.id,
+              name: 'subdomain-user-update',
+              properties: { user_id: user.id, visit_id: visit.id, edited_user_id: user.id },
+              time: current_time
+            )
+          end
+        end
+      end
+    end
+    puts 'Populating analytics records for a week - END'
+
+    # Duplicating the above events for a month
+    puts 'Populating analytics records for a month - START'
+    week_long_events_data = Ahoy::Event.all.as_json
+    3.times do |n|
+      current_time = Time.now - n.weeks
+
+      events_data = week_long_events_data.map { |event_data| event_data.except('id', 'time').merge({ 'time'=> current_time })  }
+
+      Ahoy::Event.insert_all(events_data)
+    end
+    puts 'Populating analytics records for a month - END'
+
+    # Duplication the above events for a year
+    puts 'Populating analytics records for a year - START'
+    month_long_events_data = Ahoy::Event.all.as_json
+    12.times do |n|
+      a = n
+      puts "Populating analytics records for year: #{a.months.ago.year} month: #{Date::MONTHNAMES[a.months.ago.month]} - START"
+      
+      current_time = Time.now - a.months
+      events_data = month_long_events_data.map { |event_data| event_data.except('id', 'time').merge({ 'time'=> current_time })  }
+
+      3.times do
+        Ahoy::Event.insert_all(events_data)
+      end
+      puts "Populating analytics records for year: #{a.months.ago.year} month: #{Date::MONTHNAMES[a.months.ago.month]} - END"
+    end
+    puts 'Populating analytics records for a year - END'
+  end
 end
