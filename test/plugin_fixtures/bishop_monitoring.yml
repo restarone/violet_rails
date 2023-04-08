@@ -1,0 +1,72 @@
+bishop_monitoring:
+  api_namespace: monitoring_targets
+  slug: bishop-monitoring
+  label: Bishop Monitoring in a box
+  enabled: true
+  metadata: { 'log_incidents_to': 'monitoring-target-incident' }
+  model_definition: |
+    class BishopMonitoring
+      def initialize(parameters)  
+        @external_api_client = parameters[:external_api_client]
+        @log_incidents_to_namespace = @external_api_client.metadata["log_incidents_to"]
+        @targets = @external_api_client.api_namespace.api_resources
+        @timeout_in_seconds = 30
+      end
+      def start
+        logger_namespace = ApiNamespace.find_by!(slug: @log_incidents_to_namespace)
+        @targets.each do |target|
+          url = target.properties["url"]
+          start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+          latency = 0
+          begin
+            response = HTTParty.get(url, follow_redirects: true, timeout: @timeout_in_seconds)
+            case response.code 
+              when 500..600
+                raise StandardError.new "server returned #{response.code}"
+            end
+
+
+            finish = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+            latency = ((finish - start) * 1000).round
+          rescue StandardError => e
+            logger_namespace.api_resources.create!(
+              properties: {
+                slug: url,
+                error: e.message,
+                notification_sent: false,
+                latency: latency
+              }
+            )
+            updated_target_properties = {
+              "healthy": false,
+              "alarm_raised": false,
+              "last_checked_at": Time.now,
+              "latency": 0,
+              "error_message": e.message
+            }
+            target.update!(
+              properties: target.properties.merge(updated_target_properties)
+            )
+            #after handling the error case, we need to bubble it up to the job
+            raise
+          else
+            updated_target_properties = {
+              "healthy": true,
+              "alarm_raised": false,
+              "last_checked_at": Time.now,
+              "latency": latency,
+              "error_message": nil
+            }
+            target.update!(
+              properties: target.properties.merge(updated_target_properties)
+            )
+          end
+        end
+      end
+
+      def log
+        return true
+      end
+    end
+    # at the end of the file we have to implicitly return the class 
+    BishopMonitoring
