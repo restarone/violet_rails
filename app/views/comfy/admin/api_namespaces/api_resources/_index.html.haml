@@ -1,6 +1,6 @@
 - if has_access_to_api_accessibility?(ApiNamespace::API_ACCESSIBILITIES[:read_api_resources_only], current_user, @api_namespace)
-  #api-resources-list.list-view.mb-5{data: {controller: "api-resources"}}
-    = search_form_for @api_resources_q, url: api_namespace_path(@api_namespace.id), data: {api_resources_target: 'searchForm', turbo_frame: "api-resources", turbo_action: "advance"} do |f|
+  #api-resources-list.list-view.list-view--instant-search.mb-5{data: {controller: "api-resources list-view"}}
+    = search_form_for @api_resources_q, url: api_namespace_path(@api_namespace.id), data: {list_view_target: "searchForm", instant_search_mode: "true", turbo_frame: "api-resources-table", turbo_action: "advance"} do |f|
       .form-group
         = f.label "Search by properties", class: 'col-form-label pt-0'
         .search-box

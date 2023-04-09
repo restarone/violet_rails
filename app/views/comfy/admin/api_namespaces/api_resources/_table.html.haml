@@ -1,5 +1,5 @@
 
-= turbo_frame_tag 'api-resources' do
+= turbo_frame_tag 'api-resources-table' do
   .digg_pagination.d-sm-flex.justify-content-between.mb-4.pb-3
     .page-info= page_entries_info @api_resources
     .links= will_paginate @api_resources, container: false, renderer: TurboPaginateRenderer
@@ -25,7 +25,7 @@
                     .d-flex.mt-3
                       = link_to edit_api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), class: 'mr-3' do 
                         %i.fas.fa-edit
-                      = link_to api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), remote: true, method: :delete, data: { confirm: 'Are you sure?', page: params[:page], action: "ajax:success->api-resources#reloadTable" } do
+                      = link_to api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), remote: true, method: :delete, data: { confirm: 'Are you sure?', page: params[:page], action: "ajax:success->list-view#reloadTable" } do
                         %i.fas.fa-trash
               %td.px-3.date-col
                 .td-content

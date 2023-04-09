@@ -2,6 +2,20 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: https://sass-lang.com/
 
+#comfy.c-comfy-admin-api_namespaces.a-index #cms-main {
+  padding-bottom: 0;
+}
+
+#comfy.c-comfy-admin-api_namespaces  .read .toggle-cat-edit {
+  background-color: var(--color-primary);
+}
+
+#comfy .list-view .badge-primary {
+  background-color: #EDEBFE;
+  font-weight: 500;
+  color: #252525;
+}
+
 .api-namespace-show {
   background-color: #FCFEFF;
 
@@ -26,7 +40,7 @@
           border: 1px solid #49505714;
           box-shadow: 0px 8px 10px #0108150A;
           border-radius: 4px;
-          color: #705AFE;
+          color: var(--color-primary);
           font-weight: 600;
         }
       }
@@ -60,14 +74,44 @@
   }
 
   a:not(.btn) {
-    color: #6F5AFE;
+    color: var(--color-primary);
+  }
+
+  &--instant-search .search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    input[type='search'] {
+      height: 48px;
+      background: #B1B1B10A 0% 0% no-repeat padding-box;
+      border: 1px solid #ADB1B6;
+      border-radius: 4px;
+
+      &::-webkit-search-cancel-button{
+        height: 20px;
+        width: 20px;
+        border-radius:10px;
+        cursor: pointer;
+      }
+    }
+
+    .search-action {
+      position: absolute;
+      right: 0;
+
+      .clear-text-btn {
+        border: none;
+        outline: none;
+        background-color: transparent;
+      }
+    }
   }
 
   &__table-container {
     max-height: 700px;
     overflow: auto;
     border-top: 1px solid #dee2e6;
-    border-bottom: 1px solid #dee2e6;
   }
 
   &__status-text {
@@ -100,8 +144,10 @@
       text-align: center;
 
       a {
-        color: #495057;
-        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 12px;
+        color: #6B7280;
+        font-weight: 600;
       }
     }
 
@@ -183,42 +229,10 @@
 }
 
 #api-resources-list{
-
   .table {
     line-height: var(--line-height);
   }
   & > form {
-    .search-box {
-      position: relative;
-      display: flex;
-      align-items: center;
-
-      input[type='search'] {
-        height: 48px;
-        background: #B1B1B10A 0% 0% no-repeat padding-box;
-        border: 1px solid #E3E5E9;
-        border-radius: 4px;
-
-        &::-webkit-search-cancel-button{
-          height: 20px;
-          width: 20px;
-          border-radius:10px;
-          cursor: pointer;
-        }
-      }
-  
-      .search-action {
-        position: absolute;
-        right: 0;
-
-        .clear-text-btn {
-          border: none;
-          outline: none;
-          background-color: transparent;
-        }
-      }
-    }
-
     #created-at-filter,
     #updated-at-filter {
       cursor: pointer;

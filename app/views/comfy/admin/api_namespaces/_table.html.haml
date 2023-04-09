@@ -30,10 +30,10 @@
                 .td-content
                   = link_to edit_api_namespace_path(api_namespace), class: 'mr-3' do
                     %i.fas.fa-edit
-                  = link_to api_namespace, method: :delete, remote: true, data: { confirm: 'Are you sure?', page: params[:page], action: "ajax:success->api-namespaces#reloadTable" } do
+                  = link_to api_namespace, method: :delete, remote: true, data: { confirm: 'Are you sure?', page: params[:page], action: "ajax:success->list-view#reloadTable" } do
                     %i.fas.fa-trash
               %td.px-3.py-2
-                .td-content
+                .td-content.justify-content-start
                   %div
                     = link_to api_namespace.name, api_namespace
                     .item-categories
@@ -42,7 +42,7 @@
                 .td-content
                   = api_namespace.version
               %td.px-3.py-2
-                .td-content
+                .td-content.justify-content-start
                   %div
                     - value = api_namespace.properties.to_s
                     - if value && value.length > 100

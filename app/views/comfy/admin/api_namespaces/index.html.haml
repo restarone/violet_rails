@@ -2,16 +2,14 @@
   = render "comfy/admin/cms/categories/index", type: "ApiNamespace"
 
 .page-header
-  = link_to 'New Namespace', new_api_namespace_path, class: 'btn btn-secondary float-right'
-  = link_to 'Api Keys', api_keys_path, class: 'btn btn-secondary float-right mr-3'
+  = link_to 'New Namespace', new_api_namespace_path, class: 'btn btn-primary float-right'
+  = link_to 'Api Keys', api_keys_path, class: 'btn btn-primary float-right mr-3'
   %h2 API Namespaces
-#api-namespaces-list.list-view{ data: { controller: 'api-namespaces' } }
-  = search_form_for @api_namespaces_q, url: api_namespaces_path, data: { api_namespaces_target: 'searchForm', turbo_frame: 'api-namespaces', turbo_action: 'advance' } do |f|
+#api-namespaces-list.list-view{ data: { controller: 'api-namespaces list-view' } }
+  = search_form_for @api_namespaces_q, url: api_namespaces_path, data: { list_view_target: 'searchForm', turbo_frame: 'api-namespaces', turbo_action: 'advance' } do |f|
     .form-group
       = f.label "Search by Name or Properties", class: 'col-form-label'
       .d-flex
-        = f.search_field :properties_or_name_cont, value: params[:q][:properties_or_name_cont], class: 'form-control mr-2', placeholder: 'Enter the value of name or properties you want to search'
-        %div{style: "flex-shrink: 0;"}
-          = f.submit class: 'btn btn-primary mr-2'
-          = link_to "Clear Search", request.path, class:"cancel-button", data: { turbo: true, turbo_frame: 'api-namespaces', turbo_action: 'advance', action: 'click->api-namespaces#clearSearch' }
+        = f.search_field :properties_or_name_cont, value: params[:q][:properties_cont], class: 'form-control', placeholder: 'Enter the value of name or properties you want to search'
+        = f.submit class: 'btn btn-primary ml-2'
   = render partial: 'table', locals: { api_namespaces: @api_namespaces, api_namespaces_q: @api_namespaces_q }
