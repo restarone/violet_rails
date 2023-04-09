@@ -66,8 +66,6 @@
 
   
     %hr.m-0
-    -# = render partial: 'events', locals: { events_exists: @click_events.load.any?, events_count: @click_events.size, label_grouped_event: @click_events.with_label.group(:label).pluck(:label, Arel.sql('json_agg(ahoy_events.name)')), previous_period_events_count: @previous_period_click_events.size, previous_grouped_events: @previous_period_click_events.with_label.group(:label).size, title: 'Clicks', type: 'clickables' }
-    -# - byebug
     = render partial: 'events', locals: (@click_events.present? ? @click_events : { events_exists: false }).merge({ event_category: Ahoy::Event::EVENT_CATEGORIES[:click] })
     - unless @click_events.present?
       .vr-analytics-blank-states
@@ -91,8 +89,6 @@
           - if @video_view_events.present? 
             .col.col-md-10
               .row
-                -# - watch_time = total_watch_time(@video_view_events)
-                -# - previous_watch_time = total_watch_time(@previous_period_video_view_events)
                 .col.col-12.col-sm-4.d-flex.align-items-center.my-3.my-sm-0
                   .vr-analytics-count.ml-0
                     Total watch time
@@ -105,8 +101,6 @@
                 .col.col-12.col-sm-4.d-flex.align-items-center.mb-3.mb-sm-0
                   .vr-analytics-count.ml-0
                     Avg. view duration
-                    -# - view_duration = avg_view_duration(@video_view_events)
-                    -# - previous_view_duration = avg_view_duration(@previous_period_video_view_events)
                     = to_minutes(@video_view_events[:avg_view_duration])
                   .vr-analytics-percent-change
                     = display_percent_change(@video_view_events[:avg_view_duration], @video_view_events[:previous_avg_view_duration])
@@ -116,8 +110,6 @@
                 .col.col-12.col-sm-4.d-flex.align-items-center.mb-3.mb-sm-0
                   .vr-analytics-count.ml-0
                     Avg. view percentage
-                    -# - view_percent = avg_view_percentage(@video_view_events)
-                    -# - previous_view_percent = avg_view_percentage(@previous_period_video_view_events)
                     = "#{@video_view_events[:avg_view_percent].round(2)}%"
                   .vr-analytics-percent-change
                     = display_percent_change(@video_view_events[:avg_view_percent], @video_view_events[:previous_avg_view_percent])
@@ -126,7 +118,6 @@
       - if @video_view_events.present? 
         .vr-analytics-section-body
           .vr-analytics-event-label 
-            -# - top_videos = top_three_videos(@video_view_events, @previous_period_video_view_events)
             = "Top #{@video_view_events[:top_videos].size} videos"
 
           .row.mt-4
@@ -186,7 +177,6 @@
           Please make sure 'data-violet-resource-id' is present and Analytics mapping is populated
         
     %hr.m-0
-    -# = render partial: 'events', locals: { events_exists: @form_submit_events.load.any?, events_count: @form_submit_events.size, label_grouped_event: @form_submit_events.with_label.group(:label).pluck(:label, Arel.sql('json_agg(ahoy_events.name)')), previous_period_events_count: @previous_period_form_submit_events.size, previous_grouped_events: @previous_period_form_submit_events.with_label.group(:label).size, title: 'Form Submissions', type: 'submitables' }
     = render partial: 'events', locals: (@form_submit_events.present? ? @form_submit_events : { events_exists: false }).merge({ event_category: Ahoy::Event::EVENT_CATEGORIES[:form_submit] })
     - unless @form_submit_events.present?
       .vr-analytics-blank-states
@@ -220,7 +210,6 @@
             </form>
 
     %hr.m-0
-    -# = render partial: 'events', locals: { events_exists: @section_view_events.load.any?, events_count: @section_view_events.size, label_grouped_event: @section_view_events.with_label.group(:label).pluck(:label, Arel.sql('json_agg(ahoy_events.name)')), previous_period_events_count: @previous_period_section_view_events.size, previous_grouped_events: @previous_period_section_view_events.with_label.group(:label).size, title: 'Section Views', type: 'viewables' }
     = render partial: 'events', locals: (@section_view_events.present? ? @section_view_events : { events_exists: false }).merge({ event_category: Ahoy::Event::EVENT_CATEGORIES[:section_view] })
     - unless @section_view_events.present?
       .vr-analytics-blank-states
@@ -256,5 +245,4 @@
         By default, the threshold value is 0.75
 
     %hr.m-0
-    -# = render partial: 'events', locals: { events_exists: @legacy_and_system_events.load.any?, events_count: @legacy_and_system_events.size, label_grouped_event: @legacy_and_system_events.with_label.group(:label).pluck(:label, Arel.sql('json_agg(ahoy_events.name)')), previous_period_events_count: @previous_period_legacy_and_system_events.size, previous_grouped_events: @previous_period_legacy_and_system_events.with_label.group(:label).size, title: 'Events', type: 'events' }
     = render partial: 'events', locals: (@legacy_and_system_events.present? ? @legacy_and_system_events : { events_exists: false }).merge({ event_category: 'system_events' })
