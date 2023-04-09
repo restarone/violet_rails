@@ -27,12 +27,20 @@ class Ahoy::Event < ApplicationRecord
   belongs_to :visit
   belongs_to :user, optional: true
 
-  scope :with_label , -> {
+  scope :with_label_grouped_data , -> {
     # Build a subquery SQL
     subquery = self.unscoped.select("(case when #{table_name}.properties->>'label' is not NULL then #{table_name}.properties->>'label' else #{table_name}.name end) as label, #{table_name}.id").to_sql
 
-    # join the subquery to base model
-    joins("INNER JOIN (#{subquery}) as labelled_events ON labelled_events.id = #{table_name}.id")
+    # join the subquery to base model and returns the grouped data as Hash
+    self
+      .joins("INNER JOIN (#{subquery}) as labelled_events ON labelled_events.id = #{table_name}.id")
+      .group(:label)
+      .pluck(
+        :label,
+        Arel.sql("jsonb_build_object('count', COUNT(#{table_name}.id), 'name', jsonb_array_element(jsonb_agg(#{table_name}.name), 0))")
+      )
+      .to_h
+      .with_indifferent_access
   }
 
   scope :with_api_resource , -> {

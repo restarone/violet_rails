@@ -53,9 +53,9 @@ class Comfy::Admin::V2::DashboardController < Comfy::Admin::Cms::BaseController
         instance_variable_set("@#{event_category}_events", {
           events_exists: Ahoy::Event.from("(#{current_events_sql}) as ahoy_events").size > 0,
           events_count: Ahoy::Event.from("(#{current_events_sql}) as ahoy_events").size,
-          label_grouped_events: Ahoy::Event.from("(#{current_events_sql}) as ahoy_events").with_label.group(:label).size,
+          label_grouped_events: Ahoy::Event.from("(#{current_events_sql}) as ahoy_events").with_label_grouped_data,
           previous_period_events_count: Ahoy::Event.from("(#{previous_events_sql}) as ahoy_events").size,
-          previous_label_grouped_events: Ahoy::Event.from("(#{previous_events_sql}) as ahoy_events").with_label.group(:label).size
+          previous_label_grouped_events: Ahoy::Event.from("(#{previous_events_sql}) as ahoy_events").with_label_grouped_data
         })
       end
 
@@ -69,9 +69,9 @@ class Comfy::Admin::V2::DashboardController < Comfy::Admin::Cms::BaseController
     @legacy_and_system_events = {
       events_exists: Ahoy::Event.from("(#{current_events_sql}) as ahoy_events").size > 0,
       events_count: Ahoy::Event.from("(#{current_events_sql}) as ahoy_events").size,
-      label_grouped_events: Ahoy::Event.from("(#{current_events_sql}) as ahoy_events").with_label.group(:label).size,
+      label_grouped_events: Ahoy::Event.from("(#{current_events_sql}) as ahoy_events").with_label_grouped_data,
       previous_period_events_count: Ahoy::Event.from("(#{previous_events_sql}) as ahoy_events").size,
-      previous_label_grouped_events: Ahoy::Event.from("(#{previous_events_sql}) as ahoy_events").with_label.group(:label).size
+      previous_label_grouped_events: Ahoy::Event.from("(#{previous_events_sql}) as ahoy_events").with_label_grouped_data
     }
 
     GC.start

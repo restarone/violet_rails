@@ -16,14 +16,14 @@
   - if events_exists
     .vr-analytics-section-body.d-flex.align-items-center
       .vr-analytics-events-grid.row.w-100
-        - label_grouped_events.each do |name, count|
+        - label_grouped_events.each do |label, data|
           .vr-analytics-events-grid-item.col.col-12.col-sm-6.col-md-4.col-lg-3.mb-4
             .d-flex.mr-4.align-items-center.mb-2
               .vr-analytics-count-lg
-                = count
+                = data[:count]
               .vr-analytics-percent-change
-                = display_percent_change(count, previous_label_grouped_events[name].to_i)
-              - if previous_label_grouped_events[name].to_i == 0
+                = display_percent_change(data[:count], previous_label_grouped_events[label][:count].to_i)
+              - if previous_label_grouped_events[label][:count].to_i == 0
                 .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(count, 0, params[:interval], @start_date, @end_date) }
                   ?
-            = link_to name, dashboard_events_path(ahoy_event_type: name), class: 'vr-analytics-event-label'  
+            = link_to label, dashboard_events_path(ahoy_event_type: data[:name]), class: 'vr-analytics-event-label'  
