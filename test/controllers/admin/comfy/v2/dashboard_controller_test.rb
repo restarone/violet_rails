@@ -240,4 +240,86 @@ class Comfy::Admin::V2::DashboardControllerTest < ActionDispatch::IntegrationTes
 
     assert_response :success
   end
+
+  test "#dashboard: should set the hyperlink using event's name but not label in anchor tags of different analytics-section" do
+    @subdomain.update!(tracking_enabled: true)
+    visit = Ahoy::Visit.first
+
+    page_update_event_1 = visit.events.create(name: 'comfy-cms-page-update', user_id: @user.id, time: Time.now,  properties: {"label"=>"test_page_update", "visit_id"=>visit.id})
+    click_event_1 = visit.events.create(name: 'test-link-click', user_id: @user.id, time: Time.now, properties: {"tag"=>"BUTTON", "label"=>"test_link_page_2", "page_id"=>@page.id, "category"=>"click"})
+    form_submit_event_1 = visit.events.create(name: 'test-form-submitted', user_id: @user.id, time: Time.now,  properties: {"label"=>"form_submit_event", "page_id"=>@page.id, "category"=>"form_submit"}) 
+    section_view_event_1 = visit.events.create(name: 'test-section-view', user_id: @user.id, time: Time.now,  properties: {"label"=>"section_view_event", "page_id"=>@page.id, "category"=>"section_view"}) 
+
+    page_update_event_1_page_2 = visit.events.create(name: 'comfy-cms-page-update', user_id: @user.id, time: Time.now,  properties: {"label"=>"test_page_2_udpate", "page_id"=>@page_2.id, "visit_id"=>visit.id})
+    click_event_1_page_2 = visit.events.create(name: 'test-link-click', user_id: @user.id, time: Time.now, properties: {"tag"=>"BUTTON", "label"=>"test_link_page_2", "page_id"=>@page_2.id, "category"=>"click"})
+    form_submit_event_1_page_2 = visit.events.create(name: 'test-form-submitted', user_id: @user.id, time: Time.now,  properties: {"label"=>"form_submit_event_page_2", "page_id"=>@page_2.id, "category"=>"form_submit"}) 
+    section_view_event_1_page_2 = visit.events.create(name: 'test-section-view', user_id: @user.id, time: Time.now,  properties: {"label"=>"section_view_event_page_2", "page_id"=>@page_2.id, "category"=>"section_view"}) 
+
+    visit_1 = visit.dup
+    visit_1.save!
+
+    @user.update(can_manage_analytics: true)
+    sign_in(@user)  
+
+    get v2_dashboard_url
+
+    # default range should be current month and previous period should be last month
+    assert_equal Date.today.beginning_of_month, assigns(:start_date)
+    assert_equal Date.today.end_of_month, assigns(:end_date)
+
+    current_time_range = assigns(:start_date).beginning_of_day..assigns(:end_date).end_of_day
+    previous_time_range = previous_time_interval_range(@controller.params[:interval], assigns(:start_date), assigns(:end_date))
+
+    # Click Events
+    click_event_data = assigns(:click_events)
+    current_events = Ahoy::Event.jsonb_search(:properties, { category: 'click' }).where(time: current_time_range)
+    previous_events = Ahoy::Event.jsonb_search(:properties, { category: 'click' }).where(time: previous_time_range)
+    assert_equal current_events.size, click_event_data[:events_count]
+    assert_equal previous_events.size, click_event_data[:previous_period_events_count]
+    assert click_event_data[:label_grouped_events].keys.include?(click_event_1.label)
+    assert click_event_data[:label_grouped_events].keys.include?(click_event_1_page_2.label)
+    assert_select "section.vr-analytics-section.vr-analytics-events.click-section a.vr-analytics-event-label[href=?]", dashboard_events_path(ahoy_event_type: click_event_1.name), {count: 1, text: click_event_1.label}, "Uses name of click_event_1 in the href attribute"
+    assert_select "section.vr-analytics-section.vr-analytics-events.click-section a.vr-analytics-event-label[href=?]", dashboard_events_path(ahoy_event_type: click_event_1.label), {count: 0, text: click_event_1.label}, "Does not use label of click_event_1 in the href attribute"
+    assert_select "section.vr-analytics-section.vr-analytics-events.click-section a.vr-analytics-event-label[href=?]", dashboard_events_path(ahoy_event_type: click_event_1_page_2.name), {count: 1, text: click_event_1_page_2.label}, "Uses name of click_event_1_page_2 in the href attribute"
+    assert_select "section.vr-analytics-section.vr-analytics-events.click-section a.vr-analytics-event-label[href=?]", dashboard_events_path(ahoy_event_type: click_event_1_page_2.label), {count: 0, text: click_event_1_page_2.label}, "Does not use label of click_event_1_page_2 in the href attribute"
+
+    # Form Submit Events
+    form_submit_event_data = assigns(:form_submit_events)
+    current_events = Ahoy::Event.jsonb_search(:properties, { category: 'form_submit' }).where(time: current_time_range)
+    previous_events = Ahoy::Event.jsonb_search(:properties, { category: 'form_submit' }).where(time: previous_time_range)
+    assert_equal current_events.size, form_submit_event_data[:events_count]
+    assert_equal previous_events.size, form_submit_event_data[:previous_period_events_count]
+    assert form_submit_event_data[:label_grouped_events].keys.include?(form_submit_event_1.label)
+    assert form_submit_event_data[:label_grouped_events].keys.include?(form_submit_event_1_page_2.label)
+    assert_select "section.vr-analytics-section.vr-analytics-events.form_submit-section a.vr-analytics-event-label[href=?]", dashboard_events_path(ahoy_event_type: form_submit_event_1.name), {count: 1, text: form_submit_event_1.label}, "Uses name of form_submit_event_1 in the href attribute"
+    assert_select "section.vr-analytics-section.vr-analytics-events.form_submit-section a.vr-analytics-event-label[href=?]", dashboard_events_path(ahoy_event_type: form_submit_event_1.label), {count: 0, text: form_submit_event_1.label}, "Does not use label of form_submit_event_1 in the href attribute"
+    assert_select "section.vr-analytics-section.vr-analytics-events.form_submit-section a.vr-analytics-event-label[href=?]", dashboard_events_path(ahoy_event_type: form_submit_event_1_page_2.name), {count: 1, text: form_submit_event_1_page_2.label}, "Uses name of form_submit_event_1_page_2 in the href attribute"
+    assert_select "section.vr-analytics-section.vr-analytics-events.form_submit-section a.vr-analytics-event-label[href=?]", dashboard_events_path(ahoy_event_type: form_submit_event_1_page_2.label), {count: 0, text: form_submit_event_1_page_2.label}, "Does not use label of form_submit_event_1_page_2 in the href attribute"
+
+    # Section View Events
+    section_view_event_data = assigns(:section_view_events)
+    current_events = Ahoy::Event.jsonb_search(:properties, { category: 'section_view' }).where(time: current_time_range)
+    previous_events = Ahoy::Event.jsonb_search(:properties, { category: 'section_view' }).where(time: previous_time_range)
+    assert_equal current_events.size, section_view_event_data[:events_count]
+    assert_equal previous_events.size, section_view_event_data[:previous_period_events_count]
+    assert section_view_event_data[:label_grouped_events].keys.include?(section_view_event_1.label)
+    assert section_view_event_data[:label_grouped_events].keys.include?(section_view_event_1_page_2.label)
+    assert_select "section.vr-analytics-section.vr-analytics-events.section_view-section a.vr-analytics-event-label[href=?]", dashboard_events_path(ahoy_event_type: section_view_event_1.name), {count: 1, text: section_view_event_1.label}, "Uses name of section_view_event_1 in the href attribute"
+    assert_select "section.vr-analytics-section.vr-analytics-events.section_view-section a.vr-analytics-event-label[href=?]", dashboard_events_path(ahoy_event_type: section_view_event_1.label), {count: 0, text: section_view_event_1.label}, "Does not use label of section_view_event_1 in the href attribute"
+    assert_select "section.vr-analytics-section.vr-analytics-events.section_view-section a.vr-analytics-event-label[href=?]", dashboard_events_path(ahoy_event_type: section_view_event_1_page_2.name), {count: 1, text: section_view_event_1_page_2.label}, "Uses name of section_view_event_1_page_2 in the href attribute"
+    assert_select "section.vr-analytics-section.vr-analytics-events.section_view-section a.vr-analytics-event-label[href=?]", dashboard_events_path(ahoy_event_type: section_view_event_1_page_2.label), {count: 0, text: section_view_event_1_page_2.label}, "Does not use label of section_view_event_1_page_2 in the href attribute"
+
+    # Legacy and System Events
+    system_events_data = assigns(:legacy_and_system_events)
+    current_events = Ahoy::Event.where.not('properties::jsonb ? :key', key: 'category').where.not(name: 'comfy-cms-page-visit').where(time: current_time_range)
+    previous_events = Ahoy::Event.where.not('properties::jsonb ? :key', key: 'category').where.not(name: 'comfy-cms-page-visit').where(time: previous_time_range)
+    assert_equal current_events.size, system_events_data[:events_count]
+    assert_equal previous_events.size, system_events_data[:previous_period_events_count]
+    assert system_events_data[:label_grouped_events].keys.include?(page_update_event_1.label)
+    assert system_events_data[:label_grouped_events].keys.include?(page_update_event_1_page_2.label)
+    assert_select "section.vr-analytics-section.vr-analytics-events.system_events-section a.vr-analytics-event-label[href=?]", dashboard_events_path(ahoy_event_type: page_update_event_1.name), {count: 1, text: page_update_event_1.label}, "Uses name of page_update_event_1 in the href attribute"
+    assert_select "section.vr-analytics-section.vr-analytics-events.system_events-section a.vr-analytics-event-label[href=?]", dashboard_events_path(ahoy_event_type: page_update_event_1.label), {count: 0, text: page_update_event_1.label}, "Does not use label of page_update_event_1 in the href attribute"
+    assert_select "section.vr-analytics-section.vr-analytics-events.system_events-section a.vr-analytics-event-label[href=?]", dashboard_events_path(ahoy_event_type: page_update_event_1_page_2.name), {count: 1, text: page_update_event_1_page_2.label}, "Uses name of page_update_event_1_page_2 in the href attribute"
+    assert_select "section.vr-analytics-section.vr-analytics-events.system_events-section a.vr-analytics-event-label[href=?]", dashboard_events_path(ahoy_event_type: page_update_event_1_page_2.label), {count: 0, text: page_update_event_1_page_2.label}, "Does not use label of page_update_event_1_page_2 in the href attribute"
+  end
 end
