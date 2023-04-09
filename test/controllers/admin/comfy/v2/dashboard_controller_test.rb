@@ -121,9 +121,9 @@ class Comfy::Admin::V2::DashboardControllerTest < ActionDispatch::IntegrationTes
     assert_equal current_events.size, click_event_data[:events_count]
     assert_equal previous_events.size, click_event_data[:previous_period_events_count]
     assert click_event_data[:label_grouped_events].keys.include?(click_event_1.label)
-    assert_equal current_events.with_label.group(:label).size[click_event_1.label], click_event_data[:label_grouped_events][click_event_1.label]
+    assert_equal current_events.with_label_grouped_data[click_event_1.label][:count], click_event_data[:label_grouped_events][click_event_1.label][:count]
     assert click_event_data[:previous_label_grouped_events].keys.include?(click_event_2.label)
-    assert_equal previous_events.with_label.group(:label).size[click_event_2.label], click_event_data[:previous_label_grouped_events][click_event_2.label]
+    assert_equal previous_events.with_label_grouped_data[click_event_2.label][:count], click_event_data[:previous_label_grouped_events][click_event_2.label][:count]
 
     # Video View Events
     video_view_event_data = assigns(:video_view_events)
@@ -160,9 +160,9 @@ class Comfy::Admin::V2::DashboardControllerTest < ActionDispatch::IntegrationTes
     assert_equal current_events.size, click_event_data[:events_count]
     assert_equal previous_events.size, click_event_data[:previous_period_events_count]
     assert click_event_data[:label_grouped_events].keys.include?(click_event_1.label)
-    assert_equal current_events.with_label.group(:label).size[click_event_1.label], click_event_data[:label_grouped_events][click_event_1.label]
+    assert_equal current_events.with_label_grouped_data[click_event_1.label][:count], click_event_data[:label_grouped_events][click_event_1.label][:count]
     assert click_event_data[:previous_label_grouped_events].keys.include?(click_event_2.label)
-    assert_equal previous_events.with_label.group(:label).size[click_event_2.label], click_event_data[:previous_label_grouped_events][click_event_2.label]
+    assert_equal previous_events.with_label_grouped_data[click_event_2.label][:count], click_event_data[:previous_label_grouped_events][click_event_2.label][:count]
 
     # Video View Events
     video_view_event_data = assigns(:video_view_events)
