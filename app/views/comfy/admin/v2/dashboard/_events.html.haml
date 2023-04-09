@@ -1,4 +1,5 @@
-%section.vr-analytics-section.vr-analytics-events
+-# %section.vr-analytics-section.vr-analytics-events
+%section{class: ['vr-analytics-section', 'vr-analytics-events', "#{event_category}-section"]}
   .vr-analytics-section-header
     .d-md-flex.align-items-center
       .vr-analytics-sub-title
@@ -22,8 +23,8 @@
               .vr-analytics-count-lg
                 = data[:count]
               .vr-analytics-percent-change
-                = display_percent_change(data[:count], previous_label_grouped_events[label][:count].to_i)
-              - if previous_label_grouped_events[label][:count].to_i == 0
-                .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(count, 0, params[:interval], @start_date, @end_date) }
+                = display_percent_change(data[:count], previous_label_grouped_events.dig(label, :count).to_i)
+              - if previous_label_grouped_events.dig(label, :count).to_i == 0
+                .vr-analytics-tooltips{ data: { toggle: "tooltip", placement: "right" }, title: tooltip_content(data[:count], 0, params[:interval], @start_date, @end_date) }
                   ?
             = link_to label, dashboard_events_path(ahoy_event_type: data[:name]), class: 'vr-analytics-event-label'  
