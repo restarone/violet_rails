@@ -3,6 +3,11 @@ require_relative './violet_seeds/violet.rb'
 
 BLOBS = {} 
 
+return unless Apartment::Tenant.current == "public"
+
+# set a deterministic seed
+Faker::Config.random = Random.new(123)
+
 # chance for an image embed, BLOBS must be initialized
 def maybe_image
   if rand > 0.5 then
@@ -14,9 +19,11 @@ def maybe_image
   end
 end
 
-# set a deterministic seed
-Faker::Config.random = Random.new(123)
+Subdomain.unsafe_bootstrap_root_domain unless Subdomain.find_by(name: Subdomain::ROOT_DOMAIN_NAME).present?
 
+Subdomain.unsafe_bootstrap_www_subdomain
+
+# Users
 # admin
 user_violet = User.create!(
   email: 'violet@rails.com', 
@@ -27,8 +34,6 @@ user_violet = User.create!(
   confirmed_at: Time.now
 )
 user_violet.update!(User::FULL_PERMISSIONS)
-
-Subdomain.unsafe_bootstrap_www_subdomain
 
 # other users
 users = []
@@ -99,7 +104,7 @@ site.snippets.create(
   identifier: 'logo-small',
   content: File.read("#{Rails.root}/db/violet_seeds/assets/logo-small.svg"),
 )
-  
+    
 # Blog posts
 # ----------
 5.times do
@@ -145,12 +150,12 @@ end
         <h5>#{Faker::Movie.quote}</h5>
         <p>#{Faker::Movie.quote} <b>#{Faker::Movie.quote}</b></p>
         #{maybe_image}
-     ")
+    ")
     email_thread.messages.create(content: "
-       <p>#{Faker::Movie.quote} <b>#{Faker::Movie.quote}</b> #{Faker::Movie.quote}</p>
-       #{maybe_image}
-     ",
-     from: recipients.first)
+      <p>#{Faker::Movie.quote} <b>#{Faker::Movie.quote}</b> #{Faker::Movie.quote}</p>
+      #{maybe_image}
+    ",
+    from: recipients.first)
   end
 end
 
@@ -173,3 +178,7 @@ email_thread.messages.create(content: "I really like your site!<br/>#{maybe_imag
   visit.events.create(name: 'button-click', properties: { target: 'checkbox-two' }, time: Time.now - 4.minutes)
   visit.events.create(name: 'button-click', properties: { target: 'submit' }, time: Time.now - 3.minutes)
 end
+
+# Populate event analytics in mass
+# docker-compose run -e SEED_ANALYTICS=true --rm solutions_app rails db:seed
+VioletSeeds.populate_event_analytics_data if ENV['SEED_ANALYTICS'] == 'true'
