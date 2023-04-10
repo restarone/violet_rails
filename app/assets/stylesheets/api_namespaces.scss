@@ -109,9 +109,9 @@
   }
 
   &__table-container {
-    // the max-height value will be compiled without the quotes and it will be valid CSS
-    // without wrapping it in unquote(), Sass will try to compile the value and fail to do so (Incompatible units px and vh)
-    max-height: unquote("max(700px, 78.8vh)");
+    // Since Sass is case-sensitive and CSS isn't, the CSS version of max() will be used
+    // If max() is used instead of MAX(), Sass will throw a compilation error (Incompatible units px and vh)
+    max-height: MAX(700px, 78.8vh);
     overflow: auto;
     border-top: 1px solid #dee2e6;
   }
