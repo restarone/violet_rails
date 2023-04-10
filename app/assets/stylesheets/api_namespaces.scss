@@ -109,7 +109,9 @@
   }
 
   &__table-container {
-    max-height: 700px;
+    // the max-height value will be compiled without the quotes and it will be valid CSS
+    // without wrapping it in unquote(), Sass will try to compile the value and fail to do so (Incompatible units px and vh)
+    max-height: unquote("max(700px, 78.8vh)");
     overflow: auto;
     border-top: 1px solid #dee2e6;
   }
@@ -131,6 +133,7 @@
   }
 
   .table {
+    margin-bottom: 0;
     font-size: var(--base-font-size);
     border-collapse: collapse;
 
