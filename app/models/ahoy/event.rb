@@ -63,11 +63,13 @@ class Ahoy::Event < ApplicationRecord
   }
 
   scope :filter_records_with_video_details_missing, -> {
+    # The watch_time and total_duration maybe zero.
+    # So, neglecting such records as well to prevent: "DivisionByZero error"
     self
       .where(
-        "(properties ->> 'watch_time') IS NOT NULL"\
+        "NULLIF((properties ->> 'watch_time')::float, 0.0) IS NOT NULL"\
+        " AND NULLIF((properties ->> 'total_duration')::float, 0.0) IS NOT NULL"\
         " AND (properties ->> 'video_start') IS NOT NULL"\
-        " AND (properties ->> 'total_duration') IS NOT NULL"\
         " AND (properties ->> 'resource_id') IS NOT NULL"
       )
   }
