@@ -10,6 +10,8 @@ class ApiForm < ApplicationRecord
 
   attr_accessor :api_resource
 
+  enum placement: { visitor: 'visitor', user: 'user', admin: 'admin' }
+
   INPUT_TYPE_MAPPING = {
     free_text: 'text',
     number: 'number',
