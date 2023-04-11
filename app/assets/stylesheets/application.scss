@@ -21,6 +21,10 @@
  @import './direct_upload.scss';
  @import 'daterangepicker/daterangepicker';
 
+ :root {
+  --color-primary: #6C5BF5;
+ }
+
  .alert-file_url {
    display: none;
 }
