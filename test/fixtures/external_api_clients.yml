@@ -83,6 +83,7 @@ webhook_drive_strategy:
     ExternalApiModelExample
 
 # Specific plugins are moved to its separate files.
+<%= IO.read(Rails.root.join "test/plugin_fixtures/billables_report_plugin.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/bishop_monitoring.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/bishop_tls_monitoring.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/compliance_visitor_data_request_plugin.yml") %>
