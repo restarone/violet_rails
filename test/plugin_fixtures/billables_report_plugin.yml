@@ -18,121 +18,61 @@ billables_report_plugin:
         time_tracker = ApiNamespace.find_by(name: 'time_tracker')
         current_time = Time.zone.now
 
-        # Fetching total hours billed for the last 24 hours [or day: need to CONFIRM].
-        time_tracker_entries_for_day = time_tracker.api_resources.where(
-          "created_at >= ? AND created_at <= ?",
+        # Fetching tracker entries for today, week and month to date.
+        time_tracker_entries_for_day = fetch_tracker_entries(
+          time_tracker,
           current_time - 24.hours,
           current_time
-        ).order(:created_at)
-        # Fetching total hours billed for week to date.
-        time_tracker_entries_for_week = time_tracker.api_resources.where(
-          "created_at >= ? AND created_at <= ?",
+        )
+        time_tracker_entries_for_week = fetch_tracker_entries(
+          time_tracker,
           current_time.beginning_of_week.beginning_of_day,
           current_time
-        ).order(:created_at)
-        # Fetching total hours billed for month to date.
-        time_tracker_entries_for_month = time_tracker.api_resources.where(
-          "created_at >= ? AND created_at <= ?",
+        )
+        time_tracker_entries_for_month = fetch_tracker_entries(
+          time_tracker,
           current_time.beginning_of_month.beginning_of_day,
           current_time
-        ).order(:created_at)
+        )
 
-        # constructing the data in CSV format for total hours billed for the last 24 hours.
-        total_hours_billed_for_day = time_tracker_entries_for_day.sum { |entry| entry.properties['how_much_time_in_hours_spent'].to_f }
-        total_hours_billed_for_day_csv_string = CSV.generate do |csv|
-          csv << ['', 'Total Hours', total_hours_billed_for_day]
-          csv << ['', '', '']
-          csv << ['Date', 'Hours', 'User', 'Client', 'Task', 'Notes']
-          time_tracker_entries_for_day.each do |entry|
-            csv << [
-              entry.created_at.to_s,
-              entry.properties['how_much_time_in_hours_spent'].to_f,
-              entry.properties['email_address'] || entry.user&.email,
-              entry.properties['for_what_client'],
-              entry.properties['what_task_did_you_work_on'],
-              entry.properties['notes']
-            ]
-          end
-        end
-
-        # constructing the data in CSV format for total hours billed for the week to date.
-        total_hours_billed_for_week = time_tracker_entries_for_week.sum { |entry| entry.properties['how_much_time_in_hours_spent'].to_f }
-        total_hours_billed_for_week_csv_string = CSV.generate do |csv|
-          csv << ['', 'Total Hours', total_hours_billed_for_week]
-          csv << ['', '', '']
-          csv << ['Date', 'Hours', 'User', 'Client', 'Task', 'Notes']
-          time_tracker_entries_for_week.each do |entry|
-            csv << [
-              entry.created_at.to_s,
-              entry.properties['how_much_time_in_hours_spent'].to_f,
-              entry.properties['email_address'] || entry.user&.email,
-              entry.properties['for_what_client'],
-              entry.properties['what_task_did_you_work_on'],
-              entry.properties['notes']
-            ]
-          end
-        end
-
-        # constructing the data in CSV format for total hours billed for the month to date.
-        total_hours_billed_for_month = time_tracker_entries_for_month.sum { |entry| entry.properties['how_much_time_in_hours_spent'].to_f }
-        total_hours_billed_for_month_csv_string = CSV.generate do |csv|
-          csv << ['', 'Total Hours', total_hours_billed_for_month]
-          csv << ['', '', '']
-          csv << ['Date', 'Hours', 'User', 'Client', 'Task', 'Notes']
-          time_tracker_entries_for_month.each do |entry|
-            csv << [
-              entry.created_at.to_s,
-              entry.properties['how_much_time_in_hours_spent'].to_f,
-              entry.properties['email_address'] || entry.user&.email,
-              entry.properties['for_what_client'],
-              entry.properties['what_task_did_you_work_on'],
-              entry.properties['notes']
-            ]
-          end
-        end
+        # constructing the data in CSV format
+        total_hours_billed_for_day_csv_string = generate_csv_content(time_tracker_entries_for_day)
+        total_hours_billed_for_week_csv_string = generate_csv_content(time_tracker_entries_for_week)
+        total_hours_billed_for_month_csv_string = generate_csv_content(time_tracker_entries_for_month)
       
-        # Creating attachment for total hours billed for the last 24 hours
-        total_hours_billed_for_day_attachment_details = {
-          filename: "total_hours_billed_for_day(#{current_time - 24.hours} TO #{current_time}).csv",
-          mime_type: 'text/csv',
-          content: total_hours_billed_for_day_csv_string.html_safe
-        }
+        # Attachment details
+        total_hours_billed_for_day_attachment_details = attachment_details(
+          "total_hours_billed_for_day(#{current_time - 24.hours} TO #{current_time}).csv",
+          total_hours_billed_for_day_csv_string
+        )
+        total_hours_billed_for_week_attachment_details = attachment_details(
+          "total_hours_billed_for_week(#{current_time.beginning_of_week.beginning_of_day} TO #{current_time}).csv",
+          total_hours_billed_for_week_csv_string
+        )
+        total_hours_billed_for_month_attachment_details = attachment_details(
+          "total_hours_billed_for_month(#{current_time.beginning_of_month.beginning_of_day} TO #{current_time}).csv",
+          total_hours_billed_for_month_csv_string
+        )
+
+        # Uploading respective blobs
         total_hours_billed_for_day_blob = ActiveStorage::Blob.create_and_upload!(
           io: StringIO.new(total_hours_billed_for_day_attachment_details[:content]),
           filename: total_hours_billed_for_day_attachment_details[:filename],
           content_type: total_hours_billed_for_day_attachment_details[:mime_type],
           metadata: nil
         )
-        total_hours_billed_for_day_blob_content = ActionText::Content.new("<action-text-attachment sgid='#{total_hours_billed_for_day_blob.attachable_sgid}'></action-text-attachment>").to_s
-
-        # Creating attachment for total hours billed for week to date
-        total_hours_billed_for_week_attachment_details = {
-          filename: "total_hours_billed_for_week(#{current_time.beginning_of_week.beginning_of_day} TO #{current_time}).csv",
-          mime_type: 'text/csv',
-          content: total_hours_billed_for_week_csv_string.html_safe
-        }
         total_hours_billed_for_week_blob = ActiveStorage::Blob.create_and_upload!(
           io: StringIO.new(total_hours_billed_for_week_attachment_details[:content]),
           filename: total_hours_billed_for_week_attachment_details[:filename],
           content_type: total_hours_billed_for_week_attachment_details[:mime_type],
           metadata: nil
         )
-        total_hours_billed_for_week_blob_content = ActionText::Content.new("<action-text-attachment sgid='#{total_hours_billed_for_week_blob.attachable_sgid}'></action-text-attachment>").to_s
-
-        # Creating attachment for total hours billed for month to date
-        total_hours_billed_for_month_attachment_details = {
-          filename: "total_hours_billed_for_month(#{current_time.beginning_of_month.beginning_of_day} TO #{current_time}).csv",
-          mime_type: 'text/csv',
-          content: total_hours_billed_for_month_csv_string.html_safe
-        }
         total_hours_billed_for_month_blob = ActiveStorage::Blob.create_and_upload!(
           io: StringIO.new(total_hours_billed_for_month_attachment_details[:content]),
           filename: total_hours_billed_for_month_attachment_details[:filename],
           content_type: total_hours_billed_for_month_attachment_details[:mime_type],
           metadata: nil
         )
-        total_hours_billed_for_month_blob_content = ActionText::Content.new("<action-text-attachment sgid='#{total_hours_billed_for_month_blob.attachable_sgid}'></action-text-attachment>").to_s
-
 
         # Building Email details
         subject = "Report of hours logged generated at: #{current_time}"
@@ -141,11 +81,11 @@ billables_report_plugin:
           <div>Please find the reports for hours logged below;<br><br>
           </div>
           <ul>
-            <li>Total hours logged for today<br>#{total_hours_billed_for_day_blob_content}
+            <li>Total hours logged for today<br>#{blob_content(total_hours_billed_for_day_blob)}
             </li>
-            <li>Total hours logged for this week to date<br>#{total_hours_billed_for_week_blob_content}
+            <li>Total hours logged for this week to date<br>#{blob_content(total_hours_billed_for_week_blob)}
             </li>
-            <li>Total hours logged for this month to date<br>#{total_hours_billed_for_month_blob_content}
+            <li>Total hours logged for this month to date<br>#{blob_content(total_hours_billed_for_month_blob)}
             </li>
           </ul>
         </div>
@@ -161,6 +101,47 @@ billables_report_plugin:
             total_hours_billed_for_month_blob
           ]
         )
+      end
+
+      private
+      def fetch_tracker_entries(tracker, start_time, end_time)
+        tracker.api_resources.where(
+          "created_at >= ? AND created_at <= ?",
+          start_time,
+          end_time
+        ).order(:created_at)
+      end
+
+      def generate_csv_content(tracker_entries)
+        total_hours = tracker_entries.sum { |entry| entry.properties['how_much_time_in_hours_spent'].to_f }
+
+        CSV.generate do |csv|
+          csv << ['', 'Total Hours', total_hours]
+          csv << ['', '', '']
+          csv << ['Date', 'Hours', 'User', 'Client', 'Task', 'Notes']
+          tracker_entries.each do |entry|
+            csv << [
+              entry.created_at.to_s,
+              entry.properties['how_much_time_in_hours_spent'].to_f,
+              entry.properties['email_address'] || entry.user&.email,
+              entry.properties['for_what_client'],
+              entry.properties['what_task_did_you_work_on'],
+              entry.properties['notes']
+            ]
+          end
+        end
+      end
+
+      def attachment_details(filename, attachment_content)
+        {
+          filename: filename,
+          mime_type: 'text/csv',
+          content: attachment_content.html_safe
+        }
+      end
+
+      def blob_content(blob)
+        ActionText::Content.new("<action-text-attachment sgid='#{blob.attachable_sgid}'></action-text-attachment>").to_s
       end
     end
     # at the end of the file we have to implicitly return the class 

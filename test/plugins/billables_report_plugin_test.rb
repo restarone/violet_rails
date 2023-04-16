@@ -102,6 +102,7 @@ class BillablesReportPluginTest < ActionDispatch::IntegrationTest
     assert_equal 'REPORTING_EMAILS are missing!', @billables_report_plugin.reload.error_message
   end
 
+  private
   def mock_data
     # logs of today
     @today_log_1 = api_resources(:tracker_entry_one)
@@ -122,5 +123,16 @@ class BillablesReportPluginTest < ActionDispatch::IntegrationTest
     @out_of_scope_for_today = @billables_report_plugin.api_namespace.api_resources.create(@today_log_1.as_json.except('id').merge('created_at': Time.zone.now - (24.hours + 1.minute)))
     @out_of_scope_for_week = @billables_report_plugin.api_namespace.api_resources.create(@today_log_2.as_json.except('id').merge('created_at': start_of_week_time - 1.minute))
     @out_of_scope_for_month = @billables_report_plugin.api_namespace.api_resources.create(@today_log_2.as_json.except('id').merge('created_at': start_of_month_time - 1.minute))
+  end
+
+  def csv_data_index(csv_content, data)
+    x = nil
+    y = nil
+
+    x = csv_content.index(
+      csv_content.find { |row|  y = row.index(data) }
+    )
+  
+    [x, y]
   end
 end
