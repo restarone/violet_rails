@@ -17,15 +17,15 @@ class BillablesReportPluginTest < ActionDispatch::IntegrationTest
         Sidekiq::Worker.drain_all
       end
     end
-    
+
     logs_for_today = [@today_log_1, @today_log_2, @today_log_3].sort_by { |log| log.created_at }
     logs_for_week = [@week_log_1, @week_log_2, @today_log_1, @today_log_2, @today_log_3, @out_of_scope_for_today].sort_by { |log| log.created_at }
     logs_for_month = [@month_log_1, @month_log_2, @week_log_1, @week_log_2, @today_log_1, @today_log_2, @today_log_3, @out_of_scope_for_today, @out_of_scope_for_week].sort_by { |log| log.created_at }
-    
+
     report_email = EMailer.deliveries.last
 
     assert_equal 3, report_email.attachments.size
-    
+
     # CSV report for the billables hour of today
     attached_report_for_today = report_email.attachments.find { |attachment| attachment.filename.match('total_hours_billed_for_day') }
     parsed_csv_report_for_today = CSV.parse(attached_report_for_today.body.raw_source.gsub(/\r\n/, "$"), col_sep: ",", row_sep: "$")
@@ -113,16 +113,16 @@ class BillablesReportPluginTest < ActionDispatch::IntegrationTest
     # logs for week
     start_of_week_time = Time.zone.now.beginning_of_week.beginning_of_day
     @week_log_1 = @billables_report_plugin.api_namespace.api_resources.create(@today_log_2.as_json.except('id').merge('created_at': start_of_week_time))
-    @week_log_2 = @billables_report_plugin.api_namespace.api_resources.create(@today_log_2.as_json.except('id').merge('created_at': start_of_week_time + 2.minutes))
+    @week_log_2 = @billables_report_plugin.api_namespace.api_resources.create(@today_log_3.as_json.except('id').merge('created_at': start_of_week_time + 2.minutes))
 
     # logs for month
     start_of_month_time = Time.zone.now.beginning_of_month.beginning_of_day
     @month_log_1 = @billables_report_plugin.api_namespace.api_resources.create(@today_log_2.as_json.except('id').merge('created_at': start_of_month_time))
-    @month_log_2 = @billables_report_plugin.api_namespace.api_resources.create(@today_log_2.as_json.except('id').merge('created_at': start_of_month_time + 2.minutes))
+    @month_log_2 = @billables_report_plugin.api_namespace.api_resources.create(@today_log_3.as_json.except('id').merge('created_at': start_of_month_time + 2.minutes))
 
     @out_of_scope_for_today = @billables_report_plugin.api_namespace.api_resources.create(@today_log_1.as_json.except('id').merge('created_at': Time.zone.now - (24.hours + 1.minute)))
     @out_of_scope_for_week = @billables_report_plugin.api_namespace.api_resources.create(@today_log_2.as_json.except('id').merge('created_at': start_of_week_time - 1.minute))
-    @out_of_scope_for_month = @billables_report_plugin.api_namespace.api_resources.create(@today_log_2.as_json.except('id').merge('created_at': start_of_month_time - 1.minute))
+    @out_of_scope_for_month = @billables_report_plugin.api_namespace.api_resources.create(@today_log_3.as_json.except('id').merge('created_at': start_of_month_time - 1.minute))
   end
 
   def csv_data_index(csv_content, data)
@@ -132,7 +132,7 @@ class BillablesReportPluginTest < ActionDispatch::IntegrationTest
     x = csv_content.index(
       csv_content.find { |row|  y = row.index(data) }
     )
-  
+
     [x, y]
   end
 end

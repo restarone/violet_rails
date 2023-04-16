@@ -111,7 +111,7 @@ tracker_entry_one:
   properties:
     {
       "notes": "http://link-to-backlog-task-1",
-      "for_what_client": "Retarone Solutions",
+      "for_what_client": "client-one",
       "what_task_did_you_work_on": "Setup 2FA",
       "how_much_time_in_hours_spent": 7.3,
       "i_certify_information_accurate": true,
@@ -136,7 +136,7 @@ tracker_entry_three:
   properties:
     {
       "notes": "http://link-to-backlog-task-3",
-      "for_what_client": "Retarone Solutions",
+      "for_what_client": "client-two",
       "what_task_did_you_work_on": "Setup CI/CD with GitLab",
       "how_much_time_in_hours_spent": 3.5,
       "i_certify_information_accurate": true,
