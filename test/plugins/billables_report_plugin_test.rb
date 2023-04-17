@@ -26,6 +26,11 @@ class BillablesReportPluginTest < ActionDispatch::IntegrationTest
     # Each client has 3 reports: today, week and month
     assert_equal 3 * @clients.size, report_email.attachments.size
 
+    # Initializing client independent total-hours
+    total_hours_billed_for_day = 0
+    total_hours_billed_for_week = 0
+    total_hours_billed_for_month = 0
+
     @clients.each do |client_name|
       # CSV report for the billables hour of today
       attached_report_for_today = report_email.attachments.find { |attachment| attachment.filename.starts_with?("(#{client_name})-total_hours_billed_for_day") }
@@ -33,7 +38,10 @@ class BillablesReportPluginTest < ActionDispatch::IntegrationTest
 
       client_logs_for_today = @logs_for_today.select { |log| log.properties['for_what_client'] == client_name }
 
-      assert_equal client_logs_for_today.map { |log| log.properties['how_much_time_in_hours_spent'].to_f }.sum, parsed_csv_report_for_today[0][2].to_f
+      client_total_hours_for_today = client_logs_for_today.map { |log| log.properties['how_much_time_in_hours_spent'].to_f }.sum
+      assert_equal client_total_hours_for_today, parsed_csv_report_for_today[0][2].to_f
+      total_hours_billed_for_day += client_total_hours_for_today
+
       client_logs_for_today.each_with_index do |log, index|
         row = 3 + index
         assert_equal log.created_at.to_s, parsed_csv_report_for_today[row][0]
@@ -50,7 +58,10 @@ class BillablesReportPluginTest < ActionDispatch::IntegrationTest
 
       client_logs_for_week = @logs_for_week.select { |log| log.properties['for_what_client'] == client_name }
 
-      assert_equal client_logs_for_week.map { |log| log.properties['how_much_time_in_hours_spent'].to_f }.sum, parsed_csv_report_for_week[0][2].to_f
+      client_total_hours_for_week = client_logs_for_week.map { |log| log.properties['how_much_time_in_hours_spent'].to_f }.sum
+      assert_equal client_total_hours_for_week, parsed_csv_report_for_week[0][2].to_f
+      total_hours_billed_for_week += client_total_hours_for_week
+
       client_logs_for_week.each_with_index do |log, index|
         row = 3 + index
         assert_equal log.created_at.to_s, parsed_csv_report_for_week[row][0]
@@ -67,7 +78,10 @@ class BillablesReportPluginTest < ActionDispatch::IntegrationTest
 
       client_logs_for_month = @logs_for_month.select { |log| log.properties['for_what_client'] == client_name }
 
-      assert_equal client_logs_for_month.map { |log| log.properties['how_much_time_in_hours_spent'].to_f }.sum, parsed_csv_report_for_month[0][2].to_f
+      client_total_hours_for_month = client_logs_for_month.map { |log| log.properties['how_much_time_in_hours_spent'].to_f }.sum
+      assert_equal client_total_hours_for_month, parsed_csv_report_for_month[0][2].to_f
+      total_hours_billed_for_month += client_total_hours_for_month
+
       client_logs_for_month.each_with_index do |log, index|
         row = 3 + index
         assert_equal log.created_at.to_s, parsed_csv_report_for_month[row][0]
@@ -78,6 +92,11 @@ class BillablesReportPluginTest < ActionDispatch::IntegrationTest
         assert_equal log.properties['notes'], parsed_csv_report_for_month[row][5]
       end
     end
+
+    # The total hours is equal to the sum of all clients total hours billed.
+    assert_equal total_hours_billed_for_day, @logs_for_today.map { |log| log.properties['how_much_time_in_hours_spent'].to_f }.sum
+    assert_equal total_hours_billed_for_week, @logs_for_week.map { |log| log.properties['how_much_time_in_hours_spent'].to_f }.sum
+    assert_equal total_hours_billed_for_month, @logs_for_month.map { |log| log.properties['how_much_time_in_hours_spent'].to_f }.sum
   end
 
   test 'raises error if REPORTING_EMAILS metadata is missing or empty' do
