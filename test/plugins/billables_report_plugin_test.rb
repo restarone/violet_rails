@@ -127,6 +127,19 @@ class BillablesReportPluginTest < ActionDispatch::IntegrationTest
     end
 
     assert_equal 'REPORTING_EMAILS are missing!', @billables_report_plugin.reload.error_message
+
+    # When REPORTING_EMAILS metadata is empty string
+    @billables_report_plugin.update(metadata: {'REPORTING_EMAILS': ''})
+
+    sign_in(@user)
+    perform_enqueued_jobs do
+      assert_no_difference 'EMailer.deliveries.size' do          
+        get start_api_namespace_external_api_client_path(api_namespace_id: @billables_report_plugin.api_namespace.id, id: @billables_report_plugin.id)
+        Sidekiq::Worker.drain_all
+      end
+    end
+
+    assert_equal 'REPORTING_EMAILS are missing!', @billables_report_plugin.reload.error_message
   end
 
   private
@@ -158,16 +171,5 @@ class BillablesReportPluginTest < ActionDispatch::IntegrationTest
     @logs_for_today = @tracker.api_resources.where(id: collection).where("created_at >= ?", current_time - 24.hours).order(:created_at)
     @logs_for_week = @tracker.api_resources.where(id: collection).where("created_at >= ?", start_of_week_time).order(:created_at)
     @logs_for_month = @tracker.api_resources.where(id: collection).where("created_at >= ?", start_of_month_time).order(:created_at)
-  end
-
-  def csv_data_index(csv_content, data)
-    x = nil
-    y = nil
-
-    x = csv_content.index(
-      csv_content.find { |row|  y = row.index(data) }
-    )
-
-    [x, y]
   end
 end
