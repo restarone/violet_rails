@@ -2,8 +2,21 @@ import { Controller } from "@hotwired/stimulus";
 import moment from "moment";
 import 'daterangepicker';
 
+/*
+ * Usage
+ * =====
+ *
+ * add data-controller="api-resources" to the common ancestor that contains Search form, pagination, and table
+ *
+ * Actions:
+ * Add this to "View <property_name>" link -> data-action="click->api-resources#showModal"
+ *
+ * Targets:
+ * Add this to #myModal -> data-api-resources-target="modal"
+*/
+
 export default class extends Controller {
-  static targets = [ 'searchForm', 'modal' ]
+  static targets = ['modal']
 
   ranges = {
     'Last 7 days': [moment().subtract(6, 'days'), moment()],
@@ -41,45 +54,12 @@ export default class extends Controller {
       $('#q_updated_at_gteq').val(start.format('YYYY-MM-DD'));
       $('#q_updated_at_end_of_day_lteq').val(end.format('YYYY-MM-DD')).trigger("input");
     });
-
-    $(this.searchFormTarget).on("input", (_event, _params) => {
-      this.search();
-    });
-  }
-
-  search() {
-    clearTimeout(this.timeout)
-    this.timeout = setTimeout(() => {
-      this.searchFormTarget.requestSubmit();
-    }, 200)
-  }
-
-  clearText() {
-    const searchField = this.searchFormTarget.querySelector("input[type='search']");
-    searchField.value = "";
-    this.searchFormTarget.requestSubmit();
   }
 
   showModal(e) {
     const dataset = e.target.dataset;
     this.modalTarget.querySelector('#myModalLabel').textContent = dataset['column'];
-    this.modalTarget.querySelector('#modal-id').innerHTML = `ID: <a href="/api_namespaces/${dataset['namespaceId']}/resources/${dataset['id']}">${dataset['id']}</a>`;
-    this.modalTarget.querySelector('#modal-body-content').textContent = dataset['value'];
-  }
-
-  reloadTable() {
-    const params = new URLSearchParams(location.search);
-    // preserve page and sort order number while submitting form
-    if (params.get('page')) {
-      $(this.searchFormTarget).append(`<input type="hidden" name="page" value="${params.get('page')}" />`);
-    }
-
-    if (params.get('q[s]')) {
-      $(this.searchFormTarget).append(`<input type="hidden" name="q[s]" value="${params.get('q[s]')}" />`);
-    }
-    this.searchFormTarget.requestSubmit();
-
-    this.searchFormTarget.querySelector('input[name="page"]')?.remove();
-    this.searchFormTarget.querySelector('input[name="q[s]"]')?.remove();
+    this.modalTarget.querySelector('#myModal .modal-subtitle').innerHTML = `ID: <a href="/api_namespaces/${dataset['namespaceId']}/resources/${dataset['id']}">${dataset['id']}</a>`;
+    this.modalTarget.querySelector('#myModal .modal-body-content').textContent = dataset['value'];
   }
 }
