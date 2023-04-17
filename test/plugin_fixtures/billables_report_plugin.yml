@@ -50,17 +50,17 @@ billables_report_plugin:
           # Attachment details
           total_hours_billed_for_day_attachment_details = attachment_details(
             client_name,
-            "total_hours_billed_for_day(#{(current_time - 24.hours).strftime("%A, %B #{current_time.day.ordinalize} %Y")} - #{current_time.strftime("%A, %B #{current_time.day.ordinalize} %Y")}).csv",
+            "total_hours_billed_for_day(#{(current_time - 24.hours).strftime("%A, %B #{(current_time - 24.hours).day.ordinalize} %Y")} - #{current_time.strftime("%A, %B #{current_time.day.ordinalize} %Y")}).csv",
             total_hours_billed_for_day_csv_string
           )
           total_hours_billed_for_week_attachment_details = attachment_details(
             client_name,
-            "total_hours_billed_for_week(#{current_time.beginning_of_week.beginning_of_day.strftime("%A, %B #{current_time.day.ordinalize} %Y")} - #{current_time.strftime("%A, %B #{current_time.day.ordinalize} %Y")}).csv",
+            "total_hours_billed_for_week(#{current_time.beginning_of_week.beginning_of_day.strftime("%A, %B #{current_time.beginning_of_week.beginning_of_day.day.ordinalize} %Y")} - #{current_time.strftime("%A, %B #{current_time.day.ordinalize} %Y")}).csv",
             total_hours_billed_for_week_csv_string
           )
           total_hours_billed_for_month_attachment_details = attachment_details(
             client_name,
-            "total_hours_billed_for_month(#{current_time.beginning_of_month.beginning_of_day.strftime("%A, %B #{current_time.day.ordinalize} %Y")} - #{current_time.strftime("%A, %B #{current_time.day.ordinalize} %Y")}).csv",
+            "total_hours_billed_for_month(#{current_time.beginning_of_month.beginning_of_day.strftime("%A, %B #{current_time.beginning_of_month.beginning_of_day.day.ordinalize} %Y")} - #{current_time.strftime("%A, %B #{current_time.day.ordinalize} %Y")}).csv",
             total_hours_billed_for_month_csv_string
           )
 
