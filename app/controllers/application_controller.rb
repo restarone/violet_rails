@@ -41,7 +41,8 @@ class ApplicationController < ActionController::Base
   end
 
   def prepare_profiler
-    if current_user && current_user.can_access_admin? & current_user.show_profiler?
+    if current_user && current_user.can_access_admin? && current_user.show_profiler?
+      return if params[:pp].present? && params[:pp] == 'env' && !current_user.global_admin?
       Rack::MiniProfiler.authorize_request
     end
   end

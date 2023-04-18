@@ -27,12 +27,20 @@ class Ahoy::Event < ApplicationRecord
   belongs_to :visit
   belongs_to :user, optional: true
 
-  scope :with_label , -> {
+  scope :with_label_grouped_data , -> {
     # Build a subquery SQL
     subquery = self.unscoped.select("(case when #{table_name}.properties->>'label' is not NULL then #{table_name}.properties->>'label' else #{table_name}.name end) as label, #{table_name}.id").to_sql
 
-    # join the subquery to base model
-    joins("INNER JOIN (#{subquery}) as labelled_events ON labelled_events.id = #{table_name}.id")
+    # join the subquery to base model and returns the grouped data as Hash
+    self
+      .joins("INNER JOIN (#{subquery}) as labelled_events ON labelled_events.id = #{table_name}.id")
+      .group(:label)
+      .pluck(
+        :label,
+        Arel.sql("jsonb_build_object('count', COUNT(#{table_name}.id), 'name', jsonb_array_element(jsonb_agg(#{table_name}.name), 0))")
+      )
+      .to_h
+      .with_indifferent_access
   }
 
   scope :with_api_resource , -> {
@@ -55,11 +63,13 @@ class Ahoy::Event < ApplicationRecord
   }
 
   scope :filter_records_with_video_details_missing, -> {
+    # The watch_time and total_duration maybe zero.
+    # So, neglecting such records as well to prevent: "DivisionByZero error"
     self
       .where(
-        "(properties ->> 'watch_time') IS NOT NULL"\
+        "NULLIF((properties ->> 'watch_time')::float, 0.0) IS NOT NULL"\
+        " AND NULLIF((properties ->> 'total_duration')::float, 0.0) IS NOT NULL"\
         " AND (properties ->> 'video_start') IS NOT NULL"\
-        " AND (properties ->> 'total_duration') IS NOT NULL"\
         " AND (properties ->> 'resource_id') IS NOT NULL"
       )
   }
@@ -103,4 +113,97 @@ class Ahoy::Event < ApplicationRecord
       { success: false, message: e.message }
     end
   end
+
+  # Methods for Video related events analytics - START
+  def self.total_watch_time_for_video_events
+    self.pluck(Arel.sql("SUM((#{Ahoy::Event.table_name}.properties ->> 'watch_time')::bigint)")).sum
+  end
+
+  def self.total_views_for_video_events
+    self.pluck(Arel.sql("SUM(CASE WHEN (#{Ahoy::Event.table_name}.properties ->> 'video_start')::boolean THEN 1 ELSE 0 END)")).sum
+  end
+
+  def self.avg_view_duration_for_video_events
+    self.total_watch_time_for_video_events.to_f / (self.total_views_for_video_events.nonzero? || 1)
+  end
+
+  def self.avg_view_percentage_for_video_events
+    self.pluck(Arel.sql("((properties ->> 'watch_time')::float / (properties ->> 'total_duration')::float) * 100")).sum / (self.total_views_for_video_events.nonzero? || 1)
+  end
+
+  def self.top_three_videos_details
+    self
+      .with_api_resource
+      .group(:resource_id)
+      .reorder("SUM(is_viewed) DESC", "total_watch_time DESC")
+      .select(:resource_id,
+        "SUM(watch_time)::INT AS total_watch_time",
+        "SUM(is_viewed) AS total_views",
+        "MAX(total_duration)::float AS duration",
+        "json_agg(ahoy_events.name) AS names",
+        "json_agg(namespace_id) AS namespace_ids")
+      .limit(3)
+      .as_json
+      .map(&:with_indifferent_access)
+      .each do |video_event|
+        api_resource = ApiResource.find_by(id: video_event[:resource_id])
+
+        video_event[:name] = video_event[:names].uniq.first
+        video_event[:duration] = video_event[:duration] || 0
+        video_event[:namespace_id] = video_event[:namespace_ids].uniq.first
+        video_event[:resource_title] = api_resource&.properties.dig(api_resource&.api_namespace.analytics_metadata&.dig("title")) || "Resource Id: #{video_event[:resource_id]}"
+        video_event[:resource_author] = api_resource&.properties.dig(api_resource&.api_namespace.analytics_metadata&.dig("author"))
+        video_event[:resource_image] = api_resource&.non_primitive_properties.find_by(field_type: "file", label: api_resource&.api_namespace.analytics_metadata&.dig("thumbnail"))&.file_url
+
+        video_event.delete(:names)
+        video_event.delete(:namespace_ids)
+        video_event.delete(:id)
+      end
+  end
+
+  # Argument resource_ids are derived from the above top_three_videos_details methods.
+  # Thus, the array of resource_ids will be a maximum size of 3.
+  def self.total_views_and_watch_time_detals_for_previous_video_events(resource_ids)
+    self
+      .with_api_resource
+      .where('api_resourced_events.resource_id': resource_ids)
+      .group(:resource_id)
+      .select(:resource_id,
+        "SUM(watch_time)::INT AS previous_period_total_watch_time",
+        "SUM(is_viewed) AS previous_period_total_views",
+        "MAX(total_duration)::float AS duration")
+      .as_json
+      .map(&:with_indifferent_access)
+  end
+  # Methods for Video related events analytics - END
+
+  # Methods for Page View related events analytics - START
+  def self.page_visit_chart_data_for_page_visit_events(date_range, grouping_data)
+    chart_data = []
+
+    self
+      .joins(:visit)
+      .where.not(visit: {device_type: nil})
+      .group("visit.device_type")
+      .group_by_period(grouping_data[:period], :time, range: date_range, format: grouping_data[:format])
+      .size
+      .group_by {|k, v| k.first}
+      .each do |k, v|
+        chart_data << {
+          name: k,
+          data: v.map {|item| [item.first.last, item.last]}.to_h
+        }
+      end
+
+    chart_data
+  end 
+
+  def self.visitors_chart_data_for_page_visit_events
+    visitors_by_token = self.joins(:visit).group(:visitor_token).size
+    recurring_visitors = visitors_by_token.values.count { |v| v > 1 }
+    single_time_visitors = visitors_by_token.keys.count - recurring_visitors
+
+    {"Single time visitor" => single_time_visitors, "Recurring visitors" => recurring_visitors  }
+  end
+  # Methods for Page View related events analytics - END
 end
