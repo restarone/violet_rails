@@ -4,18 +4,18 @@ class UniqueStringAggregatorPluginTest < ActiveSupport::TestCase
     setup do
         @unique_string_aggregator_plugin = external_api_clients(:unique_string_aggregator_plugin)
         @api_namespace = @unique_string_aggregator_plugin.api_namespace
-        @output_api_namespace = api_namespaces(:movie_tags)
+        @output_api_namespace = api_namespaces(:unique_string_aggregator_output_tags)
         Sidekiq::Testing.fake!
     end
 
     # How test fixtures are set up:
     # By default, PRISTINE is set to true in the plugin metadata
-    # By default, the plugin is connected to movies API namespace
-    # By default, the output API namespace is movie_tags and it has input property
+    # By default, the plugin is connected to unique_string_aggregator_target API namespace
+    # By default, the output API namespace is unique_string_aggregator_output_tags and it has input property
 
     test "Should raise an error if the output API namespace slug and the current API namespace slug are the same" do
         metadata = @unique_string_aggregator_plugin.metadata
-        metadata["OUTPUT_API_NAMESPACE"] = "movies"
+        metadata["OUTPUT_API_NAMESPACE"] = @api_namespace.slug
         @unique_string_aggregator_plugin.update(metadata: metadata)
 
         perform_enqueued_jobs do

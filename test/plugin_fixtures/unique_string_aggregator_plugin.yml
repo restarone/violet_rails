@@ -1,11 +1,11 @@
 unique_string_aggregator_plugin:
-  api_namespace: movies
+  api_namespace: unique_string_aggregator_target
   slug: unique-string-aggregator
   label: UniqueStringAggregator
   enabled: true
   metadata: {
     'INPUT_PROPERTY': 'tags',
-    'OUTPUT_API_NAMESPACE': 'movie_tags',
+    'OUTPUT_API_NAMESPACE': 'unique-string-aggregator-output-tags',
     'PRISTINE': true
   }
   model_definition: |
