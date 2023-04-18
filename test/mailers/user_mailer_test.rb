@@ -36,7 +36,7 @@ class UserMailerTest < ActionMailer::TestCase
     last_email  = ActionMailer::Base.deliveries.last
     assert_equal "OTP", last_email.subject
     assert_equal last_email.to, [@user.email]
-    assert_match Rails.application.routes.url_helpers.root_url(host: ENV['APP_HOST']), last_email.body.to_s
+    assert_match Rails.application.routes.url_helpers.root_url, last_email.body.to_s
     assert_match @user.reload.current_otp, last_email.body.to_s
   end
 end
