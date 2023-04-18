@@ -16,6 +16,10 @@ class SimpleDiscussion::UserMailerTest < ActionMailer::TestCase
     @forum_thread.save!
   end
 
+  teardown do
+    ENV["APP_HOST"] = "restarone.com"
+  end
+
   test 'sends email successfully when the forum-post has non-image attachment' do
     file_path = Rails.root.join('test','fixtures', 'files', 'fixture_file.pdf')
     attachment = ActiveStorage::Blob.create_and_upload!(io: File.open(file_path), filename: 'fixture_file', content_type: 'application/pdf', metadata: nil)
@@ -67,6 +71,7 @@ class SimpleDiscussion::UserMailerTest < ActionMailer::TestCase
     attachment = ActiveStorage::Blob.create_and_upload!(io: File.open(file_path), filename: 'fixture_image', content_type: 'image/png', metadata: nil)
     action_txt_content = ActionText::Content.new(%Q(<action-text-attachment sgid="#{attachment.attachable_sgid}"></action-text-attachment>))
     @user.update(name: "Test name")
+    ENV["APP_HOST"] = "example_mail.com"
 
     subdomain = Subdomain.current
  
@@ -85,6 +90,7 @@ class SimpleDiscussion::UserMailerTest < ActionMailer::TestCase
 
   test 'Set mailer email to restarone email when set in settings for new forum thread' do
     @user.update(name: "Test name")
+    ENV["APP_HOST"] = "example_mail.com"
 
     subdomain = Subdomain.current
  
@@ -104,6 +110,7 @@ class SimpleDiscussion::UserMailerTest < ActionMailer::TestCase
 
   test 'Set mailer email to user email when set in settings for new forum thread' do
     @user.update(name: "Test name")
+    ENV["APP_HOST"] = "example_mail.com"
 
     subdomain = Subdomain.current
  
