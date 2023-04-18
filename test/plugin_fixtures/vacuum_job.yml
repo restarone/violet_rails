@@ -1,5 +1,5 @@
 vacuum_job:
-  api_namespace: one
+  api_namespace: vacuum_job_target
   slug: vacuum-job
   label: VacuumJob
   enabled: true
@@ -7,7 +7,7 @@ vacuum_job:
             'ORDER': 'descending',
             'DIMENSION': 'created_at',
             'BATCH_SIZE': '5',
-            'API_NAMESPACE_ID': '1',
+            'API_NAMESPACE_ID': <%= ActiveRecord::FixtureSet.identify(:vacuum_job_target).to_s %>,
             'OLDER_THAN': '2880' # 2 days (in minutes)
           }
   model_definition: |

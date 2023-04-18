@@ -168,3 +168,12 @@ timesheet_request_date_range_previous_month:
 timesheet_request_current_month:
   api_namespace: timesheet_request
   properties: { "start_date": "", "end_date": "", "current_month": "true" }
+
+vacuum_job_target_resource:
+  api_namespace: vacuum_job_target
+  properties: {
+                "can_edit": true,
+                "can_se": true,
+                "can_share": true,
+                "something_else": true
+              }

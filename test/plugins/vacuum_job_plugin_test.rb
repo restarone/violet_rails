@@ -4,7 +4,7 @@ class VacuumJobPluginTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
     @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
-    @api_namespace = api_namespaces(:one)
+    @api_namespace = api_namespaces(:vacuum_job_target)
     @vacuum_job_plugin = external_api_clients(:vacuum_job)
   end
 
@@ -18,7 +18,7 @@ class VacuumJobPluginTest < ActionDispatch::IntegrationTest
     }
     @vacuum_job_plugin.update(metadata: metadata)
 
-    api_resource = api_resources(:one)
+    api_resource = api_resources(:vacuum_job_target_resource)
 
     (1..5).each do
       new_api_resource = api_resource.dup
@@ -49,7 +49,7 @@ class VacuumJobPluginTest < ActionDispatch::IntegrationTest
       'ORDER': 'descending',
       'DIMENSION': 'created_at',
       'BATCH_SIZE': '5',
-      'API_NAMESPACE_ID': '1',
+      'API_NAMESPACE_ID': api_namespaces(:tls_monitoring_targets).id.to_s,
       'OLDER_THAN': '2880' # 2 days (in minutes)
     }
     @vacuum_job_plugin.update(metadata: metadata)

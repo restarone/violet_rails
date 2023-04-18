@@ -269,3 +269,13 @@ unique_string_aggregator_output_tags:
               }
   requires_authentication: false
   namespace_type: create-read-update-delete
+
+vacuum_job_target:
+  name: vacuum_job_target
+  slug: vacuum-job-target
+  version: 1
+  properties: {
+                "name": "test"
+              }
+  requires_authentication: false
+  namespace_type: create-read-update-delete
