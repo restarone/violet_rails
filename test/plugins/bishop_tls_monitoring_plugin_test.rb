@@ -11,7 +11,7 @@ class BishopTlsMonitoringPluginTest < ActionDispatch::IntegrationTest
     Net::HTTP.any_instance.stubs(:peer_cert).returns(stub(:not_after => (Time.now + 2.months)))
 
     bishop_tls_plugin = external_api_clients(:bishop_tls_monitoring)
-    api_namespace = api_namespaces(:monitoring_targets)
+    api_namespace = api_namespaces(:tls_monitoring_targets)
     bishop_request = stub_request(:get, api_namespace.api_resources.first.properties['url'])
       .to_return(status: 200, body: "OK")
 
@@ -30,7 +30,7 @@ class BishopTlsMonitoringPluginTest < ActionDispatch::IntegrationTest
     Net::HTTP.any_instance.stubs(:peer_cert).returns(stub(:not_after => (Time.now + 1.weeks)))
 
     bishop_tls_plugin = external_api_clients(:bishop_tls_monitoring)
-    api_namespace = api_namespaces(:monitoring_targets)
+    api_namespace = api_namespaces(:tls_monitoring_targets)
     bishop_request = stub_request(:get, api_namespace.api_resources.first.properties['url'])
       .to_return(status: 200, body: "OK")
 

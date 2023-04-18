@@ -1,5 +1,5 @@
 bishop_tls_monitoring:
-  api_namespace: monitoring_targets
+  api_namespace: tls_monitoring_targets
   slug: bishop-tls-monitoring
   label: TLS monitoring in a box
   enabled: true
