@@ -23,7 +23,7 @@ module TwofactorAuthenticable
  def resend_otp
   user = find_user
   prompt_for_otp_two_factor(user)
-  render 'users/sessions/two_factor'
+  render partial: 'users/sessions/two_factor'
  end 
 
  include ApplicationHelper
@@ -34,7 +34,7 @@ module TwofactorAuthenticable
     elsif user&.valid_password?(user_params[:password])
      if user&.current_sign_in_ip != request&.remote_ip 
       prompt_for_otp_two_factor(user)
-      render 'users/sessions/two_factor'
+      render partial: 'users/sessions/two_factor'
      else
         sign_in(user)
         session.delete(:otp_user_id)
@@ -54,7 +54,11 @@ module TwofactorAuthenticable
       else
         flash.now[:alert] = 'OTP Required.'
       end
-      render 'users/sessions/two_factor'
+
+      render turbo_stream: [
+        turbo_stream.update("turbo-flash", partial: "shared/flash"),
+        turbo_stream.replace('users/sessions/two_factor')
+      ]
     end
   end
 
