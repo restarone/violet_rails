@@ -238,6 +238,8 @@ class Subdomain < ApplicationRecord
   end
 
   def self.all_with_public_schema
+    return Subdomain.all if Subdomain.where(name: 'public').present?
+
     subdomain = Subdomain.new(name: 'public')
     Subdomain.all.to_a.push(subdomain)
   end

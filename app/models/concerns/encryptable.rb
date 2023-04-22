@@ -6,9 +6,8 @@
 module Encryptable
     extend ActiveSupport::Concern
 
-    @@encrypted_attributes = []
-
     included do
+      @encryptables = []
       def build_salt
         self.salt = SecureRandom.random_bytes(
           ActiveSupport::MessageEncryptor.key_len
@@ -17,8 +16,9 @@ module Encryptable
     end
 
     class_methods do
-      def encrypted_attributes 
-        @@encrypted_attributes
+
+      def encryptables 
+        @encryptables
       end
 
       def attr_encrypted(*attributes) # rubocop:disable Metrics/AbcSize
@@ -39,7 +39,7 @@ module Encryptable
             EncryptionService.new(salt, value).decrypt if value.present?
           end
 
-          @@encrypted_attributes << attribute
+          @encryptables << attribute
         end
       end
     end

@@ -4,10 +4,10 @@ class EncryptionService
   
   delegate :encrypt_and_sign, :decrypt_and_verify, to: :encryptor
   
-  def initialize(salt, value)
+  def initialize(salt, value, secret = ENCRYPT_KEY_BASE)
     @value = value
 
-    key = ActiveSupport::KeyGenerator.new(ENCRYPT_KEY_BASE).generate_key(salt, KEY_LEN)
+    key = ActiveSupport::KeyGenerator.new(secret).generate_key(salt, KEY_LEN)
     @crypt = ActiveSupport::MessageEncryptor.new(key)
   end
 
