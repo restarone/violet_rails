@@ -1,0 +1,33 @@
+compliance_visitor_data_request:
+  name: compliance/visitor/request
+  slug: compliance-visitor-request
+  version: 1
+  properties: {
+    'name': '',
+    'email': '',
+    'compliance_message_sent': false
+  }
+  requires_authentication: false
+  namespace_type: create-read-update-delete
+
+compliance_visitor_target_one:
+  name: compliance_visitor_target_one
+  slug: compliance-visitor-target-one
+  version: 1
+  properties: {
+    'post': '',
+    'email': '',
+  }
+  requires_authentication: false
+  namespace_type: create-read-update-delete
+
+compliance_visitor_target_two:
+  name: compliance_visitor_target_two
+  slug: compliance-visitor-target-two
+  version: 1
+  properties: {
+    'email': '',
+    'name': '',
+  }
+  requires_authentication: false
+  namespace_type: create-read-update-delete
