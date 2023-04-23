@@ -7,8 +7,8 @@ class ComplianceVisitorDataRequestPluginTest < ActiveSupport::TestCase
         @visitor_one = api_resources(:compliance_visitor_data_request_one)
         @visitor_two = api_resources(:compliance_visitor_data_request_two)
 
-        @namespace_with_email_one = api_namespaces(:namespace_with_email_one)
-        @namespace_with_email_two = api_namespaces(:namespace_with_email_two)
+        @namespace_with_email_one = api_namespaces(:compliance_visitor_target_one)
+        @namespace_with_email_two = api_namespaces(:compliance_visitor_target_two)
 
         Sidekiq::Testing.fake!
 
@@ -121,8 +121,10 @@ class ComplianceVisitorDataRequestPluginTest < ActiveSupport::TestCase
         end
 
         sent_email = ActionMailer::Base.deliveries.last
-        assert(sent_email.attachments[0].filename.include?("api_namespace_#{@namespace_with_email_one.name}"))
-        assert(sent_email.attachments[0].filename.include?(".csv"))
+
+        assert sent_email
+        assert sent_email.attachments[0].filename.include?("api_namespace_#{@namespace_with_email_one.slug}")
+        assert sent_email.attachments[0].filename.include?(".csv")
     end
 
     test "CSV file should contain the right content" do
