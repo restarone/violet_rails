@@ -42,7 +42,7 @@ class BishopTlsMonitoringPluginTest < ActionDispatch::IntegrationTest
       http_method: 'post'
     )
     
-    target_namespace = api_namespaces(:monitoring_target_incident)
+    target_namespace = api_namespaces(:bishop_monitoring_target_incident)
     discord_request = stub_request(:post, "http://www.discord.com").to_return(status: 200, body: 'Success.')
 
     sign_in(@user)

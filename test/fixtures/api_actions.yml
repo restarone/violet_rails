@@ -118,24 +118,6 @@ create_custom_api_action_three:
   method_definition: "logger = Logger.new(\"#{Rails.root}/log/api_action_response.log\")\n logger.info 'Test log message!'"
   api_namespace: three
 
-create_api_action_plugin_bishop_monitoring_web_request:
-  type: CreateApiAction
-  action_type: send_web_request
-  payload_mapping: {
-                      "content": "#{api_resource.properties&.dig('representation', 'body')}"
-                    }
-  request_url: "http://www.discord.com"
-  api_namespace: monitoring_target_incident
-  http_method: post
-  custom_headers: {"AUTHORIZATION":"SECRET_BEARER_TOKEN"}
-
-create_api_action_plugin_bishop_monitoring_email:
-  type: CreateApiAction
-  action_type: send_email
-  include_api_resource_data: true
-  email: test@restarone.com
-  api_namespace: monitoring_target_incident
-
 custom_api_action_on_timesheet_request:
   type: CreateApiAction
   action_type: custom_action
@@ -221,3 +203,6 @@ custom_api_action_on_timesheet_request:
     content += ActionText::Content.new("<action-text-attachment sgid='#{blob.attachable_sgid}'></action-text-attachment>").to_s
 
     send_email.(email, subject, content, attachment)
+
+# Specific ApiNamespaces' fixtures related to plugins are moved to its separate files.
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_actions/bishop_monitoring.yml") %>
