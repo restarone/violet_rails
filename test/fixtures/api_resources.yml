@@ -68,20 +68,7 @@ mailchimp:
     'contact': '555-777',
     'synced_to_mailchimp': false
   }
-compliance_visitor_data_request_one:
-  api_namespace: compliance_visitor_data_request
-  properties: {
-    'name': 'Test Name 1',
-    'email': 'user1-compliance@example.com',
-    'compliance_message_sent': false
-  }
-compliance_visitor_data_request_two:
-  api_namespace: compliance_visitor_data_request
-  properties: {
-    'name': 'Test Name 2',
-    'email': 'user2-compliance@example.com',
-    'compliance_message_sent': false
-  }
+
 resource_with_all_types_one:
   api_namespace: namespace_with_all_types                
   properties: {
@@ -177,3 +164,6 @@ vacuum_job_target_resource:
                 "can_share": true,
                 "something_else": true
               }
+
+# Specific ApiResources' fixtures related to plugins are moved to its separate files.
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/compliance_visitor_data_request.yml") %>
