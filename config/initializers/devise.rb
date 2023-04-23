@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require Rails.root.join("lib/devise-two-factor/strategies/otp_attempt_authenticatable.rb")
 
 class RSolutionsFailureApp < Devise::FailureApp
   def respond
