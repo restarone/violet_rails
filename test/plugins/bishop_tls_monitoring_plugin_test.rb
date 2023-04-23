@@ -34,7 +34,7 @@ class BishopTlsMonitoringPluginTest < ActionDispatch::IntegrationTest
     bishop_request = stub_request(:get, api_namespace.api_resources.first.properties['url'])
       .to_return(status: 200, body: "OK")
 
-    api_actions(:create_api_action_plugin_bishop_monitoring_web_request).update!(
+    api_actions(:create_api_action_plugin_bishop_tls_monitoring_web_request).update!(
       payload_mapping: { 'content': 'test body'},
       custom_headers: { 'accept': 'application/json'},
       bearer_token: 'TEST',
@@ -42,7 +42,7 @@ class BishopTlsMonitoringPluginTest < ActionDispatch::IntegrationTest
       http_method: 'post'
     )
     
-    target_namespace = api_namespaces(:bishop_monitoring_target_incident)
+    target_namespace = api_namespaces(:bishop_tls_monitoring_target_incident)
     discord_request = stub_request(:post, "http://www.discord.com").to_return(status: 200, body: 'Success.')
 
     sign_in(@user)

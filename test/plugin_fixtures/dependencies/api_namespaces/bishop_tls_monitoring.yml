@@ -1,6 +1,6 @@
-monitoring_targets:
-  name: monitoring/targets
-  slug: monitoring-targets
+tls_monitoring_targets:
+  name: tls-monitoring/targets
+  slug: tls-monitoring-targets
   version: 1
   properties: {
                 "url": "https://restarone.com",
@@ -15,9 +15,9 @@ monitoring_targets:
   requires_authentication: false
   namespace_type: create-read-update-delete
 
-bishop_monitoring_target_incident:
-  name: bishop_monitoring/target/incident
-  slug: bishop-monitoring-target-incident
+bishop_tls_monitoring_target_incident:
+  name: bishop_tls_monitoring/target/incident
+  slug: bishop-tls-monitoring-target-incident
   version: 1
   properties: {
                 "slug": "restarone.com",

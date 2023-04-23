@@ -3,7 +3,7 @@ bishop_monitoring:
   slug: bishop-monitoring
   label: Bishop Monitoring in a box
   enabled: true
-  metadata: { 'log_incidents_to': 'monitoring-target-incident' }
+  metadata: { 'log_incidents_to': 'bishop-monitoring-target-incident' }
   model_definition: |
     class BishopMonitoring
       def initialize(parameters)  

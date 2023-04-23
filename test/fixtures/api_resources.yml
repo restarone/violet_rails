@@ -34,19 +34,6 @@ plugin_subdomain_message_event:
                   }
                 }
 
-tls_monitoring_target:
-  api_namespace: tls_monitoring_targets
-  properties: {
-                "url": "https://restarone.com",
-                "slug": "restarone.com",
-                "label": "Restarone Solutions Inc Website",
-                "healthy": true,
-                "latency": 42,
-                "alarm_raised": false,
-                "error_message": null,
-                "last_checked_at": "2022-04-23T23:02:34.592+00:00",
-                "log_incidents_to": "monitoring-target-incident"
-              }
 mailchimp:
   api_namespace: mailchimp                
   properties: {
@@ -155,4 +142,5 @@ vacuum_job_target_resource:
 
 # Specific ApiResources' fixtures related to plugins are moved to its separate files.
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/bishop_monitoring.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/bishop_tls_monitoring.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/compliance_visitor_data_request.yml") %>

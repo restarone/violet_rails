@@ -3,7 +3,7 @@ bishop_tls_monitoring:
   slug: bishop-tls-monitoring
   label: TLS monitoring in a box
   enabled: true
-  metadata: { 'log_incidents_to': 'monitoring-target-incident' }
+  metadata: { 'log_incidents_to': 'bishop-tls-monitoring-target-incident' }
   model_definition: |
     class BishopTlsMonitoring
       def initialize(parameters)  
