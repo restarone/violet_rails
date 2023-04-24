@@ -109,13 +109,13 @@ namespace_with_slash:
   version: 1
 
 # Specific ApiNamespaces' fixtures related to plugins are moved to its separate files.
-<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/bishop_monitoring.yml") %>
-<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/bishop_tls_monitoring.yml") %>
-<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/compliance_visitor_data_request.yml") %>
-<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/consultant.yml") %>
-<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/mailchimp.yml") %>
-<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/time_tracker.yml") %>
-<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/timesheet_request.yml") %>
-<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/transcript_parser.yml") %>
-<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/unique_string_aggregator.yml") %>
-<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/vacuum_job.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/bishop_monitoring_namespaces.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/bishop_tls_monitoring_namespaces.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/compliance_visitor_data_request_namespaces.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/consultant_namespaces.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/mailchimp_namespaces.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/time_tracker_namespaces.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/timesheet_request_namespaces.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/transcript_parser_namespaces.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/unique_string_aggregator_namespaces.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/vacuum_job_namespaces.yml") %>
