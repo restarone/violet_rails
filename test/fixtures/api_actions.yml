@@ -119,6 +119,6 @@ create_custom_api_action_three:
   api_namespace: three
 
 # Specific ApiNamespaces' fixtures related to plugins are moved to its separate files.
-<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_actions/bishop_monitoring.yml") %>
-<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_actions/bishop_tls_monitoring.yml") %>
-<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_actions/timesheet_request.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_actions/bishop_monitoring_actions.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_actions/bishop_tls_monitoring_actions.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_actions/timesheet_request_actions.yml") %>
