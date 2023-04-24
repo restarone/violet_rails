@@ -108,16 +108,6 @@ namespace_with_slash:
   slug: slash-namespace
   version: 1
 
-namespace_with_transcript:
-  name: namespace_with_transcript
-  slug: namespace_with_transcript
-  version: 1
-  properties: {
-    "raw_transcript": "",
-    "transcript": "",
-    "transcript_parsed": false
-  }
-
 unique_string_aggregator_target:
   name: unique_string_aggregator_target
   slug: unique-string-aggregator-target
@@ -158,3 +148,4 @@ vacuum_job_target:
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/mailchimp.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/time_tracker.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/timesheet_request.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/transcript_parser.yml") %>
