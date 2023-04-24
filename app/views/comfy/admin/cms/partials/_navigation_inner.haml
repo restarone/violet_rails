@@ -1,4 +1,4 @@
-%li{class: 'nav-item'}
+%li{class: 'nav-item', data: { turbo: 'true'}}
   = active_link_to "Users", admin_users_path, class: 'nav-link'
   = active_link_to "Email", mailbox_path, class: 'nav-link'
   = active_link_to "API", api_namespaces_path, class: 'nav-link'
@@ -16,4 +16,4 @@
         = link_to "Blog", '/blog', class: 'dropdown-item', target: '_blank'
       - if Subdomain.current.forum_enabled
         = link_to "Forum", '/forum', class: 'dropdown-item', target: '_blank'
-  = link_to "Logout", destroy_user_session_path, class: 'nav-link text-danger', method: :delete
+  = link_to "Logout", destroy_user_session_path, class: 'nav-link text-danger', data: { turbo_method: :delete, turbo: true, turbo_action: 'advance'}
