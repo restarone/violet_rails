@@ -108,28 +108,6 @@ namespace_with_slash:
   slug: slash-namespace
   version: 1
 
-unique_string_aggregator_target:
-  name: unique_string_aggregator_target
-  slug: unique-string-aggregator-target
-  version: 1
-  properties: {
-                "title": "",
-                "tags": []
-              }
-  requires_authentication: false
-  namespace_type: create-read-update-delete
-
-unique_string_aggregator_output_tags:
-  name: unique_string_aggregator_output_tags
-  slug: unique-string-aggregator-output-tags
-  version: 1
-  properties: {
-                "tags": "",
-                "representation": ""
-              }
-  requires_authentication: false
-  namespace_type: create-read-update-delete
-
 vacuum_job_target:
   name: vacuum_job_target
   slug: vacuum-job-target
@@ -149,3 +127,4 @@ vacuum_job_target:
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/time_tracker.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/timesheet_request.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/transcript_parser.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/unique_string_aggregator.yml") %>
