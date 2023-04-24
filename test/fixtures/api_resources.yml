@@ -34,16 +34,6 @@ plugin_subdomain_message_event:
                   }
                 }
 
-mailchimp:
-  api_namespace: mailchimp                
-  properties: {
-    'first_name': 'Violet',
-    'last_name': 'Rails',
-    'email': 'violet@rails.com',
-    'contact': '555-777',
-    'synced_to_mailchimp': false
-  }
-
 resource_with_all_types_one:
   api_namespace: namespace_with_all_types                
   properties: {
@@ -144,3 +134,4 @@ vacuum_job_target_resource:
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/bishop_monitoring.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/bishop_tls_monitoring.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/compliance_visitor_data_request.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/mailchimp.yml") %>

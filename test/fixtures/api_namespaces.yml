@@ -93,33 +93,6 @@ namespace_with_all_types:
   requires_authentication: false
   namespace_type: create-read-update-delete
 
-mailchimp:
-  name: mailchimp_namespace
-  slug: mailchimp_namespace
-  version: 1
-  properties: {
-    'first_name': 'Violet',
-    'last_name': 'Rails',
-    'email': 'violet@rails.com',
-    'contact': '',
-    'synced_to_mailchimp': false
-  }
-  requires_authentication: false
-  namespace_type: create-read-update-delete
-
-mailchimp_logger:
-  name: mailchimp/logger
-  slug: mailchimp_logger
-  version: 1
-  properties: {
-    'status': '',
-    'response': {},
-    'timstamp': '',
-    'api_resource': ''
-  }
-  requires_authentication: false
-  namespace_type: create-read-update-delete
-
 no_api_actions:
   name: no_api_actions
   slug: no_api_actions
@@ -206,3 +179,4 @@ vacuum_job_target:
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/bishop_monitoring.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/bishop_tls_monitoring.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/compliance_visitor_data_request.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/mailchimp.yml") %>
