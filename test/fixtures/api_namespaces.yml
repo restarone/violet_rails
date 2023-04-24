@@ -118,31 +118,6 @@ namespace_with_transcript:
     "transcript_parsed": false
   }
 
-time_tracker:
-  name: time_tracker
-  slug: time-tracker
-  version: 1
-  properties:
-    {
-      "notes": "",
-      "for_what_client": ['client-one', 'client-two'],
-      "what_task_did_you_work_on": "",
-      "how_much_time_in_hours_spent": 0,
-      "i_certify_information_accurate": false,
-    }
-
-consultant:
-  name: consultant
-  slug: consultant
-  version: 1
-  properties: { "active": false, "name": "", "rate": 0, "email": "" }
-
-timesheet_request:
-  name: consultant/timesheet_request
-  slug: consultant-timesheet_request
-  version: 1
-  properties: { "start_date": "", "end_date": "", "current_month": true }
-
 unique_string_aggregator_target:
   name: unique_string_aggregator_target
   slug: unique-string-aggregator-target
@@ -179,4 +154,7 @@ vacuum_job_target:
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/bishop_monitoring.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/bishop_tls_monitoring.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/compliance_visitor_data_request.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/consultant.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/mailchimp.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/time_tracker.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/timesheet_request.yml") %>

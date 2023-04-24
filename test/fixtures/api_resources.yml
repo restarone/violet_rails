@@ -61,66 +61,6 @@ transcript:
     "transcript_parsed": false
   }
 
-consultant_one:
-  api_namespace: consultant
-  properties:
-    {
-      "active": true,
-      "name": "Test User",
-      "rate": 20.0,
-      "email": "test@restarone.solutions",
-    }
-
-tracker_entry_one:
-  api_namespace: time_tracker
-  properties:
-    {
-      "notes": "http://link-to-backlog-task-1",
-      "for_what_client": "client-one",
-      "what_task_did_you_work_on": "Setup 2FA",
-      "how_much_time_in_hours_spent": 7.3,
-      "i_certify_information_accurate": true,
-      "email_address": "test@restarone.solutions",
-    }
-
-previous_month_tracker_entry_two:
-  api_namespace: time_tracker
-  created_at: <%= 1.month.ago %>
-  properties:
-    {
-      "notes": "http://link-to-backlog-task-2",
-      "for_what_client": "Retarone Solutions",
-      "what_task_did_you_work_on": "Add proper form validations in user login",
-      "how_much_time_in_hours_spent": 4.5,
-      "i_certify_information_accurate": true,
-      "email_address": "test@restarone.solutions",
-    }
-
-tracker_entry_three:
-  api_namespace: time_tracker
-  properties:
-    {
-      "notes": "http://link-to-backlog-task-3",
-      "for_what_client": "client-two",
-      "what_task_did_you_work_on": "Setup CI/CD with GitLab",
-      "how_much_time_in_hours_spent": 3.5,
-      "i_certify_information_accurate": true,
-      "email_address": "test@restarone.solutions",
-    }
-
-timesheet_request_date_range_previous_month:
-  api_namespace: timesheet_request
-  properties:
-    {
-      "start_date": <%= 1.month.ago.beginning_of_month %>,
-      "end_date": <%= 1.month.ago.end_of_month %>,
-      "current_month": "false",
-    }
-
-timesheet_request_current_month:
-  api_namespace: timesheet_request
-  properties: { "start_date": "", "end_date": "", "current_month": "true" }
-
 vacuum_job_target_resource:
   api_namespace: vacuum_job_target
   properties: {
@@ -134,4 +74,9 @@ vacuum_job_target_resource:
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/bishop_monitoring.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/bishop_tls_monitoring.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/compliance_visitor_data_request.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/consultant.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/mailchimp.yml") %>
+
+# ERB is used to evaluate the embedded ruby code in time_tracker.yml file
+<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/time_tracker.yml")).result %>
+<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/timesheet_request.yml")).result %>
