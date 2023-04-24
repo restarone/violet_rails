@@ -108,16 +108,6 @@ namespace_with_slash:
   slug: slash-namespace
   version: 1
 
-vacuum_job_target:
-  name: vacuum_job_target
-  slug: vacuum-job-target
-  version: 1
-  properties: {
-                "name": "test"
-              }
-  requires_authentication: false
-  namespace_type: create-read-update-delete
-
 # Specific ApiNamespaces' fixtures related to plugins are moved to its separate files.
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/bishop_monitoring.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/bishop_tls_monitoring.yml") %>
@@ -128,3 +118,4 @@ vacuum_job_target:
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/timesheet_request.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/transcript_parser.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/unique_string_aggregator.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/vacuum_job.yml") %>
