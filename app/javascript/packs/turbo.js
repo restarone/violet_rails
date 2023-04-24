@@ -15,7 +15,6 @@ $(document).on("turbo:before-cache", () => {
 });
 
 $(document).on("turbo:frame-missing", (event) => {
-  console.log(event)
   const { detail: { response, visit } } = event;
   event.preventDefault();
   visit(response.url);

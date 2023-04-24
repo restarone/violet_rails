@@ -16,4 +16,4 @@
         = link_to "Blog", '/blog', class: 'dropdown-item', target: '_blank'
       - if Subdomain.current.forum_enabled
         = link_to "Forum", '/forum', class: 'dropdown-item', target: '_blank'
-  = link_to "Logout", destroy_user_session_path, class: 'nav-link text-danger', data: { turbo_method: :delete, turbo: true, turbo_action: 'advance'}
+  = link_to "Logout", destroy_user_session_path, class: 'nav-link text-danger', method: :delete

@@ -20,9 +20,9 @@
 
     .col-md-4.d-flex.align-items-center.justify-content-md-end
       .btn-group.btn-group-sm
-        = link_to t('.add_child_layout'), new_comfy_admin_cms_site_layout_path(@site, parent_id: layout.id), class: "btn btn-outline-secondary", data: {turbo: false}
-        = link_to t('.edit'), edit_comfy_admin_cms_site_layout_path(@site, layout), class: "btn btn-outline-secondary", data: {turbo: false}
-        = link_to t('.delete'), comfy_admin_cms_site_layout_path(@site, layout), method: :delete, data: {confirm: t('.are_you_sure')}, class: "btn btn-danger", data: { turbo: false }
+        = link_to t('.add_child_layout'), new_comfy_admin_cms_site_layout_path(@site, parent_id: layout.id), class: "btn btn-outline-secondary"
+        = link_to t('.edit'), edit_comfy_admin_cms_site_layout_path(@site, layout), class: "btn btn-outline-secondary"
+        = link_to t('.delete'), comfy_admin_cms_site_layout_path(@site, layout), method: :delete, data: {confirm: t('.are_you_sure')}, class: "btn btn-danger"
 
   - if layout.children.present?
     %ul.list.children.sortable.pl-md-3
