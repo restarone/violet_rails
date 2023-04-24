@@ -54,14 +54,14 @@ resource_with_all_types_two:
   }
 
 # Specific ApiResources' fixtures related to plugins are moved to its separate files.
-<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/bishop_monitoring.yml") %>
-<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/bishop_tls_monitoring.yml") %>
-<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/compliance_visitor_data_request.yml") %>
-<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/consultant.yml") %>
-<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/mailchimp.yml") %>
-<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/transcript_parser.yml") %>
-<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/vacuum_job.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/bishop_monitoring_resources.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/bishop_tls_monitoring_resources.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/compliance_visitor_data_request_resources.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/consultant_resources.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/mailchimp_resources.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/transcript_parser_resources.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/vacuum_job_resources.yml") %>
 
-# ERB is used to evaluate the embedded ruby code in time_tracker.yml file
-<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/time_tracker.yml")).result %>
-<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/timesheet_request.yml")).result %>
+# ERB is used to evaluate the embedded ruby code in following files
+<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/time_tracker_resources.yml")).result %>
+<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/timesheet_request_resources.yml")).result %>
