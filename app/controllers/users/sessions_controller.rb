@@ -12,6 +12,7 @@ class Users::SessionsController < Devise::SessionsController
   # end
 
   def create
+    request.env['devise.skip_trackable'] = true
     self.resource = warden.authenticate!(:database_authenticatable, auth_options)
   
     if prompt_for_otp?(resource)
@@ -20,6 +21,8 @@ class Users::SessionsController < Devise::SessionsController
       session[:otp_user_id] = resource.id
       redirect_to users_sign_in_otp_path
     else
+      request.env['devise.skip_trackable'] = false
+      resource.update_tracked_fields!(request)
       set_flash_message!(:notice, :signed_in)
       sign_in(resource_name, resource)
 
@@ -27,10 +30,6 @@ class Users::SessionsController < Devise::SessionsController
     end
   end
 
-  # POST /resource/sign_in
-  # def create
-  #   super
-  # end
 
   # DELETE /resource/sign_out
   # def destroy
@@ -51,6 +50,6 @@ class Users::SessionsController < Devise::SessionsController
   end
 
   def prompt_for_otp?(resource)
-    Subdomain.current.enable_2fa && resource.otp_required_for_login && resource.last_sign_in_ip != resource.current_sign_in_ip 
+    Subdomain.current.enable_2fa && resource.otp_required_for_login && resource.current_sign_in_ip != request.remote_ip
   end
 end

@@ -11,16 +11,15 @@ class Users::Otp::SessionsController < DeviseController
   end
 
   def create
-    resource = warden.authenticate!(
-      :otp_attempt_authenticatable,
-      {
-        scope: resource_name,
-        recall: "#{controller_path}#new"
-      }
-    )
+    resource = warden.authenticate(:otp_attempt_authenticatable, scope: resource_name)
 
-    set_flash_message!(:notice, :signed_in)
-    sign_in(resource_name, resource)
-    respond_with resource, location: after_sign_in_path_for(resource)
+    if resource
+      set_flash_message!(:notice, :signed_in)
+      sign_in(resource_name, resource)
+      respond_with resource, location: after_sign_in_path_for(resource)
+    else
+      flash[:danger]= t("devise.otp.invalid")
+      redirect_to users_sign_in_otp_path
+    end
   end
 end

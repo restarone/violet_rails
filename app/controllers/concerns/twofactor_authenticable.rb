@@ -23,10 +23,11 @@ module TwofactorAuthenticable
  def resend_otp
   user = find_user
   prompt_for_otp_two_factor(user)
-  redirect_to two_factor_path
+  redirect_back fallback_location: root_path, notice: t('devise.otp.sent_to_email')
  end 
 
  include ApplicationHelper
+ 
   def user_params
     params.require(:user).permit(:email, :password, :remember_me, :otp_attempt)
   end
