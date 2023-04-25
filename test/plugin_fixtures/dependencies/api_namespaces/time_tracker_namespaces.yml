@@ -1,0 +1,12 @@
+time_tracker:
+  name: time_tracker
+  slug: time-tracker
+  version: 1
+  properties:
+    {
+      "notes": "",
+      "for_what_client": ['client-one', 'client-two'],
+      "what_task_did_you_work_on": "",
+      "how_much_time_in_hours_spent": 0,
+      "i_certify_information_accurate": false,
+    }
