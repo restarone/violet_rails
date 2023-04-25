@@ -5,15 +5,22 @@
 # also create salt if not exist
 module Encryptable
     extend ActiveSupport::Concern
+
     included do
+      @encryptables = []
       def build_salt
         self.salt = SecureRandom.random_bytes(
           ActiveSupport::MessageEncryptor.key_len
         )
       end
     end
-  
+
     class_methods do
+
+      def encryptables 
+        @encryptables
+      end
+
       def attr_encrypted(*attributes) # rubocop:disable Metrics/AbcSize
         attributes.each do |attribute|
           define_method("#{attribute}=".to_sym) do |value|
@@ -31,6 +38,8 @@ module Encryptable
             value = public_send("encrypted_#{attribute}".to_sym)
             EncryptionService.new(salt, value).decrypt if value.present?
           end
+
+          @encryptables << attribute
         end
       end
     end
