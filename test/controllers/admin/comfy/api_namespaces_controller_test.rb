@@ -741,7 +741,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "#index: should show only the api-namespaces with provided properties" do
     plugin_subdomain_events = api_namespaces(:plugin_subdomain_events)
     namespace_with_all_types = api_namespaces(:namespace_with_all_types)
-    monitoring_target_incident = api_namespaces(:monitoring_target_incident)
+    monitoring_target_incident = api_namespaces(:bishop_monitoring_target_incident)
 
     sign_in(@user)
     get api_namespaces_url, params: {q: {properties_or_name_cont: 'latency'}}
@@ -758,7 +758,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "#index: should show only the api-namespaces with provided name" do
     plugin_subdomain_events = api_namespaces(:plugin_subdomain_events)
     namespace_with_all_types = api_namespaces(:namespace_with_all_types)
-    monitoring_target_incident = api_namespaces(:monitoring_target_incident)
+    monitoring_target_incident = api_namespaces(:bishop_monitoring_target_incident)
 
     sign_in(@user)
     get api_namespaces_url, params: {q: {properties_or_name_cont: 'subdomain_events'}}
