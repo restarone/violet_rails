@@ -1,0 +1,5 @@
+consultant:
+  name: consultant
+  slug: consultant
+  version: 1
+  properties: { "active": false, "name": "", "rate": 0, "email": "" }

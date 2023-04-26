@@ -1,0 +1,5 @@
+timesheet_request:
+  name: consultant/timesheet_request
+  slug: consultant-timesheet_request
+  version: 1
+  properties: { "start_date": "", "end_date": "", "current_month": true }
