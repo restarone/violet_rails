@@ -85,7 +85,7 @@
         %a{href: "https://github.com/restarone/violet_rails/blob/141e942461e016991b18697211d2f44e4569cb4e/test/fixtures/external_api_clients.yml#L35", target: '_blank'} External API Connection Model definition
     = f.text_area :model_definition, data: {'cms-cm-mode' => 'javascript'}
 
-  #jsoneditor
+  #jsoneditor{data: { violet_jsoneditor: true, target: 'external_api_client_metadata' }}
   = hidden_field_tag "external_api_client[metadata]", @external_api_client.metadata&.to_json 
 
   .actions

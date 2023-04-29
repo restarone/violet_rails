@@ -103,8 +103,11 @@ Rails.application.routes.draw do
   # system admin panel login
   devise_scope :user do
     get 'sign_in', to: 'users/sessions#new', as: :new_global_admin_session
+    get 'otp/', to: 'users/sessions#two_factor'
     delete 'global_login', to: 'users/sessions#destroy'
     get 'resend_otp', to: "users/registrations#resend_otp"
+    get '/users/sign_in/otp' => 'users/otp/sessions#new'
+    post '/users/sign_in/otp' => 'users/otp/sessions#create'
   end
   # system admin panel authentication (ensure public schema as well)
   get 'sysadmin', to: 'admin/subdomain_requests#index'

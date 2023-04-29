@@ -100,7 +100,5 @@
       = link_to "Clear Errors", clear_errors_api_namespace_external_api_client_path(api_namespace_id: @api_namespace.id, id: @external_api_client.id), data: {confirm:"Are you sure? Please note down the error message and error state before clearing"}
   %p
     %b Metadata:
-  #jsoneditor
+  #jsoneditor{data: { violet_jsoneditor: true, mode: 'view', target: 'api_namespace_properties' }}
   = hidden_field_tag :api_namespace_properties, @external_api_client.metadata&.to_json
-
-  = render 'comfy/admin/api_namespaces/init_editor', {read_only: true}

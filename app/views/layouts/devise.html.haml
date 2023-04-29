@@ -10,7 +10,8 @@
 
 
   %body
-    = render partial: 'shared/flash'
+    = turbo_frame_tag 'turbo-flash' do
+      = render partial: 'shared/flash'
     = cms_snippet_render('navbar').html_safe unless mobile?
     .d-flex.flex-column.justify-content-center.align-items-center
       .my-5

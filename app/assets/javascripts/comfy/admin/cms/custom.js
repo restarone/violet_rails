@@ -4,7 +4,7 @@
 
 //= require select2
 
-let subdomain = /:\/\/([^\/]+)/.exec(window.location.href)[1].split('.')[0]
+var subdomain = /:\/\/([^\/]+)/.exec(window.location.href)[1].split('.')[0]
 document.title = `${subdomain} Admin`
 
 // when html body is clicked collapse bootstrap nav expansion

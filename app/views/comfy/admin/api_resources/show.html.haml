@@ -7,7 +7,6 @@
   %b Resource Id:
   = @api_resource.id
 = render 'comfy/admin/api_namespaces/editor', {api_resource: @api_resource, form_properties: @api_resource.api_namespace&.api_form&.properties&.symbolize_keys, read_only: true}
-= render 'comfy/admin/api_namespaces/init_editor', {read_only: true}
 
 - user = @api_resource.tracked_user
 - if user

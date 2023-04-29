@@ -12,7 +12,7 @@
   .field
     = f.label :version
     = f.number_field :version
-  #jsoneditor
+  #jsoneditor{data: { violet_jsoneditor: true, target: 'api_namespace_properties' }}
   = hidden_field_tag "api_namespace[properties]", @api_namespace.properties&.to_json
 
   .non-primitve-properties.mb-4
@@ -37,9 +37,6 @@
 
   .actions
     = f.submit 'Save'
-
-
-= render 'init_editor', {read_only: false}
 
 :javascript
   function manageEvent(index) {
