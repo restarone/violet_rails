@@ -1,0 +1,9 @@
+consultant_one:
+  api_namespace: consultant
+  properties:
+    {
+      "active": true,
+      "name": "Test User",
+      "rate": 20.0,
+      "email": "test@restarone.solutions",
+    }

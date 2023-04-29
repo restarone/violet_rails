@@ -3,23 +3,33 @@
 class Users::SessionsController < Devise::SessionsController
   # before_action :configure_sign_in_params, only: [:create]
 
-  include TwofactorAuthenticable
-
-  prepend_before_action :authenticate_with_otp_two_factor,
-  if: -> { action_name == 'create' && otp_two_factor_enabled? }
-
   protect_from_forgery with: :exception, prepend: true, except: :destroy
 
   # GET /resource/sign_in
-  def new
-    session.delete(:otp_user_id)
-    super
-  end
-
-  # POST /resource/sign_in
-  # def create
+  # def new
+  #   # session.delete(:otp_user_id)
   #   super
   # end
+
+  def create
+    request.env['devise.skip_trackable'] = true
+    self.resource = warden.authenticate!(:database_authenticatable, auth_options)
+  
+    if prompt_for_otp?(resource)
+      sign_out(resource)
+      UserMailer.send_otp(resource).deliver_later
+      session[:otp_user_id] = resource.id
+      redirect_to users_sign_in_otp_path
+    else
+      request.env['devise.skip_trackable'] = false
+      resource.update_tracked_fields!(request)
+      set_flash_message!(:notice, :signed_in)
+      sign_in(resource_name, resource)
+
+      redirect_to after_sign_in_path_for(resource), status: :see_other
+    end
+  end
+
 
   # DELETE /resource/sign_out
   # def destroy
@@ -37,5 +47,9 @@ class Users::SessionsController < Devise::SessionsController
 
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_in, keys: [:otp_attempt])
+  end
+
+  def prompt_for_otp?(resource)
+    Subdomain.current.enable_2fa && resource.otp_required_for_login && resource.current_sign_in_ip != request.remote_ip
   end
 end

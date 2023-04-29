@@ -9,12 +9,21 @@ class EMailer < ApplicationMailer
               "#{@subdomain.name}@#{ENV["APP_HOST"]}"
             end
     
-    # if additional attachment params are passed, they are included in the email
-    unless params[:attachments].nil?
+    # if additional attachments are present, they are included in the email
+    if params[:attachments].present?
       Array.wrap(params[:attachments]).each do |attachment|
         attachments[attachment[:filename]] = {
           mime_type: attachment[:mime_type],
           content: attachment[:content]
+        }
+      end
+    elsif @message.attachments.present?
+      @message.attachments.each do |attachment|
+        blob = attachment.blob
+        next if blob.blank?
+        attachments[blob[:filename]] = {
+          mime_type: blob[:content_type],
+          content: blob.download
         }
       end
     end

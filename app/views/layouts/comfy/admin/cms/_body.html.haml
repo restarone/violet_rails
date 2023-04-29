@@ -1,7 +1,7 @@
 %body#comfy{class: "c-#{params[:controller].parameterize} a-#{params[:action].parameterize}", 'data-turbo': 'false'}
   .container-fluid
     .row
-      #cms-left.col-lg-2.bg-dark
+      #cms-left.col-lg-2.bg-dark{data: {turbo: 'true'}}
         = render "layouts/comfy/admin/cms/left"
       #cms-main{class: "col-lg-#{controller_name == 'dashboard' ? '10 ml-auto' : '8 m-auto'}"}
         = render "layouts/comfy/admin/cms/flash"

@@ -125,3 +125,5 @@ gem 'devise-two-factor', "4.0.2"
 gem 'rack-attack'
 
 gem "slowpoke"
+
+gem "strong_migrations"

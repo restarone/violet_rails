@@ -1,0 +1,7 @@
+transcript:
+  api_namespace: namespace_with_transcript
+  properties: {
+    "raw_transcript": "1\n00:00:00,300 --> 00:00:02,167\n[sally]: i'm in los angeles and\n\n2\n00:00:01,920 --> 00:00:02,102\n[bobby]: okay\n\n3\n00:00:03,151 --> 00:00:04,737\n[sally]: maybe possibly\n\n4\n00:00:05,780 --> 00:00:13,613\n[bobby78]: $ oh maybe ye so nice an is a\nsupporter financial supporter of hollows\n\n5\n00:00:13,345 --> 00:00:15,510\n[sally]: 10 s yeah",
+    "transcript": "",
+    "transcript_parsed": false
+  }

@@ -33,42 +33,7 @@ plugin_subdomain_message_event:
                     "body": "<h1>Hello</h1>"
                   }
                 }
-monitoring_target:
-  api_namespace: monitoring_targets
-  properties: {
-                "url": "https://restarone.com",
-                "slug": "restarone.com",
-                "label": "Restarone Solutions Inc Website",
-                "healthy": true,
-                "latency": 42,
-                "alarm_raised": false,
-                "error_message": null,
-                "last_checked_at": "2022-04-23T23:02:34.592+00:00",
-                "log_incidents_to": "monitoring-target-incident"
-              }
-mailchimp:
-  api_namespace: mailchimp                
-  properties: {
-    'first_name': 'Violet',
-    'last_name': 'Rails',
-    'email': 'violet@rails.com',
-    'contact': '555-777',
-    'synced_to_mailchimp': false
-  }
-compliance_visitor_data_request_one:
-  api_namespace: compliance_visitor_data_request
-  properties: {
-    'name': 'Test Name 1',
-    'email': 'user1-compliance@example.com',
-    'compliance_message_sent': false
-  }
-compliance_visitor_data_request_two:
-  api_namespace: compliance_visitor_data_request
-  properties: {
-    'name': 'Test Name 2',
-    'email': 'user2-compliance@example.com',
-    'compliance_message_sent': false
-  }
+
 resource_with_all_types_one:
   api_namespace: namespace_with_all_types                
   properties: {
@@ -88,70 +53,15 @@ resource_with_all_types_two:
     'null': false
   }
 
-transcript:
-  api_namespace: namespace_with_transcript
-  properties: {
-    "raw_transcript": "1\n00:00:00,300 --> 00:00:02,167\n[sally]: i'm in los angeles and\n\n2\n00:00:01,920 --> 00:00:02,102\n[bobby]: okay\n\n3\n00:00:03,151 --> 00:00:04,737\n[sally]: maybe possibly\n\n4\n00:00:05,780 --> 00:00:13,613\n[bobby78]: $ oh maybe ye so nice an is a\nsupporter financial supporter of hollows\n\n5\n00:00:13,345 --> 00:00:15,510\n[sally]: 10 s yeah",
-    "transcript": "",
-    "transcript_parsed": false
-  }
+# Specific ApiResources' fixtures related to plugins are moved to its separate files.
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/bishop_monitoring_resources.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/bishop_tls_monitoring_resources.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/compliance_visitor_data_request_resources.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/consultant_resources.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/mailchimp_resources.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/transcript_parser_resources.yml") %>
+<%= IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/vacuum_job_resources.yml") %>
 
-consultant_one:
-  api_namespace: consultant
-  properties:
-    {
-      "active": true,
-      "name": "Test User",
-      "rate": 20.0,
-      "email": "test@restarone.solutions",
-    }
-
-tracker_entry_one:
-  api_namespace: time_tracker
-  properties:
-    {
-      "notes": "http://link-to-backlog-task-1",
-      "for_what_client": "Retarone Solutions",
-      "what_task_did_you_work_on": "Setup 2FA",
-      "how_much_time_in_hours_spent": 7.3,
-      "i_certify_information_accurate": true,
-      "email_address": "test@restarone.solutions",
-    }
-
-previous_month_tracker_entry_two:
-  api_namespace: time_tracker
-  created_at: <%= 1.month.ago %>
-  properties:
-    {
-      "notes": "http://link-to-backlog-task-2",
-      "for_what_client": "Retarone Solutions",
-      "what_task_did_you_work_on": "Add proper form validations in user login",
-      "how_much_time_in_hours_spent": 4.5,
-      "i_certify_information_accurate": true,
-      "email_address": "test@restarone.solutions",
-    }
-
-tracker_entry_three:
-  api_namespace: time_tracker
-  properties:
-    {
-      "notes": "http://link-to-backlog-task-3",
-      "for_what_client": "Retarone Solutions",
-      "what_task_did_you_work_on": "Setup CI/CD with GitLab",
-      "how_much_time_in_hours_spent": 3.5,
-      "i_certify_information_accurate": true,
-      "email_address": "test@restarone.solutions",
-    }
-
-timesheet_request_date_range_previous_month:
-  api_namespace: timesheet_request
-  properties:
-    {
-      "start_date": <%= 1.month.ago.beginning_of_month %>,
-      "end_date": <%= 1.month.ago.end_of_month %>,
-      "current_month": "false",
-    }
-
-timesheet_request_current_month:
-  api_namespace: timesheet_request
-  properties: { "start_date": "", "end_date": "", "current_month": "true" }
+# ERB is used to evaluate the embedded ruby code in following files
+<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/time_tracker_resources.yml")).result %>
+<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/timesheet_request_resources.yml")).result %>

@@ -453,6 +453,8 @@ GEM
       rails (>= 5.1)
       responders
       stripe (>= 3.15.0)
+    strong_migrations (1.4.4)
+      activerecord (>= 5.2)
     temple (0.10.0)
     thor (1.2.1)
     tilt (2.0.10)
@@ -568,6 +570,7 @@ DEPENDENCIES
   spring
   stackprof
   stripe-rails
+  strong_migrations
   turbo-rails (~> 1.1)
   turnout (~> 2.5)
   tzinfo-data

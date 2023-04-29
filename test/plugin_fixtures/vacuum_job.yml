@@ -1,0 +1,39 @@
+vacuum_job:
+  api_namespace: vacuum_job_target
+  slug: vacuum-job
+  label: VacuumJob
+  enabled: true
+  metadata: {
+            'ORDER': 'descending',
+            'DIMENSION': 'created_at',
+            'BATCH_SIZE': '5',
+            'API_NAMESPACE_ID': <%= ActiveRecord::FixtureSet.identify(:vacuum_job_target).to_s %>,
+            'OLDER_THAN': '2880' # 2 days (in minutes)
+          }
+  model_definition: |
+    class VacuumJob
+      def initialize(parameters)  
+        @external_api_client = parameters[:external_api_client]
+      end
+
+      def start
+        # Fetching provided inputs (namespaceid, batch_size, dimension, order, time_before)
+        api_namespace_id = @external_api_client.metadata["API_NAMESPACE_ID"]
+        batch_size = @external_api_client.metadata["BATCH_SIZE"]
+        dimension = @external_api_client.metadata["DIMENSION"]
+        order = @external_api_client.metadata["ORDER"].upcase.starts_with?('ASC') ? 'ASC' : 'DESC'
+        older_than = @external_api_client.metadata["OLDER_THAN"].to_f # in minutes
+
+        raise 'ApiResource of another ApiNamespace cannot be deleted.'if api_namespace_id.to_s != @external_api_client.api_namespace_id.to_s
+
+        api_resources_to_be_deleted = ApiResource.where(api_namespace_id: api_namespace_id).where("(EXTRACT (EPOCH FROM  now() - #{dimension} )::int/60) > ?", older_than).order("#{dimension} #{order}").limit(batch_size)
+
+        ApiResource.transaction do
+          api_resources_to_be_deleted.each do |api_resource|
+            api_resource.destroy!
+          end
+        end
+      end
+    end
+    # at the end of the file we have to implicitly return the class 
+    VacuumJob
