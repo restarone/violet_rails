@@ -1,3 +1,6 @@
+= content_for :head do
+  %meta{name: "turbo-visit-control", content: "reload"}
+  
 .page-header  
   .h2
     = I18n.t('views.comfy.web_settings.index.header.title')

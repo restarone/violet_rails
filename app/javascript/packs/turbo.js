@@ -13,3 +13,9 @@ $(document).on("turbo:load", () => {
 $(document).on("turbo:before-cache", () => {
   $(".g-recaptcha").each(function () { this.innerHTML = "" });
 });
+
+$(document).on("turbo:frame-missing", (event) => {
+  const { detail: { response, visit } } = event;
+  event.preventDefault();
+  visit(response.url);
+});
