@@ -15,6 +15,10 @@ class ApiNamespace < ApplicationRecord
   has_one :api_form, dependent: :destroy
   accepts_nested_attributes_for :api_form
 
+  has_one :visitor_api_form, -> { where("placement = ?", 'visitor') }, :class_name => "ApiForm", :dependent => :destroy 
+  has_one :user_api_form, -> { where("placement = ?", 'user') }, :class_name => "ApiForm", :dependent => :destroy 
+  has_one :admin_api_form, -> { where("placement = ?", 'admin') }, :class_name => "ApiForm", :dependent => :destroy 
+
   has_many :api_clients, dependent: :destroy
   accepts_nested_attributes_for :api_clients
 
@@ -115,13 +119,27 @@ class ApiNamespace < ApplicationRecord
 
   def update_api_form
     if has_form == '1'
-      if api_form.present? 
-        api_form.update({ properties: form_properties })
+      if visitor_api_form.present? 
+        visitor_api_form.update({ properties: form_properties, fields: 'form_properties' })
       else
-        create_api_form({ properties: form_properties })
+        create_api_form({ placement: 'visitor', properties: form_properties, fields: form_properties })
       end
-    elsif has_form == '0' && api_form.present?
-      api_form.destroy
+
+      if user_api_form.present? 
+        user_api_form.update({ properties: form_properties, fields: 'form_properties' })
+      else
+        create_api_form({ placement: 'user', properties: form_properties, fields: form_properties })
+      end
+
+      if admin_api_form.present? 
+        admin_api_form.update({ properties: form_properties, fields: 'form_properties' })
+      else
+        create_api_form({ placement: 'admin', properties: form_properties, fields: form_properties })
+      end
+    elsif has_form == '0'
+      visitor_api_form&.destroy
+      user_api_form&.destroy
+      admin_api_form&.destroy
     end
   end
 

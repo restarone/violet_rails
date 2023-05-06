@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_03_24_080541) do
+ActiveRecord::Schema.define(version: 2023_04_11_131613) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -158,6 +158,8 @@ ActiveRecord::Schema.define(version: 2023_03_24_080541) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.boolean "show_recaptcha_v3", default: false
+    t.string "placement", default: "visitor"
+    t.json "fields"
     t.index ["api_namespace_id"], name: "index_api_forms_on_api_namespace_id"
   end
 
