@@ -6,7 +6,7 @@
           - show_custom_snippet = strip_tags(value.to_s) != value.to_s
           - unless key == 'file_url'
             - alert_class = key == 'notice' ? 'alert-success' : 'alert-danger'
-            %div{class: "toast alert #{!show_custom_snippet ? alert_class : ''} p-0", role: "alert", "aria-live": "assertive", "aria-atomic": "true"}
+            %div{class: "toast alert show #{!show_custom_snippet ? alert_class : ''} p-0", role: "alert"}
               %div{class: "d-flex justify-content-between"}
                 %div{class: "toast-body"}
                   - if show_custom_snippet
@@ -15,10 +15,6 @@
                   - else
                     %strong
                       = value
-                %button{class: "btn-close btn-close-danger toast-close-btn mr-2 bg-transparent border-0", type: "button", "data-dismiss": "toast", "aria-label": "Close"}
+                %button{class: "btn-close btn-close-danger toast-close-btn mr-2 bg-transparent border-0", type: "button", "data-dismiss": "toast", "aria-label": "Close", onclick: "$(this).closest('.toast').toast('hide')"}
                   %span{"aria-hidden" => "true"}
                     %i.fa.fa-times
-  %script
-    $('.flash-container .alert').toast({ autohide: false});
-    $(".flash-container .alert").toast('show');
-    $('.flash-container .alert .btn-close').on('click', function() { $(this).closest('.toast').toast('hide') });
