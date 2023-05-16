@@ -407,8 +407,8 @@ class ApiNamespace < ApplicationRecord
         update(properties: properties.merge("#{foreign_key}" => "")) unless properties.key?(foreign_key)
       else
         foreign_key = "#{self.slug.underscore.singularize}_id"
-        namespace = ApiNamespace.friendly.find(association['namespace'])
-        namespace.update(properties: namespace.properties.merge("#{foreign_key}" => "")) unless namespace.properties.key?(foreign_key)
+        api_namespace = ApiNamespace.friendly.find(association['namespace'])
+        api_namespace.update(properties: api_namespace.properties.merge("#{foreign_key}" => "")) unless api_namespace.properties.key?(foreign_key)
       end
     end
   end
