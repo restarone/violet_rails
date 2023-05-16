@@ -1,0 +1,11 @@
+.card.form-container.font-size-sm.position-relative.p-3.mb-4{id: "association_form_#{index}"}
+  .position-absolute{style: "top: 6px; right: 6px"}
+    %a.text-danger{style: "cursor: pointer;", onclick: "$('#association_form_#{index}').remove()"}
+      %i.fas.fa-times
+  .row
+    .field.col.col-6
+      = label_tag 'type'
+      = select_tag "api_namespace[associations][#{index}][type]", options_for_select(['has_many', 'has_one', 'belongs_to'], association['type']), class: 'form-control form-control-sm', required: true
+    .field.col.col-6
+      = label_tag 'namespace'
+      = select_tag "api_namespace[associations][#{index}][namespace]", options_for_select(ApiNamespace.all.pluck(:slug).excluding(@api_namespace.slug), association['namespace']), class: 'form-control form-control-sm', required: true

@@ -8,6 +8,8 @@ class ApiNamespace < ApplicationRecord
   attr_accessor :has_form
 
   after_save :update_api_form
+
+  after_save :add_foreign_key, if: -> { self.saved_change_to_associations? }
   
   has_many :api_resources, dependent: :destroy
   accepts_nested_attributes_for :api_resources
@@ -396,5 +398,18 @@ class ApiNamespace < ApplicationRecord
 
   def destroy_old_api_resources_in_batches
     api_resources.where("created_at < ?", eval("#{purge_resources_older_than}.ago")).in_batches(&:destroy_all)
+  end
+
+  def add_foreign_key
+    associations.each do |association|
+      if association['type'] == 'belongs_to'
+        foreign_key = "#{association['namespace'].underscore.singularize}_id"
+        update(properties: properties.merge("#{foreign_key}" => "")) unless properties.key?(foreign_key)
+      else
+        foreign_key = "#{self.slug.underscore.singularize}_id"
+        namespace = ApiNamespace.friendly.find(association['namespace'])
+        namespace.update(properties: namespace.properties.merge("#{foreign_key}" => "")) unless namespace.properties.key?(foreign_key)
+      end
+    end
   end
 end

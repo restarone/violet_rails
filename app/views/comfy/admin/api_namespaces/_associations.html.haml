@@ -1,0 +1,5 @@
+- api_namespace.associations.each do |association|
+  .d-flex
+    .mr-3= association['type']
+    .mr-3
+      = link_to association['namespace'], api_namespace_path(id: association['namespace'])

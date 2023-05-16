@@ -261,6 +261,7 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
 
     # Only allow a list of trusted parameters through.
     def api_namespace_params
+      params[:api_namespace][:associations] = params[:api_namespace][:associations].values if params[:api_namespace][:associations].respond_to?(:values)
       params.require(:api_namespace).permit(:name,
                                             :version,
                                             :properties,
@@ -268,7 +269,8 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
                                             :namespace_type,
                                             :has_form,
                                             non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :allow_attachments, :_destroy],
-                                            category_ids: []
+                                            category_ids: [],
+                                            associations: [:type, :namespace]
                                            )
     end
 
