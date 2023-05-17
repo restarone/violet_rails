@@ -44,7 +44,7 @@
                       %div
                         - if api_resource.properties[dynamic_column]&.is_a?(Array)
                           - array = api_resource.properties[dynamic_column]
-                          - if array.length > 10
+                          - if array.length > 10 || array.to_s.length > 100
                             .clamp-content
                               = "[#{array.first(2).join(', ')}, ... ,#{array.last(1).join}]"
                             = link_to "View #{dynamic_column}", '#',  class: 'd-block view-dynamic-column', data: { toggle: 'modal', target: "#myModal", namespace_id: api_resource.api_namespace_id, id: api_resource.id, column: dynamic_column , value: "[#{api_resource.properties[dynamic_column].join(', ')}]", action: "click->api-resources#showModal" }
