@@ -408,7 +408,9 @@ class ApiNamespace < ApplicationRecord
       else
         foreign_key = "#{self.slug.underscore.singularize}_id"
         api_namespace = ApiNamespace.friendly.find(association['namespace'])
-        api_namespace.update(properties: api_namespace.properties.merge("#{foreign_key}" => "")) unless api_namespace.properties.key?(foreign_key)
+        association_object = { "type" => 'belongs_to', "namespace" => self.slug }
+        associations_array = (api_namespace.associations || []) << association_object  unless api_namespace.associations&.include?(association_object)
+        api_namespace.update(properties: api_namespace.properties.merge("#{foreign_key}" => ""), associations: associations_array) unless api_namespace.properties.key?(foreign_key)
       end
     end
   end
