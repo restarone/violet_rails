@@ -17,7 +17,7 @@ Violet enables subdomain based:
 - 🦾 Automation 
 - 🤝 Collaboration  
 
-So you can have your marketing site hosted on `www.mywebsite.com`, while recieving support requests under `support@mywebsite.com` and building the Next Big Thing®️™️ at `app.mywebsite.com`-- all powered by Violet Rails.
+So you can have your marketing site hosted on `www.mywebsite.com`, while receiving support requests under `support@mywebsite.com` and building the Next Big Thing®️™️ at `app.mywebsite.com`-- all powered by Violet Rails.
 
 Feel the power & productivity of the Majestic Monolith! 🐘
 
@@ -42,7 +42,7 @@ Powered by a rich Content Management System with out of the box support for Boot
 ### ✨ **A flexible app, automation and analytics platform** 🦾
 Build apps and automation with Violet Rails API Namespace: https://github.com/restarone/violet_rails/wiki/API:-Entities,-Form-Rendering,-Interfaces-and-Actions
 #### **Building forms** 📜
-Build spam-resistant forms with Google Recaptcha v2 or v3. Since all systems in Violet Rails are vertically intergrated, your forms can talk to your automations and analytics. 
+Build spam-resistant forms with Google Recaptcha v2 or v3. Since all systems in Violet Rails are vertically integrated, your forms can talk to your automations and analytics. 
 <img width="1728" alt="Screen Shot 2022-06-26 at 5 59 10 PM" src="https://user-images.githubusercontent.com/35935196/175835386-4dca9672-425b-4be0-b415-f488470d22c8.png">
 #### **Automation** 🤖
 Build custom automation (eg mailchimp: https://github.com/restarone/violet_rails/issues/720) with ease with Ruby code or our HTTP API Editor (https://github.com/restarone/violet_rails/wiki/API:-Entities,-Form-Rendering,-Interfaces-and-Actions#http-api-editor-example-discord-bot)
@@ -75,7 +75,7 @@ Allow your outreach team to support the forum and blog, while the designers and 
 
 ### ✨ **Simplest Email Service** 📧
 Each Violet Rails 
-subdomain will have access to its own emailbox for sending and recieving emails:
+subdomain will have access to its own emailbox for sending and receiving emails:
 <img width="1728" alt="Screen Shot 2022-06-26 at 5 55 10 PM" src="https://user-images.githubusercontent.com/35935196/175835219-831a78f9-809f-4b9e-a99e-d3406983cf7b.png">
 
 ### ✨ **Forum** 🤝
@@ -94,15 +94,15 @@ Domain admins have control over which subdomains can be created (via approval) a
 
 ## ✨ **Sensible architecture and safe defaults**
 
-* database multi-tenancy: Serious SaaS and XaaS apps need to support database multi-tenancy. So if you ship Violet with Postgres you will have schema based multi-tenancy with the option of routing each client at run-time to an external Postgres server. All of this is implemented in a simple way, just by subdomain (eg: design.your-website.com).
-* Flexible and code first: The Violet CMS is powered  by `comfortable_mexican_sofa` and offers the customizability of a Rails engine with full WSIWYG functionality (its recommended that you stick to HTML/CSS/JS for static web hosting). Outside of this, its just Ruby on Rails -- the world is your oyster.
+* Database multi-tenancy: Serious SaaS and XaaS apps need to support database multi-tenancy. So if you ship Violet with Postgres you will have schema based multi-tenancy with the option of routing each client at run-time to an external Postgres server. All of this is implemented in a simple way, just by subdomain (eg: design.your-website.com).
+* Flexible and code first: The Violet CMS is powered by `comfortable_mexican_sofa` and offers the customizability of a Rails engine with full WYSIWYG functionality (its recommended that you stick to HTML/CSS/JS for static web hosting). Outside of this, its just Ruby on Rails -- the world is your oyster.
 * Ready to Deploy: Violet comes with a barebones App Owner UI that helps you hit the ground running by managing subdomain requests. Each subdomain has its own roster of Users and an automatically allocated email-box (eg: design@your-website.com), blog (eg: www.your-website.com/blog) and landing page (www.yourwebsite.com). Granular permissioning for users can be managed at the subdomain level.
 
 ## ✨ **Authorization layers**
-After deploying violet, you will be able to connect and setup your cannonical page and user account from the Rails console
+After deploying violet, you will be able to connect and setup your cannonical page and user account from the Rails console.
 ### 1. App Owners (Violet Sys Admin)
 * If you are a domain owner (eg: https://yourdomain.com) you can find the Violet SysAdmin at https://www.yourdomain.com/sysadmin or https://yourdomain.com/sysadmin
-* Any subdomain name on your domain can be reserved for web hosting, blog and email functionality. For example, registering https://hello.yourdomain.com will automatically generate a website for https://hello.yourdomain.com , an email address at hello@yourdomain.com, a blog at https://hello.yourdomain.com/blog and a forum at https://hello.yourdomain.com/forum
+* Any subdomain name on your domain can be reserved for web hosting, blog, and email functionality. For example, registering https://hello.yourdomain.com will automatically generate a website for https://hello.yourdomain.com, an email address at hello@yourdomain.com, a blog at https://hello.yourdomain.com/blog and a forum at https://hello.yourdomain.com/forum
 * All these components can be administrated at https://hello.yourdomain.com/admin with granular user permissions 
 ### Subdomain Owners (Web Admin)
 To register a subdomain, visit https://yourdomain.com/signup_wizard 
@@ -111,9 +111,9 @@ For security purposes, this only generates a request-- so the sysadmin will need
 * If you are the first user in a subdomain, you are conferred maximum permissions
 
 ## Deployment 🚀
-### There are 2 options for deployment. AWS EC2 and Heroku
+### There are 2 options for deployment using AWS EC2 and Heroku
 
-The [Demo](https://violet.restarone.solutions/) of `violet_rails` is deployed on AWS EC2 (using Ubuntu 20.04LTS) & requires some server setup/automation with Capistrano. The steps are outlined in-detail here: https://github.com/restarone/violet_rails/wiki/Deploying-to-EC2-(with-Capistrano)
+The [Demo](https://violet.restarone.solutions/) of `violet_rails` is deployed on AWS EC2 (using Ubuntu 20.04 LTS) & requires some server setup/automation with Capistrano. The steps are outlined in-detail here: https://github.com/restarone/violet_rails/wiki/Deploying-to-EC2-(with-Capistrano)
 
 If you prefer deploying to Heroku, [you can view the guide for that here](https://github.com/restarone/violet_rails/wiki/Deploying-to-Heroku)
 
