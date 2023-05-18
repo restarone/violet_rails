@@ -1,0 +1,13 @@
+.card.shadow-lg.p-5.bg-white.rounded
+  .text-center
+    %h3.font-weight-bold 
+      2 Factor Authentication
+  .form-group.mt-3
+    = form_for(@resource, as: @resource_name, url: session_path(@resource_name), method: :post, data: { turbo: true, turbo_action: "advance", controller: 'form-redirect' action: 'turbo:submit-end->form-redirect#next' }) do |f|
+      .form-group
+        = f.text_field :otp_attempt, autofocus: true, class: 'form-control', placeholder: 'OTP'
+      .form-group
+        = f.submit "Verify", class: 'btn btn-primary btn-block'
+      
+    = button_to 'Resend OTP' ,resend_otp_path ,method: :get, remote: true, class: 'btn btn-link p-0',id: 'resend-otp-btn'
+    

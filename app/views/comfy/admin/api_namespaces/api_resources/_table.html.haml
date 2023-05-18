@@ -1,11 +1,11 @@
 
-= turbo_frame_tag 'api-resources' do
+= turbo_frame_tag 'api-resources-table' do
   .digg_pagination.d-sm-flex.justify-content-between.mb-4.pb-3
     .page-info= page_entries_info @api_resources
     .links= will_paginate @api_resources, container: false, renderer: TurboPaginateRenderer
   .table-responsive.bg-white
-    %div.api-resources-table-container
-      %table#api-resources-table.table.table-striped.table-bordered
+    %div.list-view__table-container
+      %table.table.table-striped.table-bordered
         %thead
           %tr
             %th.px-3= sort_link api_resources_q, :id, {}, data: { turbo: true, turbo_action: 'advance'}
@@ -25,7 +25,7 @@
                     .d-flex.mt-3
                       = link_to edit_api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), class: 'mr-3' do 
                         %i.fas.fa-edit
-                      = link_to api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), remote: true, method: :delete, data: { confirm: 'Are you sure?', page: params[:page], action: "ajax:success->api-resources#reloadTable" } do
+                      = link_to api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), remote: true, method: :delete, data: { confirm: 'Are you sure?', page: params[:page], action: "ajax:success->list-view#reloadTable" } do
                         %i.fas.fa-trash
               %td.px-3.date-col
                 .td-content
@@ -36,31 +36,37 @@
               - dynamic_columns.each_with_index do |dynamic_column|
                 %td.px-3
                   .td-content
-                    %div
-                      - if api_resource.properties[dynamic_column]&.is_a?(Array)
-                        - array = api_resource.properties[dynamic_column]
-                        - if array.length > 10
-                          .clamp-content
-                            = "[#{array.first(2).join(', ')}, ... ,#{array.last(1).join}]"
-                          = link_to "View #{dynamic_column}", '#',  class: 'd-block view-dynamic-column', data: { toggle: 'modal', target: "#myModal", namespace_id: api_resource.api_namespace_id, id: api_resource.id, column: dynamic_column , value: "[#{api_resource.properties[dynamic_column].join(', ')}]", action: "click->api-resources#showModal" }
+                    - if [true, false].include? api_resource.properties[dynamic_column]
+                      - booleanValue = api_resource.properties[dynamic_column].to_s
+                      %span{ class: "list-view__status-text #{booleanValue == 'true' ? 'list-view__status-text--success' : 'list-view__status-text--failure'}" }
+                        = booleanValue
+                    - else  
+                      %div
+                        - if api_resource.properties[dynamic_column]&.is_a?(Array)
+                          - array = api_resource.properties[dynamic_column]
+                          - if array.length > 10
+                            .clamp-content
+                              = "[#{array.first(2).join(', ')}, ... ,#{array.last(1).join}]"
+                            = link_to "View #{dynamic_column}", '#',  class: 'd-block view-dynamic-column', data: { toggle: 'modal', target: "#myModal", namespace_id: api_resource.api_namespace_id, id: api_resource.id, column: dynamic_column , value: "[#{api_resource.properties[dynamic_column].join(', ')}]", action: "click->api-resources#showModal" }
+                          - else
+                            = array
                         - else
-                          = array
-                      - else
-                        - value = api_resource.properties[dynamic_column].to_s
-                        - if value && value.length > 100
-                          .clamp-content
-                            = truncate(value, length: 100)
-                          = link_to "View #{dynamic_column}", '#' , class: 'd-block view-dynamic-column', data: { toggle: 'modal', target: "#myModal" , column: dynamic_column, namespace_id: api_resource.api_namespace_id, id: api_resource.id, value: value, action: "click->api-resources#showModal" }
-                        - else
-                          = value 
+                          - value = api_resource.properties[dynamic_column].to_s
+                          - if value && value.length > 100
+                            .clamp-content
+                              = truncate(value, length: 100)
+                            = link_to "View #{dynamic_column}", '#' , class: 'd-block view-dynamic-column', data: { toggle: 'modal', target: "#myModal" , column: dynamic_column, namespace_id: api_resource.api_namespace_id, id: api_resource.id, value: value, action: "click->api-resources#showModal" }
+                          - else
+                            = value 
    
   .modal.fade#myModal{tabindex: -1, role: "dialog", aria: {labelledby: "myModalLabel", hidden: true}, data: { api_resources_target: 'modal' }}
-    .modal-dialog{role: "document"}
-      .modal-content
-        .modal-header.pb-0
-          %h5.modal-title{id: "myModalLabel"} %p#dynamic_column_name
-          %button.close{type: "button", data: {dismiss: "modal"}, aria: {label: "Close"}}
-            %span{aria: {hidden: true}} &times;
-        .modal-body{style: "max-height: calc(100vh - 200px); overflow-y: auto;"}
-          %p#modal-id
-          %pre#modal-body-content.p-3
+    .modal-dialog-container
+      .modal-dialog{role: "document"}
+        .modal-content
+          .modal-header.pb-0
+            %h5.modal-title{id: "myModalLabel"} %p#dynamic_column_name
+            %button.close{type: "button", data: {dismiss: "modal"}, aria: {label: "Close"}}
+              %span{aria: {hidden: true}} &times;
+          .modal-body{style: "max-height: calc(100vh - 200px); overflow-y: auto;"}
+            %p.modal-subtitle
+            %pre.modal-body-content.p-3

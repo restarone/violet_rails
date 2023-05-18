@@ -1,0 +1,21 @@
+unique_string_aggregator_target:
+  name: unique_string_aggregator_target
+  slug: unique-string-aggregator-target
+  version: 1
+  properties: {
+                "title": "",
+                "tags": []
+              }
+  requires_authentication: false
+  namespace_type: create-read-update-delete
+
+unique_string_aggregator_output_tags:
+  name: unique_string_aggregator_output_tags
+  slug: unique-string-aggregator-output-tags
+  version: 1
+  properties: {
+                "tags": "",
+                "representation": ""
+              }
+  requires_authentication: false
+  namespace_type: create-read-update-delete

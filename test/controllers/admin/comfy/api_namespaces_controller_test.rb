@@ -741,7 +741,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "#index: should show only the api-namespaces with provided properties" do
     plugin_subdomain_events = api_namespaces(:plugin_subdomain_events)
     namespace_with_all_types = api_namespaces(:namespace_with_all_types)
-    monitoring_target_incident = api_namespaces(:monitoring_target_incident)
+    monitoring_target_incident = api_namespaces(:bishop_monitoring_target_incident)
 
     sign_in(@user)
     get api_namespaces_url, params: {q: {properties_or_name_cont: 'latency'}}
@@ -758,7 +758,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   test "#index: should show only the api-namespaces with provided name" do
     plugin_subdomain_events = api_namespaces(:plugin_subdomain_events)
     namespace_with_all_types = api_namespaces(:namespace_with_all_types)
-    monitoring_target_incident = api_namespaces(:monitoring_target_incident)
+    monitoring_target_incident = api_namespaces(:bishop_monitoring_target_incident)
 
     sign_in(@user)
     get api_namespaces_url, params: {q: {properties_or_name_cont: 'subdomain_events'}}
@@ -791,6 +791,128 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_select "pre", {count: 1, text: "{{ cms:helper render_api_namespace_resource_index '#{@api_namespace.slug}', scope: { properties: { arr: { value: [1], option: \"KEYWORDS\" }, title: { value: \"Hello\", option: \"KEYWORDS\" }, alpha_arr: { value: [\"a\"], option: \"KEYWORDS\" } } } }}"}
     assert_select "b", {count: 1, text: "API HTML Renderer show snippet (KEYWORDS - works for array and string data type only):"}
     assert_select "pre", {count: 1, text: "{{ cms:helper render_api_namespace_resource '#{@api_namespace.slug}', scope: { properties: { arr: { value: [1], option: \"KEYWORDS\" }, title: { value: \"Hello\", option: \"KEYWORDS\" }, alpha_arr: { value: [\"a\"], option: \"KEYWORDS\" } } } }}"}
+  end
+
+  test "#index: list view should have a Search form" do
+    sign_in(@user)
+    get api_namespaces_url
+    assert_response :success
+
+    assert_select ".list-view form.api_namespace_search", { count: 1 }
+  end
+
+  test "#index: list view should include pagination elements" do
+    sign_in(@user)
+    get api_namespaces_url
+    assert_response :success
+
+    assert_select ".list-view .digg_pagination .page-info", { count: 1 }
+    assert_select ".list-view .digg_pagination .links", { count: 1 }
+  end
+
+  test "#index: list view should have table headings that are sort links" do
+    sign_in(@user)
+    get api_namespaces_url
+    assert_response :success
+
+    assert_select ".list-view table th .sort_link", { count: 1, text: "Name" }
+    assert_select ".list-view table th .sort_link", { count: 1, text: "Version" }
+    assert_select ".list-view table th .sort_link", { count: 1, text: "Properties" }
+    assert_select ".list-view table th .sort_link", { count: 1, text: "Requires authentication" }
+    assert_select ".list-view table th .sort_link", { count: 1, text: "Namespace type" }
+    assert_select ".list-view table th .sort_link", { count: 1, text: "Cms associations" }
+  end
+
+  test "#index: should paginate API namespaces" do
+    items_per_page = 10
+
+    sign_in(@user)
+    get api_namespaces_url
+    assert_response :success
+
+    assert_equal items_per_page, @controller.view_assigns['api_namespaces'].length
+  end
+
+  test "#index: should paginate sorted API namespaces" do
+    items_per_page = 10
+
+    sign_in(@user)
+    get api_namespaces_url, params: { q: { s: 'name asc' } }
+    assert_response :success
+
+    assert_equal items_per_page, @controller.view_assigns['api_namespaces'].length
+  end
+
+  test "#index: should allow searching by name" do
+    searchTerm = 'clients'
+
+    sign_in(@user)
+    get api_namespaces_url, params: { q: { properties_or_name_cont: searchTerm } }
+
+    @controller.view_assigns['api_namespaces_q'].result.each do |namespace|
+      assert namespace.name.include? searchTerm
+    end
+  end
+
+  test "#index: should allow searching by property value" do
+    searchTerm = 'first_name'
+
+    sign_in(@user)
+    get api_namespaces_url, params: { q: { properties_or_name_cont: searchTerm } }
+
+    @controller.view_assigns['api_namespaces_q'].result.each do |namespace|
+      assert namespace.properties.to_s.include? searchTerm
+    end
+  end
+
+  test "#index: should allow sorting by CMS associations count in ascending order" do
+    # All namespaces have no cms associations by default
+    api_form = api_forms(:one)
+    api_form.update!(api_namespace: @api_namespace)
+    root_page = comfy_cms_pages(:root)
+    namespace_snippet = @api_namespace.snippet
+
+    # root page will be a CMS association of @api_namespace since the namespace's form is being rendered there
+    root_page.fragments.create!(content: namespace_snippet, identifier: 'content')
+
+    # Need the last page number to assert that @api_namespace is the very last item
+    # Since @api_namespace is the only namespace with a CMS association, it will be the last item on the last page
+    items_per_page = 10.0
+    last_page_number = (ApiNamespace.all.length / items_per_page).ceil
+
+    sign_in(@user)
+    get api_namespaces_url, params: { page: last_page_number.to_s, q: { s: 'CMS asc' } }
+    assert_response :success
+
+    assert_select '.list-view tbody tr' do |rows|
+      assert_includes rows[rows.length - 1].to_s, @api_namespace.name
+    end
+  end
+
+  test "#index: should allow sorting by CMS associations count in descending order" do
+    api_form = api_forms(:one)
+    api_form.update!(api_namespace: @api_namespace)
+    root_page = comfy_cms_pages(:root)
+    namespace_snippet = @api_namespace.snippet
+
+    root_page.fragments.create!(content: namespace_snippet, identifier: 'content')
+
+    sign_in(@user)
+    get api_namespaces_url, params: { q: { s: 'CMS desc' } }
+    assert_response :success
+
+    # Since @api_namespace is the only namespace with a CMS association, it will be the very first list item
+    assert_select '.list-view tbody tr' do |rows|
+      assert_includes rows[0].to_s, @api_namespace.name
+    end
+  end
+
+  test "#index: should render table partial in case of a turbo frame request" do
+    sign_in(@user)
+    get api_namespaces_url, headers: { 'Turbo-Frame' => 'api-namespaces' }
+    assert_response :success
+
+    assert_template partial: 'comfy/admin/api_namespaces/_table'
   end
 
   ######## API Accessibility Tests - START #########

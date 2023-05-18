@@ -1,0 +1,9 @@
+namespace_with_transcript:
+  name: namespace_with_transcript
+  slug: namespace_with_transcript
+  version: 1
+  properties: {
+    "raw_transcript": "",
+    "transcript": "",
+    "transcript_parsed": false
+  }

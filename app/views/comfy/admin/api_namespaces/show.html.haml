@@ -183,7 +183,5 @@
       = @api_namespace.version
     %p
       %b Properties:
-    #jsoneditor
+    #jsoneditor{data: { violet_jsoneditor: true, mode: 'view', target: 'api_namespace_properties' }}
     = hidden_field_tag :api_namespace_properties, @api_namespace.properties&.to_json
-
-    = render 'init_editor', {read_only: true}

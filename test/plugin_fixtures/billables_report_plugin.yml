@@ -1,0 +1,178 @@
+billables_report_plugin:
+  api_namespace: time_tracker
+  slug: billables-report-plugin
+  label: billables_report_plugin
+  enabled: true
+  metadata: { 'REPORTING_EMAILS': ['test@violet-rails.com'] }
+  model_definition: |
+    class BillablesReportPlugin
+      def initialize(parameters)  
+        @external_api_client = parameters[:external_api_client]
+        @clients_report = {}
+      end
+
+      def start
+        reporting_emails = @external_api_client.metadata["REPORTING_EMAILS"]
+        raise 'REPORTING_EMAILS are missing!' if reporting_emails.blank?
+
+        time_tracker = ApiNamespace.find_by(name: 'time_tracker')
+        clients = time_tracker.properties['for_what_client']
+        current_time = Time.zone.now
+
+        clients.each do |client_name|
+          # Fetching tracker entries for today, week and month to date.
+          time_tracker_entries_for_day = fetch_tracker_entries(
+            client_name,
+            time_tracker,
+            current_time - 24.hours,
+            current_time
+          )
+          time_tracker_entries_for_week = fetch_tracker_entries(
+            client_name,
+            time_tracker,
+            current_time.beginning_of_week.beginning_of_day,
+            current_time
+          )
+          time_tracker_entries_for_month = fetch_tracker_entries(
+            client_name,
+            time_tracker,
+            current_time.beginning_of_month.beginning_of_day,
+            current_time
+          )
+
+          @clients_report[client_name] = {}
+
+          # constructing the data in CSV format
+          total_hours_billed_for_day_csv_string = generate_csv_content(time_tracker_entries_for_day, client_name, 'day')
+          total_hours_billed_for_week_csv_string = generate_csv_content(time_tracker_entries_for_week, client_name, 'week')
+          total_hours_billed_for_month_csv_string = generate_csv_content(time_tracker_entries_for_month, client_name, 'month')
+
+          # Attachment details
+          total_hours_billed_for_day_attachment_details = attachment_details(
+            client_name,
+            "total_hours_billed_for_day(#{(current_time - 24.hours).strftime("%A, %B #{(current_time - 24.hours).day.ordinalize} %Y")} - #{current_time.strftime("%A, %B #{current_time.day.ordinalize} %Y")}).csv",
+            total_hours_billed_for_day_csv_string
+          )
+          total_hours_billed_for_week_attachment_details = attachment_details(
+            client_name,
+            "total_hours_billed_for_week(#{current_time.beginning_of_week.beginning_of_day.strftime("%A, %B #{current_time.beginning_of_week.beginning_of_day.day.ordinalize} %Y")} - #{current_time.strftime("%A, %B #{current_time.day.ordinalize} %Y")}).csv",
+            total_hours_billed_for_week_csv_string
+          )
+          total_hours_billed_for_month_attachment_details = attachment_details(
+            client_name,
+            "total_hours_billed_for_month(#{current_time.beginning_of_month.beginning_of_day.strftime("%A, %B #{current_time.beginning_of_month.beginning_of_day.day.ordinalize} %Y")} - #{current_time.strftime("%A, %B #{current_time.day.ordinalize} %Y")}).csv",
+            total_hours_billed_for_month_csv_string
+          )
+
+          # Uploading respective blobs
+          @clients_report[client_name][:total_hours_billed_for_day_blob] = ActiveStorage::Blob.create_and_upload!(
+            io: StringIO.new(total_hours_billed_for_day_attachment_details[:content]),
+            filename: total_hours_billed_for_day_attachment_details[:filename],
+            content_type: total_hours_billed_for_day_attachment_details[:mime_type],
+            metadata: nil
+          )
+          @clients_report[client_name][:total_hours_billed_for_week_blob] = ActiveStorage::Blob.create_and_upload!(
+            io: StringIO.new(total_hours_billed_for_week_attachment_details[:content]),
+            filename: total_hours_billed_for_week_attachment_details[:filename],
+            content_type: total_hours_billed_for_week_attachment_details[:mime_type],
+            metadata: nil
+          )
+          @clients_report[client_name][:total_hours_billed_for_month_blob] = ActiveStorage::Blob.create_and_upload!(
+            io: StringIO.new(total_hours_billed_for_month_attachment_details[:content]),
+            filename: total_hours_billed_for_month_attachment_details[:filename],
+            content_type: total_hours_billed_for_month_attachment_details[:mime_type],
+            metadata: nil
+          )
+        end
+
+        # Building Email details
+        subject = "Report of hours logged generated at: #{current_time.strftime("%A, %B #{current_time.day.ordinalize} %Y at%l:%M%p %Z")}"
+        email_content = <<-HTML
+        <div class='trix-content'>
+          <div>Please find the reports of hours logged for different clients listed below;<br><br>
+          </div>
+          <ol>
+            #{generate_email_content_for_clients}
+          </ol>
+        </div>
+        HTML
+
+        # Sending email report
+        email_thread = MessageThread.create!(recipients: [reporting_emails], subject: subject)
+        email_message = email_thread.messages.create!(
+          content: email_content.html_safe,
+          attachments: email_attachments
+        )
+      end
+
+      private
+      def fetch_tracker_entries(client, tracker, start_time, end_time)
+        tracker.api_resources.where(
+          "properties ->> 'for_what_client' = ? AND created_at >= ? AND created_at <= ?",
+          client,
+          start_time,
+          end_time
+        ).order(:created_at)
+      end
+
+      def generate_csv_content(tracker_entries, client, time_period)
+        total_hours = tracker_entries.sum { |entry| entry.properties['how_much_time_in_hours_spent'].to_f }
+        @clients_report[client]["total_hours_billed_for_#{time_period}".to_sym] = total_hours
+
+        CSV.generate do |csv|
+          csv << ['', 'Total Hours', total_hours]
+          csv << ['', '', '']
+          csv << ['Date', 'Hours', 'User', 'Client', 'Task', 'Notes']
+          tracker_entries.each do |entry|
+            csv << [
+              entry.created_at.to_s,
+              entry.properties['how_much_time_in_hours_spent'].to_f,
+              entry.properties['email_address'] || entry.user&.email,
+              entry.properties['for_what_client'],
+              entry.properties['what_task_did_you_work_on'],
+              entry.properties['notes']
+            ]
+          end
+        end
+      end
+
+      def attachment_details(client, filename, attachment_content)
+        {
+          filename: "(#{client})-#{filename}",
+          mime_type: 'text/csv',
+          content: attachment_content.html_safe
+        }
+      end
+
+      def blob_content(blob)
+        ActionText::Content.new("<action-text-attachment sgid='#{blob.attachable_sgid}'></action-text-attachment>").to_s
+      end
+
+      def generate_email_content_for_clients
+        clients = @clients_report.keys
+        email_report_content = ''
+
+        clients.each do |client_name|
+          email_report_content += <<-CLIENT_REPORT
+          <li><strong>#{client_name}</strong>
+            <ul>
+              <li>Total hours logged for today: #{@clients_report[client_name][:total_hours_billed_for_day]} hours<br>#{blob_content(@clients_report[client_name][:total_hours_billed_for_day_blob])}
+              </li>
+              <li>Total hours logged for this week to date: #{@clients_report[client_name][:total_hours_billed_for_week]} hours<br>#{blob_content(@clients_report[client_name][:total_hours_billed_for_week_blob])}
+              </li>
+              <li>Total hours logged for this month to date: #{@clients_report[client_name][:total_hours_billed_for_month]} hours<br>#{blob_content(@clients_report[client_name][:total_hours_billed_for_month_blob])}
+              </li>
+            </ul>
+          </li>
+          CLIENT_REPORT
+        end
+
+        email_report_content
+      end
+
+      def email_attachments
+        @clients_report.values.map { |client_blobs| client_blobs.except(:total_hours_billed_for_day, :total_hours_billed_for_week, :total_hours_billed_for_month).values }.flatten
+      end
+    end
+    # at the end of the file we have to implicitly return the class 
+    BillablesReportPlugin

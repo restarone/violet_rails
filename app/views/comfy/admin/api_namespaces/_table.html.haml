@@ -1,0 +1,75 @@
+= turbo_frame_tag 'api-namespaces' do
+  .digg_pagination.d-sm-flex.justify-content-between.mb-4.pb-3
+    .page-info
+      = page_entries_info api_namespaces
+    .links
+      = will_paginate api_namespaces, container: false, renderer: TurboPaginateRenderer
+  .table-responsive.bg-white
+    .list-view__table-container
+      %table.table.table-striped.table-bordered
+        %thead
+          %tr
+            %th.px-3
+            %th.px-3
+              = sort_link api_namespaces_q, :name, {}, data: { turbo: true, turbo_action: 'advance' }
+            %th.px-3
+              = sort_link api_namespaces_q, :version, {}, data: { turbo: true, turbo_action: 'advance' }
+            %th.px-3
+              = sort_link api_namespaces_q, :properties, {}, data: { turbo: true, turbo_action: 'advance' }
+            %th.px-3
+              = sort_link api_namespaces_q, :requires_authentication, {}, data: { turbo: true, turbo_action: 'advance' }
+            %th.px-3
+              = sort_link api_namespaces_q, :namespace_type, {}, data: { turbo: true, turbo_action: 'advance' }
+            %th.px-3
+              = sort_link api_namespaces_q, 'CMS Associations', {}, data: { turbo: true, turbo_action: 'advance' }
+        
+        %tbody
+          - api_namespaces.each do |api_namespace|
+            %tr
+              %td.px-3.py-2
+                .td-content
+                  = link_to edit_api_namespace_path(api_namespace), class: 'mr-3' do
+                    %i.fas.fa-edit
+                  = link_to api_namespace, method: :delete, remote: true, data: { confirm: 'Are you sure?', page: params[:page], action: "ajax:success->list-view#reloadTable" } do
+                    %i.fas.fa-trash
+              %td.px-3.py-2
+                .td-content.justify-content-start
+                  %div
+                    = link_to api_namespace.name, api_namespace
+                    .item-categories
+                      = render "comfy/admin/cms/categories/categories", object: api_namespace
+              %td.px-3.py-2
+                .td-content
+                  = api_namespace.version
+              %td.px-3.py-2
+                .td-content.justify-content-start
+                  %div
+                    - value = api_namespace.properties.to_s
+                    - if value && value.length > 100
+                      .clamp-content
+                        = "#{truncate(value, length: 100)}..."
+                      = link_to 'View more', '#', class: 'd-block', style: 'white-space: nowrap;', data: { toggle: 'modal', target: '#propertiesModal', namespace_name: api_namespace.name, namespace_slug: api_namespace.slug, value: api_namespace.properties, action: 'click->api-namespaces#showPropertiesModal' }
+                    - else
+                      = value 
+              %td.px-3.py-2
+                .td-content
+                  %span{ class: "list-view__status-text #{api_namespace.requires_authentication.to_s == 'true' ? 'list-view__status-text--success' : 'list-view__status-text--failure'}" }
+                    = api_namespace.requires_authentication
+              %td.px-3.py-2
+                .td-content
+                  = api_namespace.namespace_type
+              %td.px-3.py-2
+                .td-content
+                  = api_namespace.cms_associations.present? ? '<i class="fa fa-solid fa-check text-success" style="width: 30px; height: 30px;"></i>'.html_safe : '<i class="fa fa-solid fa-times text-danger" style="width: 30px; height: 30px;"></i>'.html_safe
+
+  .modal.fade#propertiesModal{ tabindex: -1, role: "dialog", aria: {labelledby: "propertiesModalTitle", hidden: true}, data: { api_namespaces_target: 'propertiesModal' }}
+    .modal-dialog-container
+      .modal-dialog{role: "document"}
+        .modal-content
+          .modal-header.pb-0
+            %h5.modal-title{id: "propertiesModalTitle"} Properties
+            %button.close{type: "button", data: {dismiss: "modal"}, aria: {label: "Close"}}
+              %span{aria: {hidden: true}} &times;
+          .modal-body{style: "max-height: calc(100vh - 200px); overflow-y: auto;"}
+            %p.modal-subtitle
+            %pre.modal-body-content.p-3
