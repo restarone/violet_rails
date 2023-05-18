@@ -8,6 +8,19 @@
   = @api_resource.id
 = render 'comfy/admin/api_namespaces/editor', {api_resource: @api_resource, form_properties: @api_resource.api_namespace&.api_form&.properties&.symbolize_keys, read_only: true}
 
+.my-3
+  %b.mb-2.d-block Associations
+  - @api_resource.api_namespace.associations.each do |association|
+    .m-3.d-flex
+      %div.mr-3
+        = association['type'] == 'has_many' ? "#{association['namespace']}:" : "#{association['namespace'].singularize}:"
+      %div
+        - if association['type'] == 'has_many'
+          = link_to association['namespace'], api_namespace_path(id: association['namespace'], q: {properties_cont: "\"#{@api_resource.api_namespace.slug.underscore.singularize}_id\": #{@api_resource.api_namespace.id}"})
+        - else
+          - associated_resource = @api_resource.send(association['namespace'].underscore.singularize.to_sym)
+          = link_to associated_resource.id, api_namespace_resource_path(api_namespace_id: associated_resource.api_namespace.id, id: associated_resource.id) if associated_resource.present?
+
 - user = @api_resource.tracked_user
 - if user
   %p 
