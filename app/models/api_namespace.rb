@@ -9,7 +9,7 @@ class ApiNamespace < ApplicationRecord
 
   after_save :update_api_form
 
-  after_save :add_foreign_key, if: -> { self.saved_change_to_associations? }
+  after_save :add_foreign_key, if: -> { attributes.key?('associations') && self.saved_change_to_associations? }
   
   has_many :api_resources, dependent: :destroy
   accepts_nested_attributes_for :api_resources
