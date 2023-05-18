@@ -200,4 +200,43 @@ class ApiResourceTest < ActiveSupport::TestCase
     # rich text
     assert_equal prop_2.content, api_resource.props['text'].content
   end
+
+  test 'should define associations: has_many' do
+    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'products'}]);
+
+    namespace_1.reload
+    namespace_2.reload
+
+    shop_1 = namespace_2.api_resources.create(properties: {name: 'Restarone'})
+    shop_2 = namespace_2.api_resources.create(properties: {name: 'Engineering'})
+
+    product_1 = namespace_1.api_resources.create(properties: {title: 'T-shirt', shop_id: shop_1.id})
+    product_2 = namespace_1.api_resources.create(properties: {title: 'Jeans', shop_id: shop_1.id})
+
+    assert_equal [product_1.id, product_2.id], shop_1.products.pluck(:id)
+    assert_equal [], shop_2.products.pluck(:id)
+
+    assert_equal shop_1, product_1.shop
+    assert_equal shop_1, product_2.shop
+  end
+
+  test 'should define associations: has_one' do
+    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' }, associations: [{type: 'has_one', namespace: 'products'}]);
+
+    namespace_1.reload
+    namespace_2.reload
+
+    shop_1 = namespace_2.api_resources.create(properties: {name: 'Restarone'})
+    shop_2 = namespace_2.api_resources.create(properties: {name: 'Engineering'})
+
+    product_1 = namespace_1.api_resources.create(properties: {title: 'T-shirt', shop_id: shop_1.id})
+    product_2 = namespace_1.api_resources.create(properties: {title: 'Jeans', shop_id: shop_1.id})
+
+    assert_equal product_2, shop_1.product
+    assert_equal nil, shop_2.product
+
+    assert_equal shop_1, product_1.shop
+  end
 end
