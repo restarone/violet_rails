@@ -243,7 +243,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,#{api_namespace.social_share_metadata}\nanalytics_metadata,#{api_namespace.analytics_metadata}\npurge_resources_older_than,never\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,#{api_namespace.social_share_metadata}\nanalytics_metadata,#{api_namespace.analytics_metadata}\npurge_resources_older_than,never\nassociations,[]\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -2411,7 +2411,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\nassociations,[]\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -2425,7 +2425,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\nassociations,[]\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -2439,7 +2439,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\nassociations,[]\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -2470,7 +2470,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\nassociations,[]\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -2486,7 +2486,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\nassociations,[]\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -2502,7 +2502,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\nassociations,[]\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -2516,7 +2516,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\nassociations,[]\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"

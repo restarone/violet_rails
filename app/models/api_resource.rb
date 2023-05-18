@@ -115,6 +115,8 @@ class ApiResource < ApplicationRecord
   end
 
   def define_associations
+    return if api_namespace.nil?
+
     # [{type: 'has_many', namespace: 'products', version: '1'}]
     api_namespace.associations.each do |association|
       case association['type']
