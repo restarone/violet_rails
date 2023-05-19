@@ -64,7 +64,7 @@
               - api_namespace.associations.each do |association|
                 %td.px-3
                   - if association['type'] == 'has_many'
-                    = link_to association['namespace'], api_namespace_path(id: association['namespace'], q: {properties_cont: "\"#{api_namespace.slug.underscore.singularize}_id\": #{api_namespace.id}"})
+                    = link_to association['namespace'], api_namespace_path(id: association['namespace'], q: {properties_cont: "\"#{api_namespace.slug.underscore.singularize}_id\": #{api_resource.id}"})
                   - else
                     - associated_resource = api_resource.send(association['namespace'].underscore.singularize.to_sym)
                     = link_to associated_resource.id, api_namespace_resource_path(api_namespace_id: associated_resource.api_namespace.id, id: associated_resource.id) if associated_resource.present?

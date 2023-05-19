@@ -369,11 +369,28 @@ class ApiNamespaceTest < ActiveSupport::TestCase
     assert_includes associations, snippet
   end
 
-  test 'should add foreign key and belongs_to to associated namespace' do
+  test 'has_many: should add foreign key and belongs_to association to child namespace' do
     namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' });
     namespace_2 = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'products'}]);
 
     assert namespace_1.reload.properties.key?('shop_id')
     assert_includes namespace_1.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
+  end
+
+  test 'has_one: should add foreign key and belongs_to association to child namespace' do
+    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' }, associations: [{type: 'has_one', namespace: 'products'}]);
+
+    assert namespace_1.reload.properties.key?('shop_id')
+    assert_includes namespace_1.reload.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
+  end
+
+  test 'belongs_to: should add foreign key and has_many association to parent namespace' do
+    namespace_2 = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' });
+    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' }, associations: [{type: 'belongs_to', namespace: 'shops'}]);
+
+    assert namespace_1.reload.properties.key?('shop_id')
+    assert_includes namespace_1.reload.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
+    assert_includes namespace_2.reload.associations, { "type" => 'has_many', "namespace" => 'products' }
   end
 end
