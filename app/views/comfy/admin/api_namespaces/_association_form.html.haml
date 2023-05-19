@@ -8,4 +8,4 @@
       = select_tag "api_namespace[associations][#{index}][type]", options_for_select(['has_many', 'has_one', 'belongs_to'], association['type']), class: 'form-control form-control-sm', required: true
     .field.col.col-6
       = label_tag 'namespace'
-      = select_tag "api_namespace[associations][#{index}][namespace]", options_for_select(ApiNamespace.all.excluding(@api_namespace.slug).map { |namespace| ["#{namespace.name}   [slug: #{namespace.slug}, id: #{namespace.id}]", namespace.slug] }, association['namespace']), class: 'form-control form-control-sm', required: true
+      = select_tag "api_namespace[associations][#{index}][namespace]", options_for_select(ApiNamespace.all.excluding(@api_namespace).map { |namespace| ["#{namespace.name}   [slug: #{namespace.slug}, id: #{namespace.id}]", namespace.slug] }, association['namespace']), class: 'form-control form-control-sm', required: true
