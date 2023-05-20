@@ -19,6 +19,7 @@
               %th.px-3= association['type'] == 'has_many' ? association['namespace'] : association['namespace'].singularize
 
         %tbody
+          - dependent_destroy_associations = api_namespace.associations.filter { |a| a['dependent'] == 'destroy'}.pluck('namespace')
           - api_resources.each do |api_resource|
             %tr
               %td.px-3.py-2
@@ -28,7 +29,7 @@
                     .d-flex.mt-3
                       = link_to edit_api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), class: 'mr-3' do 
                         %i.fas.fa-edit
-                      = link_to api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), remote: true, method: :delete, data: { confirm: 'Are you sure?', page: params[:page], action: "ajax:success->list-view#reloadTable" } do
+                      = link_to api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), remote: true, method: :delete, data: { confirm: (dependent_destroy_associations.present? ? "All the dependent #{dependent_destroy_associations.to_sentence } will be deleted. Are you sure? " : "Are you sure?"), page: params[:page], action: "ajax:success->list-view#reloadTable" } do
                         %i.fas.fa-trash
               %td.px-3.date-col
                 .td-content

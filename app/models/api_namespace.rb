@@ -408,14 +408,14 @@ class ApiNamespace < ApplicationRecord
 
         parent_namespace = ApiNamespace.friendly.find(association['namespace'])
         has_many_association = { "type" => 'has_many', "namespace" => self.slug }
-        has_one_association = { "type" => 'has_one', "namespace" => self.slug }
-        parent_namespace.update(associations: (parent_namespace.associations || []) << has_many_association) unless (parent_namespace.associations & [has_many_association, has_one_association]).any?
+        parent_association_exist = parent_namespace.associations.any? {|a| (a['type'] == 'has_many' || a['type'] == 'has_one') && a['namespace'] == self.slug } 
+        parent_namespace.update(associations: (parent_namespace.associations || []) << has_many_association) unless parent_association_exist
       else
         foreign_key = "#{self.slug.underscore.singularize}_id"
         api_namespace = ApiNamespace.friendly.find(association['namespace'])
         association_object = { "type" => 'belongs_to', "namespace" => self.slug }
         api_namespace.properties = api_namespace.properties.merge("#{foreign_key}" => "") unless api_namespace.properties.key?(foreign_key)
-        api_namespace.associations = (api_namespace.associations || []) << association_object unless api_namespace.associations&.include?(association_object)
+        api_namespace.associations = (api_namespace.associations || []) << association_object unless api_namespace.associations.any? { |a| a['type'] == 'belongs_to' && a['namespace'] == self.slug }
         api_namespace.save
       end
     end

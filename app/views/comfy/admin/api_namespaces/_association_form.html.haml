@@ -2,10 +2,13 @@
   .position-absolute{style: "top: 6px; right: 6px"}
     %a.text-danger{style: "cursor: pointer;", onclick: "$('#association_form_#{index}').remove()"}
       %i.fas.fa-times
-  .row
-    .field.col.col-6
+  .row.association_form_fields
+    .field.col.col-4
       = label_tag 'type'
-      = select_tag "api_namespace[associations][#{index}][type]", options_for_select(['has_many', 'has_one', 'belongs_to'], association['type']), class: 'form-control form-control-sm', required: true
-    .field.col.col-6
+      = select_tag "api_namespace[associations][#{index}][type]", options_for_select(['has_many', 'has_one', 'belongs_to'], association['type']), class: 'form-control form-control-sm association-type-field', required: true, onchange: "toggleDependent(this);"
+    .field.col.col-4
       = label_tag 'namespace'
       = select_tag "api_namespace[associations][#{index}][namespace]", options_for_select(ApiNamespace.all.excluding(@api_namespace).map { |namespace| ["#{namespace.name}   [slug: #{namespace.slug}, id: #{namespace.id}]", namespace.slug] }, association['namespace']), class: 'form-control form-control-sm', required: true
+    .field.col.col-4
+      = label_tag 'dependent'
+      = select_tag "api_namespace[associations][#{index}][dependent]", options_for_select(['destroy', 'restrict_with_error'], association['dependent']), include_blank: true, class: 'form-control form-control-sm dependent-field', required: false

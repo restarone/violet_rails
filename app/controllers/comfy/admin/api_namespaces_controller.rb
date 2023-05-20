@@ -270,7 +270,7 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
                                             :has_form,
                                             non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :allow_attachments, :_destroy],
                                             category_ids: [],
-                                            associations: [:type, :namespace]
+                                            associations: [:type, :namespace, :dependent]
                                            )
     end
 

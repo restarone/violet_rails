@@ -86,10 +86,19 @@
     $('#associations_forms').append("#{escape_javascript( render :partial => 'comfy/admin/api_namespaces/association_form', :locals => {index: 'index_to_replace', association: {} })}".replace(/index_to_replace/g, index))
   }
 
+  function toggleDependent(el) {
+    var dependentField = $(el).closest('.association_form_fields').find('.dependent-field').first();
+    if($(el).val() == 'belongs_to') {
+      dependentField.val('');
+      dependentField.attr('disabled', true);
+    } else {
+      dependentField.attr('disabled', false);
+    }
+  }
 
-
-
-
+  $(document).ready(function() {
+    $('.association-type-field').change();
+  })
 
 
 
