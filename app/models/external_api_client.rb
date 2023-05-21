@@ -174,6 +174,9 @@ WebhookDrivenConnection"
   private 
 
   def reload_model_definition_class
+    previous_class_name = self.model_definition_before_last_save.strip.lines.last.strip
+    # remove previous class if class name was changed
+    ExternalApiClient.send(:remove_const, previous_class_name.to_sym) if (previous_class_name != model_definition_class_name) && self.class.const_defined?(previous_class_name)
     ExternalApiClient.send(:remove_const, self.model_definition_class_name.split('::').last.to_sym) if model_definition_class_defined?
     self.evaluated_model_definition
   end

@@ -195,4 +195,31 @@ class ExternalApiClientTest < ActiveSupport::TestCase
       external_api_client.update(model_definition: model_definition)
     end
   end
+
+  test 'should remove model defination class after save if class name was changed' do
+    external_api_client = external_api_clients(:webhook_drive_strategy)
+    external_api_client.evaluated_model_definition
+
+    assert ExternalApiClient.const_defined?(:ExternalApiModelExample)
+    refute ExternalApiClient.const_defined?(:ExternalApiModelExampleNew)
+
+    model_definition = "
+      class ExternalApiModelExampleNew
+        def initialize(parameters)
+          @external_api_client = parameters[:external_api_client]
+        end
+
+        def start
+          render json: { a: 'b' }
+        end
+      end
+
+      ExternalApiModelExampleNew
+    "
+
+    external_api_client.update(model_definition: model_definition)
+
+    refute ExternalApiClient.const_defined?(:ExternalApiModelExample)
+    assert ExternalApiClient.const_defined?(:ExternalApiModelExampleNew)
+  end
 end
