@@ -65,3 +65,6 @@ resource_with_all_types_two:
 # ERB is used to evaluate the embedded ruby code in following files
 <%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/time_tracker_resources.yml")).result %>
 <%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/timesheet_request_resources.yml")).result %>
+
+# Printify Integration related fixtures
+<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/order.yml")).result %>

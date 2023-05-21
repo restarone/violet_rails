@@ -1,0 +1,22 @@
+order:
+  name: Order
+  slug: order
+  version: 1
+  properties: {
+                order_id: "",
+                shipments: [],
+                total_tax: "",
+                address_to: [],
+                line_items: [],
+                total_price: "",
+                fulfilled_at: "",
+                total_shipping: "",
+                printify_status: "",
+                shipping_method: "",
+                printify_shop_id: "",
+                stripe_charge_id: "",
+                stripe_refund_status: "",
+                sent_to_production_at: ""
+              }
+  requires_authentication: false
+  namespace_type: create-read-update-delete
