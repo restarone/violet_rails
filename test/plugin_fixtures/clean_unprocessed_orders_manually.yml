@@ -1,4 +1,4 @@
-vacuum_job:
+clean_unprocessed_orders_manually:
   api_namespace: order
   slug: clean_unprocessed_orders_manually
   label: CleanUnprocessedOrdersManually

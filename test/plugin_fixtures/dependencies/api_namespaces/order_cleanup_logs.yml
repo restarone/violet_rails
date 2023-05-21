@@ -1,4 +1,4 @@
-order:
+order_cleanup_logs:
   name: OrderCleanupLogs
   slug: order_cleanup_logs
   version: 1
