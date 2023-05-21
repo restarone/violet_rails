@@ -15,7 +15,7 @@ class Api::ExternalApiClientsController < Api::BaseController
       end
 
       if @external_api_client.model_definition_class_defined?
-        @model_definition = @external_api_client.model_definition_class_name.constantize
+        @model_definition = ExternalApiClient.const_get(@external_api_client.model_definition_class_name)
       else
         @model_definition = @external_api_client.evaluated_model_definition
       end

@@ -222,4 +222,24 @@ class ExternalApiClientTest < ActiveSupport::TestCase
     refute ExternalApiClient.const_defined?(:ExternalApiModelExample)
     assert ExternalApiClient.const_defined?(:ExternalApiModelExampleNew)
   end
+
+  test 'should allow save if model defination has syntax error' do
+    api_namespace = api_namespaces(:one)
+    model_definition = "
+      class ExternalApiModelExampleNew
+        def initialize(parameters)
+          @external_api_client = parameters[:external_api_client]
+        end
+
+        def start
+          render json: { a: 'b' }
+        # end is missing
+      end
+
+      ExternalApiModelExampleNew
+    "
+
+    external_api_client = ExternalApiClient.create( model_definition: model_definition, api_namespace_id: api_namespace.id, label: 'test_syntax')
+    assert_includes external_api_client.errors.messages[:model_definition].to_s, 'syntax error, unexpected end-of-input, expecting end'
+  end
 end
