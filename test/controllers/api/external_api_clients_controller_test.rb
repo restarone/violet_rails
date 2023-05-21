@@ -165,4 +165,40 @@ class Api::ExternalApiClientsControllerTest < ActionDispatch::IntegrationTest
     assert_response 401
     assert_equal({ 'message' => 'Invalid Authorization Token', 'success' => false }, JSON.parse(response.body))
   end
+
+  test 'should not raise error' do 
+    threads = []
+
+    5.times do  
+      threads << Thread.new do
+        post api_external_api_client_webhook_url(version: @api_namespace.version, api_namespace: @api_namespace.slug, external_api_client: @external_api_client.slug), params: {},  as: :json
+        assert_response :success
+      end
+    end
+    threads.each { |t| t.join }
+  end
+
+  test 'should use updated model definition' do 
+    post api_external_api_client_webhook_url(version: @api_namespace.version, api_namespace: @api_namespace.slug, external_api_client: @external_api_client.slug), params: { type: 'customer.created' },  as: :json
+    assert_equal({"success" => true}, response.parsed_body)
+
+    model_definition = "
+      class ExternalApiModelExample
+        def initialize(parameters)
+          @external_api_client = parameters[:external_api_client]
+        end
+
+        def start
+          render json: { a: 'b' }
+        end
+      end
+
+      ExternalApiModelExample
+    "
+
+    @external_api_client.update(model_definition: model_definition)
+
+    post api_external_api_client_webhook_url(version: @api_namespace.version, api_namespace: @api_namespace.slug, external_api_client: @external_api_client.slug), params: { type: 'customer.created' },  as: :json
+    assert_equal({"a" =>"b"}, response.parsed_body)
+  end
 end

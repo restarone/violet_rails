@@ -3,6 +3,8 @@ class ExternalApiClient < ApplicationRecord
 
   attr_accessor :require_webhook_verification, :default_model_definition, :default_webhook_driven_model_definition
 
+  after_save :unload_model_definition_class
+
   STATUSES = {
     stopped: 'stopped',
     running: 'running',
@@ -159,5 +161,18 @@ WebhookDrivenConnection"
 
   def remove_webhook_verification_method
     self.webhook_verification_method&.destroy
+  end
+
+  def model_definition_class_name
+    "ExternalApiClient::#{self.model_definition.strip.lines.last.strip}"
+  end
+
+  def model_definition_class_defined?
+    self.class.const_defined?(model_definition_class_name)
+  end
+
+  private 
+  def unload_model_definition_class
+    ExternalApiClient.send(:remove_const, self.model_definition_class_name.split('::').last.to_sym) if model_definition_class_defined?
   end
 end

@@ -170,4 +170,29 @@ class ExternalApiClientTest < ActiveSupport::TestCase
     external_api_client_3 = ExternalApiClient.new(api_namespace: api_namespace, drive_strategy: ExternalApiClient::DRIVE_STRATEGIES[:webhook])
     assert_equal ExternalApiClient::DEFAULT_WEBHOOK_DRIVEN_MODEL_DEFINITION, external_api_client_3.model_definition
   end
+
+  test 'should unload model defination class after save' do
+    external_api_client = external_api_clients(:webhook_drive_strategy)
+    external_api_client.evaluated_model_definition
+
+    assert external_api_client.model_definition_class_defined?
+
+      model_definition = "
+      class ExternalApiModelExample
+        def initialize(parameters)
+          @external_api_client = parameters[:external_api_client]
+        end
+
+        def start
+          render json: { a: 'b' }
+        end
+      end
+
+      ExternalApiModelExample
+    "
+
+    external_api_client.update(model_definition: model_definition)
+
+    refute external_api_client.model_definition_class_defined?
+  end
 end
