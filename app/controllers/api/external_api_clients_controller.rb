@@ -22,8 +22,11 @@ class Api::ExternalApiClientsController < Api::BaseController
 
       # add render method on model_definition
       # render should only be available on controller context
-      @model_definition.define_method(:render) do |args|
-        return { render: true, args: args } 
+
+      unless @model_definition.method_defined?(:render) 
+        @model_definition.define_method(:render) do |args|
+          return { render: true, args: args } 
+        end
       end
 
       response = @model_definition.new(external_api_client: @external_api_client, request: request).start
