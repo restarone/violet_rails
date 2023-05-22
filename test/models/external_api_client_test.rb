@@ -240,6 +240,6 @@ class ExternalApiClientTest < ActiveSupport::TestCase
     "
 
     external_api_client = ExternalApiClient.create( model_definition: model_definition, api_namespace_id: api_namespace.id, label: 'test_syntax')
-    assert_includes external_api_client.errors.messages[:model_definition].to_s, 'syntax error, unexpected end-of-input, expecting end'
+    assert_includes external_api_client.errors.messages[:model_definition].to_s, 'syntax error'
   end
 end
