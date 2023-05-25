@@ -495,7 +495,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_match expected_message, flash[:alert]
   end
 
-  test "should allow import api_namespace provided as json without asscociations and the newly created api_namespace should be followed by secure-random if api_namespace with such name exists" do
+  test "should allow import api_namespace provided as json without associations and the newly created api_namespace should be followed by secure-random if api_namespace with such name exists" do
     json_file = Tempfile.new(['api_namespace.json', '.json'])
     json_file.write(@api_namespace.export_as_json(include_associations: false))
     json_file.rewind
@@ -526,7 +526,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_match @api_namespace.name, ApiNamespace.last.name
   end
 
-  test "should allow import api_namespace provided as json with its asscociations and the newly created api_namespace should be followed by secure-random if api_namespace with such name exists" do
+  test "should allow import api_namespace provided as json with its associations and the newly created api_namespace should be followed by secure-random if api_namespace with such name exists" do
     api_resources_count = @api_namespace.api_resources.count
     api_actions_count = @api_namespace.api_actions.count + @api_namespace.api_resources.map(&:api_actions).flatten.count
     api_namespace_keys_count = @api_namespace.api_namespace_keys.count
@@ -563,7 +563,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_match @api_namespace.name, ApiNamespace.last.name
   end
 
-  test "should allow import api_namespace provided as json with its asscociations and the newly created api_namespace's name should be as provided if api_namespace with such name does not exist" do
+  test "should allow import api_namespace provided as json with its associations and the newly created api_namespace's name should be as provided if api_namespace with such name does not exist" do
     api_resources_count = @api_namespace.api_resources.count
     api_actions_count = @api_namespace.api_actions.count + @api_namespace.api_resources.map(&:api_actions).flatten.count
     api_namespace_keys_count = @api_namespace.api_namespace_keys.count
@@ -3423,7 +3423,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     refute products_namespace.api_resources.first.shop
   end
 
-  test "should update api_namespace with associations" do
+  test "#update should add association" do
     shops_namespace = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' })
     products_namespace = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' })
 
@@ -3456,9 +3456,93 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     products_namespace.reload
     shops_namespace.reload
 
-    # should have dynamic methods defined without associations
+    # should have dynamic methods defined
     assert products_namespace.api_resources.first.respond_to?(:shop)
     assert shops_namespace.api_resources.first.respond_to?(:products)
+  end
+
+  test "update association" do
+    products_namespace = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' })
+    shops_namespace = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'products'}])
+
+    assert products_namespace.reload.properties.key?('shop_id')
+    assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
+    assert_includes shops_namespace.reload.associations, { "type" => 'has_many', "namespace" => 'products' }
+
+    shop = shops_namespace.api_resources.create(properties: {
+      name: 'my shop'
+    })
+
+    products_namespace.api_resources.create(properties: {
+      title: 'my product',
+      shop_id: shop.id
+    })
+
+    # should have dynamic methods defined without associations
+    assert products_namespace.api_resources.first.reload.respond_to?(:shop)
+    assert shops_namespace.api_resources.first.reload.respond_to?(:products)
+
+    sign_in(@user)
+    assert_changes('shops_namespace.reload.associations') do
+      assert_no_changes('products_namespace.reload.associations') do
+        assert_no_changes('products_namespace.reload.properties') do
+          patch api_namespace_url(shops_namespace), params: { api_namespace: { associations: [{type: 'has_one', namespace: 'products'}], version: 1 } }
+        end
+      end
+    end
+
+    refute_includes shops_namespace.reload.associations, { "type" => 'has_many', "namespace" => 'products' }
+
+    assert_includes shops_namespace.reload.associations, { "type" => 'has_one', "namespace" => 'products' }
+
+    assert products_namespace.reload.properties.key?('shop_id')
+    assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
+
+    # should remove has_many dynamic method and add has_one methods
+    assert products_namespace.api_resources.first.reload.respond_to?(:shop)
+    refute shops_namespace.api_resources.first.reload.respond_to?(:products)
+    assert shops_namespace.api_resources.first.reload.respond_to?(:product)
+  end
+
+  test "update api_namespace to remove associations" do
+    shops_namespace = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' })
+    products_namespace = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' }, associations: [{type: 'belongs_to', namespace: 'shops'}])
+
+    assert products_namespace.reload.properties.key?('shop_id')
+    assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
+    assert_includes shops_namespace.reload.associations, { "type" => 'has_many', "namespace" => 'products' }
+
+    shop = shops_namespace.api_resources.create(properties: {
+      name: 'my shop'
+    })
+
+    products_namespace.api_resources.create(properties: {
+      title: 'my product',
+      shop_id: shop.id
+    })
+
+    # should have dynamic methods defined
+    assert products_namespace.api_resources.first.reload.respond_to?(:shop)
+    assert shops_namespace.api_resources.first.reload.respond_to?(:products)
+
+    sign_in(@user)
+    assert_changes('shops_namespace.reload.associations') do
+      assert_no_changes('products_namespace.reload.associations') do
+        assert_no_changes('products_namespace.reload.properties') do
+          patch api_namespace_url(shops_namespace), params: { api_namespace: { associations: [], version: 1 } }
+        end
+      end
+    end
+
+    refute_includes shops_namespace.reload.associations, { "type" => 'has_many', "namespace" => 'products' }
+
+    # removing foreign key and corresponding associations should be manual, we do not want to unintionally remove existing association
+    assert products_namespace.reload.properties.key?('shop_id')
+    assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
+
+    # should remove dynamic methods
+    assert products_namespace.api_resources.first.reload.respond_to?(:shop)
+    refute shops_namespace.api_resources.first.reload.respond_to?(:products)
   end
   
   test "should show link to associated resources" do
