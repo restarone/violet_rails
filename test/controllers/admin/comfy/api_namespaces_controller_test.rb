@@ -3356,4 +3356,141 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_equal expected_message, flash[:alert]
     refute_equal payload[:api_namespace]['analytics_metadata'], @api_namespace.reload.analytics_metadata
   end
+
+  test "should create api_namespace with parent associations" do
+    shops_namespace = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' })
+
+    shops_namespace.api_resources.create(properties: {
+      name: 'my shop'
+    })
+
+    sign_in(@user)
+    assert_difference('ApiNamespace.count', 1) do
+      post api_namespaces_url, params: { api_namespace: { name: 'products', properties: { title: '' }.to_json, associations: [{type: 'belongs_to', namespace: 'shops'}], version: 1 } }
+    end
+    products_namespace = ApiNamespace.last
+    shops_namespace.reload
+
+    shop_resource = shops_namespace.api_resources.first
+
+    assert products_namespace.reload.properties.key?('shop_id')
+    assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
+    assert_includes shops_namespace.associations, { "type" => 'has_many', "namespace" => 'products' }
+
+    assert_difference('ApiResource.count') do
+      post api_namespace_resources_url(api_namespace_id: products_namespace.id), params: { api_resource: { properties: { title: 'My product', shop_id: shop_resource.id }.to_json } }
+    end
+
+    assert_equal products_namespace.api_resources.pluck(:id), shop_resource.products.pluck(:id)
+
+    assert_equal shop_resource, products_namespace.api_resources.first.shop
+  end
+
+  test "should create api_namespace with child associations" do
+    products_namespace = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' })
+
+    products_namespace.api_resources.create(properties: {
+      title: 'my product'
+    })
+
+    sign_in(@user)
+    assert_difference('ApiNamespace.count', 1) do
+      post api_namespaces_url, params: { api_namespace: { name: 'shops', properties: { name: '' }.to_json, associations: [{type: 'has_many', namespace: 'products'}], version: 1 } }
+    end
+
+    shops_namespace = ApiNamespace.last
+    products_namespace.reload
+
+    assert products_namespace.properties.key?('shop_id')
+    assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
+    assert_includes shops_namespace.associations, { "type" => 'has_many', "namespace" => 'products' }
+
+    assert_difference('ApiResource.count') do
+      post api_namespace_resources_url(api_namespace_id: shops_namespace.id), params: { api_resource: { properties: { name: 'My shop'}.to_json } }
+    end
+
+    shop_resource = shops_namespace.api_resources.first
+
+    assert_difference('ApiResource.count') do
+      post api_namespace_resources_url(api_namespace_id: products_namespace.id), params: { api_resource: { properties: { title: 'My product', shop_id: shop_resource.id }.to_json } }
+    end
+
+    assert_equal [products_namespace.api_resources.last.id], shop_resource.products.pluck(:id)
+
+    assert_equal shop_resource, products_namespace.api_resources.last.shop
+
+    # already existing product resource 
+    refute products_namespace.api_resources.first.shop
+  end
+
+  test "should update api_namespace with associations" do
+    shops_namespace = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' })
+    products_namespace = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' })
+
+    shop = shops_namespace.api_resources.create(properties: {
+      name: 'my shop'
+    })
+
+    products_namespace.api_resources.create(properties: {
+      title: 'my product',
+      shop_id: shop.id
+    })
+
+    # does not have dynamic methods defined without associations
+    refute products_namespace.api_resources.first.reload.respond_to?(:shop)
+    refute shops_namespace.api_resources.first.reload.respond_to?(:products)
+
+    sign_in(@user)
+    assert_changes('shops_namespace.reload.associations') do
+      assert_changes('products_namespace.reload.associations') do
+        assert_changes('products_namespace.reload.properties') do
+          patch api_namespace_url(shops_namespace), params: { api_namespace: { associations: [{type: 'has_many', namespace: 'products'}], version: 1 } }
+        end
+      end
+    end
+
+    assert products_namespace.properties.key?('shop_id')
+    assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
+    assert_includes shops_namespace.associations, { "type" => 'has_many', "namespace" => 'products' }
+
+    products_namespace.reload
+    shops_namespace.reload
+
+    # should have dynamic methods defined without associations
+    assert products_namespace.api_resources.first.respond_to?(:shop)
+    assert shops_namespace.api_resources.first.respond_to?(:products)
+  end
+  
+  test "should show link to associated resources" do
+    owner_namespace = ApiNamespace.create(name: 'owners', version: 1, properties: {} )
+    shops_namespace = ApiNamespace.create(name: 'shops', version: 1, properties: { name: ''}, associations: [{type: 'has_one', namespace: 'owners'}])
+    products_namespace = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' }, associations: [{type: 'belongs_to', namespace: 'shops'}])
+
+    shop = shops_namespace.reload.api_resources.create(properties: {
+      name: 'my shop'
+    })
+
+    owner = owner_namespace.reload.api_resources.create(properties: {
+      name: 'owner',
+      shop_id: shop.id
+    })
+
+    product = products_namespace.reload.api_resources.create(properties: {
+      title: 'my product',
+      shop_id: shop.id
+    })
+
+    sign_in(@user)
+    get api_namespace_url(shops_namespace)
+    
+    # should include link to children resources namespace
+    assert_select "tbody tr td a[href=?]", api_namespace_path(id: products_namespace.slug, q: {properties_cont: "\"shop_id\": #{shop.id}"}), { count: 1, text: 'products'}
+
+    # should include link to children resource
+    assert_select "tbody tr td a[href=?]", api_namespace_resource_path(api_namespace_id: owner_namespace.id, id: owner.id), { count: 1, text: owner.id.to_s}
+
+    get api_namespace_url(products_namespace)
+    # should include link to parent resource
+    assert_select "tbody tr td a[href=?]", api_namespace_resource_path(api_namespace_id: shops_namespace.id, id: shop.id), { count: 1, text: shop.id.to_s}
+  end
 end
