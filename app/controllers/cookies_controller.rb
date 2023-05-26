@@ -27,8 +27,8 @@ class CookiesController < ApplicationController
   def geolocation_data
     {
       ip_address: request.remote_ip,
-      country: request.safe_location.country.presence || 'not available',
-      country_code: request.safe_location.country_code.presence || 'not available'
+      country: request.safe_location&.country.presence || 'not available',
+      country_code: request.safe_location&.country_code.presence || 'not available'
     }
   end
 end
