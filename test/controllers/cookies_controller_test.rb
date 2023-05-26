@@ -65,7 +65,22 @@ class CookiesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should return geolocation data if cookie consent was accepted' do
-    WebMock.allow_net_connect!(net_http_connect_on_start: true)
+    stub_request(:get, /http:\/\/ip-api.com\/json\/*/).to_return(status: 429, body: {
+      status: "success",
+      country: "Australia",
+      countryCode: "AU",
+      region: "ACT",
+      regionName: "Australian Capital Territory",
+      city: "Canberra",
+      zip: "2604",
+      lat: -35.3122,
+      lon: 149.1511,
+      timezone: "Australia/Sydney",
+      isp: "SingTel Optus Pty Ltd",
+      org: "Optus Internet Pty Ltd",
+      as: "AS4804 Microplex PTY LTD",
+      query: "110.33.122.75"
+    }.to_json)
     self.remote_addr = '110.33.122.75' # random IP of Australia
     
     @subdomain.update(tracking_enabled: true)
@@ -84,7 +99,23 @@ class CookiesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should return geolocation data even if cookie consent was rejected' do
-    WebMock.allow_net_connect!(net_http_connect_on_start: true)
+    stub_request(:get, /http:\/\/ip-api.com\/json\/*/).to_return(status: 429, body: {
+      status: "success",
+      country: "Australia",
+      countryCode: "AU",
+      region: "ACT",
+      regionName: "Australian Capital Territory",
+      city: "Canberra",
+      zip: "2604",
+      lat: -35.3122,
+      lon: 149.1511,
+      timezone: "Australia/Sydney",
+      isp: "SingTel Optus Pty Ltd",
+      org: "Optus Internet Pty Ltd",
+      as: "AS4804 Microplex PTY LTD",
+      query: "110.33.122.75"
+    }.to_json)
+
     self.remote_addr = '110.33.122.75' # random IP of Australia
     
     @subdomain.update(tracking_enabled: true)
@@ -104,7 +135,6 @@ class CookiesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should return geolocation data accordingly when the country location details cannot be determined from IP' do
-    WebMock.allow_net_connect!(net_http_connect_on_start: true)
     self.remote_addr = '127.0.0.1' # localhost IP
     
     @subdomain.update(tracking_enabled: true)
@@ -118,6 +148,31 @@ class CookiesControllerTest < ActionDispatch::IntegrationTest
     metadata = response.parsed_body['metadata']
     assert metadata
     assert_equal '127.0.0.1', metadata['ip_address']
+    assert_equal 'not available', metadata['country']
+    assert_equal 'not available', metadata['country_code']
+  end
+
+  test 'should not throw error if the API limit is crossed' do
+    stub_request(:get, /http:\/\/ip-api.com\/json\/*/).to_return(status: 429, body: {
+      query: "110.41.52.64",
+      status: "fail",
+      message: "API usage limit exceeded!",
+    }.to_json)
+    self.remote_addr = '110.41.52.64'
+    @subdomain.update(tracking_enabled: true)
+
+    assert_nothing_raised do 
+      get cookies_url, params: { cookies: false}
+
+      get cookies_fetch_url
+    end
+
+    assert_response :success
+    assert_equal ['message', 'metadata'].sort, response.parsed_body.keys.sort
+    
+    metadata = response.parsed_body['metadata']
+    assert metadata
+    assert_equal '110.41.52.64', metadata['ip_address']
     assert_equal 'not available', metadata['country']
     assert_equal 'not available', metadata['country_code']
   end
