@@ -31,7 +31,10 @@
         %a#export-tab.nav-link{"aria-controls" => "export", "aria-selected" => "false", "data-toggle" => "tab", :href => "#export", :role => "tab"} 
           Export
       %li.nav-item
-        %a#cms-associations-tab.nav-link{"aria-controls" => "export", "aria-selected" => "false", "data-toggle" => "tab", :href => "#cms-associations", :role => "tab"} 
+        %a#associations-tab.nav-link{"aria-controls" => "associations", "aria-selected" => "false", "data-toggle" => "tab", :href => "#associations", :role => "tab"} 
+          Associations
+      %li.nav-item
+        %a#cms-associations-tab.nav-link{"aria-controls" => "cms-associations", "aria-selected" => "false", "data-toggle" => "tab", :href => "#cms-associations", :role => "tab"} 
           CMS Associations
       %li.nav-item
         %a#social-tab.nav-link{"aria-controls" => "social", "aria-selected" => "false", "data-toggle" => "tab", :href => "#social", :role => "tab"} 
@@ -88,6 +91,9 @@
         = link_to 'Export JSON with associations', export_with_associations_as_json_api_namespace_path(id: @api_namespace.id), method: :get, class: 'btn btn-info'
       .my-3
         = link_to 'Export JSON without associations', export_without_associations_as_json_api_namespace_path(id: @api_namespace.id), method: :get, class: 'btn btn-info'
+    
+    #associations.tab-pane.fade{"aria-labelledby" => "associations-tab", :role => "tabpanel"} 
+      = render partial: 'associations', locals: { api_namespace: @api_namespace }
 
     #cms-associations.tab-pane.fade{"aria-labelledby" => "cms-associations-tab", :role => "tabpanel"} 
       - if (cms_associations = @api_namespace.cms_associations).present?
