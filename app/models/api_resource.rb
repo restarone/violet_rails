@@ -9,6 +9,8 @@ class ApiResource < ApplicationRecord
     api_namespace.api_form.api_resource = self unless api_namespace&.api_form.nil?
   end
 
+  after_initialize :define_associations
+
   # Need to convert and then parse again in order to preserve keys as strings
   scope :jsonb_order_pre, -> (query_obj) { jsonb_order(JSON.parse(query_obj.to_json)) }
 
@@ -39,6 +41,8 @@ class ApiResource < ApplicationRecord
   has_many :destroy_api_actions, dependent: :destroy
 
   has_many :error_api_actions, dependent: :destroy
+
+  before_destroy :handle_associations, prepend: true, if: -> { self.api_namespace.associations.present? }
 
   ransacker :properties do |_parent|
     Arel.sql("api_resources.properties::text") 
@@ -110,5 +114,43 @@ class ApiResource < ApplicationRecord
   def execute_update_api_actions
     initialize_api_resource_actions('update_api_actions')
     UpdateApiAction.where(id: self.update_api_actions.pluck(:id)).execute_model_context_api_actions
+  end
+
+  def define_associations
+    return if api_namespace.nil?
+
+    # [{type: 'has_many', namespace: 'products', version: '1'}]
+    api_namespace.associations.each do |association|
+      case association['type']
+      when 'has_many'
+        define_singleton_method(association['namespace'].underscore.to_sym) do
+          ApiNamespace.friendly.find(association['namespace']).api_resources.jsonb_search(:properties, { "#{api_namespace.slug.underscore.singularize}_id" => self.id })
+        end
+      when 'has_one'
+        define_singleton_method(association['namespace'].underscore.singularize.to_sym) do
+          ApiNamespace.friendly.find(association['namespace']).api_resources.jsonb_search(:properties, { "#{api_namespace.slug.underscore.singularize}_id" => self.id }).last
+        end
+      when 'belongs_to'
+        define_singleton_method(association['namespace'].underscore.singularize.to_sym) do
+          ApiNamespace.friendly.find(association['namespace']).api_resources.find_by_id(self.properties["#{association['namespace'].underscore.singularize}_id"])
+        end
+      end
+    end
+  end
+
+  def handle_associations
+    ActiveRecord::Base.transaction do
+      api_namespace.associations.each do |association|
+        associated_resources = ApiNamespace.friendly.find(association['namespace']).api_resources.jsonb_search(:properties, { "#{api_namespace.slug.underscore.singularize}_id" => self.id })
+        if association['dependent'] == 'destroy'
+          associated_resources.destroy_all
+        elsif association['dependent'] == 'restrict_with_error'
+          if associated_resources.present?
+            self.errors.add(:base, "Cannot delete record because dependent #{association['namespace']} exist")
+            throw(:abort)
+          end
+        end
+      end
+    end
   end
 end
