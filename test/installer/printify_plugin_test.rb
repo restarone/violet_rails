@@ -146,7 +146,7 @@ class Rack::MiniProfilerTest < ActionDispatch::IntegrationTest
     ENV['PRINTIFY_API_KEY'] = '1234asc'
     ENV['STRIPE_SECRET_KEY'] = 'qw123'
 
-    load Rails.root.join("installer/printify_plugin.rb")
+    load Rails.root.join("installers/printify_stripe_e_commerce.rb")
     Sidekiq::Worker.drain_all
 
     # printify_accounts namespace and resource should be created
