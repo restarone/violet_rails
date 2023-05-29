@@ -62,12 +62,17 @@ class Comfy::Admin::ApiResourcesController < Comfy::Admin::Cms::BaseController
 
   # DELETE /api_resources/1 or /api_resources/1.json
   def destroy
-    @api_resource.destroy
-
     respond_to do |format|
-      format.html { redirect_to api_namespace_path(id: @api_namespace.id), notice: "Api resource was successfully destroyed." }
-      format.json { head :no_content }
-      format.js
+      if @api_resource.destroy
+        format.html { redirect_to api_namespace_path(id: @api_namespace.id), notice: "Api resource was successfully destroyed." }
+        format.json { head :no_content }
+        format.js
+      else
+        flash[:danger] =  @api_resource.errors.full_messages.join('\n')
+        format.html { redirect_back fallback_location: root_path}
+        format.json { render json: { success: false, message: @api_resource.errors.full_messages  }, status: :unprocessable_entity }
+        format.js
+      end
     end
   end
 

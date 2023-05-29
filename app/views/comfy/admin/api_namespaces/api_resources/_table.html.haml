@@ -6,16 +6,20 @@
   .table-responsive.bg-white
     %div.list-view__table-container
       %table.table.table-striped.table-bordered
+        - belongs_to_keys = api_namespace.associations.map { |association| "#{association['namespace'].underscore.singularize}_id" if association['type'] == 'belongs_to' }.compact
         %thead
           %tr
             %th.px-3= sort_link api_resources_q, :id, {}, data: { turbo: true, turbo_action: 'advance'}
             %th.px-3= sort_link api_resources_q, :created_at, {}, data: { turbo: true, turbo_action: 'advance'}
             %th.px-3= sort_link api_resources_q, :updated_at, {}, data: { turbo: true, turbo_action: 'advance'}
-            - dynamic_columns = api_namespace.properties.keys
-            - api_namespace.properties.keys.each do |dynamic_column|
+            - dynamic_columns = api_namespace.properties.keys.excluding(belongs_to_keys)
+            - dynamic_columns.each do |dynamic_column|
               %th.px-3= sort_link api_resources_q, dynamic_column, {}, data: { turbo: true, turbo_action: 'advance'}
+            - api_namespace.associations.each do |association|
+              %th.px-3= association['type'] == 'has_many' ? association['namespace'] : association['namespace'].singularize
 
         %tbody
+          - dependent_destroy_associations = api_namespace.associations.filter { |a| a['dependent'] == 'destroy'}.pluck('namespace')
           - api_resources.each do |api_resource|
             %tr
               %td.px-3.py-2
@@ -25,7 +29,7 @@
                     .d-flex.mt-3
                       = link_to edit_api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), class: 'mr-3' do 
                         %i.fas.fa-edit
-                      = link_to api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), remote: true, method: :delete, data: { confirm: 'Are you sure?', page: params[:page], action: "ajax:success->list-view#reloadTable" } do
+                      = link_to api_namespace_resource_path(api_namespace_id: api_resource.api_namespace_id, id: api_resource.id), remote: true, method: :delete, data: { confirm: (dependent_destroy_associations.present? ? "All the dependent #{dependent_destroy_associations.to_sentence } will be deleted. Are you sure? " : "Are you sure?"), page: params[:page], action: "ajax:success->list-view#reloadTable" } do
                         %i.fas.fa-trash
               %td.px-3.date-col
                 .td-content
@@ -44,7 +48,7 @@
                       %div
                         - if api_resource.properties[dynamic_column]&.is_a?(Array)
                           - array = api_resource.properties[dynamic_column]
-                          - if array.length > 10
+                          - if array.length > 10 || array.to_s.length > 100
                             .clamp-content
                               = "[#{array.first(2).join(', ')}, ... ,#{array.last(1).join}]"
                             = link_to "View #{dynamic_column}", '#',  class: 'd-block view-dynamic-column', data: { toggle: 'modal', target: "#myModal", namespace_id: api_resource.api_namespace_id, id: api_resource.id, column: dynamic_column , value: "[#{api_resource.properties[dynamic_column].join(', ')}]", action: "click->api-resources#showModal" }
@@ -58,6 +62,16 @@
                             = link_to "View #{dynamic_column}", '#' , class: 'd-block view-dynamic-column', data: { toggle: 'modal', target: "#myModal" , column: dynamic_column, namespace_id: api_resource.api_namespace_id, id: api_resource.id, value: value, action: "click->api-resources#showModal" }
                           - else
                             = value 
+              - api_namespace.associations.each do |association|
+                %td.px-3
+                  - if association['type'] == 'has_many'
+                    = link_to association['namespace'], api_namespace_path(id: association['namespace'], q: {properties_cont: "\"#{api_namespace.slug.underscore.singularize}_id\": #{api_resource.id}"})
+                  - else
+                    - associated_resource = api_resource.send(association['namespace'].underscore.singularize.to_sym)
+                    = link_to associated_resource.id, api_namespace_resource_path(api_namespace_id: associated_resource.api_namespace.id, id: associated_resource.id) if associated_resource.present?
+
+
+
    
   .modal.fade#myModal{tabindex: -1, role: "dialog", aria: {labelledby: "myModalLabel", hidden: true}, data: { api_resources_target: 'modal' }}
     .modal-dialog-container
