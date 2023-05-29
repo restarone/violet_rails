@@ -1,12 +1,16 @@
-BUSINESS_NAME = 'Restarone'
+SHOPS_TO_SYNC = [ENV['SHOP_NAME']]
 
-SHOPS_TO_SYNC = ['Restarone']
+p "*** [FAILED]: PLEASE PROVIDE SHOP_NAME TO CONTINUE  ***" and return if ENV['SHOP_NAME'].nil?
 
-PRODUCTS_PAGE_SLUG = 'products'
+PRINTIFY_API_KEY = ENV['PRINTIFY_API_KEY']
 
-API_KEY = ""
+p "*** [FAILED]: PLEASE PROVIDE PRINTIFY_API_KEY TO CONTINUE  ***" and return if PRINTIFY_API_KEY.nil?
 
-STRIPE_SECRET_KEY = ""
+STRIPE_SECRET_KEY = ENV['STRIPE_SECRET_KEY']
+
+BUSINESS_NAME = ENV['BUSINESS_NAME'] || 'My Printify Account'
+
+PRODUCTS_PAGE_SLUG = ENV['PRODUCTS_PAGE_SLUG'] || 'products'
 
 WEBHOOK_SECRET = SecureRandom.hex
 
@@ -16,8 +20,16 @@ PRODUCT_SUB_CATEGORIES = ["T-shirts", "Hoodies", "Sweatshirts", "Long Sleeves", 
 
 PRINTIFY_HEADERS = {
   "Content-Type" => 'application/json;charset=utf-8',
-  "Authorization" => "Bearer #{API_KEY}" 
+  "Authorization" => "Bearer #{PRINTIFY_API_KEY}" 
 }
+
+printify_response = HTTParty.get("https://api.printify.com/v1/shops.json", headers: PRINTIFY_HEADERS)
+
+p "[FAILED] with error: #{printify_response.body}" and return unless printify_response.success?
+
+shop_exists = JSON.parse(printify_response.body).any? { |s| ENV['SHOP_NAME'] == s['title']}
+
+p "[FAILED]: Shop with name #{ENV['SHOP_NAME']} doesn't exist in printify. Please make sure SHOP_NAME matches the name of your printify store." and return unless shop_exists
 
 p "###################################  CREATING CATEGORIES     #########################"
 
@@ -32,7 +44,7 @@ p "##########################    CREATING PRINTIFY ACCOUNTS, SHOP, SHOP_LOGS NAM
 
 printify_account_namespace = ApiNamespace.create(name: 'printify_accounts', version: 1, requires_authentication: true, properties: { stripe_secret_key: '', api_key: '', name: '', shops_to_sync: [] }, category_ids: [namespace_category.id])
 
-printify_account = printify_account_namespace.api_resources.create(properties: { stripe_secret_key: STRIPE_SECRET_KEY, api_key: API_KEY, name: BUSINESS_NAME, shops_to_sync: SHOPS_TO_SYNC })
+printify_account = printify_account_namespace.api_resources.create(properties: { stripe_secret_key: STRIPE_SECRET_KEY, api_key: PRINTIFY_API_KEY, name: BUSINESS_NAME, shops_to_sync: SHOPS_TO_SYNC })
 
 countries_response = HTTParty.get("https://restcountries.com/v3.1/all")
 countries = countries_response.success? ? (countries_response.parsed_response.map {|resp| {country_name: resp['name']['common'], country_code: resp['cca2']}}.sort_by {|obj| obj[:country_name]}) : [{"country_code"=>"US", "country_name"=>"United States"}, {"country_code"=>"CA", "country_name"=>"Canada"}]
@@ -3475,8 +3487,10 @@ sync_printify_products_plugin.run
 
 subscribe_to_printify_results
 
-"NEXT STEP:  Create a stripe webhhok and add webhook signing secret to the order_fulfill plugin."
-"DOCS: https://gist.github.com/Pralish/bc3a0441534b32e2d4a189c12b0f061a?permalink_comment_id=4573559#gistcomment-4573559"
+p "**NEXT STEP**"
+p "Create a stripe webhhok and add webhook signing secret to the order_fulfill plugin."
+p "DOCS: https://gist.github.com/Pralish/bc3a0441534b32e2d4a189c12b0f061a?permalink_comment_id=4573559#gistcomment-4573559"
+p "You didn't provide STRIPE_SECRET_KEY. Please add the key manually here: #{Rails.application.routes.url_helpers.edit_api_namespace_resource_url(api_namespace_id: printify_account_namespace.id, id: printify_account.id, host: ENV['APP_HOST'])}" unless STRIPE_SECRET_KEY.present?
 
 
 
