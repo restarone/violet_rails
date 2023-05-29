@@ -142,52 +142,78 @@ class Rack::MiniProfilerTest < ActionDispatch::IntegrationTest
   end
 
   test 'should install all the namespaces' do
+    ENV['SHOP_NAME'] = 'Restarone'
+    ENV['PRINTIFY_API_KEY'] = '1234asc'
+    ENV['STRIPE_SECRET_KEY'] = 'qw123'
+
     load Rails.root.join("installer/printify_plugin.rb")
     Sidekiq::Worker.drain_all
 
     # printify_accounts namespace and resource should be created
+    assert ApiNamespace.friendly.find('printify_accounts').present?
 
     # shops namespace should be created and Restarone should be synced from printify
+    shop_namespace = ApiNamespace.friendly.find('shops')
+    assert shop_namespace.present?
+    assert shop_namespace.api_resources.jsonb_search(:properties, { title: "Restarone" }).present?
+    refute shop_namespace.api_resources.jsonb_search(:properties, { title: "Restarone not to sync" }).present?
     
     #products namespace should be created
+    products_namespace = ApiNamespace.friendly.find('products')
+    assert products_namespace.persisted?
 
     # sync_printify_products plugin should exist
+    assert ExternalApiClient.friendly.find('sync_printify_shops').persisted?
 
     # publish_succeed plugin should exist
+    assert ExternalApiClient.friendly.find('publish_succeed').persisted?
 
     # only request from printify / headers with valid X-Pfy-Signature should be able to access the publish_succeed plugin
 
     # orders namespace should be created
+    assert ApiNamespace.friendly.find('orders').persisted?
 
     # fetch_printify_shipping_and_stripe_processing_fees plugin should exist
+    assert ExternalApiClient.friendly.find('fetch_printify_shipping_and_stripe_processing_fees').persisted?
 
     # create_order_and_stripe_chekout_session plugin should exist
+    assert ExternalApiClient.friendly.find('create_order_and_stripe_chekout_session').persisted?
 
     # fulfill_order plugin should exist
+    assert ExternalApiClient.friendly.find('fulfill_order').persisted?
 
     # cleanup_unprocessed_orders_plugin should exist
+    assert ExternalApiClient.friendly.find('clean_unprocessed_orders').persisted?
 
     # clean_unprocessed_orders_manually should exist
+    assert ExternalApiClient.friendly.find('clean_unprocessed_orders_manually').persisted?
 
     # order_status_notification_plugin plugin should exist
+    assert ExternalApiClient.friendly.find('order_status_notification').persisted?
 
     # only request from printify / headers with valid X-Pfy-Signature should be able to access the order_status_notification_plugin plugin
 
     # notifications namespace should be created
+    assert ApiNamespace.friendly.find('notifications').persisted?
 
     # notifications namespace should have a email create api action
 
     # order_cleanup_logs namespace should be created
+    assert ApiNamespace.friendly.find('order_cleanup_logs').persisted?
 
     # should subscribe to printify webhook
 
     # should sync printify prodcuts
+    assert_equal 1, products_namespace.api_resources.count
 
     # printify-shop layout should be created
+    cms_site = Comfy::Cms::Site.first
+    assert cms_site.layouts.find_by(identifier: 'printify-shop').persisted?
 
     #####################   SNIPPETS    ##########################
 
     # products snippet should exist
+    assert cms_site.snippets.find_by(identifier: 'products').persisted?
 
     # products-show snippet should exist
 

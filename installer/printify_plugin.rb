@@ -237,7 +237,7 @@ sync_printify_products_plugin = products_namespace.external_api_clients.create(
                       
                           to_delete = violet_products.pluck(:properties).pluck('printify_product_id') - printify_product_list.pluck('id')
                       
-                          violet_products.jsonb_search(:properties, { printify_product_id: { value: to_delete, option: 'PARTIAL', match: 'ANY' }}).map(&:destroy)
+                          violet_products.jsonb_search(:properties, { printify_product_id: { value: to_delete, option: 'PARTIAL', match: 'ANY' }}).map(&:destroy) if to_delete.present?
                       
                           printify_product_list.each do |product_object|
                             product = violet_products.jsonb_search(:properties, { printify_product_id: product_object['id'] }).first_or_initialize
@@ -292,7 +292,8 @@ sync_printify_products_plugin = products_namespace.external_api_clients.create(
                           status: 'error',
                           timestamp: Time.zone.now,
                           response: response,
-                          extra: extra
+                          extra: extra,
+                          source: 'sync_products'
                         })
                       end
                     end
@@ -316,7 +317,7 @@ printify_product_publish_plugin = products_namespace.external_api_clients.create
                         @shop = ApiNamespace.find_by(slug: 'shops').api_resources.jsonb_search(:properties, { printify_shop_id: @payload['resource']['data']['shop_id'] }).first
                         @printify_request_headers = {
                                               'Content-Type': 'application/json;charset=utf-8',
-                                              'Authorization': "Bearer \#{@shop.properties['printify_api_key']}" }
+                                              'Authorization': "Bearer \#{@shop.printify_account.properties['api_key']}" }
                       end
                       
                       def start
@@ -327,8 +328,9 @@ printify_product_publish_plugin = products_namespace.external_api_clients.create
                             product.destroy!
                           else
                             product_response = HTTParty.get("\#{@printify_base_uri}.json", headers: @printify_request_headers)
-                    
+                            
                             product_object = JSON.parse(product_response.body) 
+
                             enabled_variants = product_object['variants'].filter { |variant| variant['is_enabled'] }
                             enabled_options_map = enabled_variants.map {|variant| variant['options']}
                             enabled_options_ids = enabled_options_map.flatten.uniq 
@@ -342,10 +344,12 @@ printify_product_publish_plugin = products_namespace.external_api_clients.create
                                 value['available_options'] = enabled_options_map.select { |opt| opt.include?(value['id']) }.flatten.uniq.excluding(value['id'])
                               end
                             end
-                            categories = @shop.properties['product_categories'] & product_object['tags']
-                            sub_categories = @shop.properties['product_sub_categories'] & product_object['tags']
+
                             default_variant = enabled_variants.find { |variant| variant['is_default'] } || enabled_variants.first
-                            default_image = product_object['images'].find { |image| image['is_default'] && image['variant_ids'].include?(default_variant.id) }                            
+                            default_image = product_object['images'].find { |image| image['is_default'] && image['variant_ids'].include?(default_variant['id']) }
+
+                            categories = @shop.properties['product_categories'] & product_object['tags']
+                            sub_categories = @shop.properties['product_sub_categories'] & product_object['tags']                          
                             product.properties = {
                               printify_product_id: product_object['id'],
                               title: product_object['title'],
@@ -371,7 +375,7 @@ printify_product_publish_plugin = products_namespace.external_api_clients.create
                             log_error(publish_response.body, { shop: @shop.id, printify_shop: product.properties['shop_id'], product: product.id }) unless publish_response.success?
                           end
                         rescue StandardError => e
-                          log_error(e.message, { shop: @shop.id, printify_shop: @payload['resource']['data']['shop_id'], product: @payload['resource']['id'] })
+                          log_error(e.message, { shop: @shop.id, printify_shop: @payload['resource']['data']['shop_id'], product: @payload['resource']['id'], error_backtrace: e.backtrace })
                     
                           HTTParty.post("\#{@printify_base_uri}/publishing_failed.json", body: { reason: "Publish Failed" }.to_json, headers: @printify_request_headers)
                         end
@@ -383,7 +387,8 @@ printify_product_publish_plugin = products_namespace.external_api_clients.create
                         @logger_namespace.api_resources.create!(properties: {
                           response: response,
                           extra: extra,
-                          timestamp: Time.zone.now
+                          timestamp: Time.zone.now,
+                          source: 'publish_succeed'
                         })
                       end
                     end
@@ -3161,6 +3166,9 @@ Comfy::Cms::Fragment.create!(
               display: grid;
               grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
               gap: 30px;
+            }
+            .similar-products__link {
+              max-width: 350px;
             }
             .similar-products__link img {
               width: 100%;
