@@ -278,7 +278,7 @@ sync_printify_products_plugin = products_namespace.external_api_clients.create(
                             product.save!
                       
                             publish_response = HTTParty.post("https://api.printify.com/v1/shops/\#{shop.properties['printify_shop_id']}/products/\#{product_object['id']}/publishing_succeeded.json",
-                              body: { external: { id: product.id.to_s, handle: "https://violet-test.net/product-details?id=\#{product.id}" }}.to_json,
+                              body: { external: { id: product.id.to_s, handle: "https://\#{ENV['APP_HOST']}/product-details?id=\#{product.id}" }}.to_json,
                               headers: printify_request_headers
                             )
                           
@@ -364,7 +364,7 @@ printify_product_publish_plugin = products_namespace.external_api_clients.create
                             product.save!
                     
                             publish_response = HTTParty.post("\#{@printify_base_uri}/publishing_succeeded.json",
-                              body: { external: { id: product.id.to_s, handle: "https://violet-test.net/product-details?id=\#{product.id}" } }.to_json,
+                              body: { external: { id: product.id.to_s, handle: "https://\#{ENV['APP_HOST']}/product-details?id=\#{product.id}" } }.to_json,
                               headers: @printify_request_headers
                             )
                     
@@ -1005,8 +1005,6 @@ order_status_notification_plugin = orders_namespace.external_api_clients.create(
   drive_strategy: "webhook",
   metadata: {
     LOGGER_NAMESPACE: "shop_logs",
-    DOMAIN_NAME: ENV['APP_HOST'],
-    SHOP_NAMESPACE: "shops",
     NOTIFICATION_NAMESPACE: "notifications"
   },
   model_definition: <<~EOS
@@ -1016,9 +1014,10 @@ order_status_notification_plugin = orders_namespace.external_api_clients.create(
                         @external_api_client = parameters[:external_api_client]
                         @metadata = @external_api_client.metadata
                         @payload = parameters[:request]&.request_parameters
+                    
                         @notification_namespace = ApiNamespace.find_by(slug: @metadata['NOTIFICATION_NAMESPACE'])
                         @logger_namespace = ApiNamespace.find_by(slug: @metadata['LOGGER_NAMESPACE'])
-                        @order = @external_api_client.api_namespace.api_resources.jsonb_search(:properties, { printify_order_id: @payload['resource']['id'] }).first
+                        @order = @external_api_client.api_namespace.api_resources.where("properties @> ?", {printify_order_id: @payload['resource']['id']}.to_json).first
                       end
                       
                       def start
@@ -1028,7 +1027,7 @@ order_status_notification_plugin = orders_namespace.external_api_clients.create(
                             render json: {
                               success: false,
                               message: "An order with the provided ID could not be found"
-                            }, status: :not_found
+                            }
                           else
                             @shop = @order.shop
                             order_id = @order.properties['printify_order_id']
@@ -1038,10 +1037,11 @@ order_status_notification_plugin = orders_namespace.external_api_clients.create(
                               # If there is a status update for an existing order, then its final_printify_order_status will change
                               # For a new order, the initial and final order status will be the same
                               notification_for_existing_order = @notification_namespace.api_resources.where("properties @> ?", {printify_order_id: order_id}.to_json).first
-                              stripe = @order.properties['stripe']
-                              total_retail_price = @order.properties['passed_processing_fee_to_customer'] ? (stripe['amount_subtotal'] - @order.properties['stripe_processing_fee']) : stripe['amount_subtotal']                              sales_tax_collected = @order.properties['sales_tax_collected']
                               passed_processing_fee_to_customer = @order.properties['passed_processing_fee_to_customer']
-                          
+                              sales_tax_collected = @order.properties['sales_tax_collected']
+                              stripe = @order.properties['stripe']
+                              total_retail_price = @order.properties['passed_processing_fee_to_customer'] ? (stripe['amount_subtotal'] - @order.properties['stripe_processing_fee']) : stripe['amount_subtotal']
+                    
                               notification_data = {
                                 line_items: @order.properties['line_items'],
                                 address_to: @order.properties['address_to'],
@@ -1055,6 +1055,7 @@ order_status_notification_plugin = orders_namespace.external_api_clients.create(
                                 },
                                 printify_shop_id: @payload['resource']['data']['shop_id'],
                                 printify_order_id: order_id,
+                                order_id: @order.id,
                                 stripe_receipt_url: stripe['receipt_url'],
                                 stripe_refund_status: @order.properties['stripe_refund_status'],
                                 final_printify_order_status: get_new_order_status,
@@ -1068,12 +1069,12 @@ order_status_notification_plugin = orders_namespace.external_api_clients.create(
                             end
                           end  
                         rescue => e
-                          log_error e.message
-                          render json: { success: false }, status: :unprocessable_entity
+                          log_error(e.message, { error_backtrace: e.backtrace })
+                          render json: { success: false }
                         end 		
                       end
                           
-                      def get_new_order_status
+                      def get_new_order_status 
                         orderStatusMap = {
                           "order:created" => "created",
                           "order:sent-to-production" => "sent to production",
@@ -1091,14 +1092,14 @@ order_status_notification_plugin = orders_namespace.external_api_clients.create(
                       def get_email_subject
                         order_id = @order.properties['printify_order_id']
                         orderStatusMap = {
-                          "order:created" => "\#{@metadata['DOMAIN_NAME']} Confirmation for order \#{order_id}",
-                          "order:sent-to-production" => "\#{@metadata['DOMAIN_NAME']} Order \#{order_id} sent to production",
-                          "order:shipment:created" => "\#{@metadata['DOMAIN_NAME']} Order \#{order_id} is on the way",
-                          "order:shipment:delivered" => "\#{@metadata['DOMAIN_NAME']} Order \#{order_id} has been delivered"
+                          "order:created" => "\#{ENV['APP_HOST']} Confirmation for order \#{order_id}",
+                          "order:sent-to-production" => "\#{ENV['APP_HOST']} Order \#{order_id} sent to production",
+                          "order:shipment:created" => "\#{ENV['APP_HOST']} Order \#{order_id} is on the way",
+                          "order:shipment:delivered" => "\#{ENV['APP_HOST']} Order \#{order_id} has been delivered"
                         }
                         
                         if @payload['resource']['data']['status'] == "canceled"
-                          "\#{@metadata['DOMAIN_NAME']} Confirmation for order \#{order_id} cancellation"
+                          "\#{ENV['APP_HOST']} Confirmation for order \#{order_id} cancellation"
                         else
                           orderStatusMap[@payload['type']]
                         end
@@ -1107,7 +1108,7 @@ order_status_notification_plugin = orders_namespace.external_api_clients.create(
                       def get_formatted_price(price)
                         {
                           value: price.to_f / 100,
-                          text: "$\#{price.to_f / 100} CAD"
+                          text: "$\#{price.to_f / 100} \#{@shop.properties['currency']}"
                         }
                       end
                     
@@ -1118,8 +1119,8 @@ order_status_notification_plugin = orders_namespace.external_api_clients.create(
                           request_body: @payload,                                      
                           error: message,
                           timestamp: Time.zone.now,
-                          extra: extra,
-                          order_id: @order&.id
+                          order_id: @order&.id,
+                          extra: extra
                         })
                       end
                     end
