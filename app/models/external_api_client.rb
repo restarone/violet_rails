@@ -3,6 +3,8 @@ class ExternalApiClient < ApplicationRecord
 
   attr_accessor :require_webhook_verification, :default_model_definition, :default_webhook_driven_model_definition
 
+  after_save :reload_model_definition_class, if: -> { self.saved_change_to_model_definition? }
+
   STATUSES = {
     stopped: 'stopped',
     running: 'running',
@@ -159,5 +161,33 @@ WebhookDrivenConnection"
 
   def remove_webhook_verification_method
     self.webhook_verification_method&.destroy
+  end
+
+  def model_definition_class_name
+    parse_class_name(self.model_definition)
+  end
+
+  def model_definition_class_defined?
+    self.class.const_defined?(model_definition_class_name)
+  end
+
+  private 
+
+  def reload_model_definition_class
+    begin
+      previous_class_name = parse_class_name(self.model_definition_before_last_save)
+      # remove previous class if class name was changed
+      ExternalApiClient.send(:remove_const, previous_class_name.to_sym) if (previous_class_name != model_definition_class_name) && self.class.const_defined?(previous_class_name)
+
+      ExternalApiClient.send(:remove_const, self.model_definition_class_name.to_sym) if model_definition_class_defined?
+      self.evaluated_model_definition
+    rescue SyntaxError => e
+      self.errors.add(:model_definition, e.message)
+      raise ActiveRecord::RecordInvalid.new(self)
+    end
+  end
+
+  def parse_class_name(definition)
+    definition.match(/class\s+(\w+)/)[1]
   end
 end
