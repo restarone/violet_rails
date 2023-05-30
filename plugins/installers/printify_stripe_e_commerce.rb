@@ -1187,52 +1187,51 @@ notifications_namespace.api_actions.create(
   email_subject: "\#{api_resource.properties['email_subject']}",
   type: "CreateApiAction",
   custom_message: <<~HTML
-                  <% price_info = api_resource.properties['price_info'] %>
-                  <% address_to = api_resource.properties['address_to'] %>
-                  <% carrier = api_resource.properties['carrier'] %>
-                  Hi <%= address_to['first_name'] + " " + address_to['last_name'] %>,
-                  <% case api_resource.properties['final_printify_order_status'] when 'created' %>
-                  Thank you for shopping at <%= ENV['APP_HOST'] %>! We have received your order.
-                  <% when 'sent to production' %>
-                  Thank you for shopping at <%= ENV['APP_HOST'] %>! Your order has been sent to production.
-                  <% when 'shipped' %>
-                  Thank you for shopping at <%= ENV['APP_HOST'] %>! We have shipped your order.
-                  
-                  Tracking information
-                  Carrier: <%= carrier['code'] %>
+                  <% price_info = api_resource.properties['price_info'] %><br/>
+                  <% address_to = api_resource.properties['address_to'] %><br/>
+                  <% carrier = api_resource.properties['carrier'] %><br/>
+                  Hi <%= address_to['first_name'] + " " + address_to['last_name'] %>,<br/>
+                  <% case api_resource.properties['final_printify_order_status'] when 'created' %><br/>
+                  Thank you for shopping at <%= ENV['APP_HOST'] %>! We have received your order.<br/>
+                  <% when 'sent to production' %><br/>
+                  Thank you for shopping at <%= ENV['APP_HOST'] %>! Your order has been sent to production.<br/>
+                  <% when 'shipped' %><br/>
+                  Thank you for shopping at <%= ENV['APP_HOST'] %>! We have shipped your order.<br/>              
+                  Tracking information <br/>
+                  Carrier: <%= carrier['code'] %><br/>
                   Tracking number: <%= carrier['tracking_number'] %>
+                  Tracking URL: <%= carrier['tracking_url'] %><br/>
+                  <% when 'delivered' %><br/>
+                  Thank you for shopping at <%= ENV['APP_HOST'] %>! Your order has been delivered to your shipping address.<br/>
+                  <br/>
+                  Tracking information<br/>
+                  Carrier: <%= carrier['code'] %><br/>
+                  Tracking number: <%= carrier['tracking_number'] %><br/>
                   Tracking URL: <%= carrier['tracking_url'] %>
-                  <% when 'delivered' %>
-                  Thank you for shopping at <%= ENV['APP_HOST'] %>! Your order has been delivered to your shipping address.
-                  
-                  Tracking information
-                  Carrier: <%= carrier['code'] %>
-                  Tracking number: <%= carrier['tracking_number'] %>
-                  Tracking URL: <%= carrier['tracking_url'] %>
-                  <% when 'canceled' %>
-                  Your order has been canceled.
-                  <% end %>
-                  
-                  Order Summary
-                  Order ID: <%= api_resource.properties['printify_order_id'] %>
-                  Receipt URL: <%= api_resource.properties['stripe_receipt_url'] %>
-                  Items:
-                  <% api_resource.properties['line_items'].each do |item| %>
-                  <%= item['quantity'].to_s + "x " + item['metadata']['variant_label'] + " " + item['metadata']['title'] %>
-                  <% end %>
-                  Subtotal: <%= price_info['total_retail_price']['text'] %>
-                  Shipping cost: <%= price_info['total_shipping']['text'] %>
-                  <%= price_info['total_tax']['value'] > 0 ? 'Tax: ' + price_info['total_tax']['text'] : "" %>
-                  <%= price_info['convenience_fee']['value'] > 0 ? 'Convenience fee: ' + price_info['convenience_fee']['text'] : "" %>
-                  Total: <%= price_info['total_price']['text'] %>
-                  <% if api_resource.properties['final_printify_order_status'] != 'canceled' %>
-                  Shipping Address
-                  <%= address_to['first_name'] + " " + address_to['last_name'] %>
-                  <%= address_to['address1'] %>
-                  <%= address_to['city'] %>
-                  <%= address_to['region'] + " " + address_to['zip'] %>
-                  <%= address_to['country'] %>
-                  <% end %>
+                  <% when 'canceled' %><br/>
+                  Your order has been canceled.<br/>
+                  <% end %><br/>
+                  <br/>
+                  Order Summary<br/>
+                  Order ID: <%= api_resource.properties['printify_order_id'] %><br/>
+                  Receipt URL: <%= api_resource.properties['stripe_receipt_url'] %><br/>
+                  Items:<br/>
+                  <% api_resource.properties['line_items'].each do |item| %><br/>
+                  <%= item['quantity'].to_s + "x " + item['metadata']['variant_label'] + " " + item['metadata']['title'] %><br/>
+                  <% end %><br/>
+                  Subtotal: <%= price_info['total_retail_price']['text'] %><br/>
+                  Shipping cost: <%= price_info['total_shipping']['text'] %><br/>
+                  <%= price_info['total_tax']['value'] > 0 ? 'Tax: ' + price_info['total_tax']['text'] : "" %><br/>
+                  <%= price_info['convenience_fee']['value'] > 0 ? 'Convenience fee: ' + price_info['convenience_fee']['text'] : "" %><br/>
+                  Total: <%= price_info['total_price']['text'] %><br/>
+                  <% if api_resource.properties['final_printify_order_status'] != 'canceled' %><br/>
+                  Shipping Address<br/>
+                  <%= address_to['first_name'] + " " + address_to['last_name'] %><br/>
+                  <%= address_to['address1'] %><br/>
+                  <%= address_to['city'] %><br/>
+                  <%= address_to['region'] + " " + address_to['zip'] %><br/>
+                  <%= address_to['country'] %><br/>
+                  <% end %><br/>
                   HTML
 )
 
