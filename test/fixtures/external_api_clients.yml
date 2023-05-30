@@ -94,5 +94,5 @@ webhook_drive_strategy:
 <%= IO.read(Rails.root.join "test/plugin_fixtures/vacuum_job.yml") %>
 
 # Printify Integration related fixtures
-<%= IO.read(Rails.root.join "test/plugin_fixtures/clean_unprocessed_orders_manually.yml") %>
-<%= IO.read(Rails.root.join "test/plugin_fixtures/clean_unprocessed_orders.yml") %>
+<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/clean_unprocessed_orders_manually.yml")).result %>
+<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/clean_unprocessed_orders.yml")).result %>

@@ -5,7 +5,7 @@ clean_unprocessed_orders:
   enabled: true
   drive_strategy: cron
   drive_every: one_day
-  last_run_at: <%= (1.day + 5.minutes).ago %>
+  last_run_at: <%= (1.day - 5.hours).ago %>
   metadata: {
               'LOGGER_NAMESPACE': 'order_cleanup_logs'
             }
