@@ -2634,8 +2634,8 @@ site.snippets.create(
                 shippingCountryDropdown.insertAdjacentHTML("beforeEnd", markup);
               });
               // Set the initial value of shipping country dropdown based on the user country (if any)
-              shippingCountryDropdown.value = userCountryDetails? userCountryDetails.country_code : "CA"; 
-            
+              shippingCountryDropdown.value = userCountryDetails && userCountryDetails.country_code !== 'not available' ? userCountryDetails.country_code : "CA"; 
+
               if (cart.line_items.length > 0) {
                 const productIds = cart.line_items.map(variant => variant.product_id);
                 products = await getProductsAsync(productIds);
