@@ -8,6 +8,8 @@ class ApiNamespace < ApplicationRecord
   attr_accessor :has_form
 
   after_save :update_api_form
+
+  after_save :add_foreign_key, if: -> { attributes.key?('associations') && self.saved_change_to_associations? }
   
   has_many :api_resources, dependent: :destroy
   accepts_nested_attributes_for :api_resources
@@ -396,5 +398,26 @@ class ApiNamespace < ApplicationRecord
 
   def destroy_old_api_resources_in_batches
     api_resources.where("created_at < ?", eval("#{purge_resources_older_than}.ago")).in_batches(&:destroy_all)
+  end
+
+  def add_foreign_key
+    associations.each do |association|
+      if association['type'] == 'belongs_to'
+        foreign_key = "#{association['namespace'].underscore.singularize}_id"
+        update(properties: properties.merge("#{foreign_key}" => "")) unless properties.key?(foreign_key)
+
+        parent_namespace = ApiNamespace.friendly.find(association['namespace'])
+        has_many_association = { "type" => 'has_many', "namespace" => self.slug }
+        parent_association_exist = parent_namespace.associations.any? {|a| (a['type'] == 'has_many' || a['type'] == 'has_one') && a['namespace'] == self.slug } 
+        parent_namespace.update(associations: (parent_namespace.associations || []) << has_many_association) unless parent_association_exist
+      else
+        foreign_key = "#{self.slug.underscore.singularize}_id"
+        api_namespace = ApiNamespace.friendly.find(association['namespace'])
+        association_object = { "type" => 'belongs_to', "namespace" => self.slug }
+        api_namespace.properties = api_namespace.properties.merge("#{foreign_key}" => "") unless api_namespace.properties.key?(foreign_key)
+        api_namespace.associations = (api_namespace.associations || []) << association_object unless api_namespace.associations.any? { |a| a['type'] == 'belongs_to' && a['namespace'] == self.slug }
+        api_namespace.save
+      end
+    end
   end
 end

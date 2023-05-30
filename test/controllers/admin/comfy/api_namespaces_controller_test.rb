@@ -243,7 +243,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,#{api_namespace.social_share_metadata}\nanalytics_metadata,#{api_namespace.analytics_metadata}\npurge_resources_older_than,never\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,#{api_namespace.social_share_metadata}\nanalytics_metadata,#{api_namespace.analytics_metadata}\npurge_resources_older_than,never\nassociations,[]\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -495,7 +495,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_match expected_message, flash[:alert]
   end
 
-  test "should allow import api_namespace provided as json without asscociations and the newly created api_namespace should be followed by secure-random if api_namespace with such name exists" do
+  test "should allow import api_namespace provided as json without associations and the newly created api_namespace should be followed by secure-random if api_namespace with such name exists" do
     json_file = Tempfile.new(['api_namespace.json', '.json'])
     json_file.write(@api_namespace.export_as_json(include_associations: false))
     json_file.rewind
@@ -526,7 +526,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_match @api_namespace.name, ApiNamespace.last.name
   end
 
-  test "should allow import api_namespace provided as json with its asscociations and the newly created api_namespace should be followed by secure-random if api_namespace with such name exists" do
+  test "should allow import api_namespace provided as json with its associations and the newly created api_namespace should be followed by secure-random if api_namespace with such name exists" do
     api_resources_count = @api_namespace.api_resources.count
     api_actions_count = @api_namespace.api_actions.count + @api_namespace.api_resources.map(&:api_actions).flatten.count
     api_namespace_keys_count = @api_namespace.api_namespace_keys.count
@@ -563,7 +563,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_match @api_namespace.name, ApiNamespace.last.name
   end
 
-  test "should allow import api_namespace provided as json with its asscociations and the newly created api_namespace's name should be as provided if api_namespace with such name does not exist" do
+  test "should allow import api_namespace provided as json with its associations and the newly created api_namespace's name should be as provided if api_namespace with such name does not exist" do
     api_resources_count = @api_namespace.api_resources.count
     api_actions_count = @api_namespace.api_actions.count + @api_namespace.api_resources.map(&:api_actions).flatten.count
     api_namespace_keys_count = @api_namespace.api_namespace_keys.count
@@ -2411,7 +2411,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\nassociations,[]\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -2425,7 +2425,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\nassociations,[]\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -2439,7 +2439,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\nassociations,[]\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -2470,7 +2470,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\nassociations,[]\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -2486,7 +2486,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\nassociations,[]\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -2502,7 +2502,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\nassociations,[]\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -2516,7 +2516,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     stubbed_date = DateTime.new(2022, 1, 1)
     DateTime.stubs(:now).returns(stubbed_date)
     get export_api_namespace_url(api_namespace, format: :csv)
-    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\n"
+    expected_csv = "id,#{api_namespace.id}\nname,namespace_with_all_types\nslug,namespace_with_all_types\nversion,1\nnull,\narray,\"[\"\"yes\"\", \"\"no\"\"]\"\nnumber,123\nobject,\"{\"\"a\"\"=>\"\"b\"\", \"\"c\"\"=>\"\"d\"\"}\"\nstring,string\nboolean,true\nrequires_authentication,false\nnamespace_type,create-read-update-delete\ncreated_at,#{api_namespace.created_at}\nupdated_at,#{api_namespace.updated_at}\nsocial_share_metadata,\nanalytics_metadata,\npurge_resources_older_than,never\nassociations,[]\n"
     assert_response :success
     assert_equal response.body, expected_csv
     assert_equal response.header['Content-Disposition'], "attachment; filename=api_namespace_#{api_namespace.id}_#{DateTime.now.to_i}.csv"
@@ -3355,5 +3355,226 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     expected_message = 'You do not have the permission to do that. Only users who can_manage_analytics are allowed to perform that action.'
     assert_equal expected_message, flash[:alert]
     refute_equal payload[:api_namespace]['analytics_metadata'], @api_namespace.reload.analytics_metadata
+  end
+
+  test "should create api_namespace with parent associations" do
+    shops_namespace = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' })
+
+    shops_namespace.api_resources.create(properties: {
+      name: 'my shop'
+    })
+
+    sign_in(@user)
+    assert_difference('ApiNamespace.count', 1) do
+      post api_namespaces_url, params: { api_namespace: { name: 'products', properties: { title: '' }.to_json, associations: [{type: 'belongs_to', namespace: 'shops'}], version: 1 } }
+    end
+    products_namespace = ApiNamespace.last
+    shops_namespace.reload
+
+    shop_resource = shops_namespace.api_resources.first
+
+    assert products_namespace.reload.properties.key?('shop_id')
+    assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
+    assert_includes shops_namespace.associations, { "type" => 'has_many', "namespace" => 'products' }
+
+    assert_difference('ApiResource.count') do
+      post api_namespace_resources_url(api_namespace_id: products_namespace.id), params: { api_resource: { properties: { title: 'My product', shop_id: shop_resource.id }.to_json } }
+    end
+
+    assert_equal products_namespace.api_resources.pluck(:id), shop_resource.products.pluck(:id)
+
+    assert_equal shop_resource, products_namespace.api_resources.first.shop
+  end
+
+  test "should create api_namespace with child associations" do
+    products_namespace = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' })
+
+    products_namespace.api_resources.create(properties: {
+      title: 'my product'
+    })
+
+    sign_in(@user)
+    assert_difference('ApiNamespace.count', 1) do
+      post api_namespaces_url, params: { api_namespace: { name: 'shops', properties: { name: '' }.to_json, associations: [{type: 'has_many', namespace: 'products'}], version: 1 } }
+    end
+
+    shops_namespace = ApiNamespace.last
+    products_namespace.reload
+
+    assert products_namespace.properties.key?('shop_id')
+    assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
+    assert_includes shops_namespace.associations, { "type" => 'has_many', "namespace" => 'products' }
+
+    assert_difference('ApiResource.count') do
+      post api_namespace_resources_url(api_namespace_id: shops_namespace.id), params: { api_resource: { properties: { name: 'My shop'}.to_json } }
+    end
+
+    shop_resource = shops_namespace.api_resources.first
+
+    assert_difference('ApiResource.count') do
+      post api_namespace_resources_url(api_namespace_id: products_namespace.id), params: { api_resource: { properties: { title: 'My product', shop_id: shop_resource.id }.to_json } }
+    end
+
+    assert_equal [products_namespace.api_resources.last.id], shop_resource.products.pluck(:id)
+
+    assert_equal shop_resource, products_namespace.api_resources.last.shop
+
+    # already existing product resource 
+    refute products_namespace.api_resources.first.shop
+  end
+
+  test "#update should add association" do
+    shops_namespace = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' })
+    products_namespace = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' })
+
+    shop = shops_namespace.api_resources.create(properties: {
+      name: 'my shop'
+    })
+
+    products_namespace.api_resources.create(properties: {
+      title: 'my product',
+      shop_id: shop.id
+    })
+
+    # does not have dynamic methods defined without associations
+    refute products_namespace.api_resources.first.reload.respond_to?(:shop)
+    refute shops_namespace.api_resources.first.reload.respond_to?(:products)
+
+    sign_in(@user)
+    assert_changes('shops_namespace.reload.associations') do
+      assert_changes('products_namespace.reload.associations') do
+        assert_changes('products_namespace.reload.properties') do
+          patch api_namespace_url(shops_namespace), params: { api_namespace: { associations: [{type: 'has_many', namespace: 'products'}], version: 1 } }
+        end
+      end
+    end
+
+    assert products_namespace.properties.key?('shop_id')
+    assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
+    assert_includes shops_namespace.associations, { "type" => 'has_many', "namespace" => 'products' }
+
+    products_namespace.reload
+    shops_namespace.reload
+
+    # should have dynamic methods defined
+    assert products_namespace.api_resources.first.respond_to?(:shop)
+    assert shops_namespace.api_resources.first.respond_to?(:products)
+  end
+
+  test "update association" do
+    products_namespace = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' })
+    shops_namespace = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'products'}])
+
+    assert products_namespace.reload.properties.key?('shop_id')
+    assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
+    assert_includes shops_namespace.reload.associations, { "type" => 'has_many', "namespace" => 'products' }
+
+    shop = shops_namespace.api_resources.create(properties: {
+      name: 'my shop'
+    })
+
+    products_namespace.api_resources.create(properties: {
+      title: 'my product',
+      shop_id: shop.id
+    })
+
+    # should have dynamic methods defined without associations
+    assert products_namespace.api_resources.first.reload.respond_to?(:shop)
+    assert shops_namespace.api_resources.first.reload.respond_to?(:products)
+
+    sign_in(@user)
+    assert_changes('shops_namespace.reload.associations') do
+      assert_no_changes('products_namespace.reload.associations') do
+        assert_no_changes('products_namespace.reload.properties') do
+          patch api_namespace_url(shops_namespace), params: { api_namespace: { associations: [{type: 'has_one', namespace: 'products'}], version: 1 } }
+        end
+      end
+    end
+
+    refute_includes shops_namespace.reload.associations, { "type" => 'has_many', "namespace" => 'products' }
+
+    assert_includes shops_namespace.reload.associations, { "type" => 'has_one', "namespace" => 'products' }
+
+    assert products_namespace.reload.properties.key?('shop_id')
+    assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
+
+    # should remove has_many dynamic method and add has_one methods
+    assert products_namespace.api_resources.first.reload.respond_to?(:shop)
+    refute shops_namespace.api_resources.first.reload.respond_to?(:products)
+    assert shops_namespace.api_resources.first.reload.respond_to?(:product)
+  end
+
+  test "update api_namespace to remove associations" do
+    shops_namespace = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' })
+    products_namespace = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' }, associations: [{type: 'belongs_to', namespace: 'shops'}])
+
+    assert products_namespace.reload.properties.key?('shop_id')
+    assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
+    assert_includes shops_namespace.reload.associations, { "type" => 'has_many', "namespace" => 'products' }
+
+    shop = shops_namespace.api_resources.create(properties: {
+      name: 'my shop'
+    })
+
+    products_namespace.api_resources.create(properties: {
+      title: 'my product',
+      shop_id: shop.id
+    })
+
+    # should have dynamic methods defined
+    assert products_namespace.api_resources.first.reload.respond_to?(:shop)
+    assert shops_namespace.api_resources.first.reload.respond_to?(:products)
+
+    sign_in(@user)
+    assert_changes('shops_namespace.reload.associations') do
+      assert_no_changes('products_namespace.reload.associations') do
+        assert_no_changes('products_namespace.reload.properties') do
+          patch api_namespace_url(shops_namespace), params: { api_namespace: { associations: [], version: 1 } }
+        end
+      end
+    end
+
+    refute_includes shops_namespace.reload.associations, { "type" => 'has_many', "namespace" => 'products' }
+
+    # removing foreign key and corresponding associations should be manual, we do not want to unintionally remove existing association
+    assert products_namespace.reload.properties.key?('shop_id')
+    assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
+
+    # should remove dynamic methods
+    assert products_namespace.api_resources.first.reload.respond_to?(:shop)
+    refute shops_namespace.api_resources.first.reload.respond_to?(:products)
+  end
+  
+  test "should show link to associated resources" do
+    owner_namespace = ApiNamespace.create(name: 'owners', version: 1, properties: {} )
+    shops_namespace = ApiNamespace.create(name: 'shops', version: 1, properties: { name: ''}, associations: [{type: 'has_one', namespace: 'owners'}])
+    products_namespace = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' }, associations: [{type: 'belongs_to', namespace: 'shops'}])
+
+    shop = shops_namespace.reload.api_resources.create(properties: {
+      name: 'my shop'
+    })
+
+    owner = owner_namespace.reload.api_resources.create(properties: {
+      name: 'owner',
+      shop_id: shop.id
+    })
+
+    product = products_namespace.reload.api_resources.create(properties: {
+      title: 'my product',
+      shop_id: shop.id
+    })
+
+    sign_in(@user)
+    get api_namespace_url(shops_namespace)
+    
+    # should include link to children resources namespace
+    assert_select "tbody tr td a[href=?]", api_namespace_path(id: products_namespace.slug, q: {properties_cont: "\"shop_id\": #{shop.id}"}), { count: 1, text: 'products'}
+
+    # should include link to children resource
+    assert_select "tbody tr td a[href=?]", api_namespace_resource_path(api_namespace_id: owner_namespace.id, id: owner.id), { count: 1, text: owner.id.to_s}
+
+    get api_namespace_url(products_namespace)
+    # should include link to parent resource
+    assert_select "tbody tr td a[href=?]", api_namespace_resource_path(api_namespace_id: shops_namespace.id, id: shop.id), { count: 1, text: shop.id.to_s}
   end
 end

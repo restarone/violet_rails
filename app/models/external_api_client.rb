@@ -85,7 +85,7 @@ WebhookDrivenConnection"
     self.default_webhook_driven_model_definition = DEFAULT_WEBHOOK_DRIVEN_MODEL_DEFINITION
     self.default_model_definition = DEFAULT_MODEL_DEFINITION
 
-    self.model_definition = DEFAULT_WEBHOOK_DRIVEN_MODEL_DEFINITION if drive_strategy == ExternalApiClient::DRIVE_STRATEGIES[:webhook] && self.new_record?
+    self.model_definition = DEFAULT_WEBHOOK_DRIVEN_MODEL_DEFINITION if drive_strategy == ExternalApiClient::DRIVE_STRATEGIES[:webhook] && self.new_record? && !self.will_save_change_to_model_definition?
   end
 
   friendly_id :label, use: :slugged
