@@ -97,7 +97,7 @@ WebhookDrivenConnection"
   validates :drive_every, inclusion: { in: ExternalApiClient::DRIVE_INTERVALS.keys.map(&:to_s) }, allow_blank: true, allow_nil: true
   validates :model_definition, safe_executable: { skip_keywords: SKIPPABLE_KEYWORDS }
 
-  has_one :webhook_verification_method
+  has_one :webhook_verification_method, dependent: :destroy
 
   accepts_nested_attributes_for :webhook_verification_method
 

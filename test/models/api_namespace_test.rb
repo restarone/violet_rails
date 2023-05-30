@@ -393,4 +393,79 @@ class ApiNamespaceTest < ActiveSupport::TestCase
     assert_includes namespace_1.reload.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
     assert_includes namespace_2.reload.associations, { "type" => 'has_many', "namespace" => 'products' }
   end
+
+  test 'should destroy api_namespace and dependent associations of resources if dependent set to destroy' do
+    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'products', dependent: 'destroy'}]);
+
+    namespace_1.reload
+    namespace_2.reload
+
+    shop_1 = namespace_2.api_resources.create(properties: {name: 'Restarone'})
+
+    product_1 = namespace_1.api_resources.create(properties: {title: 'T-shirt', shop_id: shop_1.id})
+    product_2 = namespace_1.api_resources.create(properties: {title: 'Jeans', shop_id: shop_1.id})
+
+    assert_difference "namespace_1.reload.api_resources.count", -2 do
+      assert_difference "ApiNamespace.count", -1 do
+        namespace_2.destroy
+      end
+    end
+  end
+
+  test 'should destroy api_namespace but leave dependent associations of resources as is if dependent set to blank' do
+    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'products'}]);
+
+    namespace_1.reload
+    namespace_2.reload
+
+    shop_1 = namespace_2.api_resources.create(properties: {name: 'Restarone'})
+
+    product_1 = namespace_1.api_resources.create(properties: {title: 'T-shirt', shop_id: shop_1.id})
+    product_2 = namespace_1.api_resources.create(properties: {title: 'Jeans', shop_id: shop_1.id})
+
+    assert_no_difference "namespace_1.reload.api_resources.count" do
+      assert_difference "ApiResource.count", -1 do
+        assert_difference "ApiNamespace.count", -1 do
+          namespace_2.destroy
+        end
+      end
+    end
+  end
+
+  test 'should not destroy api_namespace dependent set to restrict_with_error and dependent api resources exist' do
+    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'products', dependent: 'restrict_with_error'}]);
+
+    namespace_1.reload
+    namespace_2.reload
+
+    shop_1 = namespace_2.api_resources.create(properties: {name: 'Restarone'})
+
+    product_1 = namespace_1.api_resources.create(properties: {title: 'T-shirt', shop_id: shop_1.id})
+    product_2 = namespace_1.api_resources.create(properties: {title: 'Jeans', shop_id: shop_1.id})
+
+    assert_no_difference "namespace_1.reload.api_resources.count" do
+      assert_no_difference "ApiNamespace.count" do
+        namespace_2.destroy
+      end
+    end
+  end
+
+  test 'should destroy api_namespace dependent set to restrict_with_error but dependent api resources do not exist' do
+    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'products', dependent: 'restrict_with_error'}]);
+
+    namespace_1.reload
+    namespace_2.reload
+
+    shop_1 = namespace_2.api_resources.create(properties: {name: 'Restarone'})
+
+    assert_difference "ApiResource.count", -1 do
+      assert_difference "ApiNamespace.count", -1 do
+        namespace_2.destroy
+      end
+    end
+  end
 end

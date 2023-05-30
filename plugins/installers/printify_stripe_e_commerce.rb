@@ -23,6 +23,7 @@ PRINTIFY_HEADERS = {
   "Authorization" => "Bearer #{PRINTIFY_API_KEY}" 
 }
 
+p "###################################            VALIDATING PRINTIFY_API_KEY AND SHOP           ###################################"
 printify_response = HTTParty.get("https://api.printify.com/v1/shops.json", headers: PRINTIFY_HEADERS)
 
 p "[FAILED] with error: #{printify_response.body}" and return unless printify_response.success?
@@ -259,7 +260,7 @@ sync_printify_products_plugin = products_namespace.external_api_clients.create(
                             end
 
                             default_variant = enabled_variants.find { |variant| variant['is_default'] } || enabled_variants.first
-                            default_image = product_object['images'].find { |image| image['is_default'] && image['variant_ids'].include?(default_variant['id']) }        
+                            default_image = product_object['images'].find { |image| image['is_default'] && image['variant_ids'].include?(default_variant['id']) } || product_object['images'].find { |image| image['is_default'] } || product_object['images'].first
 
                             categories = shop.properties['product_categories'] & product_object['tags']
                             sub_categories = shop.properties['product_sub_categories'] & product_object['tags']
@@ -349,7 +350,7 @@ printify_product_publish_plugin = products_namespace.external_api_clients.create
                             end
 
                             default_variant = enabled_variants.find { |variant| variant['is_default'] } || enabled_variants.first
-                            default_image = product_object['images'].find { |image| image['is_default'] && image['variant_ids'].include?(default_variant['id']) }
+                            default_image = product_object['images'].find { |image| image['is_default'] && image['variant_ids'].include?(default_variant['id']) } || product_object['images'].find { |image| image['is_default'] } || product_object['images'].first
 
                             categories = @shop.properties['product_categories'] & product_object['tags']
                             sub_categories = @shop.properties['product_sub_categories'] & product_object['tags']                          
@@ -3682,6 +3683,10 @@ Comfy::Cms::Fragment.create!(
             HTML
 )
 
+p "###################################             SYNC PRINTIFY PRODUCTS IN BACKGROUND          ###################################"
+
+sync_printify_products_plugin.run
+
 p "###################################               SUBSCRIBING TO PRINTIFY WEBHOOKS            ###################################"
 
 subscribe_to_printify_results = []
@@ -3711,30 +3716,37 @@ shop_namespace.reload.api_resources.each do |shop|
   end
 end
 
-p "###################################             SYNC PRINTIFY PRODUCTS IN BACKGROUND          ###################################"
-
-sync_printify_products_plugin.run
-
 subscribe_to_printify_results
 
 if subscribe_to_printify_results.any? {|res| !res[:success]}
   p ""
-  p "[FAILED]: Subscribing to following printify webhook failed. Please subscribe to them manually"
+  p "     [FAILED]: Subscribing to following printify webhook failed. Please subscribe to them manually"
   p ""
 
   subscribe_to_printify_results.filter {|res| !res[:success]}.each do |res|
-    p "     #{res[:topic]} ::- #{res[:response]['errors']['reason']}"
+    p "         - #{res[:topic]} ::- #{res[:response]['errors']['reason']}"
   end
 end
 
 p ""
+p "###################################################       *** FINISHED ***       #################################################"
 p ""
-
-p "**NEXT STEP**"
 p ""
-p "     Create a stripe webhhok and add webhook signing secret to the order_fulfill plugin."
-p "     DOCS: https://gist.github.com/Pralish/bc3a0441534b32e2d4a189c12b0f061a?permalink_comment_id=4573559#gistcomment-4573559"
-p "     You didn't provide STRIPE_SECRET_KEY. Please add the key manually here: #{Rails.application.routes.url_helpers.edit_api_namespace_resource_url(api_namespace_id: printify_account_namespace.id, id: printify_account.id, host: ENV['APP_HOST'])}" unless STRIPE_SECRET_KEY.present?
+p "     Your Printify Webhook secret: #{WEBHOOK_SECRET}"
+p ""
+p ""
+p "###################################################      *** NEXT STEPS ***       #################################################"
+p ""
+p ""
+p "     - Create a stripe webhhok and add webhook signing secret to the order_fulfill plugin."
+p ""
+p "         - [DOCS][How to create stripe signing secret]:  https://gist.github.com/Pralish/bc3a0441534b32e2d4a189c12b0f061a?permalink_comment_id=4573559#gistcomment-4573559"
+p ""
+p "         - Order fulfill plugin:  #{Rails.application.routes.url_helpers.edit_api_namespace_external_api_client_url(api_namespace_id: orders_namespace.id, id: fulfill_order_plugin.id, host: ENV['APP_HOST'])}"
+p ""
+p "     - You didn't provide STRIPE_SECRET_KEY. Please add the key manually here: #{Rails.application.routes.url_helpers.edit_api_namespace_resource_url(api_namespace_id: printify_account_namespace.id, id: printify_account.id, host: ENV['APP_HOST'])}" unless STRIPE_SECRET_KEY.present?
+p ""
+p ""
 
 
 
