@@ -223,7 +223,7 @@ class ExternalApiClientTest < ActiveSupport::TestCase
     assert ExternalApiClient.const_defined?(:ExternalApiModelExampleNew)
   end
 
-  test 'should allow save if model defination has syntax error' do
+  test 'should not allow save if model defination has syntax error' do
     api_namespace = api_namespaces(:one)
     model_definition = "
       class ExternalApiModelExampleNew
