@@ -31,14 +31,17 @@ shop_exists = JSON.parse(printify_response.body).any? { |s| ENV['SHOP_NAME'] == 
 
 p "[FAILED]: Shop with name #{ENV['SHOP_NAME']} doesn't exist in printify. Please make sure SHOP_NAME matches the name of your printify store." and return unless shop_exists
 
+site = Comfy::Cms::Site.first
+
 p "###################################                    CREATING CATEGORIES                    ###################################"
 
 namespace_category = Comfy::Cms::Category.where(label: "printify-shop", categorized_type: "ApiNamespace").first_or_create
-layout_category = Comfy::Cms::Category.where(label: "printify-shop", categorized_type: "Comfy::Cms::Layout").first_or_create
-page_category = Comfy::Cms::Category.where(label: "printify-shop", categorized_type: "Comfy::Cms::Page").first_or_create
-snippet_category = Comfy::Cms::Category.where(label: "printify-shop", categorized_type: "Comfy::Cms::Snippet").first_or_create
-icon_snippet_category = Comfy::Cms::Category.where(label: "icon", categorized_type: "Comfy::Cms::Snippet").first_or_create
-script_category = Comfy::Cms::Category.where(label: "script", categorized_type: "Comfy::Cms::Snippet").first_or_create
+
+layout_category = Comfy::Cms::Category.where(label: "printify-shop", categorized_type: "Comfy::Cms::Layout", site: site).first_or_create
+page_category = Comfy::Cms::Category.where(label: "printify-shop", categorized_type: "Comfy::Cms::Page", site: site).first_or_create
+snippet_category = Comfy::Cms::Category.where(label: "printify-shop", categorized_type: "Comfy::Cms::Snippet", site: site).first_or_create
+icon_snippet_category = Comfy::Cms::Category.where(label: "icon", categorized_type: "Comfy::Cms::Snippet", site: site).first_or_create
+script_category = Comfy::Cms::Category.where(label: "script", categorized_type: "Comfy::Cms::Snippet", site: site).first_or_create
 
 p "###################################   CREATING PRINTIFY ACCOUNTS, SHOP, SHOP_LOGS NAMEPACES   ###################################"
 
@@ -1255,8 +1258,6 @@ order_cleanup_logs_namespace = ApiNamespace.create(
 
 
 p "###################################                  CREATING PRINFIFY SHOP UI                ###################################"
-
-site = Comfy::Cms::Site.first
 
 layout_content =  <<~HTML
                   <script src="https://js.stripe.com/v3/"></script>
