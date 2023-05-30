@@ -31,7 +31,7 @@ shop_exists = JSON.parse(printify_response.body).any? { |s| ENV['SHOP_NAME'] == 
 
 p "[FAILED]: Shop with name #{ENV['SHOP_NAME']} doesn't exist in printify. Please make sure SHOP_NAME matches the name of your printify store." and return unless shop_exists
 
-p "###################################  CREATING CATEGORIES     #########################"
+p "###################################                    CREATING CATEGORIES                    ###################################"
 
 namespace_category = Comfy::Cms::Category.where(label: "printify-shop", categorized_type: "ApiNamespace").first_or_create
 layout_category = Comfy::Cms::Category.where(label: "printify-shop", categorized_type: "Comfy::Cms::Layout").first_or_create
@@ -40,7 +40,7 @@ snippet_category = Comfy::Cms::Category.where(label: "printify-shop", categorize
 icon_snippet_category = Comfy::Cms::Category.where(label: "icon", categorized_type: "Comfy::Cms::Snippet").first_or_create
 script_category = Comfy::Cms::Category.where(label: "script", categorized_type: "Comfy::Cms::Snippet").first_or_create
 
-p "##########################    CREATING PRINTIFY ACCOUNTS, SHOP, SHOP_LOGS NAMEPACES    ##################"
+p "###################################   CREATING PRINTIFY ACCOUNTS, SHOP, SHOP_LOGS NAMEPACES   ###################################"
 
 printify_account_namespace = ApiNamespace.create(name: 'printify_accounts', version: 1, requires_authentication: true, properties: { stripe_secret_key: '', api_key: '', name: '', shops_to_sync: [] }, category_ids: [namespace_category.id])
 
@@ -78,7 +78,7 @@ sync_printify_shops_plugin = ExternalApiClient.create(
   enabled: true,
   drive_strategy: "on_demand",
   metadata: { LOGGER_NAMESPACE: "shop_logs" },
-  model_definition: <<~EOS
+  model_definition: <<~RUBY
                     class SyncPrintifyShops
                       def initialize(parameters)
                         @external_api_client = parameters[:external_api_client]
@@ -117,7 +117,7 @@ sync_printify_shops_plugin = ExternalApiClient.create(
                     end
                     
                     SyncPrintifyShops
-                    EOS
+                    RUBY
 )
 
 shops_details_plugin = ExternalApiClient.create(
@@ -126,7 +126,7 @@ shops_details_plugin = ExternalApiClient.create(
   enabled: true,
   drive_strategy: "webhook",
   metadata: { LOGGER_NAMESPACE: "shop_logs" },
-  model_definition: <<~EOS
+  model_definition: <<~RUBY
                     class ShopsDetail
                       def initialize(parameters)
                         @external_api_client = parameters[:external_api_client]
@@ -178,14 +178,14 @@ shops_details_plugin = ExternalApiClient.create(
                     end
                     
                     ShopsDetail
-                    EOS
+                    RUBY
 )
 
-p "#####################################           RUNNING SHOP SYNC PLUGIN         ####################"
+p "###################################                  RUNNING SHOP SYNC PLUGIN                 ###################################"
 
 ExternalApiClientJob.new.perform(sync_printify_shops_plugin.id, {})
 
-p "#####################################         CREATING PRODUCTS NAMESPACE AND PLUGINS      #####################"
+p "###################################           CREATING PRODUCTS NAMESPACE AND PLUGINS         ###################################"
 
 products_namespace = ApiNamespace.create(
   name: 'products', 
@@ -215,7 +215,7 @@ sync_printify_products_plugin = products_namespace.external_api_clients.create(
   enabled: true,
   drive_strategy: "on_demand",
   metadata: { LOGGER_NAMESPACE: "shop_logs" },
-  model_definition: <<~EOS
+  model_definition: <<~RUBY
                     class SyncPrintifyProducts
                       def initialize(parameters)
                         @external_api_client = parameters[:external_api_client]
@@ -299,7 +299,7 @@ sync_printify_products_plugin = products_namespace.external_api_clients.create(
                     end
                     
                     SyncPrintifyProducts
-                    EOS
+                    RUBY
 )
 
 printify_product_publish_plugin = products_namespace.external_api_clients.create(
@@ -307,7 +307,7 @@ printify_product_publish_plugin = products_namespace.external_api_clients.create
   enabled: true,
   drive_strategy: "webhook",
   metadata: { LOGGER_NAMESPACE: "shop_logs" },
-  model_definition: <<~EOS
+  model_definition: <<~RUBY
                     class ProductPublishStartWebhook
                       def initialize(parameters)
                         @external_api_client = parameters[:external_api_client]
@@ -394,14 +394,14 @@ printify_product_publish_plugin = products_namespace.external_api_clients.create
                     end
                     
                     ProductPublishStartWebhook
-                    EOS
+                    RUBY
 )
 
 WebhookVerificationMethod.create(
   webhook_type: 'custom',
   external_api_client_id: printify_product_publish_plugin.id,
   webhook_secret: WEBHOOK_SECRET,
-  custom_method_definition: <<~EOS
+  custom_method_definition: <<~RUBY
                             hex_digest = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), verification_method.webhook_secret.encode('utf-8'), request.body.string.encode('utf-8'))
                             signature = request.headers['X-Pfy-Signature'] || ''
                             if ActiveSupport::SecurityUtils.secure_compare(signature, "sha256=\#{hex_digest}")
@@ -409,11 +409,11 @@ WebhookVerificationMethod.create(
                             else
                               [false, 'Verification failed']
                             end
-                            EOS
+                            RUBY
 
 )
 
-p "##############################          CREATING ORDERS NAMESPACE AND PLUGINS       ###################"
+p "###################################           CREATING ORDERS NAMESPACE AND PLUGINS           ###################################"
 
 orders_namespace = ApiNamespace.create(
   name: "orders",
@@ -463,7 +463,7 @@ fetch_printify_shipping_and_stripe_processing_fees_plugin = orders_namespace.ext
     STRIPE_PROCESSING_FEE_PERCENTAGE: 2.9,
     STRIPE_TAX_FEE_PERCENTAGE: 0.5
   },
-  model_definition: <<~EOS
+  model_definition: <<~RUBY
                     class FetchPrintifyShippingAndStripeProcessingFees
                       def initialize(parameters)
                         @external_api_client = parameters[:external_api_client]
@@ -574,7 +574,7 @@ fetch_printify_shipping_and_stripe_processing_fees_plugin = orders_namespace.ext
                     end
                     
                     FetchPrintifyShippingAndStripeProcessingFees          
-                    EOS
+                    RUBY
 )
 
 create_order_and_stripe_chekout_session_plugin = orders_namespace.external_api_clients.create(
@@ -588,7 +588,7 @@ create_order_and_stripe_chekout_session_plugin = orders_namespace.external_api_c
     SHOP_NAMESPACE_SLUG: "shops",
     PROCESSING_FEE_TAX_CODE: "txcd_20030000"
   },
-  model_definition: <<~EOS
+  model_definition: <<~RUBY
                     class CreateOrderAndStripeChekoutSession
                       def initialize(parameters)
                         @external_api_client = parameters[:external_api_client]
@@ -712,7 +712,7 @@ create_order_and_stripe_chekout_session_plugin = orders_namespace.external_api_c
                     end
                     
                     CreateOrderAndStripeChekoutSession          
-                    EOS
+                    RUBY
 )
 
 fulfill_order_plugin = orders_namespace.external_api_clients.create(
@@ -722,7 +722,7 @@ fulfill_order_plugin = orders_namespace.external_api_clients.create(
   metadata: {
     LOGGER_NAMESPACE: "shop_logs"
   },
-  model_definition: <<~EOS
+  model_definition: <<~RUBY
                     class FulfillOrder
                       def initialize(parameters)
                         @external_api_client = parameters[:external_api_client]
@@ -855,7 +855,7 @@ fulfill_order_plugin = orders_namespace.external_api_clients.create(
                     end
                     
                     FulfillOrder  
-                    EOS
+                    RUBY
 )
 
 WebhookVerificationMethod.create(webhook_type: 'stripe', external_api_client_id: fulfill_order_plugin.id, webhook_secret: '')
@@ -868,7 +868,7 @@ cleanup_unprocessed_orders_plugin = orders_namespace.external_api_clients.create
   metadata: {
     LOGGER_NAMESPACE: "order_cleanup_logs",
   },
-  model_definition: <<~EOS
+  model_definition: <<~RUBY
                     class CleanUnprocessedOrders
                       def initialize(parameters)
                         @external_api_client = parameters[:external_api_client]
@@ -928,7 +928,7 @@ cleanup_unprocessed_orders_plugin = orders_namespace.external_api_clients.create
                     end
                     
                     CleanUnprocessedOrders
-                    EOS
+                    RUBY
 )
 
 clean_unprocessed_orders_manually_plugin = orders_namespace.external_api_clients.create(
@@ -940,7 +940,7 @@ clean_unprocessed_orders_manually_plugin = orders_namespace.external_api_clients
     START_TIME: "",
     END_TIME: ""
   },
-  model_definition: <<~EOS
+  model_definition: <<~RUBY
                     class CleanUnprocessedOrdersManually
                       def initialize(parameters)
                         @external_api_client = parameters[:external_api_client]
@@ -999,10 +999,8 @@ clean_unprocessed_orders_manually_plugin = orders_namespace.external_api_clients
                     end
                     
                     CleanUnprocessedOrdersManually
-                    EOS
+                    RUBY
 )
-
-p "#####################################       PLUGIN TO CLEAN UNPROCESSED ORDERS MANUALLY      ###################"
 
 order_status_notification_plugin = orders_namespace.external_api_clients.create(
   label: "order_status_notification",
@@ -1012,7 +1010,7 @@ order_status_notification_plugin = orders_namespace.external_api_clients.create(
     LOGGER_NAMESPACE: "shop_logs",
     NOTIFICATION_NAMESPACE: "notifications"
   },
-  model_definition: <<~EOS
+  model_definition: <<~RUBY
                     # This connection receives updated order status from Printify and creates/updates a notification API resource
                     class OrderStatusNotification
                       def initialize(parameters)
@@ -1131,17 +1129,17 @@ order_status_notification_plugin = orders_namespace.external_api_clients.create(
                     end
                     
                     OrderStatusNotification
-                    EOS
+                    RUBY
 )
 
 
-p "#####################################      SECURING PRINTIFY ORDER STATUS CHANGE WEBHOOK      ######################"
+p "###################################       SECURING PRINTIFY ORDER STATUS CHANGE WEBHOOK       ###################################"
             
 WebhookVerificationMethod.create(
   webhook_type: 'custom',
   external_api_client_id: order_status_notification_plugin.id,
   webhook_secret: WEBHOOK_SECRET,
-  custom_method_definition: <<~EOS
+  custom_method_definition: <<~RUBY
                             hex_digest = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), verification_method.webhook_secret.encode('utf-8'), request.body.string.encode('utf-8'))
                             signature = request.headers['X-Pfy-Signature'] || ''
                             if ActiveSupport::SecurityUtils.secure_compare(signature, "sha256=\#{hex_digest}")
@@ -1149,12 +1147,12 @@ WebhookVerificationMethod.create(
                             else
                               [false, 'Verification failed']
                             end
-                            EOS
+                            RUBY
 
 )
 
 
-p "###############################        CREATE NOTIFICATIONS NAMESPACE        ##################"
+p "###################################               CREATE NOTIFICATIONS NAMESPACE              ###################################"
 
 notifications_namespace = ApiNamespace.create(
   name: 'notifications',
@@ -1176,7 +1174,7 @@ notifications_namespace = ApiNamespace.create(
   category_ids: [namespace_category.id]
 )
 
-p "###############################        CREATE ORDER EMAIL NOTIFICATIONS      #############"
+p "###################################              CREATE ORDER EMAIL NOTIFICATIONS             ###################################"
 
 notifications_namespace.api_actions.create(
   action_type: "send_email",
@@ -1184,7 +1182,7 @@ notifications_namespace.api_actions.create(
   email: "\#{api_resource.properties['address_to']['email']}",
   email_subject: "\#{api_resource.properties['email_subject']}",
   type: "CreateApiAction",
-  custom_message: <<~EOS
+  custom_message: <<~HTML
                   <% price_info = api_resource.properties['price_info'] %>
                   <% address_to = api_resource.properties['address_to'] %>
                   <% carrier = api_resource.properties['carrier'] %>
@@ -1231,11 +1229,11 @@ notifications_namespace.api_actions.create(
                   <%= address_to['region'] + " " + address_to['zip'] %>
                   <%= address_to['country'] %>
                   <% end %>
-                  EOS
+                  HTML
 )
 
 
-p "############      CREATE ORDER CLEANUP LOGS NAMESPACE        ############"
+p "###################################             CREATE ORDER CLEANUP LOGS NAMESPACE           ###################################"
 
 order_cleanup_logs_namespace = ApiNamespace.create(
   name: 'order_cleanup_logs',
@@ -1256,17 +1254,17 @@ order_cleanup_logs_namespace = ApiNamespace.create(
 )
 
 
-p "###############################     CREATING PRINFIFY SHOP UI        #########################"
+p "###################################                  CREATING PRINFIFY SHOP UI                ###################################"
 
 site = Comfy::Cms::Site.first
 
-layout_content =  <<~EOS
+layout_content =  <<~HTML
                   <script src="https://js.stripe.com/v3/"></script>
                   {{cms:snippet navbar-custom-shop}}
                   {{cms:wysiwyg content}}
-                  EOS
+                  HTML
 
-layout_css =  <<~EOS
+layout_css =  <<~CSS
               *,
               *::before,
               *::after {
@@ -1339,6 +1337,17 @@ layout_css =  <<~EOS
                 text-decoration: none;
               }
 
+              .product__image {
+                width: 100%;
+                border-radius: 8px;
+                border: var(--image-border); 
+              }
+
+              .product__category {
+                margin-bottom: 8px;
+                color: hsla(208, 13%, 45%, 1);
+              }
+
               .product__price {
                 display: flex;
               }
@@ -1359,12 +1368,34 @@ layout_css =  <<~EOS
                 padding-top: 40px;
                 padding-bottom: 40px;
               }
+              .section__subtitle {
+                margin-bottom: 30px;
+              }
               .opacity-0 {
                 opacity: 0;
+              }
+              /* Best-selling-items */
+              .best-selling-items {
+                text-align: center;
+              }
+              .best-selling-items__carousel-container {
+                display: grid;
+                align-items: center;
+                gap: 30px;
+              }
+              .best-selling-items__section-subtitle {
+                margin-bottom: 4px;
+              }
+              .best-selling-items__section-title {
+                margin-bottom: 30px;
+              }
+              .best-selling-items .product__price {
+                justify-content: center;
               }
               /* Single-item carousel */
               .single-item-carousel {
                 display: flex;
+                align-items: center;
               }
               .single-item-carousel__middle-container {
                 flex-grow: 1;
@@ -1388,8 +1419,8 @@ layout_css =  <<~EOS
                 background-color: transparent;
               }
               .single-item-carousel__arrow svg {
-                width: 30px;
-                height: 30px;
+                width: 20px;
+                height: 20px;
               }
               .single-item-carousel__indicators {
                 display: flex;
@@ -1524,10 +1555,25 @@ layout_css =  <<~EOS
                 100% {
                   transform: rotate(360deg);
                 }
-              }     
-              EOS
+              }
+              /* Media queries */
+              @media only screen and (min-width: 700px) {
+                .best-selling-items {
+                  text-align: left;
+                }
+                .best-selling-items__carousel-container {
+                  grid-template-columns: 1fr 1fr;
+                }
+                .best-selling-items .single-item-carousel {
+                  max-width: 600px;
+                }
+                .best-selling-items .product__price {
+                  justify-content: start;
+                }
+              }  
+              CSS
 
-layout_js = <<~EOS
+layout_js = <<~JAVASCRIPT
             async function init() {
               const config = getConfig();
               const cartKey = config["CART_KEY"];
@@ -1597,23 +1643,43 @@ layout_js = <<~EOS
                 CUSTOM_EVENTS: {
                   VARIANT_CHANGE: "variant-change"
                 },
+                PRODUCTS_URL: "/api/1/products",
                 SHOP_DETAILS_URL: `${window.location.origin}/api/1/shops/shops_detail/webhook`,
                 PRICE_DETAILS_URL: `${window.location.origin}/api/1/orders/fetch_printify_shipping_and_stripe_processing_fees/webhook`,
                 CHECKOUT_URL: `${window.location.origin}/api/1/orders/create_order_and_stripe_chekout_session/webhook`
               };
             }
 
-            async function getProductsAsync() {
-              const response = await fetch("/api/1/products");
-              const { data } = await response.json();
-              return data.map(item => item.attributes);
+            async function getProductsAsync(productIds) {
+              const payload = {
+                properties: {
+                  printify_product_id: {
+                    value: productIds,
+                    option: "PARTIAL",
+                    match: "ANY"
+                  }
+                }
+              }
+              const result = await $.ajax({
+                url: getConfig()["PRODUCTS_URL"],
+                type: "GET",
+                data: payload
+              });
+              return result.data.map(item => item.attributes);
             }
 
             async function getProductAsync(productId) {
-            const response = await fetch("/api/1/products");
-            const { data } = await response.json();
-            const product = data.find(item => item.attributes.properties['printify_product_id'] == productId).attributes;
-            return product;
+              const payload = {
+              properties: {
+                printify_product_id: productId
+              }
+            };
+              const result = await $.ajax({
+                url: getConfig()["PRODUCTS_URL"],
+                type: "GET",
+                data: payload
+              });
+              return result.data[0].attributes;
             }
 
             function getVariantImage(variantId, images) {
@@ -1702,6 +1768,7 @@ layout_js = <<~EOS
               const carousel = parentContainer ? parentContainer.querySelector(`.${carouselType}`) : document.querySelector(`.${carouselType}`);
               
               const slides = carousel.querySelectorAll(`.${carouselType}__slide`);
+              const slidesContainer = carousel.querySelector(`.${carouselType}__slides`);
               const indicators = carousel.querySelectorAll(`.${carouselType}__indicator`);
               const indicatorsContainer = carousel.querySelector(`.${carouselType}__indicators`);
               const nextButton = carousel.querySelector(`.${carouselType}__arrow--next`);
@@ -1709,9 +1776,20 @@ layout_js = <<~EOS
               const variantChangeEventName = getConfig()["CUSTOM_EVENTS"]["VARIANT_CHANGE"]; 
               let currentSlideIndex = 0;
               
+              const setHeightOfSlidesContainerDebounced = debounce(setHeightOfSlidesContainer, 100);
+              
+              carousel.setAttribute("data-current-slide-index", currentSlideIndex);
+              
+              const resizeObserver = new ResizeObserver(function (entries) {
+                setHeightOfSlidesContainerDebounced();
+              });
+              
+              resizeObserver.observe(slidesContainer);
+              
               carousel.addEventListener(variantChangeEventName, function(e) {
                 const newSlideIndex = Number.parseFloat(e.detail);
                 currentSlideIndex = newSlideIndex;
+                carousel.setAttribute("data-current-slide-index", currentSlideIndex);
                 positionSlides(currentSlideIndex, slides);
                 setActiveIndicator();
               });
@@ -1739,6 +1817,7 @@ layout_js = <<~EOS
                 // If current slide is the last one, then go back to the first slide
                 if (currentSlideIndex === slides.length - 1) currentSlideIndex = 0;
                 else currentSlideIndex++;
+                carousel.setAttribute("data-current-slide-index", currentSlideIndex);
                 positionSlides(currentSlideIndex, slides);
                 setActiveIndicator();
               }
@@ -1747,6 +1826,7 @@ layout_js = <<~EOS
                 // If current slide is the first one, then go back to the last slide
                 if (currentSlideIndex === 0) currentSlideIndex = slides.length - 1;
                 else currentSlideIndex--;
+                carousel.setAttribute("data-current-slide-index", currentSlideIndex);
                 positionSlides(currentSlideIndex, slides);
                 setActiveIndicator();
               }
@@ -1755,6 +1835,7 @@ layout_js = <<~EOS
                 const clickedIndicator = e.target.closest(`.${carouselType}__indicator`);
                 if (!clickedIndicator) return;
                 currentSlideIndex = Number.parseFloat(clickedIndicator.dataset.slideIndex);
+                carousel.setAttribute("data-current-slide-index", currentSlideIndex);
                 positionSlides(currentSlideIndex, slides);
                 setActiveIndicator();
               }
@@ -1766,8 +1847,7 @@ layout_js = <<~EOS
               }
               
               function setHeightOfSlidesContainer() {
-                const slidesContainer = carousel.querySelector(`.${carouselType}__slides`);
-                const verySmallHeight = 200;
+                const firstImage = slidesContainer.querySelector(`.${carouselType}__slide:first-of-type img`);
                 let maxHeight = -Infinity;
                 // If a carousel has a display of none, then it should have the default height set in CSS
                 if (slidesContainer.offsetHeight === 0) return;
@@ -1776,11 +1856,10 @@ layout_js = <<~EOS
                   maxHeight = Math.max(maxHeight, slide.offsetHeight);
                 });
                 
-                // Check if the height has been calculated properly based on a very small height
-                // If the height is too small, then it means that images in the slide haven't finished loading
+                // Check if the height has been calculated properly based on whether or not the first image has loaded
                 // So, set another timer to wait further and recalculate height
                 // window load event is not fired on Turbo link visit; that's why this strategy is required
-                if (maxHeight < verySmallHeight) {
+                if (!firstImage.complete) {
                   setTimeout(setHeightOfSlidesContainer, 200);
                   return;
                 }
@@ -1798,6 +1877,37 @@ layout_js = <<~EOS
               }
             }
 
+            function initBestSellingItemsCarousel() {
+              const carouselConfig = {
+                carouselType: "single-item-carousel",
+                parentContainer: document.querySelector(".best-selling-items__carousel-container")
+              };
+
+              initCarousel(carouselConfig);
+
+              const bestSellingItemsCarousel = document.querySelector(".best-selling-items .single-item-carousel");
+              const bestSellingItemsInfoContainers = document.querySelectorAll(".best-selling-items__info");
+              const nextButton = bestSellingItemsCarousel.querySelector(".single-item-carousel__arrow--next");
+              const prevButton = bestSellingItemsCarousel.querySelector(".single-item-carousel__arrow--prev");
+              const indicatorsContainer = bestSellingItemsCarousel.querySelector(".single-item-carousel__indicators");
+
+              nextButton.addEventListener("click", changeBestSellingItemsInfo);
+              prevButton.addEventListener("click", changeBestSellingItemsInfo);
+              indicatorsContainer.addEventListener("click", changeBestSellingItemsInfo);
+
+              function changeBestSellingItemsInfo(e) {
+                const carouselControl = e.target.closest(".single-item-carousel__arrow, .single-item-carousel__indicator");
+                if (!carouselControl) return;
+
+              bestSellingItemsInfoContainers.forEach(infoContainer => {
+                const infoSlideIndex = Number.parseFloat(infoContainer.dataset.slideIndex);
+                const currentSlideIndex = Number.parseFloat(bestSellingItemsCarousel.dataset.currentSlideIndex);
+                if (infoSlideIndex === currentSlideIndex) infoContainer.classList.remove("d-none");
+                else infoContainer.classList.add("d-none");
+              });
+              }
+            }
+
             function showLoadingSpinner(container) {
               const markup = `
                 <span class="loading-spinner"></span>
@@ -1808,13 +1918,14 @@ layout_js = <<~EOS
 
             function removeLoadingSpinner(container) {
               const spinner = container.querySelector(".loading-spinner");
+              if (!spinner) return;
               spinner.remove();
               container.classList.remove("position-relative");
               [...container.children].forEach(child => child.classList.remove("opacity-0"));
             }
 
             init();
-            EOS
+            JAVASCRIPT
 
 layout = site.layouts.create(
   label: 'printify-shop',
@@ -1830,7 +1941,7 @@ site.snippets.create(
   label: 'products', 
   identifier: 'products',
   category_ids: [snippet_category.id],
-  content:  <<~EOS
+  content:  <<~HTML
             <% @api_resources.each do |resource| %>
               <% min_price = 1000000 %>
               <% resource.properties['variants'].each do |variant| %>
@@ -1858,14 +1969,14 @@ site.snippets.create(
                 </article>
               </a>  
             <% end %>
-            EOS
+            HTML
 )
 
 site.snippets.create(
   label: 'products-show', 
   identifier: 'products-show',
   category_ids: [snippet_category.id],
-  content:  <<~EOS
+  content:  <<~HTML
             <% enabled_variants = @api_resource.properties['variants'].filter {|variant| variant['is_enabled']} %>
             <% default_variant = enabled_variants.find{|variant| variant['is_default']} || enabled_variants.first %>
             <article class="product" data-product-id="<%= @api_resource.properties['printify_product_id'] %>">
@@ -1968,8 +2079,8 @@ site.snippets.create(
               </div>
             </section> 
             <% end %>               
-            <a href="/#{PRODUCTS_PAGE_SLUG}">Back to Shop page</a>
-            EOS
+            <a href="/custom-shop">Back to Shop page</a>
+            HTML
 )
 
 
@@ -1977,44 +2088,38 @@ site.snippets.create(
   label: "navbar-custom-shop", 
   identifier: "navbar-custom-shop",
   category_ids: [snippet_category.id],
-  content:  <<~EOS
+  content:  <<~HTML
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="/">Home</a>
-            <div class="order-lg-3">
-              <a class="cart-link" href="/cart" aria-label="View cart">
-                {{ cms:snippet cart-icon }}
-                <span class="cart-item-count d-none"></span>
-              </a>
-              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-              </button>
-            </div>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                  <a class="nav-link" href="#" data-violet-track-click="true" data-violet-event-name="web/navbar/home" data-violet-event-label="Home Page">Home <span class="sr-only">(current)</span></a>
-                </li>
-                      <li class="nav-item">
-                  <a class="nav-link" href="/#{PRODUCTS_PAGE_SLUG}" data-violet-track-click="true" data-violet-event-name="web/navbar/shop-page" data-violet-event-label="Shop Page">Shop</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="/story?id=579" data-violet-track-click="true" data-violet-event-name="web/navbar/story-detail-page" data-violet-event-label="Story Details Page">Story detail page</a>
-                </li>
-                {{ cms:helper logged_in_user_render, admin-controls }}
-              </ul>
-            </div>
-          </nav>
-          <script>
-            setItemCountInCartIcon();
-          </script>
-          EOS
+              <a class="navbar-brand" href="/">Home</a>
+              <div class="order-lg-3">
+                <a class="cart-link" href="/cart" aria-label="View cart">
+                  {{ cms:snippet cart-icon }}
+                  <span class="cart-item-count d-none"></span>
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+              </div>
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                  <li class="nav-item active">
+                    <a class="nav-link" href="#" data-violet-track-click="true" data-violet-event-name="web/navbar/home" data-violet-event-label="Home Page">Home <span class="sr-only">(current)</span></a>
+                  </li>
+                        <li class="nav-item">
+                    <a class="nav-link" href="/custom-shop" data-violet-track-click="true" data-violet-event-name="web/navbar/shop-page" data-violet-event-label="Shop Page">Shop</a>
+                  </li>
+                  {{ cms:helper logged_in_user_render, admin-controls }}
+                </ul>
+              </div>
+            </nav>
+            HTML
 )
 
 site.snippets.create(
   label: "products-multi-item-carousel", 
   identifier: "products-multi-item-carousel",
   category_ids: [snippet_category.id],
-  content:  <<~EOS
+  content:  <<~HTML
             <div class="d-sm-none">
             <div class="multi-item-carousel">
             <% items_per_slide = 1 %>
@@ -2213,15 +2318,78 @@ site.snippets.create(
             </div>
           </div>
           </div> 
-          EOS
+          HTML
   )
 
-"####################      CREATING SCRIPTS       ###################"
+site.snippets.create(
+  label: "orders-best-selling-items-carousel", 
+  identifier: "orders-best-selling-items-carousel",
+  category_ids: [snippet_category.id],
+  content:  <<~HTML
+            <% received_orders = @api_resources.where.not("properties->>'printify_status'IN(?)", ['canceled', 'initialized']) %>
+            <% products_sold_count_map = received_orders.group("jsonb_array_elements(properties->'line_items')->>'product_id'").count %>
+            <% best_selling_products_ids = Hash[products_sold_count_map.sort_by {|key, value| value}.reverse].keys.first(5) %>
+            <% best_selling_products = ApiNamespace.friendly.find('products').api_resources.jsonb_search(:properties, {printify_product_id: {value: best_selling_products_ids, option: 'PARTIAL', match: 'ANY'}}).first(5) %>
+              <div class="single-item-carousel">
+                <button class="single-item-carousel__arrow single-item-carousel__arrow--prev opacity-0">
+                  {{ cms:snippet carousel-control-prev-icon }}
+                </button>
+                <div class="single-item-carousel__middle-container opacity-0">
+                  <div class="single-item-carousel__slides">
+                    <% best_selling_products.each_with_index do |resource, i| %>
+                      <div class="single-item-carousel__slide" data-slide-index="<%= i %>">
+                        <a href="/product-details?id=<%= resource.id %>">
+                          <img class="product__image" src="<%= resource.properties['default_image_url'] %>" alt="<%= resource.properties['default_image_url'] %>">
+                        </a>
+                      </div>
+                    <% end %>
+                  </div>
+                  <div class="single-item-carousel__indicators">
+                    <% best_selling_products.each_with_index do |resource, i| %>
+                      <button class="single-item-carousel__indicator" aria-label="Go to slide <%= i + 1 %>" data-slide-index="<%= i %>"></button>
+                    <% end %>
+                  </div>
+                </div>
+                <button class="single-item-carousel__arrow single-item-carousel__arrow--next opacity-0">
+                  {{ cms:snippet carousel-control-next-icon }}
+                </button>
+              </div>
+              <div class="best-selling-items__info-container">
+                <% best_selling_products.each_with_index do |resource, i| %>
+                  <% min_price = 1000000 %>
+                  <% resource.properties['variants'].each do |variant| %>
+                    <% if variant['price'] < min_price %>
+                      <% min_price = variant['price'] %>
+                    <% end %>
+                  <% end %>
+                  <div class="best-selling-items__info <%= i != 0 ? 'd-none' : '' %>" data-slide-index="<%= i %>">
+                    <a class="product__link-wrapper" href="/product-details?id=<%= resource.id %>">
+                      <p class="product__category">
+                        <%= resource.properties['sub_categories'].empty? ? resource.properties['categories'][0] : resource.properties['sub_categories'][0] %>
+                      </p>
+                      <h3 class="best-selling-items__product-title">
+                        <%= resource.properties['title'] %>
+                      </h3>
+                      <p class="product__price">
+                        From
+                        <data value="<%= min_price.to_f / 100 %>">
+                            $<%= min_price.to_f / 100 %>  
+                        </data>
+                      </p>
+                    </a>
+                  </div>
+                <% end %>
+              </div>
+              HTML
+)
+
+p "###################################                      CREATING SCRIPTS                     ###################################"
+
 site.snippets.create(
   label: 'custom-shop-script', 
   identifier: 'custom-shop-script',
   category_ids: [snippet_category.id, script_category.id],
-  content: <<~EOS
+  content: <<~JAVASCRIPT
             function init() {
               const multiItemCarousels = document.querySelectorAll(".multi-item-carousel");
               multiItemCarousels.forEach(carousel => {
@@ -2230,18 +2398,20 @@ site.snippets.create(
                   parentContainer: carousel.parentElement
                 };
                 initCarousel(carouselConfig);
+                initBestSellingItemsCarousel();
               });
             }
-
+            
             init();
-           EOS
+            JAVASCRIPT
+           
 )
 
 site.snippets.create(
   label: 'product-details-script', 
   identifier: 'product-details-script',
   category_ids: [snippet_category.id, script_category.id],
-  content:  <<~EOS
+  content:  <<~JAVASCRIPT
             async function init() {
               const optionsForm = document.querySelector(".options-form");
               const buyNowButton = optionsForm.querySelector(".btn--buy-now");
@@ -2409,7 +2579,7 @@ site.snippets.create(
             }
             
             init();
-          EOS
+            JAVASCRIPT
 )
 
 
@@ -2417,10 +2587,10 @@ site.snippets.create(
   label: 'cart-script', 
   identifier: 'cart-script',
   category_ids: [snippet_category.id, script_category.id],
-  content:  <<~EOS
+  content: <<~JAVASCRIPT
             async function init() {
               const cart = getCart();
-              const products = await getProductsAsync();
+              let products = [];
             
               let shopDetails = getShopDetails()[0];
               if (!shopDetails) {
@@ -2444,11 +2614,13 @@ site.snippets.create(
               });
             
               if (cart.line_items.length > 0) {
+                const productIds = cart.line_items.map(variant => variant.product_id);
+                products = await getProductsAsync(productIds);
+            
                 // Render cart items
             
                 insertCartItems(cart);
                 const cartItems = document.querySelectorAll(".cart-item");
-            
                 // Render options dropdowns for each cart item
             
                 cartItems.forEach((cartItem) => {
@@ -2460,6 +2632,10 @@ site.snippets.create(
                     ".cart-item__options"
                   );
                   insertOptionsSelectElements(product, cartOptionsContainer);
+            
+                  const firstOptionsSelectElement = cartOptionsContainer.querySelector(".cart-item__option:first-child select");
+                  
+                  showAvailableOptions(firstOptionsSelectElement);
                 });
             
                 // Add event listeners for removing or modifying cart items
@@ -2555,7 +2731,7 @@ site.snippets.create(
                 const cartItemsContainer = document.querySelector(".cart-items");
                 const markup = `
                 <p class="empty-cart-text">Your cart is empty</p>
-                <a class="btn btn-primary" href="/#{PRODUCTS_PAGE_SLUG}">Return to shop</a>
+                <a class="btn btn-primary" href="/custom-shop">Return to shop</a>
               `;
                 cartItemsContainer.insertAdjacentHTML("beforeEnd", markup);
               }
@@ -2616,6 +2792,9 @@ site.snippets.create(
               function insertOptionsSelectElements(product, parentContainer) {
                 // Only insert select elements if there aren't any
                 if (parentContainer.children.length > 0) return;
+                  
+                const enabledVariants = product.properties.variants.filter(variant => variant.is_enabled);
+                const enabledOptionIds = new Set(enabledVariants.flatMap(variant => variant.options));
                 const variantId = Number.parseFloat(
                   parentContainer.closest(".cart-item").dataset.variantId
                 );
@@ -2637,10 +2816,12 @@ site.snippets.create(
             
                   selectContainer.appendChild(labelElement);
                   selectContainer.appendChild(selectElement);
+                  
+                  const availableOptionValues = option.values.filter(value => enabledOptionIds.has(value.id));
             
-                  option.values.forEach((value) => {
+                  availableOptionValues.forEach((value) => {
                     const selectOptionMarkup = `
-                      <option value="${value.id}">${value.title}</option>
+                      <option value="${value.id}" data-available-options="${JSON.stringify(value.available_options)}">${value.title}</option>
                     `;
                     selectElement.insertAdjacentHTML("beforeEnd", selectOptionMarkup);
             
@@ -2651,16 +2832,43 @@ site.snippets.create(
                   parentContainer.appendChild(selectContainer);
                 });
               }
+                  
+              // the selected option in the reference options dropdown must be present as a companion option of all available options for each of the other option types
+              function showAvailableOptions(referenceOptionsSelectElement) {
+                  const cartItem = referenceOptionsSelectElement.closest(".cart-item");
+                  const referenceOptionId = Number.parseFloat(referenceOptionsSelectElement.value);
+                  const otherOptionsSelectElements = cartItem.querySelectorAll(`select:not([name="${referenceOptionsSelectElement.name}"]`);
+                otherOptionsSelectElements.forEach(selectElement => {
+                  const optionElements = selectElement.querySelectorAll("option");
+                  optionElements.forEach(optionElement => {
+                    const availableOptions = JSON.parse(optionElement.dataset.availableOptions);
+                    if (availableOptions.includes(referenceOptionId)) {
+                      optionElement.classList.remove("d-none");
+                    } else {
+                      optionElement.classList.add("d-none");
+                    }
+                    // If the selected option is no longer an available option, then select the first available option
+                    const selectedOption = selectElement.querySelector(`option[value="${selectElement.value}"]`);
+                    if (selectedOption.classList.contains("d-none")) {
+                      const firstAvailableOption = selectElement.querySelector("option:not(.d-none)");
+                      selectElement.value = firstAvailableOption.value;
+                    }
+                  });
+                }); 
+              }
             
               function handleOptionChange(e) {
                 const cart = getCart();
                 const cartItem = e.target.closest(".cart-item");
                 const oldVariantId = Number.parseFloat(cartItem.dataset.variantId);
                 const productId = cartItem.dataset.productId;
-            
-                const selectElements = cartItem.querySelectorAll(
-                  ".cart-item__option select"
-                );
+                  
+                const firstOptionsSelectElement = cartItem.querySelector(".cart-item__option:first-of-type select");
+                  
+                const selectElements = cartItem.querySelectorAll(".cart-item__option select");
+                        
+                // Update other options dropdowns to show only available options
+                showAvailableOptions(firstOptionsSelectElement);
             
                 const selectedOptionIds = [...selectElements].map((elem) =>
                   Number.parseFloat(elem.value)
@@ -2698,7 +2906,7 @@ site.snippets.create(
                   
                 // Quantity should be reset to 1 when variant changes
                 cartItem.querySelector(".cart-item__quantity input").value = 1;
-            
+                  
                 // update cart (delete old variant and add new variant)
             
                 const newItem = {
@@ -2779,13 +2987,24 @@ site.snippets.create(
             
                 const parentContainer = removeButton.closest(".cart-item");
                 const variantId = Number.parseFloat(parentContainer.dataset.variantId);
+                const quantity = Number.parseFloat(parentContainer.querySelector(".cart-item__quantity input").value);
                 const cart = getCart();
+                  
+                let itemRemoved = false;
             
                 // Remove item from browser storage
+                // Only one item should be removed even if there are multiple items with the same variant ID and quantity
+                // There could be multiple items with the same variant ID if the user adds variants of the same product to the cart and then changes the variants on the cart page
                 const updatedCart = {
                   ...cart,
                   line_items: cart.line_items.filter(
-                    (item) => item.variant_id !== variantId
+                    (item) => {
+                      if (!itemRemoved && (item.variant_id === variantId && quantity === item.quantity)) {
+                        itemRemoved = true;
+                        return false;
+                      }
+                      return itemRemoved || item.variant_id !== variantId;
+                    }
                   ),
                 };
                 setCart(updatedCart);
@@ -2925,49 +3144,49 @@ site.snippets.create(
               }
             }
             
-            init();
-          EOS
+            init(); 
+            JAVASCRIPT
 )
 
 site.snippets.create(
   label: 'checkout-success-script', 
   identifier: 'checkout-success-script',
   category_ids: [snippet_category.id, script_category.id],
-  content:  <<~EOS
+  content:  <<~JAVASCRIPT
             function emptyCart() {
-              const store = getStore();
-              const updatedStore = {
-                ...store,
+              const cart = getCart();
+              const updatedCart = {
+                ...cart,
                 line_items: [],
               }
-              setStore(updatedStore);
+              setCart(updatedCart);
               setItemCountInCartIcon();
             }
             emptyCart();
-            EOS
+            JAVASCRIPT
 )
 
-"#####################  CREATING ICONS   ######################"
+p "###################################                       CREATING ICONS                      ###################################"
 
 site.snippets.create(
   label: 'cart-icon', 
   identifier: 'cart-icon',
   category_ids: [snippet_category.id, icon_snippet_category.id],
-  content:  <<~EOS
+  content:  <<~HTML
             <svg role="img" width="20" height="23" viewBox="0 0 20 23" fill="none" xmlns="http://www.w3.org/2000/svg">
             <title>View cart</title>
             <path d="M12.9924 17.4487C11.6582 17.4487 10.5635 18.6081 10.5635 20.0135C10.5635 21.4189 11.6582 22.5784 12.9924 22.5784C14.3266 22.5784 15.4214 21.4189 15.4214 20.0135C15.4556 18.6081 14.3608 17.4487 12.9924 17.4487ZM12.9924 21.3487C12.3082 21.3487 11.7608 20.7514 11.7608 20.0135C11.7608 19.2757 12.3082 18.6784 12.9924 18.6784C13.6766 18.6784 14.224 19.2757 14.224 20.0135C14.2582 20.7514 13.6766 21.3487 12.9924 21.3487Z" fill="#212B36"/>
             <path d="M5.2268 17.4487C3.89259 17.4487 2.79785 18.6081 2.79785 20.0135C2.79785 21.4189 3.89259 22.5784 5.2268 22.5784C6.56101 22.5784 7.65574 21.4189 7.65574 20.0135C7.68995 18.6081 6.59522 17.4487 5.2268 17.4487ZM5.2268 21.3487C4.54259 21.3487 3.99522 20.7514 3.99522 20.0135C3.99522 19.2757 4.54259 18.6784 5.2268 18.6784C5.91101 18.6784 6.45837 19.2757 6.45837 20.0135C6.49258 20.7514 5.91101 21.3487 5.2268 21.3487Z" fill="#212B36"/>
             <path d="M18.7741 0.970276H16.5846C16.0714 0.970276 15.6267 1.35676 15.5583 1.88379L14.9425 6.52163H1.49776C1.18986 6.52163 0.916176 6.66217 0.745123 6.90811C0.574071 7.15406 0.50565 7.47028 0.574071 7.75136V7.78649L2.66091 14.427C2.76354 14.8487 3.13986 15.1649 3.61881 15.1649H13.7109C14.4635 15.1649 15.0793 14.6027 15.182 13.8297L16.7557 2.16487H18.8083C19.1504 2.16487 19.4241 1.88379 19.4241 1.53244C19.4241 1.18109 19.1162 0.970276 18.7741 0.970276ZM13.9504 13.6541C13.9162 13.7946 13.8135 13.9351 13.6425 13.9351H3.72144L1.77144 7.75136H14.7372L13.9504 13.6541Z" fill="#212B36"/>
             </svg>
-            EOS
+            HTML
 )
 
 site.snippets.create(
   label: 'trash-icon', 
   identifier: 'trash-icon',
   category_ids: [snippet_category.id, icon_snippet_category.id],
-  content:  <<~EOS
+  content:  <<~HTML
             <svg role="img" width="13" height="15" viewBox="0 0 13 15" fill="none" xmlns="http://www.w3.org/2000/svg">
             <title>Remove item</title>
             <path d="M3.75 4.65625H4.6875V12.1562H3.75V4.65625Z" fill="#f7193e"/>
@@ -2977,40 +3196,40 @@ site.snippets.create(
             <path d="M8.40625 2.3125H7.53125V1.375C7.53125 1.09375 7.3125 0.875001 7.03125 0.875001H5.15625C4.875 0.875001 4.65625 1.09375 4.65625 1.375V2.3125H3.78125V1.375C3.78125 0.624998 4.40625 0 5.15625 0H7.03125C7.78125 0 8.40625 0.624998 8.40625 1.375V2.3125Z" fill="#f7193e"/>
             <path d="M8.90625 14.9687H3.28125C2.53125 14.9687 1.875 14.3437 1.8125 13.5937L0.9375 2.34375L1.875 2.28125L2.75 13.5312C2.78125 13.8125 3.03125 14.0312 3.28125 14.0312H8.90625C9.1875 14.0312 9.4375 13.7813 9.4375 13.5312L10.3125 2.28125L11.25 2.34375L10.375 13.5937C10.3125 14.375 9.65625 14.9687 8.90625 14.9687Z" fill="#f7193e"/>
             </svg>
-            EOS
+            HTML
 )
 
 site.snippets.create(
   label: 'check-icon', 
   identifier: 'check-icon',
   category_ids: [snippet_category.id, icon_snippet_category.id],
-  content:  <<~EOS
+  content:  <<~HTML
             <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
             <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
             </svg>
-            EOS
+            HTML
 )
 
 site.snippets.create(
   label: 'carousel-control-next-icon', 
   identifier: 'carousel-control-next-icon',
   category_ids: [snippet_category.id, icon_snippet_category.id],
-  content:  <<~EOS
+  content:  <<~HTML
             <svg role="img" width="10" height="13" viewBox="0 0 10 13" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M1.71656 12.2472L1.81534 12.1815L9.17701 7.21159C9.42632 7.04349 9.58155 6.79135 9.58155 6.50996C9.58155 6.22858 9.42162 5.97643 9.17701 5.80834L1.82946 0.842124L1.70715 0.758075C1.58955 0.695952 1.44844 0.659409 1.29791 0.659409C0.888668 0.659409 0.554688 0.929828 0.554688 1.26602V11.7466C0.554688 12.0828 0.888668 12.3532 1.29791 12.3532C1.45314 12.3532 1.59896 12.313 1.71656 12.2472Z" fill="black"/>
             </svg>
-            EOS
+            HTML
 )
 
 site.snippets.create(
   label: 'carousel-control-prev-icon', 
   identifier: 'carousel-control-prev-icon',
   category_ids: [snippet_category.id, icon_snippet_category.id],
-  content:  <<~EOS
+  content:  <<~HTML
             <svg role="img" width="10" height="13" viewBox="0 0 10 13" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M8.39575 0.76538L8.29696 0.831159L0.935293 5.80102C0.685984 5.96912 0.530754 6.22127 0.530754 6.50265C0.530754 6.78403 0.690688 7.03618 0.935293 7.20428L8.28285 12.1705L8.40515 12.2545C8.52275 12.3167 8.66387 12.3532 8.81439 12.3532C9.22364 12.3532 9.55762 12.0828 9.55762 11.7466L9.55762 1.26602C9.55762 0.929825 9.22364 0.659406 8.8144 0.659406C8.65917 0.659406 8.51334 0.699603 8.39575 0.76538Z" fill="black"/>
             </svg>
-            EOS
+            HTML
 )
 
 products_page = layout.pages.create!(
@@ -3024,7 +3243,7 @@ Comfy::Cms::Fragment.create!(
   identifier: 'content',
   record: products_page,
   tag: 'wysiwyg',
-  content: <<~EOS
+  content:  <<~HTML
             <style>
             .products {
               display: grid;
@@ -3032,14 +3251,7 @@ Comfy::Cms::Fragment.create!(
               gap: 40px;
             }
             .product__image {
-              width: 100%;
               margin-bottom: 24px;
-              border-radius: 8px;
-              border: var(--image-border); 
-            }
-            .product__category {
-              margin-bottom: 8px;
-              color: hsla(208, 13%, 45%, 1);
             }
             .product__info {
               display: flex;
@@ -3056,18 +3268,27 @@ Comfy::Cms::Fragment.create!(
                 grid-template-columns: repeat(auto-fit, minmax(200px, var(--max-product-image-width)));
               }
             }
-            </style><main><section class="section">
+            </style><main><section class="section best-selling-items">
             <div class="restrictive-container">
-              <h2>Recently Added</h2>
-              <p>These are the 10 latest available products shown in a carousel.
+              <p class="best-selling-items__section-subtitle">Most Popular Products
+              </p>
+              <h2 class="best-selling-items__section-title">Best Selling Items</h2>
+              <div class="best-selling-items__carousel-container">
+                {{ cms:helper render_api_namespace_resource_index 'orders', { snippet: 'orders-best-selling-items-carousel' } }}
+              </div>
+            </div>
+            </section><section class="section">
+            <div class="restrictive-container">
+              <h2 class="section__title">Recently Added</h2>
+              <p class="section__subtitle">These are the 10 latest available products shown in a carousel.
               </p>
               <div class="carousel-container">
                 {{ cms:helper render_api_namespace_resource_index 'products', { snippet: 'products-multi-item-carousel', scope: { properties: { visible: true } }, order: { created_at: 'DESC' }, limit: 10 } }}
               </div>
             </div></section><section class="section">
             <div class="restrictive-container">
-              <h2>All Products</h2>
-              <p>These are all the available products shown in a grid view.
+              <h2 class="section__title">All Products</h2>
+              <p class="section__subtitle">These are all the available products shown in a grid view.
               </p>
               <div class="products">
                 {{ cms:helper render_api_namespace_resource_index 'products', scope: { properties: { visible: true } }, order: { created_at: 'DESC' } }}
@@ -3076,7 +3297,7 @@ Comfy::Cms::Fragment.create!(
             </section></main>
             <script>{{ cms:snippet custom-shop-script }}
             </script>
-          EOS
+            HTML
 )
 
 
@@ -3091,103 +3312,102 @@ Comfy::Cms::Fragment.create!(
   identifier: 'content',
   record: product_details_page,
   tag: 'wysiwyg',
-  content: <<~EOS
+  content: <<~HTML
             <style>
-            main {
-              padding-top: 40px;
-              padding-bottom: 40px;
-            }
-            .restrictive-container {
-              max-width: 1300px;
-              margin-left: auto;
-              margin-right: auto;
-            }
-            .product {
-              display: grid;
-              align-items: start;
-              grid-template-columns: 100%;
-              gap: 60px;
-            }
-            .product__image {
-              width: 100%;
-              border-radius: 8px;
-              border: 1px solid hsla(208, 13%, 45%, 1); 
-            }
-            .product__variant-title {
-              color: hsla(208, 13%, 45%, 1);
-            }
-            .product__title {
-              margin-right: 20px;
-            }
-            .product__variant-price {
-              font-size: 24px;
-            }
-            .slick-arrow::before {
-              color: black;
-            }
-            .options-form {
-              margin-bottom: 20px;
-            }
-            .options-container:not(:last-child) {
-              margin-bottom: 20px;
-            }
-            .options {
-              display: flex;
-              flex-wrap: wrap;
-            }
-            .option input {
-              position: absolute;
-              opacity: 0;
-              z-index: -1;
-            }
-            .option label {
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              min-height: 40px;
-              padding: 10px 20px;
-              margin-right: 10px;
-              margin-bottom: 10px;
-              border: 1px solid gray;
-              border-radius: 4px;
-              cursor: pointer;
-            }
-            .option input:checked + label {
-              outline: 1px solid blue;
-            }
-            .similar-products-section {
-              padding-top: 30px;
-              padding-bottom: 30px;
-            }
-            .similar-products-section__title {
-              margin-bottom: 30px;
-            }
-            .similar-products {
-              display: grid;
-              grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
-              gap: 30px;
-            }
-            .similar-products__link {
-              max-width: 350px;
-            }
-            .similar-products__link img {
-              width: 100%;
-              border-radius: 8px;
-              border: var(--image-border);
-            }
-            @media only screen and (min-width: 1000px) {
-              .product {
-                grid-template-columns: 43% 50%;
+              main {
+                padding-top: 40px;
+                padding-bottom: 40px;
               }
-            }
-            </style><main>
-            <div class="restrictive-container">{{ cms:helper render_api_namespace_resource 'products', scope: { properties: { visible: 'true' } } }}
-            </div></main>
+              .restrictive-container {
+                max-width: 1300px;
+                margin-left: auto;
+                margin-right: auto;
+              }
+              .product {
+                display: grid;
+                align-items: start;
+                grid-template-columns: 100%;
+                gap: 60px;
+              }
+              .product__variant-title {
+                margin-bottom: 4px;
+                color: hsla(208, 13%, 45%, 1);
+              }
+              .product__title {
+                margin-right: 20px;
+                font-size: clamp(24px, 4.5vw, 40px);
+              }
+              .product__variant-price {
+                font-size: clamp(18px, 4vw, 24px);
+              }
+              .slick-arrow::before {
+                color: black;
+              }
+              .options-form {
+                margin-bottom: 20px;
+              }
+              .options-container:not(:last-child) {
+                margin-bottom: 20px;
+              }
+              .options {
+                display: flex;
+                flex-wrap: wrap;
+              }
+              .option input {
+                position: absolute;
+                opacity: 0;
+                z-index: -1;
+              }
+              .option label {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 40px;
+                padding: 10px 20px;
+                margin-right: 10px;
+                margin-bottom: 10px;
+                border: 1px solid gray;
+                border-radius: 4px;
+                cursor: pointer;
+              }
+              .option input:checked + label {
+                outline: 1px solid blue;
+              }
+              .similar-products-section {
+                padding-top: 30px;
+                padding-bottom: 30px;
+              }
+              .similar-products-section__title {
+                margin-bottom: 30px;
+              }
+              .similar-products {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(min(100%, 100px), 1fr));
+                gap: 30px;
+              }
+              .similar-products__link {
+                max-width: 350px;
+              }
+              .similar-products__link img {
+                width: 100%;
+                border-radius: 8px;
+                border: var(--image-border);
+              }
+              @media only screen and (min-width: 1000px) {
+                .product {
+                  grid-template-columns: 43% 50%;
+                }
+              }
+            </style>
+            <main>
+              <div class="restrictive-container">{{ cms:helper render_api_namespace_resource 'products', scope: { properties: { visible: 'true' } } }}
+              </div>
+            </main>
             <div class="toast-container">
             </div>
             <script>{{ cms:snippet product-details-script }}
-            </script> 
-          EOS
+            </script>
+          HTML
 )
 
 cart_page = layout.pages.create!(
@@ -3201,7 +3421,7 @@ Comfy::Cms::Fragment.create!(
   identifier: 'content',
   record: cart_page,
   tag: 'wysiwyg',
-  content:  <<~EOS
+  content:  <<~HTML
             <style>
             h1 {
               margin-bottom: 30px;
@@ -3410,7 +3630,7 @@ Comfy::Cms::Fragment.create!(
             </div>
             <script>{{ cms:snippet cart-script }}
             </script>
-            EOS
+            HTML
 )
 
 checkout_success_page = layout.pages.create!(
@@ -3424,28 +3644,28 @@ Comfy::Cms::Fragment.create!(
   identifier: 'content',
   record: checkout_success_page,
   tag: 'wysiwyg',
-  content:  <<~EOS
+  content:  <<~HTML
             <style>
-              h1 {
-                margin-top: 10px;
-              }
-              .content-container {
-                min-height: 91vh;
-                min-height: 91svh;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-              }
-              .main-content {
-                text-align: center;
-              }
-              .main-content svg {
-                width: 150px;
-                fill: #0cca81;
-              }
-              .subtitle {
-                margin-bottom: 30px;
-              }
+            h1 {
+              margin-top: 10px;
+            }
+            .content-container {
+              min-height: 91vh;
+              min-height: 91svh;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            }
+            .main-content {
+              text-align: center;
+            }
+            .main-content svg {
+              width: 150px;
+              fill: #0cca81;
+            }
+            .subtitle {
+              margin-bottom: 30px;
+            }
             </style><main>
             <div class="restrictive-container content-container">
               <div class="main-content">
@@ -3453,15 +3673,15 @@ Comfy::Cms::Fragment.create!(
                 <h1>Thank you for your purchase!</h1>
                 <p class="subtitle">We have received your order. An automated email with a receipt will be sent to you.
                 </p>
-                <a class="btn btn-primary" href="/#{PRODUCTS_PAGE_SLUG}">Back to Home</a>
+                <a class="btn btn-primary" href="/custom-shop">Back to Home</a>
               </div>
             </div></main>
             <script>{{ cms:snippet checkout-success-script }}
             </script>
-            EOS
+            HTML
 )
 
-p "#######################   SUBSCRIBING TO PRINTIFY WEBHOOKS   ##########################"
+p "###################################               SUBSCRIBING TO PRINTIFY WEBHOOKS            ###################################"
 
 subscribe_to_printify_results = []
 
@@ -3490,16 +3710,30 @@ shop_namespace.reload.api_resources.each do |shop|
   end
 end
 
-p "################      SYNC PRINTIFY PRODUCTS IN BACKGROUND    ###############"
+p "###################################             SYNC PRINTIFY PRODUCTS IN BACKGROUND          ###################################"
 
 sync_printify_products_plugin.run
 
 subscribe_to_printify_results
 
+if subscribe_to_printify_results.any? {|res| !res[:success]}
+  p ""
+  p "[FAILED]: Subscribing to following printify webhook failed. Please subscribe to them manually"
+  p ""
+
+  subscribe_to_printify_results.filter {|res| !res[:success]}.each do |res|
+    p "     #{res[:topic]} ::- #{res[:response]['errors']['reason']}"
+  end
+end
+
+p ""
+p ""
+
 p "**NEXT STEP**"
-p "Create a stripe webhhok and add webhook signing secret to the order_fulfill plugin."
-p "DOCS: https://gist.github.com/Pralish/bc3a0441534b32e2d4a189c12b0f061a?permalink_comment_id=4573559#gistcomment-4573559"
-p "You didn't provide STRIPE_SECRET_KEY. Please add the key manually here: #{Rails.application.routes.url_helpers.edit_api_namespace_resource_url(api_namespace_id: printify_account_namespace.id, id: printify_account.id, host: ENV['APP_HOST'])}" unless STRIPE_SECRET_KEY.present?
+p ""
+p "     Create a stripe webhhok and add webhook signing secret to the order_fulfill plugin."
+p "     DOCS: https://gist.github.com/Pralish/bc3a0441534b32e2d4a189c12b0f061a?permalink_comment_id=4573559#gistcomment-4573559"
+p "     You didn't provide STRIPE_SECRET_KEY. Please add the key manually here: #{Rails.application.routes.url_helpers.edit_api_namespace_resource_url(api_namespace_id: printify_account_namespace.id, id: printify_account.id, host: ENV['APP_HOST'])}" unless STRIPE_SECRET_KEY.present?
 
 
 
