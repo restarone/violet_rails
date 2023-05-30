@@ -2080,7 +2080,7 @@ site.snippets.create(
               </div>
             </section> 
             <% end %>               
-            <a href="/custom-shop">Back to Shop page</a>
+            <a href="/#{PRODUCTS_PAGE_SLUG}">Back to Shop page</a>
             HTML
 )
 
@@ -2107,7 +2107,7 @@ site.snippets.create(
                     <a class="nav-link" href="#" data-violet-track-click="true" data-violet-event-name="web/navbar/home" data-violet-event-label="Home Page">Home <span class="sr-only">(current)</span></a>
                   </li>
                         <li class="nav-item">
-                    <a class="nav-link" href="/custom-shop" data-violet-track-click="true" data-violet-event-name="web/navbar/shop-page" data-violet-event-label="Shop Page">Shop</a>
+                    <a class="nav-link" href="/#{PRODUCTS_PAGE_SLUG}" data-violet-track-click="true" data-violet-event-name="web/navbar/shop-page" data-violet-event-label="Shop Page">Shop</a>
                   </li>
                   {{ cms:helper logged_in_user_render, admin-controls }}
                 </ul>
@@ -2732,7 +2732,7 @@ site.snippets.create(
                 const cartItemsContainer = document.querySelector(".cart-items");
                 const markup = `
                 <p class="empty-cart-text">Your cart is empty</p>
-                <a class="btn btn-primary" href="/custom-shop">Return to shop</a>
+                <a class="btn btn-primary" href="/#{PRODUCTS_PAGE_SLUG}">Return to shop</a>
               `;
                 cartItemsContainer.insertAdjacentHTML("beforeEnd", markup);
               }
@@ -3674,7 +3674,7 @@ Comfy::Cms::Fragment.create!(
                 <h1>Thank you for your purchase!</h1>
                 <p class="subtitle">We have received your order. An automated email with a receipt will be sent to you.
                 </p>
-                <a class="btn btn-primary" href="/custom-shop">Back to Home</a>
+                <a class="btn btn-primary" href="/#{PRODUCTS_PAGE_SLUG}">Back to Home</a>
               </div>
             </div></main>
             <script>{{ cms:snippet checkout-success-script }}
