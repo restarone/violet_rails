@@ -1615,8 +1615,18 @@ layout_js = <<~JAVASCRIPT
               }
             }
 
+            async function getUserCountryDetailsAsync() {
+              const response = await fetch(getConfig()["COOKIES_URL"]);
+              const { metadata } = await response.json();
+              return metadata;
+            }
+
             function getShopDetails() {
               return JSON.parse(sessionStorage.getItem(getConfig()["SHOP_DETAILS_KEY"]));
+            }
+
+            function getUserCountryDetails() {
+              return JSON.parse(sessionStorage.getItem(getConfig()["USER_COUNTRY_DETAILS_KEY"]));
             }
 
             function setItemCountInCartIcon() {
@@ -1635,16 +1645,18 @@ layout_js = <<~JAVASCRIPT
             function getConfig() {
               return {
                 CART_KEY: "restaroneCart",
+                USER_COUNTRY_DETAILS_KEY: "restaroneUserCountryDetails",
                 SHOP_DETAILS_KEY: "restaroneShopDetails",
                 TOAST_HIDE_DELAY: 1500,
                 ERROR_MESSAGES: {
                   PRICE_DETAILS: "A problem occurred while calculating prices. Please try again later.",
                   CHECKOUT: "A problem occurred while processing checkout request. Please try again later.",
-                  SHOP_DETAILS: "Could not get necessary shop details. Please try again later."
+                  SHOP_DETAILS: "Could not get necessary shop details. Please try again later.",
                 },
                 CUSTOM_EVENTS: {
                   VARIANT_CHANGE: "variant-change"
                 },
+                COOKIES_URL: "/cookies/fetch",
                 PRODUCTS_URL: "/api/1/products",
                 SHOP_DETAILS_URL: `${window.location.origin}/api/1/shops/shops_detail/webhook`,
                 PRICE_DETAILS_URL: `${window.location.origin}/api/1/orders/fetch_printify_shipping_and_stripe_processing_fees/webhook`,
@@ -2595,8 +2607,15 @@ site.snippets.create(
               let products = [];
             
               let shopDetails = getShopDetails()[0];
+              let userCountryDetails = getUserCountryDetails();
+            
               if (!shopDetails) {
                 shopDetails = await getShopDetailsAsync()[0];
+              }
+            
+              if (!userCountryDetails) {
+                userCountryDetails = await getUserCountryDetailsAsync();
+                sessionStorage.setItem(getConfig()["USER_COUNTRY_DETAILS_KEY"], JSON.stringify(userCountryDetails));
               }
             
               const cartItemsContainer = document.querySelector(".cart-items");
@@ -2614,6 +2633,8 @@ site.snippets.create(
                 const markup = `<option value="${country.country_code}">${country.country_name}</option>`;
                 shippingCountryDropdown.insertAdjacentHTML("beforeEnd", markup);
               });
+              // Set the initial value of shipping country dropdown based on the user country (if any)
+              shippingCountryDropdown.value = userCountryDetails? userCountryDetails.country_code : "CA"; 
             
               if (cart.line_items.length > 0) {
                 const productIds = cart.line_items.map(variant => variant.product_id);
@@ -3146,7 +3167,7 @@ site.snippets.create(
               }
             }
             
-            init(); 
+            init();
             JAVASCRIPT
 )
 
@@ -3613,7 +3634,7 @@ Comfy::Cms::Fragment.create!(
                     </p>
                     <div class="shipping-country cart-form-control">
                       <label for="shipping-countries">Country:</label>
-                      <select name="shipping-countries" id="shipping-countries" value="CA">
+                      <select name="shipping-countries" id="shipping-countries">
                         <option value="CA">Canada</option>
                         <option value="US">USA</option>
                       </select>
