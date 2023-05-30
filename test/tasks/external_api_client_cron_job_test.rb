@@ -17,8 +17,12 @@ class ExternalApiClientCronJobTest < ActiveSupport::TestCase
     error_msg = 'error!'
     @external_api_client.evaluated_model_definition.any_instance.stubs(:start).raises(StandardError, error_msg)
     refute @external_api_client.reload.error_message
-    Rake::Task["external_api_client:drive_cron_jobs"].invoke
-    Sidekiq::Worker.drain_all
+
+    perform_enqueued_jobs do
+      Rake::Task["external_api_client:drive_cron_jobs"].invoke
+      Sidekiq::Worker.drain_all
+    end
+
     assert_equal @external_api_client.reload.error_message, error_msg
     assert @external_api_client.last_run_at
   end
