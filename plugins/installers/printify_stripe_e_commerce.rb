@@ -1197,14 +1197,14 @@ notifications_namespace.api_actions.create(
                   Thank you for shopping at <%= ENV['APP_HOST'] %>! Your order has been sent to production.<br/>
                   <% when 'shipped' %><br/>
                   Thank you for shopping at <%= ENV['APP_HOST'] %>! We have shipped your order.<br/>              
-                  Tracking information <br/>
+                  <strong>Tracking information</strong><br/>
                   Carrier: <%= carrier['code'] %><br/>
                   Tracking number: <%= carrier['tracking_number'] %>
                   Tracking URL: <%= carrier['tracking_url'] %><br/>
                   <% when 'delivered' %><br/>
                   Thank you for shopping at <%= ENV['APP_HOST'] %>! Your order has been delivered to your shipping address.<br/>
                   <br/>
-                  Tracking information<br/>
+                  <strong>Tracking information</strong><br/>
                   Carrier: <%= carrier['code'] %><br/>
                   Tracking number: <%= carrier['tracking_number'] %><br/>
                   Tracking URL: <%= carrier['tracking_url'] %>
@@ -1212,10 +1212,10 @@ notifications_namespace.api_actions.create(
                   Your order has been canceled.<br/>
                   <% end %><br/>
                   <br/>
-                  Order Summary<br/>
+                  <strong>Order Summary</strong><br/>
                   Order ID: <%= api_resource.properties['printify_order_id'] %><br/>
                   Receipt URL: <%= api_resource.properties['stripe_receipt_url'] %><br/>
-                  Items:<br/>
+                  <strong>Items:</strong><br/>
                   <% api_resource.properties['line_items'].each do |item| %><br/>
                   <%= item['quantity'].to_s + "x " + item['metadata']['variant_label'] + " " + item['metadata']['title'] %><br/>
                   <% end %><br/>
@@ -1225,7 +1225,7 @@ notifications_namespace.api_actions.create(
                   <%= price_info['convenience_fee']['value'] > 0 ? 'Convenience fee: ' + price_info['convenience_fee']['text'] : "" %><br/>
                   Total: <%= price_info['total_price']['text'] %><br/>
                   <% if api_resource.properties['final_printify_order_status'] != 'canceled' %><br/>
-                  Shipping Address<br/>
+                  <strong>Shipping Address</strong><br/>
                   <%= address_to['first_name'] + " " + address_to['last_name'] %><br/>
                   <%= address_to['address1'] %><br/>
                   <%= address_to['city'] %><br/>
