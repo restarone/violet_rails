@@ -24,7 +24,10 @@ class CleanUnprocessedOrdersTest < ActiveSupport::TestCase
     assert @order_namespace.api_resources.find_by(id: @unprocessed_order_2.id)
 
     perform_enqueued_jobs do
-      Rake::Task["external_api_client:drive_cron_jobs"].invoke
+      plugin = ExternalApiClient.cron_jobs.find { |plugin| plugin.id == @clean_unprocessed_orders_plugin.id }
+      assert plugin
+      plugin.run
+
       Sidekiq::Worker.drain_all
 
       refute_equal initial_run_at, @clean_unprocessed_orders_plugin.reload.last_run_at
