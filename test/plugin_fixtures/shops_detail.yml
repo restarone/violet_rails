@@ -1,0 +1,62 @@
+shops_detail:
+  api_namespace: shops
+  slug: shops_detail
+  label: ShopsDetail
+  enabled: true
+  drive_strategy: webhook
+  metadata: {
+              'LOGGER_NAMESPACE': 'shop_logs'
+            }
+  model_definition: |
+    class ShopsDetail
+      def initialize(parameters)
+        @external_api_client = parameters[:external_api_client]
+        @payload = parameters[:request]&.request_parameters
+        @logger_namespace = ApiNamespace.find_by(slug: @external_api_client.metadata["LOGGER_NAMESPACE"])
+      end
+
+      def start
+        begin
+          shops = @external_api_client.api_namespace.api_resources
+          shops_detail = []
+
+          shops.each do |shop|
+            shops_detail << {
+              shop_id: shop.properties['printify_shop_id'],
+              currency: shop.properties['currency'],
+              collect_sales_tax: shop.properties['collect_sales_tax'],
+              pass_processing_fees_to_customer: shop.properties['pass_processing_fees_to_customer'],
+              shipping_countries: shop.properties['shipping_countries']
+            }
+          end
+
+          render json: {
+            success: true,
+            data: {
+              shops_detail: shops_detail
+            }
+          }
+
+        rescue => e
+          log_error('shipping_countries_list', e.message, @payload)
+
+          render json: {
+            success: false,
+            message: e.message
+          }, status: :bad_request
+        end
+      end
+
+      def log_error(source, message, params)
+        @logger_namespace.api_resources.create!(
+          properties: {
+            source: source,
+            error: message,
+            request_params: params,
+          }
+        )
+      end
+    end
+
+    # at the end of the file we have to implicitly return the class 
+    ShopsDetail
