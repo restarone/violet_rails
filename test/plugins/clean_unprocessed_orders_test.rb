@@ -16,6 +16,10 @@ class CleanUnprocessedOrdersTest < ActiveSupport::TestCase
     Rails.application.load_tasks if Rake::Task.tasks.empty?
   end
 
+  teardown do
+    Rake::Task.clear
+  end
+
   test '#clean_unprocessed_orders: runs and unprocessed orders are deleted if a day has passed by' do
     @clean_unprocessed_orders_plugin.update(last_run_at: Time.zone.now - 2.days)
     initial_run_at = @clean_unprocessed_orders_plugin.last_run_at
@@ -24,10 +28,7 @@ class CleanUnprocessedOrdersTest < ActiveSupport::TestCase
     assert @order_namespace.api_resources.find_by(id: @unprocessed_order_2.id)
 
     perform_enqueued_jobs do
-      plugin = ExternalApiClient.cron_jobs.find { |plugin| plugin.id == @clean_unprocessed_orders_plugin.id }
-      assert plugin
-      plugin.run
-
+      Rake::Task["external_api_client:drive_cron_jobs"].invoke
       Sidekiq::Worker.drain_all
 
       refute_equal initial_run_at, @clean_unprocessed_orders_plugin.reload.last_run_at

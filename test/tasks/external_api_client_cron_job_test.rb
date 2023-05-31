@@ -13,6 +13,10 @@ class ExternalApiClientCronJobTest < ActiveSupport::TestCase
     Rails.application.load_tasks if Rake::Task.tasks.empty?
   end
 
+  teardown do
+    Rake::Task.clear
+  end
+
   test 'invoke task for running external api client tasks' do
     error_msg = 'error!'
     @external_api_client.evaluated_model_definition.any_instance.stubs(:start).raises(StandardError, error_msg)
