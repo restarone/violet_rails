@@ -170,4 +170,76 @@ class ExternalApiClientTest < ActiveSupport::TestCase
     external_api_client_3 = ExternalApiClient.new(api_namespace: api_namespace, drive_strategy: ExternalApiClient::DRIVE_STRATEGIES[:webhook])
     assert_equal ExternalApiClient::DEFAULT_WEBHOOK_DRIVEN_MODEL_DEFINITION, external_api_client_3.model_definition
   end
+
+  test 'should reload model defination class after save' do
+    external_api_client = external_api_clients(:webhook_drive_strategy)
+    external_api_client.evaluated_model_definition
+
+    assert external_api_client.model_definition_class_defined?
+
+    assert_changes "ExternalApiClient::ExternalApiModelExample.object_id" do
+      model_definition = "
+        class ExternalApiModelExample
+          def initialize(parameters)
+            @external_api_client = parameters[:external_api_client]
+          end
+
+          def start
+            render json: { a: 'b' }
+          end
+        end
+
+        ExternalApiModelExample
+      "
+
+      external_api_client.update(model_definition: model_definition)
+    end
+  end
+
+  test 'should remove model defination class after save if class name was changed' do
+    external_api_client = external_api_clients(:webhook_drive_strategy)
+    external_api_client.evaluated_model_definition
+
+    assert ExternalApiClient.const_defined?(:ExternalApiModelExample)
+    refute ExternalApiClient.const_defined?(:ExternalApiModelExampleNew)
+
+    model_definition = "
+      class ExternalApiModelExampleNew
+        def initialize(parameters)
+          @external_api_client = parameters[:external_api_client]
+        end
+
+        def start
+          render json: { a: 'b' }
+        end
+      end
+
+      ExternalApiModelExampleNew
+    "
+
+    external_api_client.update(model_definition: model_definition)
+
+    refute ExternalApiClient.const_defined?(:ExternalApiModelExample)
+    assert ExternalApiClient.const_defined?(:ExternalApiModelExampleNew)
+  end
+
+  test 'should not allow save if model defination has syntax error' do
+    api_namespace = api_namespaces(:one)
+    model_definition = "
+      class ExternalApiModelExampleNew
+        def initialize(parameters)
+          @external_api_client = parameters[:external_api_client]
+        end
+
+        def start
+          render json: { a: 'b' }
+        # end is missing
+      end
+
+      ExternalApiModelExampleNew
+    "
+
+    external_api_client = ExternalApiClient.create( model_definition: model_definition, api_namespace_id: api_namespace.id, label: 'test_syntax')
+    assert_includes external_api_client.errors.messages[:model_definition].to_s, 'syntax error'
+  end
 end
