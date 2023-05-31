@@ -123,7 +123,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
                     "bearer_token": "foo",
                     "test_object": {'a': 'test string', 'b': [1,2,3]}
                   }.to_json,
-        model_definition: "class ExternalApiModelExample; def initialize(parameters); # do init stuff; end; def start; return true; end; def log; return true; end; end; # at the end of the file we have to implicitly return the class; ExternalApiModelExample;"
+        model_definition: "class ExternalApiModelExample; def initialize(parameters); end; def start; return true; end; def log; return true; end; end;  ExternalApiModelExample;"
       }
     }
 
@@ -161,7 +161,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
                     "api_key": "x-api-key-foo",
                     "bearer_token": "foo"
                   },
-        model_definition: "class ExternalApiModelExample; def initialize(parameters); # do init stuff; end; def start; return true; end; def log; return true; end; end; # at the end of the file we have to implicitly return the class; ExternalApiModelExample;"
+        model_definition: "class ExternalApiModelExample; def initialize(parameters); end; def start; return true; end; def log; return true; end; end;  ExternalApiModelExample;"
       }
     }
 
@@ -185,7 +185,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
                     "api_key": "x-api-key-foo",
                     "bearer_token": "foo"
                   },
-        model_definition: "class ExternalApiModelExample; def initialize(parameters); # do init stuff; end; def start; return true; end; def log; return true; end; end; # at the end of the file we have to implicitly return the class; ExternalApiModelExample;"
+        model_definition: "class ExternalApiModelExample; def initialize(parameters); end; def start; return true; end; def log; return true; end; end;  ExternalApiModelExample;"
       }
     }
 
@@ -276,7 +276,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
                     "bearer_token": "foo",
                     "test_object": {'a': 'test string', 'b': [1,2,3]}
                   }.to_json,
-        model_definition: "class ExternalApiModelExample; def initialize(parameters); # do init stuff; end; def start; return true; end; def log; return true; end; end; # at the end of the file we have to implicitly return the class; ExternalApiModelExample;"
+        model_definition: "class ExternalApiModelExample; def initialize(parameters); end; def start; return true; end; def log; return true; end; end;  ExternalApiModelExample;"
       }
     }
 
@@ -312,7 +312,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
                     "api_key": "x-api-key-foo",
                     "bearer_token": "foo"
                   },
-        model_definition: "class ExternalApiModelExample; def initialize(parameters); # do init stuff; end; def start; return true; end; def log; return true; end; end; # at the end of the file we have to implicitly return the class; ExternalApiModelExample;"
+        model_definition: "class ExternalApiModelExample; def initialize(parameters); end; def start; return true; end; def log; return true; end; end;  ExternalApiModelExample;"
       }
     }
 
@@ -334,7 +334,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
                     "api_key": "x-api-key-foo",
                     "bearer_token": "foo"
                   },
-        model_definition: "class ExternalApiModelExample; def initialize(parameters); # do init stuff; end; def start; return true; end; def log; return true; end; end; # at the end of the file we have to implicitly return the class; ExternalApiModelExample;"
+        model_definition: "class ExternalApiModelExample; def initialize(parameters); end; def start; return true; end; def log; return true; end; end;  ExternalApiModelExample;"
       }
     }
 
@@ -904,7 +904,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
                     "bearer_token": "foo",
                     "test_object": {'a': 'test string', 'b': [1,2,3]}
                   }.to_json,
-        model_definition: "class ExternalApiModelExample; def initialize(parameters); # do init stuff; end; def start; return true; end; def log; return true; end; end; # at the end of the file we have to implicitly return the class; ExternalApiModelExample;"
+        model_definition: "class ExternalApiModelExample; def initialize(parameters); end; def start; return true; end; def log; return true; end; end;  ExternalApiModelExample;"
       }
     }
 
@@ -942,7 +942,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
                     "bearer_token": "foo",
                     "test_object": {'a': 'test string', 'b': [1,2,3]}
                   }.to_json,
-        model_definition: "class ExternalApiModelExample; def initialize(parameters); # do init stuff; end; def start; return true; end; def log; return true; end; end; # at the end of the file we have to implicitly return the class; ExternalApiModelExample;"
+        model_definition: "class ExternalApiModelExample; def initialize(parameters); end; def start; return true; end; def log; return true; end; end;  ExternalApiModelExample;"
       }
     }
 
@@ -980,7 +980,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
                     "bearer_token": "foo",
                     "test_object": {'a': 'test string', 'b': [1,2,3]}
                   }.to_json,
-        model_definition: "class ExternalApiModelExample; def initialize(parameters); # do init stuff; end; def start; return true; end; def log; return true; end; end; # at the end of the file we have to implicitly return the class; ExternalApiModelExample;"
+        model_definition: "class ExternalApiModelExample; def initialize(parameters); end; def start; return true; end; def log; return true; end; end;  ExternalApiModelExample;"
       }
     }
 
@@ -1022,7 +1022,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
                     "bearer_token": "foo",
                     "test_object": {'a': 'test string', 'b': [1,2,3]}
                   }.to_json,
-        model_definition: "class ExternalApiModelExample; def initialize(parameters); # do init stuff; end; def start; return true; end; def log; return true; end; end; # at the end of the file we have to implicitly return the class; ExternalApiModelExample;"
+        model_definition: "class ExternalApiModelExample; def initialize(parameters); end; def start; return true; end; def log; return true; end; end;  ExternalApiModelExample;"
       }
     }
 
@@ -1062,7 +1062,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
                     "bearer_token": "foo",
                     "test_object": {'a': 'test string', 'b': [1,2,3]}
                   }.to_json,
-        model_definition: "class ExternalApiModelExample; def initialize(parameters); # do init stuff; end; def start; return true; end; def log; return true; end; end; # at the end of the file we have to implicitly return the class; ExternalApiModelExample;"
+        model_definition: "class ExternalApiModelExample; def initialize(parameters); end; def start; return true; end; def log; return true; end; end;  ExternalApiModelExample;"
       }
     }
 
@@ -1100,7 +1100,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
                     "bearer_token": "foo",
                     "test_object": {'a': 'test string', 'b': [1,2,3]}
                   }.to_json,
-        model_definition: "class ExternalApiModelExample; def initialize(parameters); # do init stuff; end; def start; return true; end; def log; return true; end; end; # at the end of the file we have to implicitly return the class; ExternalApiModelExample;"
+        model_definition: "class ExternalApiModelExample; def initialize(parameters); end; def start; return true; end; def log; return true; end; end;  ExternalApiModelExample;"
       }
     }
 
@@ -1140,7 +1140,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
                     "bearer_token": "foo",
                     "test_object": {'a': 'test string', 'b': [1,2,3]}
                   }.to_json,
-        model_definition: "class ExternalApiModelExample; def initialize(parameters); # do init stuff; end; def start; return true; end; def log; return true; end; end; # at the end of the file we have to implicitly return the class; ExternalApiModelExample;"
+        model_definition: "class ExternalApiModelExample; def initialize(parameters); end; def start; return true; end; def log; return true; end; end;  ExternalApiModelExample;"
       }
     }
 
@@ -1180,7 +1180,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
                     "bearer_token": "foo",
                     "test_object": {'a': 'test string', 'b': [1,2,3]}
                   }.to_json,
-        model_definition: "class ExternalApiModelExample; def initialize(parameters); # do init stuff; end; def start; return true; end; def log; return true; end; end; # at the end of the file we have to implicitly return the class; ExternalApiModelExample;"
+        model_definition: "class ExternalApiModelExample; def initialize(parameters); end; def start; return true; end; def log; return true; end; end;  ExternalApiModelExample;"
       }
     }
 
@@ -1216,7 +1216,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
                     "bearer_token": "foo",
                     "test_object": {'a': 'test string', 'b': [1,2,3]}
                   }.to_json,
-        model_definition: "class ExternalApiModelExample; def initialize(parameters); # do init stuff; end; def start; return true; end; def log; return true; end; end; # at the end of the file we have to implicitly return the class; ExternalApiModelExample;"
+        model_definition: "class ExternalApiModelExample; def initialize(parameters); end; def start; return true; end; def log; return true; end; end;  ExternalApiModelExample;"
       }
     }
 
@@ -1252,7 +1252,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
                     "bearer_token": "foo",
                     "test_object": {'a': 'test string', 'b': [1,2,3]}
                   }.to_json,
-        model_definition: "class ExternalApiModelExample; def initialize(parameters); # do init stuff; end; def start; return true; end; def log; return true; end; end; # at the end of the file we have to implicitly return the class; ExternalApiModelExample;"
+        model_definition: "class ExternalApiModelExample; def initialize(parameters); end; def start; return true; end; def log; return true; end; end;  ExternalApiModelExample;"
       }
     }
 
@@ -1292,7 +1292,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
                     "bearer_token": "foo",
                     "test_object": {'a': 'test string', 'b': [1,2,3]}
                   }.to_json,
-        model_definition: "class ExternalApiModelExample; def initialize(parameters); # do init stuff; end; def start; return true; end; def log; return true; end; end; # at the end of the file we have to implicitly return the class; ExternalApiModelExample;"
+        model_definition: "class ExternalApiModelExample; def initialize(parameters); end; def start; return true; end; def log; return true; end; end;  ExternalApiModelExample;"
       }
     }
 
@@ -1330,7 +1330,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
                     "bearer_token": "foo",
                     "test_object": {'a': 'test string', 'b': [1,2,3]}
                   }.to_json,
-        model_definition: "class ExternalApiModelExample; def initialize(parameters); # do init stuff; end; def start; return true; end; def log; return true; end; end; # at the end of the file we have to implicitly return the class; ExternalApiModelExample;"
+        model_definition: "class ExternalApiModelExample; def initialize(parameters); end; def start; return true; end; def log; return true; end; end;  ExternalApiModelExample;"
       }
     }
 
@@ -1366,7 +1366,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
                     "bearer_token": "foo",
                     "test_object": {'a': 'test string', 'b': [1,2,3]}
                   }.to_json,
-        model_definition: "class ExternalApiModelExample; def initialize(parameters); # do init stuff; end; def start; return true; end; def log; return true; end; end; # at the end of the file we have to implicitly return the class; ExternalApiModelExample;"
+        model_definition: "class ExternalApiModelExample; def initialize(parameters); end; def start; return true; end; def log; return true; end; end;  ExternalApiModelExample;"
       }
     }
 
@@ -1404,7 +1404,7 @@ class Comfy::Admin::ExternalApiClientsControllerTest < ActionDispatch::Integrati
                     "bearer_token": "foo",
                     "test_object": {'a': 'test string', 'b': [1,2,3]}
                   }.to_json,
-        model_definition: "class ExternalApiModelExample; def initialize(parameters); # do init stuff; end; def start; return true; end; def log; return true; end; end; # at the end of the file we have to implicitly return the class; ExternalApiModelExample;"
+        model_definition: "class ExternalApiModelExample; def initialize(parameters); end; def start; return true; end; def log; return true; end; end;  ExternalApiModelExample;"
       }
     }
 
