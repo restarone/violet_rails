@@ -139,6 +139,9 @@ class Rack::MiniProfilerTest < ActionDispatch::IntegrationTest
       status: 200,
       body: ""
       )
+
+    ApiForm.destroy_all
+    ApiNamespace.destroy_all
   end
 
   test 'should install all the namespaces' do
