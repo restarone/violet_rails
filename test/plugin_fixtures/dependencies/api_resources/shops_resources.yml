@@ -1,0 +1,24 @@
+shop_1:
+  api_namespace: shops
+  properties: {
+                printify_shop_id: 123456,
+                title: 'Restarone',
+                sales_channel: 'custom_integration',
+                printify_account_id: '123',
+                collect_sales_tax: true,
+                pass_processing_fees_to_customer: true,
+                stripe_processing_fee_margin_percentage: 0,
+                shipping_countries: [
+                                      {
+                                        country_name: 'United States',
+                                        country_code: 'US'
+                                      },
+                                      {
+                                        country_name: 'Canada',
+                                        country_code: 'CA'
+                                      }
+                                    ],
+                currency: 'USD',
+                product_categories: ["Men's Clothing", "Women's Clothing", "Home & Living", "Accessories", "Kids' Clothing"],
+                product_sub_categories: ["T-shirts", "Hoodies", "Sweatshirts", "Long Sleeves", "Tank Tops", "Sportswear", "Bottoms", "Swimwear", "Shoes", "Skirts & Dresses", "Baby Clothing", "Face Masks", "Phone Cases", "Bags", "Socks", "Underwear", "Hats", "Baby Accessories", "Mouse Pads", "Pets", "Kitchen Accessories", "Car Accessories", "Tech Accessories", "Travel Accessories", "Stationery Accessories", "Mugs", "Glassware", "Bottles & Tumblers", "Canvas", "Posters", "Postcards", "Ornaments", "Journals & Notebooks", "Magnets & Stickers", "Home Decor", "Bathroom", "Towels", "Blankets", "Pillows & Covers", "Games", "Rugs & Mats", "Seasonal Decorations", "Other"] 
+              }
