@@ -3358,11 +3358,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should create api_namespace with parent associations" do
-    shops_namespace = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' })
-
-    shops_namespace.api_resources.create(properties: {
-      name: 'my shop'
-    })
+    shops_namespace = api_namespaces(:shops)
 
     sign_in(@user)
     assert_difference('ApiNamespace.count', 1) do
@@ -3387,6 +3383,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should create api_namespace with child associations" do
+    api_namespaces(:shops).destroy!
     products_namespace = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' })
 
     products_namespace.api_resources.create(properties: {
@@ -3424,12 +3421,10 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "#update should add association" do
-    shops_namespace = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' })
+    shops_namespace = api_namespaces(:shops)
     products_namespace = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' })
 
-    shop = shops_namespace.api_resources.create(properties: {
-      name: 'my shop'
-    })
+    shop = shops_namespace.api_resources.first
 
     products_namespace.api_resources.create(properties: {
       title: 'my product',
@@ -3463,7 +3458,8 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
   test "update association" do
     products_namespace = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' })
-    shops_namespace = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'products'}])
+    shops_namespace = api_namespaces(:shops)
+    shops_namespace.update(associations: [{type: 'has_many', namespace: 'products'}])
 
     assert products_namespace.reload.properties.key?('shop_id')
     assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
@@ -3505,16 +3501,14 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "update api_namespace to remove associations" do
-    shops_namespace = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' })
+    shops_namespace = api_namespaces(:shops)
     products_namespace = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' }, associations: [{type: 'belongs_to', namespace: 'shops'}])
 
     assert products_namespace.reload.properties.key?('shop_id')
     assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
     assert_includes shops_namespace.reload.associations, { "type" => 'has_many', "namespace" => 'products' }
 
-    shop = shops_namespace.api_resources.create(properties: {
-      name: 'my shop'
-    })
+    shop = shops_namespace.api_resources.first
 
     products_namespace.api_resources.create(properties: {
       title: 'my product',
@@ -3547,7 +3541,8 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   
   test "should show link to associated resources" do
     owner_namespace = ApiNamespace.create(name: 'owners', version: 1, properties: {} )
-    shops_namespace = ApiNamespace.create(name: 'shops', version: 1, properties: { name: ''}, associations: [{type: 'has_one', namespace: 'owners'}])
+    shops_namespace = api_namespaces(:shops)
+    shops_namespace.update(associations: [{type: 'has_one', namespace: 'owners'}])
     products_namespace = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' }, associations: [{type: 'belongs_to', namespace: 'shops'}])
 
     shop = shops_namespace.reload.api_resources.create(properties: {
