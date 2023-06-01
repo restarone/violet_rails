@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Plugins::Installers::PrintifyStripeECommerce < ActionDispatch::IntegrationTest
+class PrintifyStripeECommerce < ActionDispatch::IntegrationTest
   setup do
     stub_request(:get, "https://restcountries.com/v3.1/all").to_return(body: [{ name: { common: 'United States' }, cca2: 'US' }].to_json, status: 200, headers: {'Content-Type': 'application/json'})
     stub_request(:get, "https://api.printify.com/v1/shops.json").to_return(
