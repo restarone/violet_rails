@@ -1,6 +1,6 @@
-order:
-  name: Order
-  slug: order
+orders:
+  name: Orders
+  slug: orders
   version: 1
   properties: {
                 order_id: "",
@@ -18,5 +18,5 @@ order:
                 stripe_refund_status: "",
                 sent_to_production_at: ""
               }
-  requires_authentication: false
+  requires_authentication: true
   namespace_type: create-read-update-delete

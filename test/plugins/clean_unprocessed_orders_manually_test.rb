@@ -4,7 +4,7 @@ class CleanUnprocessedOrdersManuallyTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:public)
     @user.update(api_accessibility: {api_namespaces: {all_namespaces: {full_access: 'true'}}})
-    @order_namespace = api_namespaces(:order)
+    @order_namespace = api_namespaces(:orders)
     @logger_namespace = api_namespaces(:order_cleanup_logs)
     @unprocessed_orders_cleanup_plugin = external_api_clients(:clean_unprocessed_orders_manually)
   end

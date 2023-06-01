@@ -1,5 +1,5 @@
 unprocessed_order:
-  api_namespace: order
+  api_namespace: orders
   properties: {
                 order_id: "",
                 shipments: [],
@@ -26,7 +26,7 @@ unprocessed_order:
   updated_at: <%= (Time.zone.now - 2.hours) %>
 
 old_unprocessed_order:
-  api_namespace: order
+  api_namespace: orders
   properties: {
                 order_id: "",
                 shipments: [],
@@ -53,7 +53,7 @@ old_unprocessed_order:
   updated_at: <%= 2.days.ago %>
 
 processed_order_1:
-  api_namespace: order
+  api_namespace: orders
   properties: {
                 printify_status: "pending",
                 shop_id: 9024703,
@@ -107,7 +107,7 @@ processed_order_1:
   updated_at: <%= 2.days.ago %>
 
 processed_order_2:
-  api_namespace: order
+  api_namespace: orders
   properties: {
                 printify_status: "pending",
                 shop_id: 9024703,

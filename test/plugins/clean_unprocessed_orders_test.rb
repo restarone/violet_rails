@@ -3,7 +3,7 @@ require "rake"
 
 class CleanUnprocessedOrdersTest < ActiveSupport::TestCase
   setup do
-    @order_namespace = api_namespaces(:order)
+    @order_namespace = api_namespaces(:orders)
     @logger_namespace = api_namespaces(:order_cleanup_logs)
     @clean_unprocessed_orders_plugin = external_api_clients(:clean_unprocessed_orders)
 

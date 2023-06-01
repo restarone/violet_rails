@@ -1,5 +1,5 @@
 clean_unprocessed_orders:
-  api_namespace: order
+  api_namespace: orders
   slug: clean_unprocessed_orders
   label: CleanUnprocessedOrders
   enabled: true

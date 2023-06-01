@@ -12,5 +12,5 @@ order_cleanup_logs:
                 before_cleanup_orders: [],
                 after_cleanup_remaining_orders: []
               }
-  requires_authentication: false
+  requires_authentication: true
   namespace_type: create-read-update-delete
