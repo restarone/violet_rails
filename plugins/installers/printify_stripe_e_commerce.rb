@@ -3258,7 +3258,8 @@ products_page = layout.pages.create!(
   site_id: site.id,
   label: PRODUCTS_PAGE_SLUG,
   slug: PRODUCTS_PAGE_SLUG,
-  category_ids: [page_category.id]
+  category_ids: [page_category.id],
+  is_restricted: true
 )
 
 Comfy::Cms::Fragment.create!(
@@ -3327,7 +3328,8 @@ product_details_page = layout.pages.create!(
   site_id: site.id,
   label: 'product-details',
   category_ids: [page_category.id],
-  slug: 'product-details'
+  slug: 'product-details',
+  is_restricted: true
 )
 
 Comfy::Cms::Fragment.create!(
@@ -3436,7 +3438,8 @@ cart_page = layout.pages.create!(
   site_id: site.id,
   label: 'cart',
   category_ids: [page_category.id],
-  slug: 'cart'
+  slug: 'cart',
+  is_restricted: true
 )
 
 Comfy::Cms::Fragment.create!(
@@ -3659,7 +3662,8 @@ checkout_success_page = layout.pages.create!(
   site_id: site.id,
   label: 'checkout-success',
   category_ids: [page_category.id],
-  slug: 'checkout-success'
+  slug: 'checkout-success',
+  is_restricted: true
 )
 
 Comfy::Cms::Fragment.create!(
