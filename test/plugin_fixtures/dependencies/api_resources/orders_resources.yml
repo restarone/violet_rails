@@ -22,8 +22,8 @@ unprocessed_order:
                 stripe_refund_status: "",
                 sent_to_production_at: ""
               }
-  created_at: <%= (Time.zone.now - 2.hours) %>
-  updated_at: <%= (Time.zone.now - 2.hours) %>
+  created_at: <%= (Time.zone.now.beginning_of_day + 2.hours) %>
+  updated_at: <%= (Time.zone.now.beginning_of_day + 2.hours) %>
 
 old_unprocessed_order:
   api_namespace: orders

@@ -12,7 +12,7 @@ class CleanUnprocessedOrdersManuallyTest < ActionDispatch::IntegrationTest
   test "#clean_unprocessed_orders_manually: deletes only the unprocessed orders that falls within the provided date-time range" do
     metadata = {
       'START_TIME': Time.zone.now.beginning_of_day.to_s,
-      'END_TIME': Time.zone.now,
+      'END_TIME': Time.zone.now.end_of_day.to_s,
       'LOGGER_NAMESPACE': @logger_namespace.slug
     }
     @unprocessed_orders_cleanup_plugin.update(metadata: metadata)
