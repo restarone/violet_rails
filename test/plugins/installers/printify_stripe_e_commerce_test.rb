@@ -160,10 +160,16 @@ class PrintifyStripeECommerce < ActionDispatch::IntegrationTest
     assert shop_namespace.present?
     assert shop_namespace.api_resources.jsonb_search(:properties, { title: "Restarone" }).present?
     refute shop_namespace.api_resources.jsonb_search(:properties, { title: "Restarone not to sync" }).present?
+
+    # shop_namespace should requires authentication
+    assert shop_namespace.requires_authentication
     
     #products namespace should be created
     products_namespace = ApiNamespace.friendly.find('products')
     assert products_namespace.persisted?
+
+    # products namespace should not requires authentication
+    refute products_namespace.requires_authentication    
 
     # sync_printify_products plugin should exist
     assert ExternalApiClient.friendly.find('sync_printify_shops').persisted?
@@ -174,7 +180,11 @@ class PrintifyStripeECommerce < ActionDispatch::IntegrationTest
     # only request from printify / headers with valid X-Pfy-Signature should be able to access the publish_succeed plugin
 
     # orders namespace should be created
-    assert ApiNamespace.friendly.find('orders').persisted?
+    orders_namespace = ApiNamespace.friendly.find('orders')
+    assert orders_namespace.persisted?
+
+    # products namespace should requires authentication
+    assert orders_namespace.requires_authentication
 
     # fetch_printify_shipping_and_stripe_processing_fees plugin should exist
     assert ExternalApiClient.friendly.find('fetch_printify_shipping_and_stripe_processing_fees').persisted?
@@ -197,12 +207,18 @@ class PrintifyStripeECommerce < ActionDispatch::IntegrationTest
     # only request from printify / headers with valid X-Pfy-Signature should be able to access the order_status_notification_plugin plugin
 
     # notifications namespace should be created
-    assert ApiNamespace.friendly.find('notifications').persisted?
+    notifications_namespace = ApiNamespace.friendly.find('notifications')
+    assert notifications_namespace.persisted?
+
+    assert notifications_namespace.requires_authentication
 
     # notifications namespace should have a email create api action
 
     # order_cleanup_logs namespace should be created
-    assert ApiNamespace.friendly.find('order_cleanup_logs').persisted?
+    order_cleanup_logs_namespace = ApiNamespace.friendly.find('order_cleanup_logs')
+    assert order_cleanup_logs_namespace.persisted?
+
+    assert order_cleanup_logs_namespace.requires_authentication
 
     # should subscribe to printify webhook
 
@@ -219,42 +235,65 @@ class PrintifyStripeECommerce < ActionDispatch::IntegrationTest
     assert cms_site.snippets.find_by(identifier: 'products').persisted?
 
     # products-show snippet should exist
+    assert cms_site.snippets.find_by(identifier: 'products-show').persisted?
 
     # navbar-custom-shop anippet should exist
+    assert cms_site.snippets.find_by(identifier: 'navbar-custom-shop').persisted?
 
     # products-multi-item-carousel snippet should exist
+    assert cms_site.snippets.find_by(identifier: 'products-multi-item-carousel').persisted?
 
     #####################   SCRIPTS    ##########################
 
     # custom-shop-script snippet should exist
+    assert cms_site.snippets.find_by(identifier: 'custom-shop-script').persisted?
 
     # product-details-script snippet should exist
+    assert cms_site.snippets.find_by(identifier: 'product-details-script').persisted?
 
     # cart-script snippet should exist
+    assert cms_site.snippets.find_by(identifier: 'cart-script').persisted?
 
     # checkout-success-script should exist
+    assert cms_site.snippets.find_by(identifier: 'checkout-success-script').persisted?
 
     #####################   ICONS    ##########################
 
     # cart-icon snippet should exist
+    assert cms_site.snippets.find_by(identifier: 'cart-icon').persisted?
 
     # trash-icon snippet should exist
+    assert cms_site.snippets.find_by(identifier: 'trash-icon').persisted?
 
     # check-icon snippet should exist
+    assert cms_site.snippets.find_by(identifier: 'check-icon').persisted?
 
     # carousel-control-next-icon snippet should exist
+    assert cms_site.snippets.find_by(identifier: 'carousel-control-next-icon').persisted?
 
     # carousel-control-prev-icon snippet should exist
+    assert cms_site.snippets.find_by(identifier: 'carousel-control-prev-icon').persisted?
 
     #####################     PAGES      ########################
     
     # products page should exist
+    products_page = cms_site.pages.find_by(slug: 'products')
+    assert products_page.persisted?
+    assert products_page.is_restricted
 
     # product-details page should exist
+    product_details_page = cms_site.pages.find_by(slug: 'product-details')
+    assert product_details_page.persisted?
+    assert product_details_page.is_restricted
 
     # cart page should exist
+    cart_page = cms_site.pages.find_by(slug: 'cart')
+    assert cart_page.persisted?
+    assert cart_page.is_restricted
 
     # checkout-success page should exist
-
+    checkout_session_page = cms_site.pages.find_by(slug: 'checkout-success')
+    assert checkout_session_page.persisted?
+    assert checkout_session_page.is_restricted
   end
 end
