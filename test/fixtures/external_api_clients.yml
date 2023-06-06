@@ -96,4 +96,5 @@ webhook_drive_strategy:
 # Printify Integration related fixtures
 <%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/clean_unprocessed_orders_manually.yml")).result %>
 <%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/clean_unprocessed_orders.yml")).result %>
+<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/fetch_printify_shipping_and_stripe_processing_fees.yml")).result %>
 <%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/shops_detail.yml")).result %>
