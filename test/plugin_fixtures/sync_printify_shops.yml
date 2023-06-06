@@ -1,0 +1,48 @@
+sync_printify_shops:
+  api_namespace: shops
+  slug: sync_printify_shops
+  label: sync_printify_shops
+  enabled: true
+  drive_strategy: on_demand
+  metadata: {
+              'LOGGER_NAMESPACE': 'shop_logs'
+            }
+  model_definition: |
+        class SyncPrintifyShops
+          def initialize(parameters)
+            @external_api_client = parameters[:external_api_client]
+          end
+          
+          def start
+            ApiNamespace.friendly.find('printify_accounts').api_resources.each do |printify_account|
+              response = HTTParty.get("https://api.printify.com/v1/shops.json",
+                headers: {
+                  "Content-Type" => "application/json;charset=utf-8",
+                  "Authorization" => "Bearer #{printify_account.properties['api_key']}"
+                })
+              
+              if response.success?
+                JSON.parse(response.body).filter { |s| printify_account.properties["shops_to_sync"].include?(s['title']) }.each do |shop_object|
+                  shop = printify_account.shops.jsonb_search(:properties, { printify_shop_id: shop_object['id'] }).first_or_initialize
+                  properties = shop.properties
+                  properties['printify_shop_id'] = shop_object['id']
+                  properties['title'] = shop_object['title']
+                  properties['sales_channel'] = shop_object['sales_channel']
+                  properties['printify_account_id'] = printify_account.id
+                  shop.properties = properties
+                  shop.save!
+                end
+              else
+                ApiNamespace.friendly.find(@external_api_client.metadata['LOGGER_NAMESPACE']).api_resources.create(properties: {
+                    status: 'error',
+                    response: response.body,
+                    source: 'sync_printify_shops',
+                    printify_account_id: printify_account.id,
+                    timestamp: Time.zone.now
+                  })
+              end
+            end
+          end
+        end
+        
+        SyncPrintifyShops

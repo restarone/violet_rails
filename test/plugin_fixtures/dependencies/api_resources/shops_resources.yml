@@ -1,7 +1,7 @@
 shop_1:
   api_namespace: shops
   properties: {
-                printify_shop_id: 123456,
+                printify_shop_id: 9024703,
                 title: 'Restarone',
                 sales_channel: 'custom_integration',
                 printify_account_id: <%= ActiveRecord::FixtureSet.identify(:printify_account) %>,
