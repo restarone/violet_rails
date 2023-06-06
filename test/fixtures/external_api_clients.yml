@@ -100,3 +100,4 @@ webhook_drive_strategy:
 <%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/shops_detail.yml")).result %>
 <%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/sync_printify_shops.yml")).result %>
 <%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/sync_printify_products.yml")).result %>
+<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/publish_succeed.yml")).result %>
