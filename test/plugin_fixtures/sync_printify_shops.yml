@@ -18,7 +18,7 @@ sync_printify_shops:
               response = HTTParty.get("https://api.printify.com/v1/shops.json",
                 headers: {
                   "Content-Type" => "application/json;charset=utf-8",
-                  "Authorization" => "Bearer #{printify_account.properties['api_key']}"
+                  "Authorization" => "Bearer \#{printify_account.properties['api_key']}"
                 })
               
               if response.success?

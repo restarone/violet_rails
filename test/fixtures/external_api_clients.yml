@@ -99,3 +99,4 @@ webhook_drive_strategy:
 <%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/fetch_printify_shipping_and_stripe_processing_fees.yml")).result %>
 <%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/shops_detail.yml")).result %>
 <%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/sync_printify_shops.yml")).result %>
+<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/sync_printify_products.yml")).result %>
