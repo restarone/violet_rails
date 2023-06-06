@@ -69,4 +69,5 @@ resource_with_all_types_two:
 # Printify Integration related fixtures
 <%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/orders_resources.yml")).result %>
 <%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/printify_account_resources.yml")).result %>
+<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/products_resources.yml")).result %>
 <%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_resources/shops_resources.yml")).result %>

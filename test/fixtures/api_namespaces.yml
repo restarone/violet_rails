@@ -124,5 +124,6 @@ namespace_with_slash:
 <%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/orders.yml")).result %>
 <%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/order_cleanup_logs.yml")).result %>
 <%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/printify_accounts.yml")).result %>
+<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/products.yml")).result %>
 <%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/shops.yml")).result %>
 <%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/dependencies/api_namespaces/shop_logs.yml")).result %>

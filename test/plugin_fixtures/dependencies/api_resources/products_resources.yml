@@ -1,0 +1,231 @@
+product_1:
+  api_namespace: products
+  properties: {
+    tags: ['Home & Living', 'Mugs', '15 oz', 'Glossy', 'Sublimation', '15oz', 'Ceramic', 'Coffee Mugs', 'Drink', 'Drinks'],
+    title: 'Black Mug',
+    images: [
+      {
+        src: "https://images-api.printify.com/mockup/64545662f38d703e1a0c84f8/88132/56789/black-mug.jpg?camera_label=front",
+        position: "other",
+        is_default: false,
+        variant_ids: [88132],
+        is_selected_for_publishing: true
+      },
+      {
+        src: "https://images-api.printify.com/mockup/64545662f38d703e1a0c84f8/88132/79307/black-mug.jpg?camera_label=right",
+        position: "other",
+        is_default: false,
+        variant_ids: [88132],
+        is_selected_for_publishing: true
+      },
+      {
+        src: "https://images-api.printify.com/mockup/64545662f38d703e1a0c84f8/88132/79309/black-mug.jpg?camera_label=back",
+        position: "other",
+        is_default: true,
+        variant_ids: [88132],
+        is_selected_for_publishing: true
+      },
+      {
+        src: "https://images-api.printify.com/mockup/64545662f38d703e1a0c84f8/88132/79308/black-mug.jpg?camera_label=left",
+        position: "other",
+        is_default: false,
+        variant_ids: [88132],
+        is_selected_for_publishing: true
+      },
+      {
+        src: "https://images-api.printify.com/mockup/64545662f38d703e1a0c84f8/88132/79310/black-mug.jpg?camera_label=angled-1",
+        position: "other",
+        is_default: false,
+        variant_ids: [88132],
+        is_selected_for_publishing: true
+      },
+      {
+        src: "https://images-api.printify.com/mockup/64545662f38d703e1a0c84f8/88132/79311/black-mug.jpg?camera_label=angled-2",
+        position: "other",
+        is_default: false,
+        variant_ids: [88132],
+        is_selected_for_publishing: true
+      },
+      {
+        src: "https://images-api.printify.com/mockup/64545662f38d703e1a0c84f8/88132/57049/black-mug.jpg?camera_label=context-1-right",
+        position: "other",
+        is_default: false,
+        variant_ids: [88132],
+        is_selected_for_publishing: true
+      },
+      {
+        src: "https://images-api.printify.com/mockup/64545662f38d703e1a0c84f8/88132/58659/black-mug.jpg?camera_label=context-1-left",
+        position: "other",
+        is_default: false,
+        variant_ids: [88132],
+        is_selected_for_publishing: true
+      },
+      {
+        src: "https://images-api.printify.com/mockup/64545662f38d703e1a0c84f8/88132/57323/black-mug.jpg?camera_label=context-2",
+        position: "other",
+        is_default: false,
+        variant_ids: [88132],
+        is_selected_for_publishing: true
+      }
+    ],
+    options: [
+      {
+        name: "Size",
+        type: "size",
+        values: [
+          {
+            id: 1190,
+            title: "15oz",
+            available_options: []
+          }
+        ]
+      }
+    ],
+    shop_id: <%= ActiveRecord::FixtureSet.identify(:shop_1) %>,
+    visible: true,
+    variants: [
+      {
+        id: 88132,
+        sku: "27064875536231748497",
+        cost: 875,
+        grams: 431,
+        price: 1430,
+        title: "15oz",
+        options: [1190],
+        quantity: 1,
+        is_default: true,
+        is_enabled: true,
+        is_available: true
+      }
+    ],
+    description: "These black mugs come in one size – 15oz (0.44l) – plenty for morning caffeine boosts and hot cups of tea on a rainy day. They're easy to grip and feel sturdy thanks to the C-shaped handle. Add more personality by decorating them with your original designs. They'll be printed on the black ceramic material in picture-perfect quality with a glossy finish.<br/><p>.: Black ceramic material with a glossy finish<br/>.: One size: 15oz (0.44 l)<br/>.: C-shaped easy-grip handle<br/>.: Lead and BPA-free</p>",
+    printify_shop_id: '9024703',
+    default_image_url: 'https://images-api.printify.com/mockup/64545662f38d703e1a0c84f8/88132/79309/black-mug.jpg?camera_label=back',
+    printify_product_id: '64545662f38d703e1a0c84f8',
+    categories: ["Home & Living"],
+    sub_categories: []
+  }
+product_2:
+  api_namespace: products
+  properties: {
+    tags: ["Kids' Clothing", "DTG", "Regular fit", "Crew neck", "Baby Clothing", "Cotton", "Baby"],
+    title: 'Infant Fine Jersey Tee',
+    images: [
+      {
+        src: "https://images-api.printify.com/mockup/645a2c4115db3e0fca07ae80/21628/303/infant-fine-jersey-tee.jpg?camera_label=front",
+        position: "front",
+        is_default: true,
+        variant_ids: [21628, 21629, 21630, 25928],
+        is_selected_for_publishing: true
+      },
+      {
+        src: "https://images-api.printify.com/mockup/645a2c4115db3e0fca07ae80/21628/304/infant-fine-jersey-tee.jpg?camera_label=back",
+        position: "back",
+        is_default: false,
+        variant_ids: [21628, 21629, 21630, 25928],
+        is_selected_for_publishing: true
+      }
+    ],
+    options: [
+      {
+        name: "Colors",
+        type: "color",
+        values: [
+          {
+            id: 494,
+            title: "Navy",
+            colors: ["#061f2e"],
+            available_options: [987, 988, 989, 985]
+          }
+        ]
+      },
+      {
+        name: "Sizes",
+        type: "size",
+        values: [
+          {
+            id: 985,
+            title: "6M",
+            available_options: [494]
+          },
+          {
+            id: 987,
+            title: "12M",
+            available_options: [494]
+          },
+          {
+            id: 988,
+            title: "18M",
+            available_options: [494]
+          },
+          {
+            id: 989,
+            title: "24M",
+            available_options: [494]
+          }
+        ]
+      }
+    ],
+    shop_id: <%= ActiveRecord::FixtureSet.identify(:shop_1) %>,
+    visible: true,
+    variants: [
+      {
+        id: 21628,
+        sku: "14187204053726918395",
+        cost: 1093,
+        grams: 70,
+        price: 1798,
+        title: "Navy / 12M",
+        options: [494, 987],
+        quantity: 1,
+        is_default: true,
+        is_enabled: true,
+        is_available: true
+      },
+      {
+        id: 21629,
+        sku: "15860651164243740713",
+        cost: 1093,
+        grams: 80,
+        price: 1798,
+        title: "Navy / 18M",
+        options: [494, 988],
+        quantity: 1,
+        is_default: false,
+        is_enabled: true,
+        is_available: true
+      },
+      {
+        id: 21630,
+        sku: "30882899266268862204",
+        cost: 1093,
+        grams: 90,
+        price: 1798,
+        title: "Navy / 24M",
+        options: [494, 989],
+        quantity: 1,
+        is_default: false,
+        is_enabled: true,
+        is_available: true
+      },
+      {
+        id: 25928,
+        sku: "88985062439387871084",
+        cost: 1093,
+        grams: 60,
+        price: 1798,
+        title: "Navy / 6M",
+        options: [494, 985],
+        quantity: 1,
+        is_default: false,
+        is_enabled: true,
+        is_available: true
+      }
+    ],
+    description: "Striking the perfect balance between comfort for younglings and toddler-specific durability, this infant fine jersey tee delivers on all fronts. Featuring side seams to better support the garment’s shape, these tees also come with ribbed knitting for improved durability and taped shoulders for a breezy fit. Solid colors are 100% soft ring-spun cotton, but heather colors include polyester.<br/><p>.: 100% Combed ringspun cotton (fiber content may vary for different colors)<br/>.: Light fabric (4.5 oz/yd² (153 g/m²))<br/>.: Classic fit<br/>.: Runs true to size</p>",
+    printify_shop_id: '9024703',
+    default_image_url: 'https://images-api.printify.com/mockup/645a2c4115db3e0fca07ae80/21628/303/infant-fine-jersey-tee.jpg?camera_label=front',
+    printify_product_id: '645a2c4115db3e0fca07ae80',
+    categories: ["Kids' Clothing"],
+    sub_categories: ["Baby Clothing"]
+  }
