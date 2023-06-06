@@ -202,8 +202,8 @@ class ApiResourceTest < ActiveSupport::TestCase
   end
 
   test 'should define associations: has_many' do
-    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' });
-    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'products'}]);
+    namespace_1 = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'items'}]);
 
     namespace_1.reload
     namespace_2.reload
@@ -211,19 +211,19 @@ class ApiResourceTest < ActiveSupport::TestCase
     stall_1 = namespace_2.api_resources.create(properties: {name: 'Restarone'})
     stall_2 = namespace_2.api_resources.create(properties: {name: 'Engineering'})
 
-    product_1 = namespace_1.api_resources.create(properties: {title: 'T-shirt', stall_id: stall_1.id})
-    product_2 = namespace_1.api_resources.create(properties: {title: 'Jeans', stall_id: stall_1.id})
+    item_1 = namespace_1.api_resources.create(properties: {title: 'T-shirt', stall_id: stall_1.id})
+    item_2 = namespace_1.api_resources.create(properties: {title: 'Jeans', stall_id: stall_1.id})
 
-    assert_equal [product_1.id, product_2.id], stall_1.products.pluck(:id)
-    assert_equal [], stall_2.products.pluck(:id)
+    assert_equal [item_1.id, item_2.id], stall_1.items.pluck(:id)
+    assert_equal [], stall_2.items.pluck(:id)
 
-    assert_equal stall_1, product_1.stall
-    assert_equal stall_1, product_2.stall
+    assert_equal stall_1, item_1.stall
+    assert_equal stall_1, item_2.stall
   end
 
   test 'should define associations: has_one' do
-    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' });
-    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_one', namespace: 'products'}]);
+    namespace_1 = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_one', namespace: 'items'}]);
 
     namespace_1.reload
     namespace_2.reload
@@ -231,26 +231,26 @@ class ApiResourceTest < ActiveSupport::TestCase
     stall_1 = namespace_2.api_resources.create(properties: {name: 'Restarone'})
     stall_2 = namespace_2.api_resources.create(properties: {name: 'Engineering'})
 
-    product_1 = namespace_1.api_resources.create(properties: {title: 'T-shirt', stall_id: stall_1.id})
-    product_2 = namespace_1.api_resources.create(properties: {title: 'Jeans', stall_id: stall_1.id})
+    item_1 = namespace_1.api_resources.create(properties: {title: 'T-shirt', stall_id: stall_1.id})
+    item_2 = namespace_1.api_resources.create(properties: {title: 'Jeans', stall_id: stall_1.id})
 
-    assert_equal product_2, stall_1.product
-    assert_equal nil, stall_2.product
+    assert_equal item_2, stall_1.item
+    assert_equal nil, stall_2.item
 
-    assert_equal stall_1, product_1.stall
+    assert_equal stall_1, item_1.stall
   end
 
   test ' should destroy dependent associations when dependent is set to destroy' do
-    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' });
-    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'products', dependent: 'destroy'}]);
+    namespace_1 = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'items', dependent: 'destroy'}]);
 
     namespace_1.reload
     namespace_2.reload
 
     stall_1 = namespace_2.api_resources.create(properties: {name: 'Restarone'})
 
-    product_1 = namespace_1.api_resources.create(properties: {title: 'T-shirt', stall_id: stall_1.id})
-    product_2 = namespace_1.api_resources.create(properties: {title: 'Jeans', stall_id: stall_1.id})
+    item_1 = namespace_1.api_resources.create(properties: {title: 'T-shirt', stall_id: stall_1.id})
+    item_2 = namespace_1.api_resources.create(properties: {title: 'Jeans', stall_id: stall_1.id})
 
     assert_difference "namespace_2.reload.api_resources.count", -1 do
       assert_difference "namespace_1.reload.api_resources.count", -2 do
@@ -260,15 +260,15 @@ class ApiResourceTest < ActiveSupport::TestCase
   end
 
   test 'should not allow destroy if dependent association exist when dependent is set to restrict_with_error' do
-    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' });
-    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_one', namespace: 'products', dependent: 'restrict_with_error'}]);
+    namespace_1 = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_one', namespace: 'items', dependent: 'restrict_with_error'}]);
 
     namespace_1.reload
     namespace_2.reload
 
     stall_1 = namespace_2.api_resources.create(properties: {name: 'Restarone'})
 
-    product_1 = namespace_1.api_resources.create(properties: {title: 'T-shirt', stall_id: stall_1.id})
+    item_1 = namespace_1.api_resources.create(properties: {title: 'T-shirt', stall_id: stall_1.id})
 
     assert_no_difference "namespace_2.reload.api_resources.count"  do
       assert_no_difference "namespace_1.reload.api_resources.count"  do
@@ -276,19 +276,19 @@ class ApiResourceTest < ActiveSupport::TestCase
       end
     end
 
-    assert_equal ["Cannot delete record because dependent products exist"], stall_1.reload.errors.full_messages
+    assert_equal ["Cannot delete record because dependent items exist"], stall_1.reload.errors.full_messages
   end
 
   test 'should not remove dependent association when dependent is not set' do
-    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' });
-    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'products'}]);
+    namespace_1 = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'items'}]);
 
     namespace_1.reload
     namespace_2.reload
 
     stall_1 = namespace_2.api_resources.create(properties: {name: 'Restarone'})
 
-    product_1 = namespace_1.api_resources.create(properties: {title: 'T-shirt', stall_id: stall_1.id})
+    item_1 = namespace_1.api_resources.create(properties: {title: 'T-shirt', stall_id: stall_1.id})
 
     assert_difference "namespace_2.reload.api_resources.count", -1  do
       assert_no_difference "namespace_1.reload.api_resources.count"  do

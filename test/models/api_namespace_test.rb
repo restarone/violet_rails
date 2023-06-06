@@ -370,16 +370,16 @@ class ApiNamespaceTest < ActiveSupport::TestCase
   end
 
   test 'has_many: should add foreign key and belongs_to association to child namespace' do
-    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' });
-    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'products'}]);
+    namespace_1 = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'items'}]);
 
     assert namespace_1.reload.properties.key?('stall_id')
     assert_includes namespace_1.associations, { "type" => 'belongs_to', "namespace" => 'stall' }
   end
 
   test 'has_one: should add foreign key and belongs_to association to child namespace' do
-    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' });
-    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_one', namespace: 'products'}]);
+    namespace_1 = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_one', namespace: 'items'}]);
 
     assert namespace_1.reload.properties.key?('stall_id')
     assert_includes namespace_1.reload.associations, { "type" => 'belongs_to', "namespace" => 'stall' }
@@ -387,16 +387,16 @@ class ApiNamespaceTest < ActiveSupport::TestCase
 
   test 'belongs_to: should add foreign key and has_many association to parent namespace' do
     namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' });
-    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' }, associations: [{type: 'belongs_to', namespace: 'stall'}]);
+    namespace_1 = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' }, associations: [{type: 'belongs_to', namespace: 'stall'}]);
 
     assert namespace_1.reload.properties.key?('stall_id')
     assert_includes namespace_1.reload.associations, { "type" => 'belongs_to', "namespace" => 'stall' }
-    assert_includes namespace_2.reload.associations, { "type" => 'has_many', "namespace" => 'products' }
+    assert_includes namespace_2.reload.associations, { "type" => 'has_many', "namespace" => 'items' }
   end
 
   test 'should destroy api_namespace and dependent associations of resources if dependent set to destroy' do
-    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' });
-    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'products', dependent: 'destroy'}]);
+    namespace_1 = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'items', dependent: 'destroy'}]);
 
     namespace_1.reload
     namespace_2.reload
@@ -414,8 +414,8 @@ class ApiNamespaceTest < ActiveSupport::TestCase
   end
 
   test 'should destroy api_namespace but leave dependent associations of resources as is if dependent set to blank' do
-    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' });
-    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'products'}]);
+    namespace_1 = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'items'}]);
 
     namespace_1.reload
     namespace_2.reload
@@ -435,16 +435,16 @@ class ApiNamespaceTest < ActiveSupport::TestCase
   end
 
   test 'should not destroy api_namespace dependent set to restrict_with_error and dependent api resources exist' do
-    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' });
-    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'products', dependent: 'restrict_with_error'}]);
+    namespace_1 = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'items', dependent: 'restrict_with_error'}]);
 
     namespace_1.reload
     namespace_2.reload
 
     stall = namespace_2.api_resources.create(properties: {name: 'Restarone'})
 
-    product_1 = namespace_1.api_resources.create(properties: {title: 'T-shirt', stall_id: stall.id})
-    product_2 = namespace_1.api_resources.create(properties: {title: 'Jeans', stall_id: stall.id})
+    item_1 = namespace_1.api_resources.create(properties: {title: 'T-shirt', stall_id: stall.id})
+    item_2 = namespace_1.api_resources.create(properties: {title: 'Jeans', stall_id: stall.id})
 
     assert_no_difference "namespace_1.reload.api_resources.count" do
       assert_no_difference "ApiNamespace.count" do
@@ -454,8 +454,8 @@ class ApiNamespaceTest < ActiveSupport::TestCase
   end
 
   test 'should destroy api_namespace dependent set to restrict_with_error but dependent api resources do not exist' do
-    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' });
-    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'products', dependent: 'restrict_with_error'}]);
+    namespace_1 = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'items', dependent: 'restrict_with_error'}]);
 
     namespace_1.reload
     namespace_2.reload
