@@ -4,7 +4,7 @@ shop_1:
                 printify_shop_id: 123456,
                 title: 'Restarone',
                 sales_channel: 'custom_integration',
-                printify_account_id: '123',
+                printify_account_id: <%= ActiveRecord::FixtureSet.identify(:printify_account) %>,
                 collect_sales_tax: true,
                 pass_processing_fees_to_customer: true,
                 stripe_processing_fee_margin_percentage: 0,

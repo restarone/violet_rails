@@ -28,6 +28,14 @@ shops:
                   {
                     type: 'belongs_to',
                     namespace: 'printify_accounts'
+                  },
+                  {
+                    type: 'has_many',
+                    namespace: 'products'
+                  },
+                  {
+                    type: 'has_many',
+                    namespace: 'orders'
                   }
                 ]
   requires_authentication: true
