@@ -11,7 +11,7 @@ class FetchPrintifyShippingAndStripeProcessingFeesTest < ActionDispatch::Integra
 
     @payload = {
       data: {
-        shop_id: '123456',
+        shop_id: api_resources(:shop_1).properties['printify_shop_id'],
         line_items: [
           {
             product_id: '64545662f38d703e1a0c84f8',

@@ -622,6 +622,7 @@ create_order_and_stripe_chekout_session_plugin = orders_namespace.external_api_c
                             properties['line_items'] = cart_line_items
                             properties['shop_id'] = @shop.id
                             properties['printify_shop_id'] = @shop.properties['printify_shop_id']
+                            properties['printify_status'] = 'initialized'
                             properties['stripe_processing_fee'] = shipping_and_processing_charges[:stripe_processing_fee]
                             properties['passed_processing_fee_to_customer'] = @shop.properties['pass_processing_fees_to_customer']
                             properties['sales_tax_collected'] = @shop.properties['collect_sales_tax']
