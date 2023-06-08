@@ -68,7 +68,8 @@ shop_namespace = ApiNamespace.create(
     shipping_countries: countries,
     currency: 'USD',
     product_categories: PRODUCT_CATEGORIES,
-    product_sub_categories: PRODUCT_SUB_CATEGORIES 
+    product_sub_categories: PRODUCT_SUB_CATEGORIES,
+    seller_email: ''
   },
   associations: [{ type: 'belongs_to', namespace: 'printify_accounts' }],
   category_ids: [namespace_category.id]
@@ -864,6 +865,79 @@ fulfill_order_plugin = orders_namespace.external_api_clients.create(
 
 WebhookVerificationMethod.create(webhook_type: 'stripe', external_api_client_id: fulfill_order_plugin.id, webhook_secret: '')
 
+refund_handler_plugin = orders_namespace.external_api_clients.create(
+  label: "refund_handler",
+  enabled: true,
+  drive_strategy: "webhook",
+  metadata: {
+    LOGGER_NAMESPACE: "shop_logs",
+    REFUND_NOTIFICATION_NAMESPACE: "refund_notifications"
+  },
+  model_definition: <<~RUBY
+                    class RefundHandler
+                      def initialize(parameters)
+                        @external_api_client = parameters[:external_api_client]
+                        @payload = parameters[:request]&.request_parameters
+                        @logger_namespace = ApiNamespace.find_by_slug(@external_api_client.metadata['LOGGER_NAMESPACE'])
+                        @refund_notification_namespace = ApiNamespace.find_by_slug(@external_api_client.metadata['REFUND_NOTIFICATION_NAMESPACE'])
+                      end
+                      
+                      def start
+                        return if @payload['type'] != 'charge.refunded' && @payload['type'] != 'charge.refund.updated'
+                        begin
+                          @order = @external_api_client.api_namespace.api_resources.jsonb_search(:properties, { stripe: { payment_intent: @payload['data']['object']['payment_intent'] } }  ).first
+                    
+                          raise "Order couldn't be found" if @order.nil? 
+                    
+                          refund_properties = @order.properties['stripe']['refund'] || {}
+                          if @payload['type'] == 'charge.refunded'
+                            charge = @payload['data']['object']
+                            refund = charge['refunds']['data'].first
+                            refund_properties['receipt_url'] = charge['receipt_url']
+                            refund_properties['receipt_email'] = charge['receipt_email']
+                          else
+                            refund = @payload['data']['object']
+                          end
+                    
+                          refund_properties['id'] = refund['id']
+                          refund_properties['amount'] = refund['amount']
+                          refund_properties['status'] = refund['status']
+                          
+                          refund_properties['failure_reason'] = refund['failure_reason'] if refund['status'] == 'failed'
+                            
+                          order_properties = @order.properties
+                          order_properties['stripe']['refund'] = refund_properties
+                          
+                          @order.update(properties: order_properties)
+                          
+                          @refund_notification_namespace.api_resources.create(properties: {
+                            order_id: @order.id,
+                            status: refund['status'],
+                            receipt_email: @order.properties['stripe']['refund']['receipt_email'],                                               
+                            payload_type: @payload['type'],
+                            email_subject: "\#{ENV['APP_HOST']} Refund \#{refund['status'] == 'succeeded' ? 'initiated' : refund['status']} for order \#{@order.properties['printify_order_id']}"
+                          })
+                    
+                          render json: { success: true }
+                        rescue => e
+                          @logger_namespace.api_resources.create({
+                            message: e.message,
+                            source: 'refund_plugin',
+                            error_backtrace: e.backtrace,
+                            order_id: @order&.id,
+                            request_body: @payload
+                          })
+                          render json: { success: false, message: e.message }, status: :unprocessable_entity
+                        end
+                      end
+                    end
+                    
+                    RefundHandler
+                    RUBY
+)
+
+WebhookVerificationMethod.create(webhook_type: 'stripe', external_api_client_id: refund_handler_plugin.id, webhook_secret: '')
+
 cleanup_unprocessed_orders_plugin = orders_namespace.external_api_clients.create(
   label: "clean_unprocessed_orders",
   enabled: true,
@@ -1021,7 +1095,7 @@ order_status_notification_plugin = orders_namespace.external_api_clients.create(
                         @external_api_client = parameters[:external_api_client]
                         @metadata = @external_api_client.metadata
                         @payload = parameters[:request]&.request_parameters
-                    
+
                         @notification_namespace = ApiNamespace.find_by(slug: @metadata['NOTIFICATION_NAMESPACE'])
                         @logger_namespace = ApiNamespace.find_by(slug: @metadata['LOGGER_NAMESPACE'])
                         @order = @external_api_client.api_namespace.api_resources.where("properties @> ?", {printify_order_id: @payload['resource']['id']}.to_json).first
@@ -1038,7 +1112,7 @@ order_status_notification_plugin = orders_namespace.external_api_clients.create(
                           else
                             @shop = @order.shop
                             order_id = @order.properties['printify_order_id']
-                    
+
                             # Only "canceled" order production status is considered if there is an order production status
                             if @payload['resource']['data']['status'].nil? || @payload['resource']['data']['status'] == "canceled"
                               # If there is a status update for an existing order, then its final_printify_order_status will change
@@ -1048,7 +1122,7 @@ order_status_notification_plugin = orders_namespace.external_api_clients.create(
                               sales_tax_collected = @order.properties['sales_tax_collected']
                               stripe = @order.properties['stripe']
                               total_retail_price = @order.properties['passed_processing_fee_to_customer'] ? (stripe['amount_subtotal'] - @order.properties['stripe_processing_fee']) : stripe['amount_subtotal']
-                    
+
                               notification_data = {
                                 line_items: @order.properties['line_items'],
                                 address_to: @order.properties['address_to'],
@@ -1072,8 +1146,15 @@ order_status_notification_plugin = orders_namespace.external_api_clients.create(
                                 notification_data[:carrier] = @payload['resource']['data']['carrier']
                               end
                               @notification_namespace.api_resources.create!(properties: notification_data)
-                              render json: { success: true }
                             end
+                            if @payload['resource']['data']['status'].present?
+                                props = @order.properties
+                                props['printify_status'] = @payload['resource']['data']['status']
+                                @order.update(properties: props)
+
+                                initiate_refund if @payload['resource']['data']['status'] == 'canceled'
+                            end
+                            render json: { success: true }
                           end  
                         rescue => e
                           log_error(e.message, { error_backtrace: e.backtrace })
@@ -1118,7 +1199,7 @@ order_status_notification_plugin = orders_namespace.external_api_clients.create(
                           text: "$\#{price.to_f / 100} \#{@shop.properties['currency']}"
                         }
                       end
-                    
+
                       def log_error(message, extra = {})
                         @logger_namespace.api_resources.create!(properties: {
                           status: 'error',
@@ -1130,8 +1211,33 @@ order_status_notification_plugin = orders_namespace.external_api_clients.create(
                           extra: extra
                         })
                       end
+                      
+                      def initiate_refund
+                        order_properties = @order.properties
+                        begin
+                          Stripe::Refund.create({
+                            payment_intent: @order.properties['stripe']['payment_intent']
+                          })
+                        rescue => e
+                          unless @order.properties['stripe']['refund'].present?
+                            order_properties['stripe']['refund'] = {
+                              status: 'failed',
+                              failure_reason: e.message,
+                              amount: @order.properties['stripe']['amount_total']
+                            }
+                          end
+                          refund_notifications_properties = {
+                            order_id: @order.id,
+                            status: 'failed',
+                            email_subject: "\#{ENV['APP_HOST']} Refund failed for order \#{@order.properties['printify_order_id']}"
+                          }
+                          log_error(e.message, { response: e })
+                          @order.update(properties: order_properties)
+                          ApiNamespace.find_by(slug: @external_api_client.metadata['REFUND_NOTIFICATION_NAMESPACE']).api_resources.create!(properties: refund_notifications_properties)
+                        end
+                      end
                     end
-                    
+
                     OrderStatusNotification
                     RUBY
 )
@@ -1235,6 +1341,122 @@ notifications_namespace.api_actions.create(
                   HTML
 )
 
+p "###################################            CREATE REFUND NOTIFICATION NAMESPACE           ###################################"
+
+refund_notifications_namespace = ApiNamespace.create(
+  name: 'refund_notifications',
+  version: 1,
+  requires_authentication: true,
+  properties: {
+    status: '',
+    order_id: '',
+    payload_type: '',
+    email_subject: '',
+    receipt_email: ''
+  },
+  associations: [{type: 'belongs_to', namespace: 'orders'}],
+  category_ids: [namespace_category.id]
+)
+
+refund_notifications_namespace.api_actions.create(
+  action_type: "send_email",
+  include_api_resource_data: false,
+  email: "\#{api_resource.properties['receipt_email']}",
+  email_subject: "\#{api_resource.properties['email_subject']}",
+  type: "CreateApiAction",
+  custom_message: <<~HTML
+                  <% address_to = api_resource.order.properties['address_to'] %><br/>
+                  Hi <%= address_to['first_name'] + " " + address_to['last_name'] %>,<br/>
+                  <br/>
+                  <% amount = "$" + (api_resource.order.properties['stripe']['refund']['amount'].to_f/100).to_s + " " + api_resource.order.shop.properties['currency'] %><br/>
+                  <% if api_resource.properties['status'] == 'succeeded' %><br/>
+                  We wanted to inform you that your refund has been initiated for your recent purchase.<br/>
+                  <br/>
+                  Order Id: <%= api_resource.order.properties['printify_order_id'] %><br/>
+                  Amount: <%= amount %><br/>
+                  Reason for refund: Order Canceled<br/>
+                  <br/>
+                  You can access the receipt by clicking here:<br/>
+                  <%= api_resource.order.properties['stripe']['refund']['receipt_url'] %><br/>
+                  Please note that it may take 5-10 business days for the funds to settle in your account. If it takes longer please contact your bank for assistance. We appreciate your patience during this process.<br/>
+                  <br/>
+                  <% elsif api_resource.properties['status'] == 'failed' %>
+                  We regret to inform you that the refund for your recent purchase was unsuccessful due to a technical issue.<br/>
+                  <br/>
+                  Order Id: <%= api_resource.order.properties['printify_order_id'] %><br/>
+                  Amount: <%= amount %><br/>
+                  Failure Reason:  <%= api_resource.order.properties['stripe']['refund']['failure_reason'] %><br/>
+                  <br/>
+                  We apologize for any inconvenience caused. Our team is actively working to resolve the issue and ensure a prompt refund.<br/>
+                  Further updates will be provided once the refund has been successfully processed.<br/>
+                  <br/>
+                  <% else %><br/>
+                  We wanted to inform you that a refund will be initiated soon for your recent purchase.<br/>
+                  <br/>
+                  Order Id: <%= api_resource.order.properties['printify_order_id'] %><br/>
+                  Amount: <%= amount %><br/>
+                  Reason for refund: Order Canceled<br/>
+                  <br/>
+                  <% end %><br/>
+                  If you have any questions, feel free to reach out to our customer support team.<br/>
+                  <br/>
+                  Thank you for your understanding.
+                  <br/>
+                  Best regards
+                  HTML
+)
+
+refund_notifications_namespace.api_actions.create(
+  action_type: "send_email",
+  include_api_resource_data: false,
+  email: "\#{api_resource.properties['receipt_email']}",
+  email_subject: "\#{api_resource.properties['email_subject']}",
+  type: "CreateApiAction",
+  custom_message: <<~HTML
+                  Dear Admin,<br/>
+                  <br/>
+                  <% amount = "$" + (api_resource.order.properties['stripe']['refund']['amount'].to_f/100).to_s + " " + api_resource.order.shop.properties['currency'] %><br/>
+                  <% order_page_url = "https://\#{ENV['APP_HOST']}/api_namespaces/\#{api_resource.order.api_namespace.id}/resources/\#{api_resource.order.id}" %><br/>
+                  <% if api_resource.properties['status'] == 'succeeded' %><br/>
+                  A refund has been initiated for a purchase with following detail:<br/>
+                  <br/>
+                  Order Url: <%= order_page_url %><br/>
+                  Printify Order Id: <%= api_resource.order.properties['printify_order_id'] %><br/>
+                  Amount: <%= amount %><br/>
+                  Reason for refund: Order Canceled<br/>
+                  Receipt: <%= api_resource.order.properties['stripe']['refund']['receipt_url'] %><br/>
+                  Payment Intent: https://dashboard.stripe.com/payments/<%= api_resource.order.properties['stripe']['payment_intent'] %>https://\#{ENV['APP_HOST']}/api_namespaces/\#{api_resource.order.api_namespace.id}/resources/\#{api_resource.order.id}<br/>
+                  <br/>
+                  <% elsif api_resource.properties['status'] == 'failed' %><br/>
+                  The refund for a purchase with following details was unsuccessful due to a technical issue.<br/>
+                  <br/>
+                  Order Url: <%= order_page_url %><br/>
+                  Printify Order Id: <%= api_resource.order.properties['printify_order_id'] %><br/>
+                  Amount: <%= amount %><br/>
+                  Failure Reason:  <%= api_resource.order.properties['stripe']['refund']['failure_reason'] %><br/>
+                  <br/>
+                  Please visit the payment intent link provided below to handle it manually.<br/>
+                  Payment Intent: https://dashboard.stripe.com/payments/<%= api_resource.order.properties['stripe']['payment_intent'] %><br/>
+                  <br/>
+                  <% else %><br/>
+                  A refund for a purchase with the following details is in pending state.<br/>
+                  <br/>
+                  Order Url: <%= order_page_url %><br/>
+                  Printify Order Id: <%= api_resource.order.properties['printify_order_id'] %><br/>
+                  Amount: <%= amount %><br/>
+                  Reason for refund: Order Canceled<br/>
+                  <br/>
+                  This status means that the refund is pending due to insufficient account balance. Your action is needed to initiate the refund process, and for the customer to receive the refund. There will be no progress unless the balance issue is resolved by you.<br/>
+                  
+                  Please visit the payment intent link provided below to handle it.<br/>
+                  Payment Intent: https://dashboard.stripe.com/payments/<%= api_resource.order.properties['stripe']['payment_intent'] %><br/>
+                  <br/>      
+                  <% end %>
+                  More details on Stripe refunds: https://support.stripe.com/questions/refunds-faq<br/>
+                  <br/>
+                  Best regards
+                  HTML
+)
 
 p "###################################             CREATE ORDER CLEANUP LOGS NAMESPACE           ###################################"
 
@@ -1255,6 +1477,7 @@ order_cleanup_logs_namespace = ApiNamespace.create(
   associations: [{type: 'belongs_to', namespace: 'orders'}],
   category_ids: [namespace_category.id]
 )
+
 
 
 p "###################################                  CREATING PRINFIFY SHOP UI                ###################################"
