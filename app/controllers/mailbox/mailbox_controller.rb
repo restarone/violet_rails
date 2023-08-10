@@ -6,7 +6,7 @@ class Mailbox::MailboxController < Mailbox::BaseController
     else
       MessageThread.all.includes(:messages).ransack(params[:q])
     end
-    @message_threads_q.sorts = ['messages.created_at desc', 'created_at desc'] if @message_threads_q.sorts.empty?
+    @message_threads_q.sorts = ['unread','messages.created_at desc', 'created_at desc'] if @message_threads_q.sorts.empty?
     @message_threads = @message_threads_q.result(distinct: true).paginate(page: params[:page], per_page: params[:per_page] || 10)
   end
 end
