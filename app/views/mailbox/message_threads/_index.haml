@@ -13,5 +13,5 @@
             %small= "#{distance_of_time_in_words(Time.now, message_thread.updated_at)} ago (#{message_thread.updated_at})"
         - if message_thread.messages.any?
           .card-text.bg-light.p-2
-            = message_thread.messages.first.content
+            = render_trix_preview(message_thread.messages.first.content)
 = render partial: 'mailbox/mailbox/pagination', locals: { data: @message_threads }
