@@ -205,4 +205,9 @@ class Mailbox::MailboxControllerTest < ActionDispatch::IntegrationTest
       assert_includes categorized_message_thread_ids, message_thread.id
     end
   end
+
+  test "sort order of email threads" do
+    # to do
+    # https://github.com/restarone/violet_rails/blob/6d56a7ae241442b894d7105d09683294a44035a6/app/controllers/mailbox/mailbox_controller.rb
+  end
 end
