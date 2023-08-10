@@ -144,7 +144,7 @@ end
 # ------
 3.times do
   recipients = [Faker::Internet.email, Faker::Internet.email] 
-  email_thread = MessageThread.create!(recipients: recipients)
+  email_thread = MessageThread.create!(recipients: recipients, subject: Faker::Movie.quote)
   3.times do
     email_thread.messages.create(content: "
         <h5>#{Faker::Movie.quote}</h5>

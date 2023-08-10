@@ -374,4 +374,8 @@ class EMailboxTest < ActionMailbox::TestCase
       end
     end
   end
+
+  test "new message in thread sets thread unread: true" do
+    #  todo test https://github.com/restarone/violet_rails/blob/57739a34ea8927ba222a42d372908a82e35de8cf/app/mailboxes/e_mailbox.rb
+  end
 end

@@ -66,6 +66,10 @@ module ContentHelper
     render body: Rails.root.join('public', '404.html').read.html_safe, status: :not_found, layout: false
   end
 
+  def render_trix_preview(action_text_richtext)
+    action_text_richtext.to_plain_text[0, 250]
+  end
+
   private
 
   def cms_dynamic_snippet_render(identifier, cms_site = @cms_site, context = {})

@@ -3,6 +3,7 @@ class Mailbox::MessageThreadsController < Mailbox::BaseController
   before_action :load_thread, except: [:new, :create]
 
   def show
+    @message_thread.update(unread: false)
     ahoy.track(
       "subdomain-email-visit",
       {visit_id: current_visit.id, message_thread_id: @message_thread.id, user_id: current_user.id}
