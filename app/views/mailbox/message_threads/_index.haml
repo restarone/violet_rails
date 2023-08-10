@@ -1,0 +1,17 @@
+- @message_threads.each do |message_thread|
+  = link_to mailbox_message_thread_path(id: message_thread.id), class: 'text-reset text-decoration-none' do
+    .card.my-3
+      .card-body 
+        .card-title.d-flex.justify-content-between
+          = message_thread.subject
+          .item-categories
+            = render "comfy/admin/cms/categories/categories", object: message_thread
+        .card-subtitle.mb-2.text-muted
+          %strong
+            %span= message_thread.recipients.join(', ')
+          %div
+            %small= "#{distance_of_time_in_words(Time.now, message_thread.updated_at)} ago (#{message_thread.updated_at})"
+        - if message_thread.messages.any?
+          .card-text.bg-light.p-2
+            = message_thread.messages.first.content
+= render partial: 'mailbox/mailbox/pagination', locals: { data: @message_threads }
