@@ -13,11 +13,7 @@ class MessageThread < ApplicationRecord
     .distinct
   }
 
-  scope :sort_by_unread_messages, -> { joins(:messages).order("message_threads.unread DESC, messages.created_at DESC").distinct}
-
-  ransacker :messages_created_at do
-    Arel.sql('messages.created_at')
-  end
+  scope :sort_by_unread_messages, -> { joins(:messages).order("message_threads.unread DESC, messages.created_at DESC").distinct }
 
   private
 
