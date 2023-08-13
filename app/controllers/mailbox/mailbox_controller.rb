@@ -2,7 +2,7 @@ class Mailbox::MailboxController < Mailbox::BaseController
   def show
     params[:q] ||= {}
     @message_threads_q = if params[:categories].present?
-      MessageThread.includes(:categories).for_category(params[:categories]).all.includes(:messages).ransack(params[:q])
+      MessageThread.joins(:messages).includes(:categories).for_category(params[:categories]).all.includes(:messages).ransack(params[:q])
     else
       MessageThread.joins(:messages).includes(:messages).ransack(params[:q])
     end
