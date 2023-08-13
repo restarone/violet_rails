@@ -13,8 +13,6 @@ class MessageThread < ApplicationRecord
     .distinct
   }
 
-  scope :sort_by_unread_messages, -> { joins(:messages).order("message_threads.unread DESC, messages.created_at DESC").distinct }
-
   private
 
   def self.ransackable_scopes(auth_object = nil)
