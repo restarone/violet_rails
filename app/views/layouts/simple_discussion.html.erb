@@ -98,6 +98,10 @@
   <div class="col-md-9 mb-3">
 
     <div class="card card-body">
+      <%= form_tag simple_discussion.forum_threads_path, method: :get do %>
+        <%= text_field_tag :search, params[:search], placeholder: "Search threads..." %>
+        <%= submit_tag "Search" %>
+      <% end %>
       <%= yield %>
     </div>
 

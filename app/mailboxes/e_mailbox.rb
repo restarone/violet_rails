@@ -25,6 +25,7 @@ class EMailbox < ApplicationMailbox
             from: mail.from.join(', '),
             attachments: (attachments + multipart_attached).map{ |a| a[:blob] }
           )
+          message_thread.update(unread: true)
           ApiNamespace::Plugin::V1::SubdomainEventsService.new(message).track_event
         end
       end
