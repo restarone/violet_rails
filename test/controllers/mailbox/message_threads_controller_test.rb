@@ -221,4 +221,8 @@ class Mailbox::MessageThreadsControllerTest < ActionDispatch::IntegrationTest
       end
     end
   end
+
+  test 'viewing unread thread sets unread:true' do
+    # todo test https://github.com/restarone/violet_rails/blob/9476c661537a1688a81c95802d5f49a6617f0678/app/controllers/mailbox/message_threads_controller.rb
+  end
 end

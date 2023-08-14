@@ -19,16 +19,21 @@ class FillEmptyLocationEntriesTaks < ActiveSupport::TestCase
   end
   
   test 'populate location of a new created entry' do
-    stub_request(:get, /http:\/\/ipinfo.io\/*/).to_return(status: 200, body: {
-      "ip": "110.41.52.64",
-      "hostname": "ecs-110-41-52-64.compute.hwclouds-dns.com",
-      "city": "Guangzhou",
-      "region": "Guangdong",
-      "country": "CN",
-      "loc": "23.1167,113.2500",
-      "org": "AS55990 Huawei Cloud Service data center",
-      "timezone": "Asia/Shanghai",
-      "readme": "https://ipinfo.io/missingauth"
+    stub_request(:get, /http:\/\/ip-api.com\/json\/*/).to_return(status: 200, body: {
+      query: "110.41.52.64",
+      status: "success",
+      country: "China",
+      countryCode: "CN",
+      region: "GD",
+      regionName: "Guangdong",
+      city: "Guangzhou",
+      zip: "",
+      lat: 23.129,
+      lon: 113.2643,
+      timezone: "Asia/Shanghai",
+      isp: "Huawei Cloud Service data center",
+      org: "Huawei Public Cloud Service",
+      as: "AS55990 Huawei Cloud Service data center"
     }.to_json)
     
     refute @new_visit.country
@@ -43,7 +48,7 @@ class FillEmptyLocationEntriesTaks < ActiveSupport::TestCase
     sleep 2
 
     @new_visit.reload
-    assert_equal 'CN', @new_visit.country
+    assert_equal 'China', @new_visit.country
     assert_equal 'Guangdong', @new_visit.region
     assert_equal 'Guangzhou', @new_visit.city
   end

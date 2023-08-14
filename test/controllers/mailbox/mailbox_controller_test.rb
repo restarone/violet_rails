@@ -205,4 +205,67 @@ class Mailbox::MailboxControllerTest < ActionDispatch::IntegrationTest
       assert_includes categorized_message_thread_ids, message_thread.id
     end
   end
+
+  test "sort order of email threads" do
+    other_user = users(:one)
+
+    message_thread_1 = MessageThread.first
+    message_1 = message_thread_1.messages.create!(content: '<div>thread 1 message 1</div>')
+
+    message_thread_2 = MessageThread.create!(unread: true, subject: 'test', recipients: [other_user.email])
+    message_2 = message_thread_2.messages.create!(content: '<div>thread 2 message 2</div>')
+
+    message_thread_3 = MessageThread.create!(unread: true, subject: 'new email', recipients: [other_user.email])
+    message_3 = message_thread_3.messages.create!(content: '<div>thread 3 message 3</div>')
+    
+    sign_in(@user)
+    get mailbox_url
+
+    assert_response :success
+    
+    message_threads = @controller.view_assigns['message_threads']
+
+    # thread with last message should come first
+    assert_equal [message_thread_3.id, message_thread_2.id, message_thread_1.id], message_threads.pluck(:id)
+
+    message_4 = message_thread_2.messages.create!(content: '<div>thread 2 message 4</div>')
+
+    get mailbox_url
+
+    assert_response :success
+    
+    message_threads = @controller.view_assigns['message_threads']
+
+    # thread with last message should come first
+    assert_equal [message_thread_2.id, message_thread_3.id, message_thread_1.id], message_threads.pluck(:id)
+  end
+
+  test "sort order of email threads, sort params present" do
+    other_user = users(:one)
+
+    message_thread_1 = MessageThread.first
+    message_1 = message_thread_1.messages.create!(content: '<div>thread 1 message 1</div>')
+
+    message_thread_2 = MessageThread.create!(unread: true, subject: 'test', recipients: [other_user.email])
+    message_2 = message_thread_2.messages.create!(content: '<div>thread 2 message 2</div>')
+
+    message_thread_3 = MessageThread.create!(unread: true, subject: 'new email', recipients: [other_user.email])
+    message_3 = message_thread_3.messages.create!(content: '<div>thread 3 message 3</div>')
+    
+    sign_in(@user) 
+    get mailbox_url, params: { q: { s: 'id asc'}}
+    
+    message_threads = @controller.view_assigns['message_threads']
+
+    # should be sorted as specified in params
+    assert_equal [message_thread_1.id, message_thread_2.id, message_thread_3.id], message_threads.pluck(:id)
+
+    message_4 = message_thread_2.messages.create!(content: '<div>thread 2 message 4</div>')
+
+    get mailbox_url, params: { q: { s: 'created_at desc'}}
+
+    message_threads = @controller.view_assigns['message_threads']
+
+    assert_equal [message_thread_3.id, message_thread_2.id, message_thread_1.id], message_threads.pluck(:id)
+  end
 end
