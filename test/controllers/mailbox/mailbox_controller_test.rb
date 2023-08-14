@@ -253,7 +253,7 @@ class Mailbox::MailboxControllerTest < ActionDispatch::IntegrationTest
     message_3 = message_thread_3.messages.create!(content: '<div>thread 3 message 3</div>')
     
     sign_in(@user) 
-    get mailbox_url, params: { q: { s: 'id desc'}}
+    get mailbox_url, params: { q: { s: 'id asc'}}
     
     message_threads = @controller.view_assigns['message_threads']
 
