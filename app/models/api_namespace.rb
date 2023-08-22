@@ -427,74 +427,75 @@ class ApiNamespace < ApplicationRecord
     site = Comfy::Cms::Site.first
     # grab default layout -- might not be present in heavily customized apps
     layout = site.layouts.find_by(identifier: 'default')
-  
-    index_page = layout.pages.find_or_create_by(
-      site_id: site.id,
-      label: self.name.pluralize,
-      slug: self.slug,
-      is_restricted: self.requires_authentication?,
-    )
+    if layout.present?
+      index_page = layout.pages.find_or_create_by(
+        site_id: site.id,
+        label: self.name.pluralize,
+        slug: self.slug,
+        is_restricted: self.requires_authentication?,
+      )
 
-    site.snippets.create(
-      label: "#{self.name.pluralize}-show", 
-      identifier: "#{self.slug}-show",
-      content: "
-        <nav aria-label='breadcrumb'>
-          <ol class='breadcrumb'>
-            <li class='breadcrumb-item'><a href='#{index_page.full_path}'>#{self.name.pluralize}</a></li>
-            <li class='breadcrumb-item active' aria-current='page'>ID: <%= @api_resource.id %></li>
-          </ol>
-        </nav>
-        <div>hello from <%= @api_resource.id %></div>
-      "
-    )
+      site.snippets.create(
+        label: "#{self.name.pluralize}-show", 
+        identifier: "#{self.slug}-show",
+        content: "
+          <nav aria-label='breadcrumb'>
+            <ol class='breadcrumb'>
+              <li class='breadcrumb-item'><a href='#{index_page.full_path}'>#{self.name.pluralize}</a></li>
+              <li class='breadcrumb-item active' aria-current='page'>ID: <%= @api_resource.id %></li>
+            </ol>
+          </nav>
+          <div>hello from <%= @api_resource.id %></div>
+        "
+      )
 
-    Comfy::Cms::Fragment.create!(
-      identifier: 'content',
-      record: index_page,
-      tag: 'wysiwyg',
-      content: "
-        <div>
-          <h1>#{self.name.pluralize}</h1>
-          <div class='container'>#{self.snippet}</div>
-          {{ cms:helper render_api_namespace_resource_index '#{self.slug}', order: { created_at: 'DESC' } } }}
-        </div>
-      "
-    )
+      Comfy::Cms::Fragment.create!(
+        identifier: 'content',
+        record: index_page,
+        tag: 'wysiwyg',
+        content: "
+          <div>
+            <h1>#{self.name.pluralize}</h1>
+            <div class='container'>#{self.snippet}</div>
+            {{ cms:helper render_api_namespace_resource_index '#{self.slug}', order: { created_at: 'DESC' } } }}
+          </div>
+        "
+      )
 
-    show_page = layout.pages.find_or_create_by(
-      site_id: site.id,
-      label: "#{self.name.pluralize}-show",
-      slug: "#{self.slug}-show",
-      is_restricted: self.requires_authentication?,
-    )
-    site.snippets.create(
-      label: self.name.pluralize, 
-      identifier: self.slug,
-      content: "
-        <div class='my-3'>
-            <% @api_resources.each do |resource| %>
-              <a href='/<%= resource.api_namespace.slug %>-show?id=<%= resource.id %>' class='list-group-item list-group-item-action flex-column align-items-start'>
-              <div class='d-flex w-100 justify-content-between'>
-                <h5 class='mb-1'><%= resource.id %></h5>
-                <small class='text-muted'><%= resource.created_at %></small>
-              </div>
-            </a>
-          <% end %>
-        </div>
-      "
-    )
+      show_page = layout.pages.find_or_create_by(
+        site_id: site.id,
+        label: "#{self.name.pluralize}-show",
+        slug: "#{self.slug}-show",
+        is_restricted: self.requires_authentication?,
+      )
+      site.snippets.create(
+        label: self.name.pluralize, 
+        identifier: self.slug,
+        content: "
+          <div class='my-3'>
+              <% @api_resources.each do |resource| %>
+                <a href='/<%= resource.api_namespace.slug %>-show?id=<%= resource.id %>' class='list-group-item list-group-item-action flex-column align-items-start'>
+                <div class='d-flex w-100 justify-content-between'>
+                  <h5 class='mb-1'><%= resource.id %></h5>
+                  <small class='text-muted'><%= resource.created_at %></small>
+                </div>
+              </a>
+            <% end %>
+          </div>
+        "
+      )
 
-    Comfy::Cms::Fragment.create!(
-      identifier: 'content',
-      record: show_page,
-      tag: 'wysiwyg',
-      content: "
-        <div>
-          <h1>#{self.name} show</h1>
-          {{ cms:helper render_api_namespace_resource '#{self.slug}' }} 
-        </div>
-      "
-    )
+      Comfy::Cms::Fragment.create!(
+        identifier: 'content',
+        record: show_page,
+        tag: 'wysiwyg',
+        content: "
+          <div>
+            <h1>#{self.name} show</h1>
+            {{ cms:helper render_api_namespace_resource '#{self.slug}' }} 
+          </div>
+        "
+      )
+    end
   end
 end
