@@ -439,7 +439,13 @@ class ApiNamespace < ApplicationRecord
       label: "#{self.name.pluralize}-show", 
       identifier: "#{self.name}-show",
       content: "
-        hello from <%= @api_resource.id %>
+        <nav aria-label='breadcrumb'>
+          <ol class='breadcrumb'>
+            <li class='breadcrumb-item'><a href='#{index_page.full_path}'>#{self.name.pluralize}</a></li>
+            <li class='breadcrumb-item active' aria-current='page'>ID: <%= @api_resource.id %></li>
+          </ol>
+        </nav>
+        <div>hello from <%= @api_resource.id %></div>
       "
     )
 
@@ -450,7 +456,7 @@ class ApiNamespace < ApplicationRecord
       content: "
         <div>
           <h1>#{self.name.pluralize}</h1>
-          {{ cms:helper render_api_namespace_resource_index #{self.slug}, order: { created_at: 'DESC' } } }}
+          {{ cms:helper render_api_namespace_resource_index '#{self.slug}', order: { created_at: 'DESC' } } }}
         </div>
       "
     )
@@ -484,7 +490,7 @@ class ApiNamespace < ApplicationRecord
       tag: 'wysiwyg',
       content: "
         <div>
-          <h1>#{self.name.pluralize} show</h1>
+          <h1>#{self.name} show</h1>
           {{ cms:helper render_api_namespace_resource '#{self.slug}' }} 
         </div>
       "
