@@ -437,7 +437,7 @@ class ApiNamespace < ApplicationRecord
 
     site.snippets.create(
       label: "#{self.name.pluralize}-show", 
-      identifier: "#{self.name.pluralize}-show",
+      identifier: "#{self.name}-show",
       content: "
         hello from <%= @api_resource.id %>
       "
