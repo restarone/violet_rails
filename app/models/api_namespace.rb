@@ -437,7 +437,7 @@ class ApiNamespace < ApplicationRecord
 
     site.snippets.create(
       label: "#{self.name.pluralize}-show", 
-      identifier: "#{self.name}-show",
+      identifier: "#{self.slug}-show",
       content: "
         <nav aria-label='breadcrumb'>
           <ol class='breadcrumb'>
