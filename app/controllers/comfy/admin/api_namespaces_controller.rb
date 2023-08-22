@@ -267,7 +267,7 @@ class Comfy::Admin::ApiNamespacesController < Comfy::Admin::Cms::BaseController
                                             :properties,
                                             :requires_authentication,
                                             :namespace_type,
-                                            :has_form,
+                                            :is_renderable,
                                             non_primitive_properties_attributes: [:id, :label, :field_type, :content, :attachment, :allow_attachments, :_destroy],
                                             category_ids: [],
                                             associations: [:type, :namespace, :dependent]
