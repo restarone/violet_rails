@@ -11,7 +11,7 @@ class ApiNamespace < ApplicationRecord
 
   after_save :add_foreign_key, if: -> { attributes.key?('associations') && self.saved_change_to_associations? }
 
-  after_create :generate_renderable_entities, if: -> { is_renderable }
+  after_create_commit :generate_renderable_entities, if: -> { is_renderable }
   
   has_many :api_resources, dependent: :destroy
   accepts_nested_attributes_for :api_resources
@@ -456,6 +456,7 @@ class ApiNamespace < ApplicationRecord
       content: "
         <div>
           <h1>#{self.name.pluralize}</h1>
+          <div class='container'>#{self.snippet}</div>
           {{ cms:helper render_api_namespace_resource_index '#{self.slug}', order: { created_at: 'DESC' } } }}
         </div>
       "
