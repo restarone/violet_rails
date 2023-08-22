@@ -25,7 +25,7 @@ sync_attribute_to_api_namespace_plugin:
 
         # Adding the new-attribute in ApiNamespace
         new_properties = @api_namespace.properties.merge(attribute_name => default_value)
-        @api_namespace.has_form = @api_namespace.api_form.present? ? '1' : '0'
+        @api_namespace.is_renderable = @api_namespace.api_form.present? ? '1' : '0'
         @api_namespace.update!(properties: new_properties)
 
         # Making the new-attribute non-renderable

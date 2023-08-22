@@ -549,8 +549,8 @@ class Comfy::Admin::ApiResourcesControllerTest < ActionDispatch::IntegrationTest
     assert_equal expected_message, flash[:alert]
   end
 
-  test "should able to create api_resource if has_form params is set false" do
-    @api_namespace.has_form = '0';
+  test "should able to create api_resource if is_renderable params is set false" do
+    @api_namespace.is_renderable = '0';
     @api_namespace.save;
     payload_as_stringified_json = "{\"age\":26,\"alive\":true,\"last_name\":\"Teng\",\"first_name\":\"Jennifer\"}"
 
