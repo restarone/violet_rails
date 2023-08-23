@@ -1,0 +1,71 @@
+clean_unprocessed_orders_manually:
+  api_namespace: orders
+  slug: clean_unprocessed_orders_manually
+  label: CleanUnprocessedOrdersManually
+  enabled: true
+  drive_strategy: on_demand
+  metadata: {
+              'START_TIME': <%= (Time.zone.now.beginning_of_day - 1.hour).to_s %>,
+              'END_TIME': <%= Time.zone.now.to_s %>,
+              'LOGGER_NAMESPACE': 'order_cleanup_logs'
+            }
+  model_definition: |
+    class CleanUnprocessedOrdersManually
+      def initialize(parameters)
+        @external_api_client = parameters[:external_api_client]
+        @logger_namespace = ApiNamespace.find_by(slug: @external_api_client.metadata["LOGGER_NAMESPACE"])
+
+        @start_date_time = DateTime.parse(@external_api_client.metadata['START_TIME'])
+        @end_date_time = DateTime.parse(@external_api_client.metadata['END_TIME']) || Time.zone.now
+      end
+      
+      def start
+        begin
+          ApiResource.transaction do
+            @logger = @logger_namespace.api_resources.create!(
+              properties: {
+                'source' => 'clean_unprocessed_orders_manually',
+                'start_time' => @start_date_time.to_s,
+                'end_time' => @end_date_time.to_s
+              }
+            )
+
+            orders_to_be_deleted = @external_api_client
+                                    .api_namespace
+                                    .api_resources
+                                    .where(created_at: @start_date_time..@end_date_time)
+                                    .jsonb_search(:properties, { printify_status: 'initialized' })
+                                    .order(:created_at)
+            initial_size = orders_to_be_deleted.size
+
+            @logger.properties['before_cleanup_orders'] = orders_to_be_deleted.pluck(:id)
+            @logger.properties['cleanup_status'] = 'initialized'
+            @logger.save!
+
+            orders_to_be_deleted.each do |orphan_order|
+              orphan_order.destroy!
+            end
+
+            orders_to_be_deleted.reload
+            final_size = orders_to_be_deleted.size
+
+            if final_size.zero?
+              @logger.properties['cleanup_status'] = 'completed'
+            else
+              @logger.properties['cleanup_status'] = 'partially_deleted'
+              @logger.properties['after_cleanup_remaining_orders'] = orders_to_be_deleted.pluck(:id)
+            end
+
+            @logger.save!
+          end
+        rescue => e
+          @logger.properties['cleanup_status'] = 'failed'
+          @logger.properties['error_message'] = e.message
+          @logger.properties['error_backtrace'] = e.backtrace.join("\n")
+          @logger.save!
+        end
+      end
+    end
+
+    # at the end of the file we have to implicitly return the class 
+    CleanUnprocessedOrdersManually

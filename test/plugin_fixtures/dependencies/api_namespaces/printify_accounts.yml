@@ -1,0 +1,12 @@
+printify_accounts:
+  name: PrintifyAccounts
+  slug: printify_accounts
+  version: 1
+  properties: {
+                stripe_secret_key: '',
+                api_key: '',
+                name: '',
+                shops_to_sync: []
+              }
+  requires_authentication: true
+  namespace_type: create-read-update-delete

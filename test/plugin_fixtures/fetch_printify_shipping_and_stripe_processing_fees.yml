@@ -1,0 +1,124 @@
+fetch_printify_shipping_and_processing_fees:
+  api_namespace: orders
+  slug: fetch_printify_shipping_and_processing_fees
+  label: FetchPrintifyShippingAndStripeProcessingFees
+  enabled: true
+  drive_strategy: webhook
+  metadata: {
+              'LOGGER_NAMESPACE': 'shop_logs',
+              'STRIPE_CAP_AMOUNT': 30,
+              'SHOP_NAMESPACE_SLUG': 'shops',
+              'STRIPE_TAX_FEE_PERCENTAGE': 0.5,
+              'STRIPE_PROCESSINF_FEE_PERCENTAGE': 2.9
+            }
+  model_definition: |
+    class FetchPrintifyShippingAndStripeProcessingFees
+      def initialize(parameters)
+        @external_api_client = parameters[:external_api_client]
+        @payload = parameters[:request]&.request_parameters
+      end
+
+      def start
+        begin
+          # Fetching required data
+          printify_shop_id = @payload[:data][:shop_id]
+          raise "Printify Shop ID missing!" if printify_shop_id.blank?
+
+          shop = ApiNamespace.friendly.find(@external_api_client.metadata['SHOP_NAMESPACE_SLUG']).api_resources.jsonb_search(:properties, {printify_shop_id: printify_shop_id}).first
+          printify_token = shop.printify_account.properties['api_key']
+          raise "Printify API token missing!" if printify_token.blank?
+
+          logger_namespace = ApiNamespace.find_by!(slug: @external_api_client.metadata["LOGGER_NAMESPACE"])
+          violet_products = shop.products
+
+          printify_base_uri = "https://api.printify.com/v1/shops/#{printify_shop_id}"
+          printify_request_headers = {
+                                "Content-Type" => 'application/json;charset=utf-8',
+                                "Authorization" => "Bearer #{printify_token}" 
+                              }
+
+          # line_items should contain (product_id, variant_id) and quantity
+          cart_line_items = @payload[:data][:line_items]
+          cart_line_items_total = 0
+
+          cart_line_items.each do |line_item|
+            product = violet_products.jsonb_search(:properties, { printify_product_id: line_item[:product_id] }).first
+            variant = product.properties['variants'].find { |v| v['id'].to_s == line_item[:variant_id].to_s }
+
+            price = variant['price'].to_i * line_item['quantity'].to_i
+            cart_line_items_total += price
+          end
+
+          # Fetching Shipping charges for the provided line_items
+          req_body = {
+            line_items: cart_line_items,
+            address_to: @payload[:data][:address_to]
+          }
+
+          shipping_charges_response = HTTParty.post(
+            "#{printify_base_uri}/orders/shipping.json",
+            headers: printify_request_headers,
+            body: req_body.to_json
+          )
+
+          unless shipping_charges_response.success?
+            logger_namespace.api_resources.create!(
+              properties: {
+                source: 'fetch_printify_shipping_and_stripe_processing_fees',
+                request_body: req_body,
+                response_body: shipping_charges_response.body,
+              }
+            )
+
+            raise 'Error while fetching shipping charge information!'
+          end
+
+          shipping_charge = JSON.parse(shipping_charges_response.body)['standard'].to_i
+          total_amount = cart_line_items_total + shipping_charge
+
+          misc_fees_details = {
+            total_amount_to_charge_customer: total_amount
+          }
+
+          pass_stripe_processing_fees_to_customer = shop.properties['pass_processing_fees_to_customer']
+          if pass_stripe_processing_fees_to_customer
+            # Determining Stripe's processing fee
+            cap_amount = @external_api_client.metadata["STRIPE_CAP_AMOUNT"].to_f
+            processing_fee_percentage = @external_api_client.metadata["STRIPE_PROCESSING_FEE_PERCENTAGE"].to_f / 100
+            # reference: https://stripe.com/docs/tax/faq#:~:text=Pricing%20for%20Stripe%20Tax%20on,100%2C000%20USD%20in%20a%20month.
+            processing_fee_percentage += @external_api_client.metadata["STRIPE_TAX_FEE_PERCENTAGE"].to_f / 100 if shop.properties['collect_sales_tax']
+
+            total_amount_to_charge_customer = ((total_amount + cap_amount) / (1 - processing_fee_percentage)).ceil
+            stripe_processing_fee = total_amount_to_charge_customer - total_amount
+
+            # Margin on Stripe processing fee
+            stripe_processing_fee_margin_percentage = shop.properties['stripe_processing_fee_margin_percentage'].to_f
+            unless stripe_processing_fee_margin_percentage.zero?
+              stripe_processing_fee += (stripe_processing_fee * stripe_processing_fee_margin_percentage / 100).ceil
+              total_amount_to_charge_customer = total_amount + stripe_processing_fee
+            end
+
+            misc_fees_details[:stripe_processing_fee] = stripe_processing_fee
+            misc_fees_details[:total_amount_to_charge_customer] = total_amount_to_charge_customer
+          end
+
+          render json: {
+            success: true,
+            data: {
+              cart_total_items_cost: cart_line_items_total,
+              shipping_charge: shipping_charge,
+              currency: shop.properties['currency']
+            }.merge(misc_fees_details)
+          }
+
+        rescue => e
+          render json: {
+            success: false,
+            message: e.message
+          }, status: :bad_request
+        end
+      end
+    end
+
+    # at the end of the file we have to implicitly return the class 
+    FetchPrintifyShippingAndStripeProcessingFees

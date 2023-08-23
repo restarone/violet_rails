@@ -1,0 +1,96 @@
+publish_succeed:
+  api_namespace: products
+  slug: publish_succeed
+  label: publish_succeed
+  enabled: true
+  drive_strategy: webhook
+  metadata: {
+              'LOGGER_NAMESPACE': 'shop_logs'
+            }
+  model_definition: |
+                    class ProductPublishStartWebhook
+                      def initialize(parameters)
+                        @external_api_client = parameters[:external_api_client]
+                        @payload = parameters[:request]&.request_parameters
+                        @logger_namespace = ApiNamespace.find_by(slug: @external_api_client.metadata["LOGGER_NAMESPACE"]) if @external_api_client.metadata["LOGGER_NAMESPACE"]
+                        @printify_base_uri = "https://api.printify.com/v1/shops/#{@payload['resource']['data']['shop_id']}/products/#{@payload['resource']['id']}"
+                        @shop = ApiNamespace.find_by(slug: 'shops').api_resources.jsonb_search(:properties, { printify_shop_id: @payload['resource']['data']['shop_id'] }).first
+                        @printify_request_headers = {
+                                              'Content-Type': 'application/json;charset=utf-8',
+                                              'Authorization': "Bearer #{@shop.printify_account.properties['api_key']}" }
+                      end
+                      
+                      def start
+                        begin
+                          product = @external_api_client.api_namespace.api_resources.jsonb_search(:properties, { printify_product_id: @payload['resource']['id'] }).first_or_initialize
+                    
+                          if @payload['resource']['data']['action'] == 'delete' && product.persisted?
+                            product.destroy!
+                          else
+                            product_response = HTTParty.get("#{@printify_base_uri}.json", headers: @printify_request_headers)
+                            
+                            product_object = JSON.parse(product_response.body) 
+
+                            enabled_variants = product_object['variants'].filter { |variant| variant['is_enabled'] }
+                            enabled_options_map = enabled_variants.map {|variant| variant['options']}
+                            enabled_options_ids = enabled_options_map.flatten.uniq 
+                            enabled_options = product_object['options'].map do |option|
+                              option['values'] = option['values'].filter { |value| enabled_options_ids.include?(value['id']) }
+                              option
+                            end
+
+                            enabled_options.each do |option|
+                              option['values'].each do |value| 
+                                value['available_options'] = enabled_options_map.select { |opt| opt.include?(value['id']) }.flatten.uniq.excluding(value['id'])
+                              end
+                            end
+
+                            default_variant = enabled_variants.find { |variant| variant['is_default'] } || enabled_variants.first
+                            default_image = product_object['images'].find { |image| image['is_default'] && image['variant_ids'].include?(default_variant['id']) } || product_object['images'].find { |image| image['is_default'] } || product_object['images'].first
+
+                            categories = @shop.properties['product_categories'] & product_object['tags']
+                            sub_categories = @shop.properties['product_sub_categories'] & product_object['tags']                          
+                            product.properties = {
+                              printify_product_id: product_object['id'],
+                              title: product_object['title'],
+                              description: product_object['description'],
+                              tags: product_object['tags'],
+                              variants: enabled_variants,
+                              images: product_object['images'],
+                              options: enabled_options,
+                              visible: product_object['visible'],
+                              default_image_url: default_image&.dig('src'),
+                              shop_id: @shop.id,
+                              printify_shop_id: product_object['shop_id'],
+                              categories: categories,
+                              sub_categories: sub_categories
+                            }
+                            product.save!
+                    
+                            publish_response = HTTParty.post("#{@printify_base_uri}/publishing_succeeded.json",
+                              body: { external: { id: product.id.to_s, handle: "https://#{ENV['APP_HOST']}/product-details?id=#{product.id}" } }.to_json,
+                              headers: @printify_request_headers
+                            )
+                    
+                            log_error(publish_response.body, { shop: @shop.id, printify_shop: product.properties['shop_id'], product: product.id }) unless publish_response.success?
+                          end
+                        rescue StandardError => e
+                          log_error(e.message, { shop: @shop.id, printify_shop: @payload['resource']['data']['shop_id'], product: @payload['resource']['id'], error_backtrace: e.backtrace })
+                    
+                          HTTParty.post("#{@printify_base_uri}/publishing_failed.json", body: { reason: "Publish Failed" }.to_json, headers: @printify_request_headers)
+                        end
+                    
+                        render json: { result: product }
+                      end
+                    
+                      def log_error(response, extra)
+                        @logger_namespace.api_resources.create!(properties: {
+                          response: response,
+                          extra: extra,
+                          timestamp: Time.zone.now,
+                          source: 'publish_succeed'
+                        })
+                      end
+                    end
+                    
+                    ProductPublishStartWebhook

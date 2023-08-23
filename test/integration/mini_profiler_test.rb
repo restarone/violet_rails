@@ -243,6 +243,9 @@ class Rack::MiniProfilerTest < ActionDispatch::IntegrationTest
       assert response.headers['Content-Type'].include?('text/plain')
       refute response.headers['Content-Type'].include?('text/html')
 
+      response_body = response.body
+      response_body = response_body.force_encoding('UTF-8')
+
       assert_match 'ObjectSpace stats:', response.body
       assert_match '1000 Largest strings:', response.body
     end

@@ -141,7 +141,10 @@ class ApiResource < ApplicationRecord
   def handle_associations
     ActiveRecord::Base.transaction do
       api_namespace.associations.each do |association|
-        associated_resources = ApiNamespace.friendly.find(association['namespace']).api_resources.jsonb_search(:properties, { "#{api_namespace.slug.underscore.singularize}_id" => self.id })
+        associated_namespace = ApiNamespace.find_by(slug: association['namespace'])
+        next if associated_namespace.nil?
+
+        associated_resources = associated_namespace.api_resources.jsonb_search(:properties, { "#{api_namespace.slug.underscore.singularize}_id" => self.id })
         if association['dependent'] == 'destroy'
           associated_resources.destroy_all
         elsif association['dependent'] == 'restrict_with_error'
