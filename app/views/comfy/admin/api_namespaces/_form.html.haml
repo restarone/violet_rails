@@ -42,7 +42,7 @@
     = f.check_box :requires_authentication
   .field
     = f.label "Renderable (Form, and representation)"
-    = f.check_box :has_form, checked: @api_namespace.api_form.present?
+    = f.check_box :is_renderable, checked: @api_namespace.api_form.present?
 
   - unless has_only_uncategorized_access?(current_user.api_accessibility) 
     = render "comfy/admin/cms/categories/form", form: f

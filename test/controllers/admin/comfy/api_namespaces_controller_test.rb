@@ -68,10 +68,10 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     assert_redirected_to api_namespaces_url
   end
 
-  test "should create api_form if has_form params is true" do
+  test "should create api_form if is_renderable params is true" do
     sign_in(@user)
     assert_difference('ApiForm.count') do
-      post api_namespaces_url, params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, properties: @api_namespace.properties.to_json, has_form: "1" ,requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
+      post api_namespaces_url, params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, properties: @api_namespace.properties.to_json, is_renderable: "1" ,requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
     end
     api_namespace = ApiNamespace.last
     assert api_namespace.api_form
@@ -85,31 +85,31 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     }.to_json
 
     assert_difference('ApiForm.count') do
-      post api_namespaces_url, params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, properties: properties, has_form: "1" ,requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
+      post api_namespaces_url, params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, properties: properties, is_renderable: "1" ,requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
     end
     api_namespace = ApiNamespace.last
     assert api_namespace.api_form
     assert_equal api_namespace.api_form.properties["age"]["type_validation"], 'tel'
   end
 
-  test "should create api_form if has_form params is true when updating" do
+  test "should create api_form if is_renderable params is true when updating" do
     sign_in(@user)
     assert_difference('ApiForm.count') do
-      patch api_namespace_url(api_namespaces(:two)), params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, has_form: '1', properties: @api_namespace.properties, requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
+      patch api_namespace_url(api_namespaces(:two)), params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, is_renderable: '1', properties: @api_namespace.properties, requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
     end
   end
 
-  test "should reomve api_form if has_form params is false when updating" do
+  test "should reomve api_form if is_renderable params is false when updating" do
     sign_in(@user)
     assert_difference('ApiForm.count', -1) do
-      patch api_namespace_url(@api_namespace), params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, has_form: '0', properties: @api_namespace.properties, requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
+      patch api_namespace_url(@api_namespace), params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, is_renderable: '0', properties: @api_namespace.properties, requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
     end
   end
 
   test "should not create api_form if api_form already exists" do
     sign_in(@user)
     assert_no_difference('ApiForm.count') do
-      patch api_namespace_url(@api_namespace), params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, has_form: '1', properties: @api_namespace.properties, requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
+      patch api_namespace_url(@api_namespace), params: { api_namespace: { name: @api_namespace.name, namespace_type: @api_namespace.namespace_type, is_renderable: '1', properties: @api_namespace.properties, requires_authentication: @api_namespace.requires_authentication, version: @api_namespace.version } }
     end
   end
 
@@ -606,7 +606,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     sign_in(@user)
     properties = {"attr_1"=>true, "attr_2"=>true, "attr_3"=>true, "attr_4"=>true}
 
-    @api_namespace.has_form = '1'
+    @api_namespace.is_renderable = '1'
     @api_namespace.update(properties: properties)
 
     get api_namespace_url(@api_namespace)
@@ -774,7 +774,7 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
 
   test "#index: Rendering tab should include documentation on form snippet and API HTML renderer snippets" do
     sign_in(@user)
-    @api_namespace.has_form = "1"
+    @api_namespace.is_renderable = "1"
     properties = { test_id: 123, obj:{ a:"b", c:"d"}, title: "Hello World", published: true, arr:[ 1, 2, 3], alpha_arr: ["a", "b"] }
 
     @api_namespace.update(properties: properties)

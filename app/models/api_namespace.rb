@@ -5,11 +5,13 @@ class ApiNamespace < ApplicationRecord
 
   friendly_id :name, use: :slugged
 
-  attr_accessor :has_form
+  attr_accessor :is_renderable
 
   after_save :update_api_form
 
   after_save :add_foreign_key, if: -> { attributes.key?('associations') && self.saved_change_to_associations? }
+
+  after_create_commit :generate_renderable_entities, if: -> { is_renderable }
   
   has_many :api_resources, dependent: :destroy
   accepts_nested_attributes_for :api_resources
@@ -116,13 +118,13 @@ class ApiNamespace < ApplicationRecord
    }
 
   def update_api_form
-    if has_form == '1'
+    if is_renderable == '1'
       if api_form.present? 
         api_form.update({ properties: form_properties })
       else
         create_api_form({ properties: form_properties })
       end
-    elsif has_form == '0' && api_form.present?
+    elsif is_renderable == '0' && api_form.present?
       api_form.destroy
     end
   end
@@ -418,6 +420,82 @@ class ApiNamespace < ApplicationRecord
         api_namespace.associations = (api_namespace.associations || []) << association_object unless api_namespace.associations.any? { |a| a['type'] == 'belongs_to' && a['namespace'] == self.slug }
         api_namespace.save
       end
+    end
+  end
+
+  def generate_renderable_entities
+    site = Comfy::Cms::Site.first
+    # grab default layout -- might not be present in heavily customized apps
+    layout = site.layouts.find_by(identifier: 'default')
+    if layout.present?
+      index_page = layout.pages.find_or_create_by(
+        site_id: site.id,
+        label: self.name.pluralize,
+        slug: self.slug,
+        is_restricted: self.requires_authentication?,
+      )
+
+      site.snippets.create(
+        label: "#{self.name.pluralize}-show", 
+        identifier: "#{self.slug}-show",
+        content: "
+          <nav aria-label='breadcrumb'>
+            <ol class='breadcrumb'>
+              <li class='breadcrumb-item'><a href='#{index_page.full_path}'>#{self.name.pluralize}</a></li>
+              <li class='breadcrumb-item active' aria-current='page'>ID: <%= @api_resource.id %></li>
+            </ol>
+          </nav>
+          <div>hello from <%= @api_resource.id %></div>
+        "
+      )
+
+      Comfy::Cms::Fragment.create!(
+        identifier: 'content',
+        record: index_page,
+        tag: 'wysiwyg',
+        content: "
+          <div>
+            <h1>#{self.name.pluralize}</h1>
+            <div class='container'>#{self.snippet}</div>
+            {{ cms:helper render_api_namespace_resource_index '#{self.slug}', order: { created_at: 'DESC' } } }}
+          </div>
+        "
+      )
+
+      show_page = layout.pages.find_or_create_by(
+        site_id: site.id,
+        label: "#{self.name.pluralize}-show",
+        slug: "#{self.slug}-show",
+        is_restricted: self.requires_authentication?,
+      )
+      site.snippets.create(
+        label: self.name.pluralize, 
+        identifier: self.slug,
+        content: "
+          <div class='my-3'>
+              <% @api_resources.each do |resource| %>
+                <a href='/<%= resource.api_namespace.slug %>-show?id=<%= resource.id %>' class='list-group-item list-group-item-action flex-column align-items-start'>
+                <div class='d-flex w-100 justify-content-between'>
+                  <h5 class='mb-1'><%= resource.id %></h5>
+                  <small class='text-muted'><%= resource.created_at %></small>
+                </div>
+              </a>
+            <% end %>
+          </div>
+        "
+      )
+
+      Comfy::Cms::Fragment.create!(
+        identifier: 'content',
+        record: show_page,
+        tag: 'wysiwyg',
+        content: "
+          <div>
+            <h1>#{self.name} show</h1>
+            {{ cms:helper render_api_namespace_resource '#{self.slug}' }} 
+          </div>
+        "
+      )
     end
   end
 end
