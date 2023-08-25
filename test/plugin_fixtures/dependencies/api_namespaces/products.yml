@@ -1,0 +1,31 @@
+products:
+  name: Products
+  slug: products
+  version: 1
+  properties: {
+                tags: [],
+                title: '',
+                images: [],
+                options: [],
+                shop_id: '',
+                visible: true,
+                variants: [],
+                description: '',
+                printify_shop_id: '',
+                default_image_url: '',
+                printify_product_id: '',
+                categories: [],
+                sub_categories: []
+              }
+  associations: [
+                  {
+                    type: 'belongs_to',
+                    namespace: 'shops'
+                  },
+                  {
+                    type: 'has_many',
+                    namespace: 'orders'
+                  }
+                ]
+  requires_authentication: true
+  namespace_type: create-read-update-delete

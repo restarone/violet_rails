@@ -370,27 +370,102 @@ class ApiNamespaceTest < ActiveSupport::TestCase
   end
 
   test 'has_many: should add foreign key and belongs_to association to child namespace' do
-    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' });
-    namespace_2 = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'products'}]);
+    namespace_1 = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'items'}]);
 
-    assert namespace_1.reload.properties.key?('shop_id')
-    assert_includes namespace_1.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
+    assert namespace_1.reload.properties.key?('stall_id')
+    assert_includes namespace_1.associations, { "type" => 'belongs_to', "namespace" => 'stall' }
   end
 
   test 'has_one: should add foreign key and belongs_to association to child namespace' do
-    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' });
-    namespace_2 = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' }, associations: [{type: 'has_one', namespace: 'products'}]);
+    namespace_1 = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_one', namespace: 'items'}]);
 
-    assert namespace_1.reload.properties.key?('shop_id')
-    assert_includes namespace_1.reload.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
+    assert namespace_1.reload.properties.key?('stall_id')
+    assert_includes namespace_1.reload.associations, { "type" => 'belongs_to', "namespace" => 'stall' }
   end
 
   test 'belongs_to: should add foreign key and has_many association to parent namespace' do
-    namespace_2 = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' });
-    namespace_1 = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' }, associations: [{type: 'belongs_to', namespace: 'shops'}]);
+    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' });
+    namespace_1 = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' }, associations: [{type: 'belongs_to', namespace: 'stall'}]);
 
-    assert namespace_1.reload.properties.key?('shop_id')
-    assert_includes namespace_1.reload.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
-    assert_includes namespace_2.reload.associations, { "type" => 'has_many', "namespace" => 'products' }
+    assert namespace_1.reload.properties.key?('stall_id')
+    assert_includes namespace_1.reload.associations, { "type" => 'belongs_to', "namespace" => 'stall' }
+    assert_includes namespace_2.reload.associations, { "type" => 'has_many', "namespace" => 'items' }
+  end
+
+  test 'should destroy api_namespace and dependent associations of resources if dependent set to destroy' do
+    namespace_1 = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'items', dependent: 'destroy'}]);
+
+    namespace_1.reload
+    namespace_2.reload
+
+    stall_1 = namespace_2.api_resources.create(properties: {name: 'Restarone'})
+
+    product_1 = namespace_1.api_resources.create(properties: {title: 'T-shirt', stall_id: stall_1.id})
+    product_2 = namespace_1.api_resources.create(properties: {title: 'Jeans', stall_id: stall_1.id})
+
+    assert_difference "namespace_1.reload.api_resources.count", -2 do
+      assert_difference "ApiNamespace.count", -1 do
+        namespace_2.destroy
+      end
+    end
+  end
+
+  test 'should destroy api_namespace but leave dependent associations of resources as is if dependent set to blank' do
+    namespace_1 = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'items'}]);
+
+    namespace_1.reload
+    namespace_2.reload
+
+    stall_1 = namespace_2.api_resources.create(properties: {name: 'Restarone'})
+
+    product_1 = namespace_1.api_resources.create(properties: {title: 'T-shirt', stall_id: stall_1.id})
+    product_2 = namespace_1.api_resources.create(properties: {title: 'Jeans', stall_id: stall_1.id})
+
+    assert_no_difference "namespace_1.reload.api_resources.count" do
+      assert_difference "ApiResource.count", -1 do
+        assert_difference "ApiNamespace.count", -1 do
+          namespace_2.destroy
+        end
+      end
+    end
+  end
+
+  test 'should not destroy api_namespace dependent set to restrict_with_error and dependent api resources exist' do
+    namespace_1 = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'items', dependent: 'restrict_with_error'}]);
+
+    namespace_1.reload
+    namespace_2.reload
+
+    stall = namespace_2.api_resources.create(properties: {name: 'Restarone'})
+
+    item_1 = namespace_1.api_resources.create(properties: {title: 'T-shirt', stall_id: stall.id})
+    item_2 = namespace_1.api_resources.create(properties: {title: 'Jeans', stall_id: stall.id})
+
+    assert_no_difference "namespace_1.reload.api_resources.count" do
+      assert_no_difference "ApiNamespace.count" do
+        namespace_2.destroy
+      end
+    end
+  end
+
+  test 'should destroy api_namespace dependent set to restrict_with_error but dependent api resources do not exist' do
+    namespace_1 = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' });
+    namespace_2 = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'items', dependent: 'restrict_with_error'}]);
+
+    namespace_1.reload
+    namespace_2.reload
+
+    stall_1 = namespace_2.api_resources.create(properties: {name: 'Restarone'})
+
+    assert_difference "ApiResource.count", -1 do
+      assert_difference "ApiNamespace.count", -1 do
+        namespace_2.destroy
+      end
+    end
   end
 end

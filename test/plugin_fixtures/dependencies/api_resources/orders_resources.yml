@@ -1,0 +1,159 @@
+unprocessed_order:
+  api_namespace: orders
+  properties: {
+                order_id: "",
+                shipments: [],
+                total_tax: "",
+                address_to: [],
+                line_items: [
+                  {
+                    quantity: 1,
+                    product_id: "645a317153c0c42ec001f098",
+                    variant_id: 45178
+                  }
+                ],
+                total_price: "",
+                fulfilled_at: "",
+                total_shipping: "",
+                printify_status: "initialized",
+                shipping_method: "",
+                printify_shop_id: "",
+                stripe_charge_id: "",
+                stripe_refund_status: "",
+                sent_to_production_at: ""
+              }
+  created_at: <%= (Time.zone.now.beginning_of_day + 2.hours) %>
+  updated_at: <%= (Time.zone.now.beginning_of_day + 2.hours) %>
+
+old_unprocessed_order:
+  api_namespace: orders
+  properties: {
+                order_id: "",
+                shipments: [],
+                total_tax: "",
+                address_to: [],
+                line_items: [
+                  {
+                    quantity: 1,
+                    product_id: "645a317153c0c42ec001f098",
+                    variant_id: 45178
+                  }
+                ],
+                total_price: "",
+                fulfilled_at: "",
+                total_shipping: "",
+                printify_status: "initialized",
+                shipping_method: "",
+                printify_shop_id: "",
+                stripe_charge_id: "",
+                stripe_refund_status: "",
+                sent_to_production_at: ""
+              }
+  created_at: <%= 2.days.ago %>
+  updated_at: <%= 2.days.ago %>
+
+processed_order_1:
+  api_namespace: orders
+  properties: {
+                printify_status: "pending",
+                shop_id: 9024703,
+                metadata: {
+                  order_type: "api",
+                  shop_order_id: "261",
+                  shop_order_label: "261",
+                  shop_fulfilled_at: "1970-01-01 00:00:00+00:00"
+                },
+                order_id: "6460e2bf65e81fee840f8398",
+                total_tax: 0,
+                address_to: {
+                  zip: "13039",
+                  city: "Cicero",
+                  email: "pralishkayastha@gmail.com",
+                  phone: "0000000",
+                  region: "NY",
+                  company: null,
+                  country: "United States",
+                  address1: "8064 Newyork",
+                  address2: "",
+                  last_name: "Kayastha",
+                  first_name: "Pralish"
+                },
+                created_at: "2023-05-14 13:31:43+00:00",
+                line_items: [
+                  {
+                    id: "6460e2bf65e81fee840f8397",
+                    cost: 1467,
+                    status: "on-hold",
+                    metadata: {
+                      sku: "16829974889347728633",
+                      price: 2445,
+                      title: "Knit Beanie",
+                      country: "United States",
+                      variant_label: "Graphite Heather / One size"
+                    },
+                    quantity: 1,
+                    product_id: "645a317153c0c42ec001f098",
+                    variant_id: 45178,
+                    shipping_cost: 450,
+                    print_provider_id: 16
+                  }
+                ],
+                total_price: 1467,
+                total_shipping: 450,
+                fulfilment_type: "ordinary",
+                shipping_method: 1
+              }
+  created_at: <%= 2.days.ago %>
+  updated_at: <%= 2.days.ago %>
+
+processed_order_2:
+  api_namespace: orders
+  properties: {
+                printify_status: "pending",
+                shop_id: 9024703,
+                metadata: {
+                  order_type: "api",
+                  shop_order_id: "3920",
+                  shop_order_label: "3920",
+                  shop_fulfilled_at: "1970-01-01 00:00:00+00:00"
+                },
+                order_id: "6463a1bd16783815d4067c85",
+                total_tax: 0,
+                address_to: {
+                  zip: "00977",
+                  city: "Kathmandu Valley",
+                  email: "alish.khadka@gmail.com",
+                  phone: "0000000",
+                  region: "PR",
+                  company: null,
+                  country: "United States",
+                  address1: "Thimi, Bhaktapur",
+                  address2: "kjnk",
+                  last_name: "Khadka",
+                  first_name: "Prashant"
+                },
+                created_at: "2023-05-16 15:31:09+00:00",
+                line_items: [
+                  {
+                    id: "6463a1bd16783815d4067c84",
+                    cost: 4372,
+                    status: "on-hold",
+                    metadata: {
+                      sku: "31694905375866653888",
+                      price: 1798,
+                      title: "Infant Fine Jersey Tee",
+                      country: "Canada",
+                      variant_label: "Black / 12M"
+                    },
+                    quantity: 4,
+                    product_id: "645a2c4115db3e0fca07ae80",
+                    variant_id: 21560,
+                    shipping_cost: 1526,
+                    print_provider_id: 41
+                  }
+                ],
+                total_price: 4372,
+                total_shipping: 1526,
+                fulfilment_type: "ordinary",
+                shipping_method: 1
+              }

@@ -1,0 +1,140 @@
+create_order_and_stripe_chekout_session:
+  api_namespace: orders
+  slug: create_order_and_stripe_chekout_session
+  label: CreateOrderAndStripeChekoutSession
+  enabled: true
+  drive_strategy: webhook
+  metadata: {
+              'CANCEL_URL': 'localhost:5250/cart',
+              'SUCCESS_URL': 'localhost:5250/products',
+              'LOGGER_NAMESPACE': 'shop_logs',
+              'SHOP_NAMESPACE_SLUG': 'shops',
+              'PROCESSING_FEE_TAX_CODE': 'stripe_tax_code'
+            }
+  model_definition: |
+    class CreateOrderAndStripeChekoutSession
+      def initialize(parameters)
+        @external_api_client = parameters[:external_api_client]
+        @payload = parameters[:request]&.request_parameters
+        @shop = ApiNamespace.friendly.find(@external_api_client.metadata["SHOP_NAMESPACE_SLUG"]).api_resources.jsonb_search(:properties, {printify_shop_id: @payload[:data][:shop_id]}).first
+        @violet_products = @shop.products
+        @success_url = @external_api_client.metadata["SUCCESS_URL"]
+        @cancel_url = @external_api_client.metadata["CANCEL_URL"]
+        @logger_namespace = ApiNamespace.find_by(slug: @external_api_client.metadata["LOGGER_NAMESPACE"])
+        Stripe.api_key = @shop.printify_account.properties['stripe_secret_key']
+      end
+      
+      def start
+        begin
+          ApiNamespace.transaction do
+            # should contain (product_id, variant_id), quantity, images[array] within line_items
+            cart_line_items = @payload[:data][:line_items]
+            shipping_and_processing_charges = @payload[:data][:shipping_and_processing_charges]
+            shipping_country = @payload[:data][:country_code]
+
+            stripe_line_items = []
+
+            # Create order
+            violet_order = @external_api_client.api_namespace.api_resources.new
+            properties = violet_order.properties
+            properties['line_items'] = cart_line_items
+            properties['shop_id'] = @shop.id
+            properties['printify_shop_id'] = @shop.properties['printify_shop_id']
+            properties['printify_status'] = 'initialized'
+            properties['stripe_processing_fee'] = shipping_and_processing_charges[:stripe_processing_fee]
+            properties['passed_processing_fee_to_customer'] = @shop.properties['pass_processing_fees_to_customer']
+            properties['sales_tax_collected'] = @shop.properties['collect_sales_tax']
+            properties['currency'] = @shop.properties['currency']
+            violet_order.save!
+
+            # Create request parameters for Stripe Checkout Session
+            stripe_tax_behaviour = @shop.properties['collect_sales_tax'] ? 'exclusive' : 'inclusive'
+            cart_line_items.each do |line_item|
+              product = @violet_products.jsonb_search(:properties, { printify_product_id: line_item[:product_id] }).first
+              variant = product.properties['variants'].find { |v| v['id'].to_s == line_item[:variant_id].to_s }
+
+              stripe_line_items << {
+                price_data: {
+                  currency: @shop.properties['currency'],
+                  product_data: {name: product.properties['title'], images: line_item[:images] },
+                  unit_amount: variant['price'],
+                  tax_behavior: stripe_tax_behaviour,
+                },
+                quantity: line_item[:quantity]
+              }
+            end
+
+            if @shop.properties['pass_processing_fees_to_customer']
+              stripe_line_items << {
+                price_data: {
+                  currency: @shop.properties['currency'],
+                  product_data: {
+                    name: 'Convenience fee',
+                    tax_code: @external_api_client.metadata['PROCESSING_FEE_TAX_CODE']
+                  },
+                  unit_amount: shipping_and_processing_charges[:stripe_processing_fee],
+                  tax_behavior: stripe_tax_behaviour
+                },
+                quantity: 1
+              }
+            end
+            shipping_options = [
+              {
+                shipping_rate_data: {
+                  type: 'fixed_amount',
+                  fixed_amount: {
+                    amount: shipping_and_processing_charges[:shipping_charge],
+                    currency: @shop.properties['currency'],
+                  },
+                  display_name: 'Standard shipping',
+                },
+              }
+            ]
+            stripe_checkout_session = Stripe::Checkout::Session.create(
+              {
+                metadata: {
+                  order_id: violet_order.id,
+                },
+                line_items: stripe_line_items,
+                mode: 'payment',
+                payment_method_types: ['card'],
+                automatic_tax: {
+                  enabled: @shop.properties['collect_sales_tax']
+                },
+                cancel_url: @cancel_url,
+                success_url: @success_url,
+                shipping_address_collection: {allowed_countries: [shipping_country]},
+                shipping_options: shipping_options
+              }
+            )
+
+            render json: {
+              success: true,
+              data: {
+                checkout_url: stripe_checkout_session.url
+              }
+            }
+          end
+        rescue => e
+          log_error('create_order_and_stripe_checkout_session', e.message, @payload)
+
+          render json: {
+            success: false,
+            message: e.message
+          }, status: :bad_request
+        end
+      end
+
+      def log_error(source, message, params)
+        @logger_namespace.api_resources.create!(
+          properties: {
+            source: source,
+            error: message,
+            request_params: params,
+          }
+        )
+      end
+    end
+
+    # at the end of the file we have to implicitly return the class 
+    CreateOrderAndStripeChekoutSession

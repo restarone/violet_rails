@@ -3358,52 +3358,51 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "should create api_namespace with parent associations" do
-    shops_namespace = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' })
+    stall_namespace = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' })
 
-    shops_namespace.api_resources.create(properties: {
+    sign_in(@user)
+    assert_difference('ApiNamespace.count', 1) do
+      post api_namespaces_url, params: { api_namespace: { name: 'items', properties: { title: '' }.to_json, associations: [{type: 'belongs_to', namespace: 'stall'}], version: 1 } }
+    end
+    items_namespace = ApiNamespace.last
+    stall_namespace.reload
+
+    stall_resource = stall_namespace.api_resources.create(properties: {
       name: 'my shop'
     })
 
-    sign_in(@user)
-    assert_difference('ApiNamespace.count', 1) do
-      post api_namespaces_url, params: { api_namespace: { name: 'products', properties: { title: '' }.to_json, associations: [{type: 'belongs_to', namespace: 'shops'}], version: 1 } }
-    end
-    products_namespace = ApiNamespace.last
-    shops_namespace.reload
-
-    shop_resource = shops_namespace.api_resources.first
-
-    assert products_namespace.reload.properties.key?('shop_id')
-    assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
-    assert_includes shops_namespace.associations, { "type" => 'has_many', "namespace" => 'products' }
+    assert items_namespace.reload.properties.key?('stall_id')
+    assert_includes items_namespace.associations, { "type" => 'belongs_to', "namespace" => 'stall' }
+    assert_includes stall_namespace.associations, { "type" => 'has_many', "namespace" => 'items' }
 
     assert_difference('ApiResource.count') do
-      post api_namespace_resources_url(api_namespace_id: products_namespace.id), params: { api_resource: { properties: { title: 'My product', shop_id: shop_resource.id }.to_json } }
+      post api_namespace_resources_url(api_namespace_id: items_namespace.id), params: { api_resource: { properties: { title: 'My item', stall_id: stall_resource.id }.to_json } }
     end
 
-    assert_equal products_namespace.api_resources.pluck(:id), shop_resource.products.pluck(:id)
+    assert_equal items_namespace.api_resources.pluck(:id), stall_resource.items.pluck(:id)
 
-    assert_equal shop_resource, products_namespace.api_resources.first.shop
+    assert_equal stall_resource, items_namespace.api_resources.first.stall
   end
 
   test "should create api_namespace with child associations" do
-    products_namespace = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' })
+    api_namespaces(:shops).destroy!
+    items_namespace = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' })
 
-    products_namespace.api_resources.create(properties: {
-      title: 'my product'
+    items_namespace.api_resources.create(properties: {
+      title: 'my item'
     })
 
     sign_in(@user)
     assert_difference('ApiNamespace.count', 1) do
-      post api_namespaces_url, params: { api_namespace: { name: 'shops', properties: { name: '' }.to_json, associations: [{type: 'has_many', namespace: 'products'}], version: 1 } }
+      post api_namespaces_url, params: { api_namespace: { name: 'shops', properties: { name: '' }.to_json, associations: [{type: 'has_many', namespace: 'items'}], version: 1 } }
     end
 
     shops_namespace = ApiNamespace.last
-    products_namespace.reload
+    items_namespace.reload
 
-    assert products_namespace.properties.key?('shop_id')
-    assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
-    assert_includes shops_namespace.associations, { "type" => 'has_many', "namespace" => 'products' }
+    assert items_namespace.properties.key?('shop_id')
+    assert_includes items_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
+    assert_includes shops_namespace.associations, { "type" => 'has_many', "namespace" => 'items' }
 
     assert_difference('ApiResource.count') do
       post api_namespace_resources_url(api_namespace_id: shops_namespace.id), params: { api_resource: { properties: { name: 'My shop'}.to_json } }
@@ -3412,169 +3411,169 @@ class Comfy::Admin::ApiNamespacesControllerTest < ActionDispatch::IntegrationTes
     shop_resource = shops_namespace.api_resources.first
 
     assert_difference('ApiResource.count') do
-      post api_namespace_resources_url(api_namespace_id: products_namespace.id), params: { api_resource: { properties: { title: 'My product', shop_id: shop_resource.id }.to_json } }
+      post api_namespace_resources_url(api_namespace_id: items_namespace.id), params: { api_resource: { properties: { title: 'My item', shop_id: shop_resource.id }.to_json } }
     end
 
-    assert_equal [products_namespace.api_resources.last.id], shop_resource.products.pluck(:id)
+    assert_equal [items_namespace.api_resources.last.id], shop_resource.items.pluck(:id)
 
-    assert_equal shop_resource, products_namespace.api_resources.last.shop
+    assert_equal shop_resource, items_namespace.api_resources.last.shop
 
-    # already existing product resource 
-    refute products_namespace.api_resources.first.shop
+    # already existing item resource 
+    refute items_namespace.api_resources.first.shop
   end
 
   test "#update should add association" do
-    shops_namespace = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' })
-    products_namespace = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' })
+    stall_namespace = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' })
+    items_namespace = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' })
 
-    shop = shops_namespace.api_resources.create(properties: {
+    stall = stall_namespace.api_resources.create(properties: {
       name: 'my shop'
     })
 
-    products_namespace.api_resources.create(properties: {
-      title: 'my product',
-      shop_id: shop.id
+    items_namespace.api_resources.create(properties: {
+      title: 'my item',
+      stall_id: stall.id
     })
 
     # does not have dynamic methods defined without associations
-    refute products_namespace.api_resources.first.reload.respond_to?(:shop)
-    refute shops_namespace.api_resources.first.reload.respond_to?(:products)
+    refute items_namespace.api_resources.first.reload.respond_to?(:stall)
+    refute stall_namespace.api_resources.first.reload.respond_to?(:items)
 
     sign_in(@user)
-    assert_changes('shops_namespace.reload.associations') do
-      assert_changes('products_namespace.reload.associations') do
-        assert_changes('products_namespace.reload.properties') do
-          patch api_namespace_url(shops_namespace), params: { api_namespace: { associations: [{type: 'has_many', namespace: 'products'}], version: 1 } }
+    assert_changes('stall_namespace.reload.associations') do
+      assert_changes('items_namespace.reload.associations') do
+        assert_changes('items_namespace.reload.properties') do
+          patch api_namespace_url(stall_namespace), params: { api_namespace: { associations: [{type: 'has_many', namespace: 'items'}], version: 1 } }
         end
       end
     end
 
-    assert products_namespace.properties.key?('shop_id')
-    assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
-    assert_includes shops_namespace.associations, { "type" => 'has_many', "namespace" => 'products' }
+    assert items_namespace.properties.key?('stall_id')
+    assert_includes items_namespace.associations, { "type" => 'belongs_to', "namespace" => 'stall' }
+    assert_includes stall_namespace.associations, { "type" => 'has_many', "namespace" => 'items' }
 
-    products_namespace.reload
-    shops_namespace.reload
+    items_namespace.reload
+    stall_namespace.reload
 
     # should have dynamic methods defined
-    assert products_namespace.api_resources.first.respond_to?(:shop)
-    assert shops_namespace.api_resources.first.respond_to?(:products)
+    assert items_namespace.api_resources.first.respond_to?(:stall)
+    assert stall_namespace.api_resources.first.respond_to?(:items)
   end
 
   test "update association" do
-    products_namespace = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' })
-    shops_namespace = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'products'}])
+    items_namespace = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' })
+    stall_namespace = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' }, associations: [{type: 'has_many', namespace: 'items'}])
 
-    assert products_namespace.reload.properties.key?('shop_id')
-    assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
-    assert_includes shops_namespace.reload.associations, { "type" => 'has_many', "namespace" => 'products' }
+    assert items_namespace.reload.properties.key?('stall_id')
+    assert_includes items_namespace.associations, { "type" => 'belongs_to', "namespace" => 'stall' }
+    assert_includes stall_namespace.reload.associations, { "type" => 'has_many', "namespace" => 'items' }
 
-    shop = shops_namespace.api_resources.create(properties: {
-      name: 'my shop'
+    stall = stall_namespace.api_resources.create(properties: {
+      name: 'my stall'
     })
 
-    products_namespace.api_resources.create(properties: {
-      title: 'my product',
-      shop_id: shop.id
+    items_namespace.api_resources.create(properties: {
+      title: 'my item',
+      stall_id: stall.id
     })
 
     # should have dynamic methods defined without associations
-    assert products_namespace.api_resources.first.reload.respond_to?(:shop)
-    assert shops_namespace.api_resources.first.reload.respond_to?(:products)
+    assert items_namespace.api_resources.first.reload.respond_to?(:stall)
+    assert stall_namespace.api_resources.first.reload.respond_to?(:items)
 
     sign_in(@user)
-    assert_changes('shops_namespace.reload.associations') do
-      assert_no_changes('products_namespace.reload.associations') do
-        assert_no_changes('products_namespace.reload.properties') do
-          patch api_namespace_url(shops_namespace), params: { api_namespace: { associations: [{type: 'has_one', namespace: 'products'}], version: 1 } }
+    assert_changes('stall_namespace.reload.associations') do
+      assert_no_changes('items_namespace.reload.associations') do
+        assert_no_changes('items_namespace.reload.properties') do
+          patch api_namespace_url(stall_namespace), params: { api_namespace: { associations: [{type: 'has_one', namespace: 'items'}], version: 1 } }
         end
       end
     end
 
-    refute_includes shops_namespace.reload.associations, { "type" => 'has_many', "namespace" => 'products' }
+    refute_includes stall_namespace.reload.associations, { "type" => 'has_many', "namespace" => 'items' }
 
-    assert_includes shops_namespace.reload.associations, { "type" => 'has_one', "namespace" => 'products' }
+    assert_includes stall_namespace.reload.associations, { "type" => 'has_one', "namespace" => 'items' }
 
-    assert products_namespace.reload.properties.key?('shop_id')
-    assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
+    assert items_namespace.reload.properties.key?('stall_id')
+    assert_includes items_namespace.associations, { "type" => 'belongs_to', "namespace" => 'stall' }
 
     # should remove has_many dynamic method and add has_one methods
-    assert products_namespace.api_resources.first.reload.respond_to?(:shop)
-    refute shops_namespace.api_resources.first.reload.respond_to?(:products)
-    assert shops_namespace.api_resources.first.reload.respond_to?(:product)
+    assert items_namespace.api_resources.first.reload.respond_to?(:stall)
+    refute stall_namespace.api_resources.first.reload.respond_to?(:items)
+    assert stall_namespace.api_resources.first.reload.respond_to?(:item)
   end
 
   test "update api_namespace to remove associations" do
-    shops_namespace = ApiNamespace.create(name: 'shops', version: 1, properties: { name: '' })
-    products_namespace = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' }, associations: [{type: 'belongs_to', namespace: 'shops'}])
+    stall_namespace = ApiNamespace.create(name: 'stall', version: 1, properties: { name: '' })
+    items_namespace = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' }, associations: [{type: 'belongs_to', namespace: 'stall'}])
 
-    assert products_namespace.reload.properties.key?('shop_id')
-    assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
-    assert_includes shops_namespace.reload.associations, { "type" => 'has_many', "namespace" => 'products' }
+    assert items_namespace.reload.properties.key?('stall_id')
+    assert_includes items_namespace.associations, { "type" => 'belongs_to', "namespace" => 'stall' }
+    assert_includes stall_namespace.reload.associations, { "type" => 'has_many', "namespace" => 'items' }
 
-    shop = shops_namespace.api_resources.create(properties: {
-      name: 'my shop'
+    stall = stall_namespace.api_resources.create(properties: {
+      name: 'my stall'
     })
 
-    products_namespace.api_resources.create(properties: {
-      title: 'my product',
-      shop_id: shop.id
+    items_namespace.api_resources.create(properties: {
+      title: 'my item',
+      stall_id: stall.id
     })
 
     # should have dynamic methods defined
-    assert products_namespace.api_resources.first.reload.respond_to?(:shop)
-    assert shops_namespace.api_resources.first.reload.respond_to?(:products)
+    assert items_namespace.api_resources.first.reload.respond_to?(:stall)
+    assert stall_namespace.api_resources.first.reload.respond_to?(:items)
 
     sign_in(@user)
-    assert_changes('shops_namespace.reload.associations') do
-      assert_no_changes('products_namespace.reload.associations') do
-        assert_no_changes('products_namespace.reload.properties') do
-          patch api_namespace_url(shops_namespace), params: { api_namespace: { associations: [], version: 1 } }
+    assert_changes('stall_namespace.reload.associations') do
+      assert_no_changes('items_namespace.reload.associations') do
+        assert_no_changes('items_namespace.reload.properties') do
+          patch api_namespace_url(stall_namespace), params: { api_namespace: { associations: [], version: 1 } }
         end
       end
     end
 
-    refute_includes shops_namespace.reload.associations, { "type" => 'has_many', "namespace" => 'products' }
+    refute_includes stall_namespace.reload.associations, { "type" => 'has_many', "namespace" => 'items' }
 
     # removing foreign key and corresponding associations should be manual, we do not want to unintionally remove existing association
-    assert products_namespace.reload.properties.key?('shop_id')
-    assert_includes products_namespace.associations, { "type" => 'belongs_to', "namespace" => 'shops' }
+    assert items_namespace.reload.properties.key?('stall_id')
+    assert_includes items_namespace.associations, { "type" => 'belongs_to', "namespace" => 'stall' }
 
     # should remove dynamic methods
-    assert products_namespace.api_resources.first.reload.respond_to?(:shop)
-    refute shops_namespace.api_resources.first.reload.respond_to?(:products)
+    assert items_namespace.api_resources.first.reload.respond_to?(:stall)
+    refute stall_namespace.api_resources.first.reload.respond_to?(:items)
   end
   
   test "should show link to associated resources" do
     owner_namespace = ApiNamespace.create(name: 'owners', version: 1, properties: {} )
-    shops_namespace = ApiNamespace.create(name: 'shops', version: 1, properties: { name: ''}, associations: [{type: 'has_one', namespace: 'owners'}])
-    products_namespace = ApiNamespace.create(name: 'products', version: 1, properties: { title: '' }, associations: [{type: 'belongs_to', namespace: 'shops'}])
+    stall_namespace = ApiNamespace.create(name: 'stall', version: 1, properties: { name: ''}, associations: [{type: 'has_one', namespace: 'owners'}])
+    items_namespace = ApiNamespace.create(name: 'items', version: 1, properties: { title: '' }, associations: [{type: 'belongs_to', namespace: 'stall'}])
 
-    shop = shops_namespace.reload.api_resources.create(properties: {
-      name: 'my shop'
+    stall = stall_namespace.reload.api_resources.create(properties: {
+      name: 'my stall'
     })
 
     owner = owner_namespace.reload.api_resources.create(properties: {
       name: 'owner',
-      shop_id: shop.id
+      stall_id: stall.id
     })
 
-    product = products_namespace.reload.api_resources.create(properties: {
-      title: 'my product',
-      shop_id: shop.id
+    item = items_namespace.reload.api_resources.create(properties: {
+      title: 'my item',
+      stall_id: stall.id
     })
 
     sign_in(@user)
-    get api_namespace_url(shops_namespace)
+    get api_namespace_url(stall_namespace)
     
     # should include link to children resources namespace
-    assert_select "tbody tr td a[href=?]", api_namespace_path(id: products_namespace.slug, q: {properties_cont: "\"shop_id\": #{shop.id}"}), { count: 1, text: 'products'}
+    assert_select "tbody tr td a[href=?]", api_namespace_path(id: items_namespace.slug, q: {properties_cont: "\"stall_id\": #{stall.id}"}), { count: 1, text: 'items'}
 
     # should include link to children resource
     assert_select "tbody tr td a[href=?]", api_namespace_resource_path(api_namespace_id: owner_namespace.id, id: owner.id), { count: 1, text: owner.id.to_s}
 
-    get api_namespace_url(products_namespace)
+    get api_namespace_url(items_namespace)
     # should include link to parent resource
-    assert_select "tbody tr td a[href=?]", api_namespace_resource_path(api_namespace_id: shops_namespace.id, id: shop.id), { count: 1, text: shop.id.to_s}
+    assert_select "tbody tr td a[href=?]", api_namespace_resource_path(api_namespace_id: stall_namespace.id, id: stall.id), { count: 1, text: stall.id.to_s}
   end
 end

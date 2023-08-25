@@ -1,0 +1,8 @@
+printify_account:
+  api_namespace: printify_accounts
+  properties: {
+                stripe_secret_key: 'restarone_stripe_secret_key',
+                api_key: 'restarone_printify_api_key',
+                name: 'Restarone',
+                shops_to_sync: ['Restarone']
+              }

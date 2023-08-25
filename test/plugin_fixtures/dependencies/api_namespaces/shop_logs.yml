@@ -1,0 +1,18 @@
+shop_logs:
+  name: ShopLogs
+  slug: shop_logs
+  version: 1
+  properties: {
+                type: '',
+                source: '',
+                response: {},
+                extra: {},
+                timestamp: ''
+              }
+  associations: [
+                  {
+                    type: 'belongs_to',
+                    namespace: 'shops'
+                  }
+                ]
+  requires_authentication: true

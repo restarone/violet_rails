@@ -92,3 +92,13 @@ webhook_drive_strategy:
 <%= IO.read(Rails.root.join "test/plugin_fixtures/transcript_parser_plugin.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/unique_string_aggregator_plugin.yml") %>
 <%= IO.read(Rails.root.join "test/plugin_fixtures/vacuum_job.yml") %>
+
+# Printify Integration related fixtures
+<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/clean_unprocessed_orders_manually.yml")).result %>
+<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/clean_unprocessed_orders.yml")).result %>
+<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/create_order_and_stripe_chekout_session.yml")).result %>
+<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/fetch_printify_shipping_and_stripe_processing_fees.yml")).result %>
+<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/shops_detail.yml")).result %>
+<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/sync_printify_shops.yml")).result %>
+<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/sync_printify_products.yml")).result %>
+<%= ERB.new(IO.read(Rails.root.join "test/plugin_fixtures/publish_succeed.yml")).result %>
