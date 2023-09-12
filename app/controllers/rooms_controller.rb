@@ -7,6 +7,7 @@ class RoomsController < ApplicationController
   end
 
   def show
+    @client = Client.new(id: SecureRandom.uuid)
     @room = Room.new(id: params[:id])
   end
 end

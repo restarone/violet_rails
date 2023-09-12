@@ -1,0 +1,18 @@
+<%= turbo_stream_from @client.id %>
+<p>Find me in app/views/room/show.html.erb</p>
+
+<article
+  class="room"
+  data-controller="room"
+  data-room-id-value="<%= @room.id %>"
+  data-room-client-id-value="<%= @client.id %>"
+  data-action="media:connect->room#negotiateConnection"
+>
+  <div class="media" id="media">
+    <div class="media media--local">
+      <video data-room-target="localMedia" autoplay playsinline></video>
+    </div>
+  </div>
+
+  <%= button_tag 'Enter', data: { action: 'room#enter' } %>
+</article>
