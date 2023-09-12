@@ -8,7 +8,10 @@ class SubdomainConstraint
 end
 
 Rails.application.routes.draw do
-  resources :rooms
+  # for implementation ease
+  # get 'rooms', to: 'rooms#new'
+  root to: 'rooms#new'
+  resources :rooms, only: [:new, :create, :show]
   get 'cookies', to: 'cookies#index'
   get 'cookies/fetch', to: 'cookies#fetch'
   # analytics dashboard
@@ -164,7 +167,7 @@ Rails.application.routes.draw do
   # cms comes last because its a catch all
   comfy_route :cms, path: "/"
 
-  root to: 'content#index'
+  # root to: 'content#index'
 
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
