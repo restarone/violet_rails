@@ -1,10 +1,16 @@
 import { Controller } from '@hotwired/stimulus'
 
-export default class extends Controller {
-  static values = { clientId: String }
-
+export default class MediaController extends Controller {
   connect () {
     this.dispatch('connect', {
+      detail: { clientId: this.clientIdValue }
+    })
+  }
+
+
+
+  disconnect() {
+    this.dispatch('disconnect', {
       detail: { clientId: this.clientIdValue }
     })
   }
@@ -16,3 +22,5 @@ export default class extends Controller {
     return event
   }
 }
+
+MediaController.values = { clientId: String }

@@ -32,7 +32,7 @@ export default class WebrtcNegotiation {
     })
   }
 
-  async createOffer () {
+  createOffer () {
     try {
       this.makingOffer = true
       this.setLocalDescription()

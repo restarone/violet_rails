@@ -4,10 +4,8 @@ import WebrtcNegotiation from '../models/webrtc_negotiation'
 import RoomSubscription from '../subscriptions/room_subscription'
 import Signaller from '../subscriptions/webrtc_session_subscription'
 
-export default class extends Controller {
-  static values = { id: String, clientId: String }
-  static targets = ['localMedia', 'remoteMedia']
-
+export default class RoomController extends Controller {
+  
   connect() {
     this.clients = {}
     this.client = new Client(this.clientIdValue)
@@ -31,9 +29,10 @@ export default class extends Controller {
 
   async enter () {
     try {
-      const constraints = { audio: false, video: true }
+      const constraints = { audio: true, video: true }
       this.stream = await navigator.mediaDevices.getUserMedia(constraints)
       this.localMediaTarget.srcObject = this.stream
+      this.enterTarget.hidden = true
 
       this.subscription.start()
       this.signaller.start()
@@ -101,6 +100,12 @@ export default class extends Controller {
     }
   }
 
+  removeClient ({ from }) {
+    if (this.clients[from]) {
+      delete this.clients[from]
+    }
+  }
+
   findOrCreateClient (id) {
     return this.clients[id] || (this.clients[id] = new Client(id))
   }
@@ -116,3 +121,6 @@ export default class extends Controller {
     return this.clients[id].negotiation
   }
 }
+
+RoomController.values = { id: String, clientId: String }
+RoomController.targets = ['localMedia', 'remoteMedia','enter']
