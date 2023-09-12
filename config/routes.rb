@@ -8,6 +8,7 @@ class SubdomainConstraint
 end
 
 Rails.application.routes.draw do
+  resources :rooms
   get 'cookies', to: 'cookies#index'
   get 'cookies/fetch', to: 'cookies#fetch'
   # analytics dashboard
