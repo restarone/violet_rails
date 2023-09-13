@@ -4,5 +4,8 @@
   %p Early access, feature under active development
 
 
-= month_calendar do |date|
+= month_calendar(events: @meetings, attribute: :start_time) do |date, meetings|
   = date
+  - meetings.each do |meeting|
+    %div
+      = meeting.name
