@@ -4,7 +4,7 @@ one:
   name: MyString
   start_time: 2023-09-13 16:06:00
   end_time: 2023-09-13 16:06:00
-  participant_emails: MyText
+  participant_emails: []
   description: MyText
   timezone: MyString
   location: MyString
@@ -15,9 +15,9 @@ two:
   name: MyString
   start_time: 2023-09-13 16:06:00
   end_time: 2023-09-13 16:06:00
-  participant_emails: MyText
+  participant_emails: []
   description: MyText
   timezone: MyString
   location: MyString
   status: MyString
-  external_meeting_id: MyString
+  external_meeting_id: MyString2

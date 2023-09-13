@@ -101,7 +101,7 @@ class EMailbox < ApplicationMailbox
       calendars = Icalendar::Calendar.parse(ics_string)
       calendars.each do |calendar|
         calendar.events.each do |event|
-          byebug
+          puts "id: #{event.uid}"
           puts "start date-time: #{event.dtstart}"
           puts "end date-time: #{event.dtend}"
           puts "start date-time timezone: #{event.dtstart.ical_params['tzid']}"
