@@ -417,6 +417,8 @@ GEM
       connection_pool (>= 2.2.2)
       rack (~> 2.0)
       redis (>= 4.2.0)
+    simple_calendar (3.0.2)
+      rails (>= 6.1)
     simplecov (0.21.2)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
@@ -559,6 +561,7 @@ DEPENDENCIES
   ros-apartment-sidekiq
   sass-rails (>= 6)
   selenium-webdriver
+  simple_calendar (~> 3.0)
   simple_discussion!
   simplecov
   sinatra
@@ -580,7 +583,7 @@ DEPENDENCIES
   will_paginate
 
 RUBY VERSION
-   ruby 3.0.0p0
+   ruby 2.6.6p146
 
 BUNDLED WITH
    2.1.4
