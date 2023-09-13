@@ -3,4 +3,8 @@ class Comfy::Admin::CalendarsController < Comfy::Admin::Cms::BaseController
   def new
 
   end
+
+  def index
+
+  end
 end
