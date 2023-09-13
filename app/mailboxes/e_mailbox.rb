@@ -103,14 +103,14 @@ class EMailbox < ApplicationMailbox
         calendar.events.each do |event|
           meeting = Meeting.create!(
             name: event.summary,
-            external_meeting_id: event.uid.to_s,
+            external_meeting_id: event.uid,
             start_time: event.dtstart,
             end_time: event.dtend,
             timezone: event.dtstart.ical_params['tzid'].join('-'),
             description: event.description,
             participant_emails: event.attendee.map{|uri| uri.to },
             location: event.location,
-            status: event.status,
+            status: 'pending',
             custom_properties: event.custom_properties,
           )
         end

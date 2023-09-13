@@ -3,6 +3,8 @@ require "test_helper"
 class MeetingsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @meeting = meetings(:one)
+    @user = users(:public)
+    sign_in(@user)
   end
 
   test "should get index" do
@@ -17,7 +19,7 @@ class MeetingsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create meeting" do
     assert_difference('Meeting.count') do
-      post meetings_url, params: { meeting: { description: @meeting.description, end_time: @meeting.end_time, external_meeting_id: @meeting.external_meeting_id, location: @meeting.location, name: @meeting.name, participant_emails: @meeting.participant_emails, start_time: @meeting.start_time, status: @meeting.status, timezone: @meeting.timezone } }
+      post meetings_url, params: { meeting: { description: @meeting.description, end_time: @meeting.end_time, external_meeting_id: SecureRandom.hex, location: @meeting.location, name: @meeting.name, participant_emails: @meeting.participant_emails, start_time: @meeting.start_time, status: @meeting.status, timezone: @meeting.timezone } }
     end
 
     assert_redirected_to meeting_url(Meeting.last)

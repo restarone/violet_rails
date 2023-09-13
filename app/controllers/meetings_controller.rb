@@ -22,7 +22,6 @@ class MeetingsController < Comfy::Admin::Cms::BaseController
   # POST /meetings or /meetings.json
   def create
     @meeting = Meeting.new(meeting_params)
-
     respond_to do |format|
       if @meeting.save
         format.html { redirect_to @meeting, notice: "Meeting was successfully created." }
