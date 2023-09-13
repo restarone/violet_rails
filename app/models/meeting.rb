@@ -1,3 +1,6 @@
 class Meeting < ApplicationRecord
-  validates :status, inclusion: { in: ['pending', 'confirmed', 'maybe']  }
+  STATUS_LIST = ['TENTATIVE', 'CONFIRMED', 'CANCELLED']
+  # https://www.kanzaki.com/docs/ical/status.html
+
+  validates :status, inclusion: { in: STATUS_LIST  }
 end

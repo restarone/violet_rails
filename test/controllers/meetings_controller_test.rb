@@ -19,7 +19,7 @@ class MeetingsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create meeting" do
     assert_difference('Meeting.count') do
-      post meetings_url, params: { meeting: { description: @meeting.description, end_time: @meeting.end_time, external_meeting_id: SecureRandom.hex, location: @meeting.location, name: @meeting.name, participant_emails: @meeting.participant_emails, start_time: @meeting.start_time, status: @meeting.status, timezone: @meeting.timezone } }
+      post meetings_url, params: { meeting: { description: @meeting.description, end_time: @meeting.end_time, location: @meeting.location, name: @meeting.name, participant_emails: ['contact@restarone.com'], start_time: @meeting.start_time, status: @meeting.status, timezone: @meeting.timezone } }
     end
 
     assert_redirected_to meeting_url(Meeting.last)
@@ -36,7 +36,7 @@ class MeetingsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update meeting" do
-    patch meeting_url(@meeting), params: { meeting: { description: @meeting.description, end_time: @meeting.end_time, external_meeting_id: @meeting.external_meeting_id, location: @meeting.location, name: @meeting.name, participant_emails: @meeting.participant_emails, start_time: @meeting.start_time, status: @meeting.status, timezone: @meeting.timezone } }
+    patch meeting_url(@meeting), params: { meeting: { description: @meeting.description, end_time: @meeting.end_time, location: @meeting.location, name: @meeting.name, participant_emails: @meeting.participant_emails, start_time: @meeting.start_time, status: "TENTATIVE", timezone: @meeting.timezone } }
     assert_redirected_to meeting_url(@meeting)
   end
 

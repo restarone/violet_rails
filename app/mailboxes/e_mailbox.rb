@@ -110,7 +110,7 @@ class EMailbox < ApplicationMailbox
             description: event.description,
             participant_emails: event.attendee.map{|uri| uri.to },
             location: event.location,
-            status: 'pending',
+            status: 'TENTATIVE',
             custom_properties: event.custom_properties,
           )
         end

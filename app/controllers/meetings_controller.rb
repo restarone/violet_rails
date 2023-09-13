@@ -22,8 +22,53 @@ class MeetingsController < Comfy::Admin::Cms::BaseController
   # POST /meetings or /meetings.json
   def create
     @meeting = Meeting.new(meeting_params)
+    @meeting.external_meeting_id = "VioletRails@#{SecureRandom.uuid}"
+    @meeting.status = 'CONFIRMED'
+    @meeting.participant_emails = meeting_params[:participant_emails].filter{ |node| URI::MailTo::EMAIL_REGEXP.match?(node) }
+  
     respond_to do |format|
       if @meeting.save
+        # send .ics file to participants
+        cal = Icalendar::Calendar.new
+        filename = "Invitation: #{@meeting.name}"
+        # to generate outlook
+        if false == 'vcs'
+          cal.prodid = '-//Microsoft Corporation//Outlook MIMEDIR//EN'
+          cal.version = '1.0'
+          filename += '.vcs'
+        else # ical
+          cal.prodid = '-//Restarone Solutions, Inc.//NONSGML ExportToCalendar//EN'
+          cal.version = '2.0'
+          filename += '.ics'
+        end
+        
+        cal.event do |e|
+          e.dtstart     = Icalendar::Values::DateTime.new(@meeting.start_time, tzid: @meeting.timezone)
+          e.dtend       = Icalendar::Values::DateTime.new(@meeting.end_time, tzid: @meeting.timezone)
+          e.summary     = @meeting.name
+          e.description = @meeting.description
+          # e.url         = event_url(foo)
+          e.location    = @meeting.location
+          e.attendee = @meeting.participant_emails
+        end
+        file = cal.to_ical
+        attachment = { filename: filename, mime_type: "text/calendar", content: file }
+        blob = ActiveStorage::Blob.create_and_upload!(io: StringIO.new(attachment[:content]), filename: attachment[:filename], content_type: attachment[:mime_type], metadata: nil)
+        email_thread = MessageThread.create!(recipients: @meeting.participant_emails, subject: "Invitation: #{@meeting.name}")
+        email_content = <<-HTML
+        <div>
+          <p>You have been invited to the following meeting, please see details below<br><br>
+          </p>
+
+        </div>
+        HTML
+        email_content += ActionText::Content.new("<action-text-attachment sgid='#{blob.attachable_sgid}'></action-text-attachment>").to_s
+        email_message = email_thread.messages.create!(
+          content: email_content.html_safe,
+          from: "#{Apartment::Tenant.current}@#{ENV['APP_HOST']}"
+        )
+        EMailer.with(message: email_message, message_thread: email_thread, attachments: [attachment]).ship.deliver_later
+
         format.html { redirect_to @meeting, notice: "Meeting was successfully created." }
         format.json { render :show, status: :created, location: @meeting }
       else
@@ -63,6 +108,6 @@ class MeetingsController < Comfy::Admin::Cms::BaseController
 
     # Only allow a list of trusted parameters through.
     def meeting_params
-      params.require(:meeting).permit(:name, :start_time, :end_time, :participant_emails, :description, :timezone, :location, :status, :external_meeting_id)
+      params.require(:meeting).permit(:name, :start_time, :end_time, :description, :timezone, :location, participant_emails: [])
     end
 end

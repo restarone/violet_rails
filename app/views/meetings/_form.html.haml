@@ -17,21 +17,25 @@
     = f.datetime_select :end_time
   .field
     = f.label :participant_emails
-    = f.text_area :participant_emails
+    = f.select :participant_emails, options_for_select([]), { include_blank: false }, { multiple: true }
   .field
     = f.label :description
     = f.text_area :description
   .field
     = f.label :timezone
-    = f.text_field :timezone
+    = f.select :timezone, ActiveSupport::TimeZone::MAPPING
   .field
     = f.label :location
     = f.text_field :location
-  .field
-    = f.label :status
-    = f.text_field :status
-  .field
-    = f.label :external_meeting_id
-    = f.text_field :external_meeting_id
   .actions
     = f.submit 'Save'
+
+:javascript
+  $(document).ready( function() {
+    $("#meeting_participant_emails").select2({
+      multiple: true,
+      required: true,
+      tags: true,
+      tokenSeparators: [',', ' '],
+    })
+  });
