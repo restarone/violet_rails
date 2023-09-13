@@ -26,6 +26,7 @@ class EMailbox < ApplicationMailbox
             attachments: (attachments + multipart_attached).map{ |a| a[:blob] }
           )
           message_thread.update(unread: true)
+          process_attachments if attachments.size > 0
           ApiNamespace::Plugin::V1::SubdomainEventsService.new(message).track_event
         end
       end
@@ -90,5 +91,27 @@ class EMailbox < ApplicationMailbox
     # There are some standard email subject prefixes which gets prepended in the email's subject.
     # examples: 'Re: ', 're: ', 'FWD: ', 'Fwd: ', 'Fw: '
     subject.gsub(/^((re|fw(d)?): )/i, '')
+  end
+
+  def process_attachments
+    # process .ics files
+    ics_files = attachments.select {|attachment| attachment[:original].content_type.include?('.ics') }
+    ics_files.each do |ics_file|
+      ics_string = ics_file[:blob].download
+      calendars = Icalendar::Calendar.parse(ics_string)
+      calendars.each do |calendar|
+        calendar.events.each do |event|
+          puts "start date-time: #{event.dtstart}"
+          puts "end date-time: #{event.dtend}"
+          puts "start date-time timezone: #{event.dtstart.ical_params['tzid']}"
+          puts "summary: #{event.summary}"
+          puts "properties: #{event.custom_properties}"
+          puts "attendees: #{event.attendee}"
+          puts "description: #{event.description}"
+          puts "location: #{event.location}"
+          puts "status: #{event.status}"
+        end
+      end
+    end
   end
 end

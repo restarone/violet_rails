@@ -378,4 +378,14 @@ class EMailboxTest < ActionMailbox::TestCase
   test "new message in thread sets thread unread: true" do
     #  todo test https://github.com/restarone/violet_rails/blob/57739a34ea8927ba222a42d372908a82e35de8cf/app/mailboxes/e_mailbox.rb
   end
+
+  test "when sent with calendar invite" do
+    Apartment::Tenant.switch @restarone_subdomain do      
+      assert_difference "Message.all.reload.size", +1 do
+        email = create_inbound_email_from_fixture('email_with_calendar_invite.eml')
+        email.tap(&:route)
+        # assert that the calendar invite was parsed, analyzed and corresponding meeting event was created
+      end
+    end
+  end
 end
