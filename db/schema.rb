@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_05_16_012035) do
+ActiveRecord::Schema.define(version: 2023_09_13_160600) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -427,6 +427,21 @@ ActiveRecord::Schema.define(version: 2023_05_16_012035) do
     t.integer "threads_count", default: 0
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "meetings", force: :cascade do |t|
+    t.string "name"
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.text "participant_emails", default: [], array: true
+    t.text "description"
+    t.string "timezone"
+    t.string "location"
+    t.string "status"
+    t.string "external_meeting_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["external_meeting_id"], name: "index_meetings_on_external_meeting_id", unique: true
   end
 
   create_table "message_threads", force: :cascade do |t|
