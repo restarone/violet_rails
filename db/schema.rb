@@ -439,6 +439,7 @@ ActiveRecord::Schema.define(version: 2023_09_13_160600) do
     t.string "location"
     t.string "status"
     t.string "external_meeting_id"
+    t.jsonb "custom_properties", default: "{}"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["external_meeting_id"], name: "index_meetings_on_external_meeting_id", unique: true

@@ -1,4 +1,4 @@
-class MeetingsController < ApplicationController
+class MeetingsController < Comfy::Admin::Cms::BaseController
   before_action :set_meeting, only: %i[ show edit update destroy ]
 
   # GET /meetings or /meetings.json

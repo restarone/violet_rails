@@ -101,16 +101,18 @@ class EMailbox < ApplicationMailbox
       calendars = Icalendar::Calendar.parse(ics_string)
       calendars.each do |calendar|
         calendar.events.each do |event|
-          puts "id: #{event.uid}"
-          puts "start date-time: #{event.dtstart}"
-          puts "end date-time: #{event.dtend}"
-          puts "start date-time timezone: #{event.dtstart.ical_params['tzid']}"
-          puts "summary: #{event.summary}"
-          puts "properties: #{event.custom_properties}"
-          puts "attendees: #{event.attendee}"
-          puts "description: #{event.description}"
-          puts "location: #{event.location}"
-          puts "status: #{event.status}"
+          meeting = Meeting.create!(
+            name: event.summary,
+            external_meeting_id: event.uid.to_s,
+            start_time: event.dtstart,
+            end_time: event.dtend,
+            timezone: event.dtstart.ical_params['tzid'].join('-'),
+            description: event.description,
+            participant_emails: event.attendee.map{|uri| uri.to },
+            location: event.location,
+            status: event.status,
+            custom_properties: event.custom_properties,
+          )
         end
       end
     end

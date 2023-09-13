@@ -10,6 +10,7 @@ class CreateMeetings < ActiveRecord::Migration[6.1]
       t.string :location
       t.string :status
       t.string :external_meeting_id
+      t.jsonb :custom_properties, default: '{}'
 
       t.timestamps
     end

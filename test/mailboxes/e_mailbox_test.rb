@@ -382,9 +382,10 @@ class EMailboxTest < ActionMailbox::TestCase
   test "when sent with calendar invite" do
     Apartment::Tenant.switch @restarone_subdomain do      
       assert_difference "Message.all.reload.size", +1 do
-        email = create_inbound_email_from_fixture('email_with_calendar_invite.eml')
-        email.tap(&:route)
-        # assert that the calendar invite was parsed, analyzed and corresponding meeting event was created
+        assert_difference "Meeting.all.reload.size", +1 do
+          email = create_inbound_email_from_fixture('email_with_calendar_invite.eml')
+          email.tap(&:route)
+        end  
       end
     end
   end
