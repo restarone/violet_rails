@@ -1,5 +1,6 @@
 class MeetingsController < Comfy::Admin::Cms::BaseController
   before_action :set_meeting, only: %i[ show edit update destroy ]
+  before_action :check_email_authorization
 
   # GET /meetings or /meetings.json
   def index
@@ -130,5 +131,12 @@ class MeetingsController < Comfy::Admin::Cms::BaseController
     # Only allow a list of trusted parameters through.
     def meeting_params
       params.require(:meeting).permit(:name, :start_time, :end_time, :description, :timezone, :location, participant_emails: [])
+    end
+
+    def check_email_authorization
+      unless current_user.can_manage_email
+        flash.alert = 'You do not have permission to manage email'
+        redirect_back(fallback_location: root_path)
+      end
     end
 end

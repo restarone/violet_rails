@@ -4,6 +4,7 @@ class MeetingsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @meeting = meetings(:one)
     @user = users(:public)
+    @user.update(can_manage_email: true)
     sign_in(@user)
   end
 
