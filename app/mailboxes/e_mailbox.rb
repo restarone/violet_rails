@@ -102,18 +102,24 @@ class EMailbox < ApplicationMailbox
       calendars = Icalendar::Calendar.parse(ics_string)
       calendars.each do |calendar|
         calendar.events.each do |event|
-          meeting = Meeting.create!(
-            name: event.summary,
-            external_meeting_id: event.uid,
-            start_time: event.dtstart,
-            end_time: event.dtend,
-            timezone: Array.wrap(event.dtstart.ical_params['tzid']).join('-'),
-            description: event.description,
-            participant_emails: event.attendee.map{|uri| uri.to },
-            location: event.location,
-            status: 'TENTATIVE',
-            custom_properties: event.custom_properties,
-          )
+          existing_meeting = Meeting.find_by(external_meeting_id: event.uid.to_s)
+          if existing_meeting
+            # handle replies to meeting invites
+            existing_meeting.update(updated_at: Time.now)
+          else
+            meeting = Meeting.create!(
+              name: event.summary,
+              external_meeting_id: event.uid,
+              start_time: event.dtstart,
+              end_time: event.dtend,
+              timezone: Array.wrap(event.dtstart.ical_params['tzid']).join('-'),
+              description: event.description,
+              participant_emails: event.attendee.map{|uri| uri.to },
+              location: event.location,
+              status: 'TENTATIVE',
+              custom_properties: event.custom_properties,
+            )
+          end
         end
       end
     end
