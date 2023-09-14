@@ -42,16 +42,12 @@ class MeetingsController < Comfy::Admin::Cms::BaseController
           cal.version = '2.0'
           filename += '.ics'
         end
-        
+        cal.append_custom_property('METHOD', 'REQUEST')
         cal.event do |e|
-          e.uid = @meeting.external_meeting_id
-          e.sequence = Time.now.to_i
           e.dtstart     = Icalendar::Values::DateTime.new(@meeting.start_time, tzid: @meeting.timezone)
           e.dtend       = Icalendar::Values::DateTime.new(@meeting.end_time, tzid: @meeting.timezone)
-          e.summary     = @meeting.name
-          e.description = @meeting.description
-          e.location    = @meeting.location
-          e.attendee = Icalendar::Values::CalAddress.new("mailto:#{from_address}", partstat: 'ACCEPTED')
+          e.organizer = Icalendar::Values::CalAddress.new("mailto:#{from_address}", cn: from_address)
+          e.uid = @meeting.external_meeting_id
           @meeting.participant_emails.each do |email|
             attendee_params = { 
               # "CUTYPE"   => "INDIVIDUAL",
@@ -63,18 +59,21 @@ class MeetingsController < Comfy::Admin::Cms::BaseController
             attendee_value = Icalendar::Values::Text.new("MAILTO:#{email}", attendee_params)
             cal.append_custom_property("ATTENDEE", attendee_value)
           end
+          e.description = @meeting.description
+          e.location    = @meeting.location
+          e.sequence = Time.now.to_i
           e.status = "CONFIRMED"
-          e.organizer = Icalendar::Values::CalAddress.new("mailto:#{from_address}", cn: from_address)
+          e.summary     = @meeting.name
+          
 
           e.alarm do |a|
             a.summary = "#{@meeting.name} starts in 30 minutes!"
             a.trigger = '-PT30M'
           end
         end
-        cal.append_custom_property('METHOD', 'REQUEST')
         cal.publish
         file = cal.to_ical
-        attachment = { filename: filename, mime_type: "text/calendar", content: file }
+        attachment = { filename: filename, mime_type: "text/calendar;method=REQUEST;name=\'#{filename}\'", content: file }
         blob = ActiveStorage::Blob.create_and_upload!(io: StringIO.new(attachment[:content]), filename: attachment[:filename], content_type: attachment[:mime_type], metadata: nil)
         email_thread = MessageThread.create!(recipients: @meeting.participant_emails, subject: "Invitation: #{@meeting.name}")
         email_content = <<-HTML
