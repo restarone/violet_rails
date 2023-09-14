@@ -49,10 +49,19 @@ class MeetingsController < Comfy::Admin::Cms::BaseController
           e.summary     = @meeting.name
           e.description = @meeting.description
           e.location    = @meeting.location
-          e.attendee = @meeting.participant_emails
+          @meeting.participant_emails.each do |email|
+            e.attendee = Icalendar::Values::CalAddress.new("mailto:#{email}", partstat: 'accepted')
+          end
           e.status = "CONFIRMED"
           e.organizer = Icalendar::Values::CalAddress.new("mailto:#{from_address}", cn: from_address)
+
+          e.alarm do |a|
+            a.summary = "#{@meeting.name} starts in 30 minutes!"
+            a.trigger = '-PT30M'
+          end
         end
+        cal.append_custom_property('METHOD', 'REQUEST')
+        cal.publish
         file = cal.to_ical
         attachment = { filename: filename, mime_type: "text/calendar", content: file }
         blob = ActiveStorage::Blob.create_and_upload!(io: StringIO.new(attachment[:content]), filename: attachment[:filename], content_type: attachment[:mime_type], metadata: nil)
