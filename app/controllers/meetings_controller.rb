@@ -47,12 +47,13 @@ class MeetingsController < Comfy::Admin::Cms::BaseController
           e.dtstart     = Icalendar::Values::DateTime.new(@meeting.start_time, tzid: @meeting.timezone)
           e.dtend       = Icalendar::Values::DateTime.new(@meeting.end_time, tzid: @meeting.timezone)
           e.organizer = Icalendar::Values::CalAddress.new("mailto:#{from_address}", cn: from_address)
+          e.attendee = Icalendar::Values::CalAddress.new("mailto:#{from_address}", partstat: 'ACCEPTED')
           e.uid = @meeting.external_meeting_id
           @meeting.participant_emails.each do |email|
             attendee_params = { 
-              # "CUTYPE"   => "INDIVIDUAL",
-              # "ROLE"     => "REQ-PARTICIPANT",
-              # "PARTSTAT" => "NEEDS-ACTION",
+              "CUTYPE"   => "INDIVIDUAL",
+              "ROLE"     => "REQ-PARTICIPANT",
+              "PARTSTAT" => "NEEDS-ACTION",
               "RSVP"     => "TRUE",
             }
 
@@ -71,7 +72,6 @@ class MeetingsController < Comfy::Admin::Cms::BaseController
             a.trigger = '-PT30M'
           end
         end
-        cal.publish
         file = cal.to_ical
         attachment = { filename: filename, mime_type: "text/calendar;method=REQUEST;name=\'#{filename}\'", content: file }
         blob = ActiveStorage::Blob.create_and_upload!(io: StringIO.new(attachment[:content]), filename: attachment[:filename], content_type: attachment[:mime_type], metadata: nil)
