@@ -22,7 +22,7 @@ class MeetingsController < Comfy::Admin::Cms::BaseController
   # POST /meetings or /meetings.json
   def create
     @meeting = Meeting.new(meeting_params)
-    @meeting.external_meeting_id = "VioletRails@#{SecureRandom.uuid}"
+    @meeting.external_meeting_id = "#{SecureRandom.uuid}.#{Apartment::Tenant.current}@#{ENV['APP_HOST']}"
     @meeting.status = 'CONFIRMED'
     @meeting.participant_emails = meeting_params[:participant_emails].filter{ |node| URI::MailTo::EMAIL_REGEXP.match?(node) }
   
@@ -44,6 +44,8 @@ class MeetingsController < Comfy::Admin::Cms::BaseController
         end
         
         cal.event do |e|
+          e.uid = @meeting.external_meeting_id
+          e.sequence = Time.now.to_i
           e.dtstart     = Icalendar::Values::DateTime.new(@meeting.start_time, tzid: @meeting.timezone)
           e.dtend       = Icalendar::Values::DateTime.new(@meeting.end_time, tzid: @meeting.timezone)
           e.summary     = @meeting.name
@@ -51,7 +53,6 @@ class MeetingsController < Comfy::Admin::Cms::BaseController
           e.location    = @meeting.location
           e.attendee = Icalendar::Values::CalAddress.new("mailto:#{from_address}", partstat: 'ACCEPTED')
           @meeting.participant_emails.each do |email|
-            e.attendee = Icalendar::Values::CalAddress.new("mailto:#{email}", partstat: 'NEEDS-ACTION')
             attendee_params = { 
               "CUTYPE"   => "INDIVIDUAL",
               "ROLE"     => "REQ-PARTICIPANT",
