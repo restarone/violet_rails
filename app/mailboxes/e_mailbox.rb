@@ -17,16 +17,17 @@ class EMailbox < ApplicationMailbox
               subject: subject
             )
           end
-
+          uploaded_attachments = attachments
+          multipart_attachments = multipart_attached
           message = Message.create!(
             email_message_id: mail.message_id,
             message_thread: message_thread,
-            content: body,
+            content: body(uploaded_attachments),
             from: mail.from.join(', '),
-            attachments: (attachments + multipart_attached).map{ |a| a[:blob] }
+            attachments: (uploaded_attachments + multipart_attachments).map{ |a| a[:blob] }
           )
           message_thread.update(unread: true)
-          process_attachments if attachments.size > 0
+          process_attachments(uploaded_attachments) if uploaded_attachments.size > 0
           ApiNamespace::Plugin::V1::SubdomainEventsService.new(message).track_event
         end
       end
@@ -61,10 +62,10 @@ class EMailbox < ApplicationMailbox
     return blobs
   end
 
-  def body
+  def body(uploaded_blobs)
     if mail.multipart? && mail.html_part
       document = Nokogiri::HTML(mail.html_part.body.decoded)
-      attachments.map do |attachment_hash|
+      uploaded_blobs.map do |attachment_hash|
         attachment = attachment_hash[:original]
         blob = attachment_hash[:blob]
         if attachment.content_id.present?
@@ -93,9 +94,9 @@ class EMailbox < ApplicationMailbox
     subject.gsub(/^((re|fw(d)?): )/i, '')
   end
 
-  def process_attachments
+  def process_attachments(blobs)
     # process .ics files
-    ics_files = attachments.select {|attachment| attachment[:original].content_type.include?('.ics') }
+    ics_files = blobs.select {|attachment| attachment[:original].content_type.include?('.ics') }
     ics_files.each do |ics_file|
       ics_string = ics_file[:blob].download
       calendars = Icalendar::Calendar.parse(ics_string)
