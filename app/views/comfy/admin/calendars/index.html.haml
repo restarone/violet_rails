@@ -1,0 +1,38 @@
+.page-header
+  .h2
+    Calendar
+  %p Early access, feature under active development
+
+
+= month_calendar(events: @meetings, attribute: :start_time) do |date, meetings|
+  = date
+  - meetings.each do |meeting|
+    %div
+      = meeting.name
+
+.h2 Listing meetings
+
+%table.table
+  %thead
+    %tr
+      %th Name
+      %th Start time
+      %th Participant emails
+      %th Status
+      %th
+      %th
+
+  %tbody
+    - @meetings.each do |meeting|
+      %tr
+        %td
+          = link_to meeting.name, meeting
+        %td= meeting.start_time
+        %td= meeting.participant_emails
+        %td= meeting.status
+        %td= link_to 'Edit', edit_meeting_path(meeting)
+        %td= link_to 'Destroy', meeting, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New Meeting', new_meeting_path

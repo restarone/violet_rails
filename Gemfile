@@ -125,3 +125,6 @@ gem 'devise-two-factor', "4.0.2"
 gem "slowpoke"
 
 gem "strong_migrations"
+gem "simple_calendar", "~> 3.0"
+
+gem "icalendar", "~> 2.9"
