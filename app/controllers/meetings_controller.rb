@@ -49,8 +49,18 @@ class MeetingsController < Comfy::Admin::Cms::BaseController
           e.summary     = @meeting.name
           e.description = @meeting.description
           e.location    = @meeting.location
+          e.attendee = Icalendar::Values::CalAddress.new("mailto:#{from_address}", partstat: 'ACCEPTED')
           @meeting.participant_emails.each do |email|
-            e.attendee = Icalendar::Values::CalAddress.new("mailto:#{email}", partstat: 'accepted')
+            e.attendee = Icalendar::Values::CalAddress.new("mailto:#{email}", partstat: 'NEEDS-ACTION')
+            attendee_params = { 
+              "CUTYPE"   => "INDIVIDUAL",
+              "ROLE"     => "REQ-PARTICIPANT",
+              "PARTSTAT" => "NEEDS-ACTION",
+              "RSVP"     => "TRUE",
+            }
+
+            attendee_value = Icalendar::Values::Text.new("MAILTO:#{email}", attendee_params)
+            cal.append_custom_property("ATTENDEE", attendee_value)
           end
           e.status = "CONFIRMED"
           e.organizer = Icalendar::Values::CalAddress.new("mailto:#{from_address}", cn: from_address)
@@ -60,6 +70,7 @@ class MeetingsController < Comfy::Admin::Cms::BaseController
             a.trigger = '-PT30M'
           end
         end
+        cal.append_custom_property('METHOD', 'REQUEST')
         cal.append_custom_property('METHOD', 'REQUEST')
         cal.publish
         file = cal.to_ical
