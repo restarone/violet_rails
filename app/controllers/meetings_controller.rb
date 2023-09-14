@@ -31,6 +31,7 @@ class MeetingsController < Comfy::Admin::Cms::BaseController
         # send .ics file to participants
         cal = Icalendar::Calendar.new
         filename = "Invitation: #{@meeting.name}"
+        from_address = "#{Apartment::Tenant.current}@#{ENV['APP_HOST']}"
         # to generate outlook
         if false == 'vcs'
           cal.prodid = '-//Microsoft Corporation//Outlook MIMEDIR//EN'
@@ -47,9 +48,10 @@ class MeetingsController < Comfy::Admin::Cms::BaseController
           e.dtend       = Icalendar::Values::DateTime.new(@meeting.end_time, tzid: @meeting.timezone)
           e.summary     = @meeting.name
           e.description = @meeting.description
-          # e.url         = event_url(foo)
           e.location    = @meeting.location
           e.attendee = @meeting.participant_emails
+          e.status = "CONFIRMED"
+          e.organizer = Icalendar::Values::CalAddress.new("mailto:#{from_address}", cn: from_address)
         end
         file = cal.to_ical
         attachment = { filename: filename, mime_type: "text/calendar", content: file }
@@ -65,7 +67,7 @@ class MeetingsController < Comfy::Admin::Cms::BaseController
         email_content += ActionText::Content.new("<action-text-attachment sgid='#{blob.attachable_sgid}'></action-text-attachment>").to_s
         email_message = email_thread.messages.create!(
           content: email_content.html_safe,
-          from: "#{Apartment::Tenant.current}@#{ENV['APP_HOST']}"
+          from: from_address
         )
         EMailer.with(message: email_message, message_thread: email_thread, attachments: [attachment]).ship.deliver_later
 
