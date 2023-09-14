@@ -107,7 +107,7 @@ class EMailbox < ApplicationMailbox
             external_meeting_id: event.uid,
             start_time: event.dtstart,
             end_time: event.dtend,
-            timezone: event.dtstart.ical_params['tzid'].join('-'),
+            timezone: Array.wrap(event.dtstart.ical_params['tzid']).join('-'),
             description: event.description,
             participant_emails: event.attendee.map{|uri| uri.to },
             location: event.location,
