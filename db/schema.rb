@@ -431,14 +431,14 @@ ActiveRecord::Schema.define(version: 2023_09_13_160600) do
 
   create_table "meetings", force: :cascade do |t|
     t.string "name"
-    t.datetime "start_time"
-    t.datetime "end_time"
+    t.datetime "start_time", null: false
+    t.datetime "end_time", null: false
     t.text "participant_emails", default: [], array: true
     t.text "description"
-    t.string "timezone"
+    t.string "timezone", null: false
     t.string "location"
-    t.string "status"
-    t.string "external_meeting_id"
+    t.string "status", null: false
+    t.string "external_meeting_id", null: false
     t.jsonb "custom_properties", default: "{}"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
