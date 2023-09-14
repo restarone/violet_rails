@@ -72,7 +72,6 @@ class MeetingsController < Comfy::Admin::Cms::BaseController
           end
         end
         cal.append_custom_property('METHOD', 'REQUEST')
-        cal.append_custom_property('METHOD', 'REQUEST')
         cal.publish
         file = cal.to_ical
         attachment = { filename: filename, mime_type: "text/calendar", content: file }
