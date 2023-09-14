@@ -1,0 +1,33 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @meeting.name
+%p
+  %b Start time:
+  = @meeting.start_time
+%p
+  %b End time:
+  = @meeting.end_time
+%p
+  %b Participant emails:
+  = @meeting.participant_emails
+%p
+  %b Description:
+  = @meeting.description
+%p
+  %b Timezone:
+  = @meeting.timezone
+%p
+  %b Location:
+  = @meeting.location
+%p
+  %b Status:
+  = @meeting.status
+%p
+  %b External meeting:
+  = @meeting.external_meeting_id
+
+= link_to 'Edit', edit_meeting_path(@meeting)
+\|
+= link_to 'Back', meetings_path
