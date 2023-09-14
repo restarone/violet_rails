@@ -54,9 +54,9 @@ class MeetingsController < Comfy::Admin::Cms::BaseController
           e.attendee = Icalendar::Values::CalAddress.new("mailto:#{from_address}", partstat: 'ACCEPTED')
           @meeting.participant_emails.each do |email|
             attendee_params = { 
-              "CUTYPE"   => "INDIVIDUAL",
-              "ROLE"     => "REQ-PARTICIPANT",
-              "PARTSTAT" => "NEEDS-ACTION",
+              # "CUTYPE"   => "INDIVIDUAL",
+              # "ROLE"     => "REQ-PARTICIPANT",
+              # "PARTSTAT" => "NEEDS-ACTION",
               "RSVP"     => "TRUE",
             }
 
