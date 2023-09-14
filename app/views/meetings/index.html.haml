@@ -1,0 +1,37 @@
+%h1 Listing meetings
+
+%table
+  %thead
+    %tr
+      %th Name
+      %th Start time
+      %th End time
+      %th Participant emails
+      %th Description
+      %th Timezone
+      %th Location
+      %th Status
+      %th External meeting
+      %th
+      %th
+      %th
+
+  %tbody
+    - @meetings.each do |meeting|
+      %tr
+        %td= meeting.name
+        %td= meeting.start_time
+        %td= meeting.end_time
+        %td= meeting.participant_emails
+        %td= meeting.description
+        %td= meeting.timezone
+        %td= meeting.location
+        %td= meeting.status
+        %td= meeting.external_meeting_id
+        %td= link_to 'Show', meeting
+        %td= link_to 'Edit', edit_meeting_path(meeting)
+        %td= link_to 'Destroy', meeting, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New Meeting', new_meeting_path
