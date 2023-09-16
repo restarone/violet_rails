@@ -53,10 +53,8 @@ export default class RoomController extends Controller {
     // Be polite to newcomers!
     const polite = !!otherClient.newcomer
 
-    otherClient.negotiation = this.createNegotiation({
-      otherClientId: otherClient.id,
-      polite
-    })
+
+    otherClient.negotiation = this.createNegotiation({ otherClient, polite })
 
     // The polite client sets up the negotiation last, so we can start streaming
     // The impolite client signals to the other client that it's ready
@@ -67,16 +65,16 @@ export default class RoomController extends Controller {
     }
   }
 
-  createNegotiation ({ otherClientId, polite }) {
+  createNegotiation ({ otherClient, polite }) {
     const negotiation = new WebrtcNegotiation({
       signaller: this.signaller,
-      clientId: this.client.id,
-      otherClientId: otherClientId,
+      client: this.client,
+      otherClient: otherClient,
       polite
     })
 
-    negotiation.peerConnection.addEventListener('track', (event) => {
-      this.startStreamingFrom(otherClientId, event)
+    otherClient.on('track', ({detail}) => {
+      this.startStreamingFrom(otherClient.id, detail)
     })
 
     return negotiation

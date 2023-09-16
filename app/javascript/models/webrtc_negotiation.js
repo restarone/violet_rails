@@ -1,35 +1,14 @@
 export default class WebrtcNegotiation {
-  constructor ({ clientId, otherClientId, polite, signaller }) {
-    this.clientId = clientId
-    this.otherClientId = otherClientId
+  constructor ({ client, otherClient, polite, signaller }) {
+    this.client = client
+    this.otherClient = otherClient
     this.polite = polite
-    this.peerConnection = new RTCPeerConnection()
     this.signaller = signaller
     this.makingOffer = false
     this.isSettingRemoteAnswerPending = false
     this.candidates = []
 
-    this.peerConnection.addEventListener('negotiationneeded', () => {
-      this.createOffer()
-    })
-
-    this.peerConnection.addEventListener('icecandidate', ({ candidate }) => {
-      this.signaller.signal({
-        type: candidate ? 'candidate' : undefined,
-        to: this.otherClientId,
-        from: this.clientId,
-        candidate
-      })
-    })
-
-    this.peerConnection.addEventListener('iceconnectionstatechange', () => {
-      if (this.peerConnection.iceConnectionState === 'disconnected') {
-        this.signaller.signal({
-          type: 'candidate:disconnected',
-          from: this.otherClientId
-        })
-      }
-    })
+    this.setupPeerConnection()
   }
 
   async createOffer () {
@@ -64,8 +43,8 @@ export default class WebrtcNegotiation {
       type: (
         this.peerConnection.localDescription ? 'description' : undefined
       ),
-      to: this.otherClientId,
-      from: this.clientId,
+      to: this.otherClient,
+      from: this.client,
       description: this.peerConnection.localDescription
     })
   }
@@ -108,5 +87,35 @@ export default class WebrtcNegotiation {
 
   ignore (description) {
     return !this.polite && this.collides(description)
+  }
+
+  setupPeerConnection () {
+    this.peerConnection = new RTCPeerConnection()
+
+    this.peerConnection.addEventListener('negotiationneeded', () => {
+      this.createOffer()
+    })
+
+    this.peerConnection.addEventListener('icecandidate', ({ candidate }) => {
+      this.signaller.signal({
+        type: candidate ? 'candidate' : undefined,
+        to: this.otherClient.id,
+        from: this.client.id,
+        candidate
+      })
+    })
+
+    this.peerConnection.addEventListener('iceconnectionstatechange', () => {
+      if (this.peerConnection.iceConnectionState === 'disconnected') {
+        this.signaller.signal({
+          type: 'candidate:disconnected',
+          from: this.otherClient.id
+        })
+      }
+    })
+
+    this.peerConnection.addEventListener('track', (event) => {
+      this.otherClient.broadcast('track', event)
+    })
   }
 }
