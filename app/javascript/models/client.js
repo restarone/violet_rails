@@ -35,4 +35,9 @@ export default class Client {
     if (name) return delete this.callbacks[name]
     else this.callbacks = {}
   }
+
+  stop () {
+    this.off()
+    this.negotiation.stop()
+  }
 }

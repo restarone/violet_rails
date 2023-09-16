@@ -1,15 +1,14 @@
 import { cable } from '@hotwired/turbo-rails'
 
 export default class RoomSubscription {
-  constructor ({ controller, id, clientId }) {
-    this.controller = controller
+  constructor ({ delegate, id, clientId }) {
+    this.delegate = delegate
     this.id = id
     this.clientId = clientId
   }
 
   async start () {
     const self = this
-    const controller = this.controller
 
     this.subscription = await cable.subscribeTo({
       channel: 'RoomChannel',
@@ -24,7 +23,7 @@ export default class RoomSubscription {
         // Ignore self-sent data
         if (data.from === self.clientId) return
 
-        if (data.type === 'ping') controller.greetNewClient(data)
+        if (data.type === 'ping') self.delegate.roomPinged(data)
       }
     })
 

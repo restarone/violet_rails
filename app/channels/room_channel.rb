@@ -8,7 +8,7 @@ class RoomChannel < ApplicationCable::Channel
   def unsubscribed
     Turbo::StreamsChannel.broadcast_remove_to(
       find_room,
-      target: "media_#{current_client.id}"
+      target: "medium_#{current_client.id}"
     )
   end
 
@@ -16,7 +16,7 @@ class RoomChannel < ApplicationCable::Channel
     Turbo::StreamsChannel.broadcast_append_to(
       data['to'],
       target: 'media',
-      partial: 'media/media',
+      partial: 'media/medium',
       locals: { client_id: data['from'] }
     )
   end

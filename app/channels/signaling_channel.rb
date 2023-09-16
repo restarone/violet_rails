@@ -1,4 +1,4 @@
-class WebrtcSessionChannel < ApplicationCable::Channel
+class SignalingChannel < ApplicationCable::Channel
   def subscribed
     stream_for Room.new(id: params[:id])
   end
