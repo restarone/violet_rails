@@ -2,12 +2,18 @@ import { Controller } from '@hotwired/stimulus'
 
 export default class MediaController extends Controller {
   connect () {
+    this.reRenderMediaElement()
     this.dispatch('connect', {
       detail: { clientId: this.clientIdValue }
     })
   }
 
-
+  reRenderMediaElement () {
+    const mediaElement = this.mediaElementTarget
+    const clone = mediaElement.cloneNode(true)
+    mediaElement.parentNode.insertBefore(clone, mediaElement)
+    mediaElement.remove()
+  }
 
   disconnect() {
     this.dispatch('disconnect', {
@@ -24,3 +30,4 @@ export default class MediaController extends Controller {
 }
 
 MediaController.values = { clientId: String }
+MediaController.targets = ['mediaElement']
