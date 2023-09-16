@@ -21,6 +21,11 @@ Rails.application.routes.draw do
   post 'import_api_namespace', to: 'comfy/admin/api_namespaces#import_as_json', as: :import_as_json_api_namespaces
 
   get 'v2/dashboard', to: 'comfy/admin/v2/dashboard#dashboard'
+
+  # video calling, lock down new/create actions-- and allow public show action
+  get 'rooms', to: 'comfy/admin/rooms#new'
+  post 'rooms', to: 'comfy/admin/rooms#create'
+  resources :rooms, only: [:show]
   
   resources :signup_wizard
   resources :signin_wizard

@@ -1,0 +1,15 @@
+<div
+  class="medium"
+  id="medium_<%= client_id %>"
+  data-controller="medium"
+  data-room-target="remoteMedium"
+>
+  <div>
+    <video autoplay playsinline data-medium-target="mediaElement"></video>
+  </div>
+  <% if user %>
+    <div>
+      <p><%= user.name %></p>
+    </div>
+  <% end %>
+</div>
