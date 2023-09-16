@@ -32,10 +32,10 @@ export default class WebrtcNegotiation {
     })
   }
 
-  createOffer () {
+  async createOffer () {
     try {
       this.makingOffer = true
-      this.setLocalDescription()
+      this.setLocalDescription(await this.peerConnection.createOffer())
     } catch (error) {
       console.error(error)
     } finally {
@@ -47,19 +47,18 @@ export default class WebrtcNegotiation {
     try {
       if (this.ignore(description)) return
 
-      this.isSettingRemoteAnswerPending = description.type === 'answer'
-      await this.peerConnection.setRemoteDescription(description) // SRD rolls back as needed
-      this.addCandidates()
-      this.isSettingRemoteAnswerPending = false
+      this.setRemoteDescription(description)
 
-      if (description.type === 'offer') this.setLocalDescription()
+      if (description.type === 'offer') {
+        this.setLocalDescription(await this.peerConnection.createAnswer())
+      } 
     } catch (error) {
       if (!this.ignore(description)) throw error
     }
   }
 
-  async setLocalDescription () {
-    await this.peerConnection.setLocalDescription()
+  async setLocalDescription (description) {
+    await this.peerConnection.setLocalDescription(description)
 
     this.signaller.signal({
       type: (
@@ -69,6 +68,14 @@ export default class WebrtcNegotiation {
       from: this.clientId,
       description: this.peerConnection.localDescription
     })
+  }
+
+
+  async setRemoteDescription (description) {
+    this.isSettingRemoteAnswerPending = description.type === 'answer'
+    await this.peerConnection.setRemoteDescription(description) // SRD rolls back as needed
+    this.addCandidates()
+    this.isSettingRemoteAnswerPending = false
   }
 
   addCandidate (candidate) {
