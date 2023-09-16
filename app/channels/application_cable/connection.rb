@@ -20,7 +20,6 @@ module ApplicationCable
     def bind_user_to_client(client)
       user = env['warden']&.user
       if user
-        user
         client.user_id = user.id
       else
         nil
