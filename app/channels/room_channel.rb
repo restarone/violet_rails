@@ -13,11 +13,12 @@ class RoomChannel < ApplicationCable::Channel
   end
 
   def greet(data)
+    user = User.find_by(id: current_client.user_id)
     Turbo::StreamsChannel.broadcast_append_to(
       data['to'],
       target: 'media',
       partial: 'media/medium',
-      locals: { client_id: data['from'] }
+      locals: { client_id: data['from'], user:  user}
     )
   end
 

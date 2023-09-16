@@ -11,8 +11,14 @@
 >
   <div class="media" id="media">
     <div class="medium medium--local" data-controller="medium">
-      <video data-room-target="localMedium" data-medium-target="mediaElement" muted autoplay playsinline></video>
-
+      <div>
+        <video data-room-target="localMedium" data-medium-target="mediaElement" muted autoplay playsinline></video>
+      </div>
+      <% if @user %>
+        <div>
+          <p><%= @user.name %></p>
+        </div>
+      <% end %>
       <div class="medium-actions">
         <%= button_tag 'Enter',  data: { room_target: 'enter', action: 'room#enter' } %>
       </div>
