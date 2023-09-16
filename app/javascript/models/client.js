@@ -8,6 +8,15 @@ export default class Client {
     return this.negotiation && this.negotiation.peerConnection
   }
 
+  streamTo (otherClient) {
+    if (!otherClient.streaming) {
+      this.stream.getTracks().forEach(track => {
+        otherClient.peerConnection.addTrack(track, this.stream)
+      })
+      otherClient.streaming = true
+    }
+  }
+
   on (name, callback) {
     const names = name.split(' ')
     names.forEach((name) => {
