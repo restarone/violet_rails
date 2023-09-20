@@ -1,6 +1,5 @@
 import Sortable from 'sortablejs';
 import jQuery from 'jquery';
-import "bootstrap";
 import "controllers"
 
 global.$ = global.jQuery = jQuery;
