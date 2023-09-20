@@ -246,3 +246,8 @@
 
     %hr.m-0
     = render partial: 'events', locals: (@legacy_and_system_events.present? ? @legacy_and_system_events : { events_exists: false }).merge({ event_category: 'system_events' })
+
+:javascript
+  $(document).ready(function() {
+    $('[data-toggle="tooltip"]').tooltip();
+  })
