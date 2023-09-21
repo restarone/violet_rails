@@ -1,6 +1,7 @@
 import Sortable from 'sortablejs';
 import jQuery from 'jquery';
-import "controllers"
+import "controllers";
+import "chartkick/chart.js";
 
 global.$ = global.jQuery = jQuery;
 
