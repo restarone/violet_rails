@@ -72,7 +72,6 @@ function resetIndex(containerId) {
       });
   }
 
-
 require("../../trix")
 require("../../select2")
 require("../../common")
