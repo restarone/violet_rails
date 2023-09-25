@@ -1,7 +1,7 @@
 import Sortable from 'sortablejs';
 import jQuery from 'jquery';
-import "bootstrap";
-import "controllers"
+import "controllers";
+import "chartkick/chart.js";
 
 global.$ = global.jQuery = jQuery;
 
@@ -72,7 +72,7 @@ function resetIndex(containerId) {
       });
   }
 
-
-
+require("../../trix")
+require("../../select2")
 require("../../common")
 require("../../turbo")
