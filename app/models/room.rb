@@ -1,10 +1,4 @@
-class Room
-  attr_reader :id
-
-  def initialize(id:)
-    @id = id
-  end
-
+class Room < ApplicationRecord
    def to_param
      id
    end

@@ -4,6 +4,8 @@ class Comfy::Admin::RoomsController < Comfy::Admin::Cms::BaseController
   end
 
   def create
-    redirect_to room_path(SecureRandom.uuid)
+    external_room_id = SecureRandom.uuid
+    Room.create!(external_room_id: external_room_id)
+    redirect_to room_path(external_room_id)
   end
 end

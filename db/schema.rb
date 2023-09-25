@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_09_13_160600) do
+ActiveRecord::Schema.define(version: 2023_09_25_182202) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -431,14 +431,14 @@ ActiveRecord::Schema.define(version: 2023_09_13_160600) do
 
   create_table "meetings", force: :cascade do |t|
     t.string "name"
-    t.datetime "start_time", null: false
-    t.datetime "end_time", null: false
+    t.datetime "start_time"
+    t.datetime "end_time"
     t.text "participant_emails", default: [], array: true
     t.text "description"
-    t.string "timezone", null: false
+    t.string "timezone"
     t.string "location"
-    t.string "status", null: false
-    t.string "external_meeting_id", null: false
+    t.string "status"
+    t.string "external_meeting_id"
     t.jsonb "custom_properties", default: "{}"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -476,6 +476,17 @@ ActiveRecord::Schema.define(version: 2023_09_13_160600) do
     t.boolean "allow_attachments", default: false
     t.index ["api_namespace_id"], name: "index_non_primitive_properties_on_api_namespace_id"
     t.index ["api_resource_id"], name: "index_non_primitive_properties_on_api_resource_id"
+  end
+
+  create_table "rooms", force: :cascade do |t|
+    t.string "name"
+    t.string "external_room_id", null: false
+    t.boolean "active", default: true
+    t.bigint "user_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["external_room_id"], name: "index_rooms_on_external_room_id", unique: true
+    t.index ["user_id"], name: "index_rooms_on_user_id"
   end
 
   create_table "subdomain_requests", force: :cascade do |t|
@@ -621,5 +632,6 @@ ActiveRecord::Schema.define(version: 2023_09_13_160600) do
   add_foreign_key "messages", "message_threads"
   add_foreign_key "non_primitive_properties", "api_namespaces"
   add_foreign_key "non_primitive_properties", "api_resources"
+  add_foreign_key "rooms", "users"
   add_foreign_key "webhook_verification_methods", "external_api_clients"
 end
