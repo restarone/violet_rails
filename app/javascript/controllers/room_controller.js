@@ -31,10 +31,13 @@ export default class RoomController extends Controller {
       let video = $('#allowVideo').is(':checked')
       let audio = $('#allowAudio').is(':checked')
       const constraints = { audio: audio, video: video }
-      this.client.stream = await navigator.mediaDevices.getUserMedia(constraints)
+      this.client.constraints = constraints
+      if (video || audio) {
+        this.client.stream = await navigator.mediaDevices.getUserMedia(constraints)
+      }
       this.localMediumTarget.srcObject = this.client.stream
       this.localMediumTarget.muted = true // Keep muted on Firefox
-      this.enterTarget.hidden = true
+      this.enterTarget.hidden = true // Hide enter controls
 
       this.subscription.start()
       this.signaller.start()
@@ -97,7 +100,9 @@ export default class RoomController extends Controller {
   }
 
   startStreamingTo (otherClient) {
-    this.client.streamTo(otherClient)
+    if (this.client.constraints.video || this.client.constraints.audio) {
+      this.client.streamTo(otherClient)
+    }
   }
 
   startStreamingFrom (id, { track, streams: [stream] }) {
