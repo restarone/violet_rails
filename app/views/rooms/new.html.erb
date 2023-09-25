@@ -5,9 +5,15 @@
   <p>Early access, feature under active development</p>
 </div>
 
-<%= form_with url: rooms_path do |form| %>
-  <%= form.label "Room owner broadcast" %>
-  <%= form.check_box :one_to_many %>
+<%= form_for @room, url: rooms_path do |form| %>
+  <div>
+    <%= form.label "Room owner broadcast (spectators only)" %>
+    <%= form.check_box :owner_broadcast_only, checked: false %>
+  </div>
+  <div>
+    <%= form.label "Require authentication (no visitors)" %>
+    <%= form.check_box :require_authentication, checked: false %>
+  </div>
   <div>
     <%= form.submit 'Create Room', class: 'btn btn-primary' %>
   </div>

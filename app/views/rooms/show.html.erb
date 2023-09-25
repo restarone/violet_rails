@@ -1,7 +1,13 @@
 <%= turbo_stream_from @room %>
 <%= turbo_stream_from @client.id %>
 
-<p>Room ID: <%= @room.external_room_id %></p>
+<p>
+  <% if @room.require_authentication %>
+    Secure Room ID: <%= @room.external_room_id %>
+  <% else %>
+    Public Room ID: <%= @room.external_room_id %>
+  <% end %>
+</p>
 
 <article
   class="room"
@@ -21,10 +27,15 @@
       <% end %>
       <div class="medium-actions">
         <div class="enter" data-room-target="enter">
-          <%= label_tag "enable video?" %>
-          <%= check_box_tag :allowVideo, true %>
-          <%= label_tag "enable audio?" %>
-          <%= check_box_tag :allowAudio, true %>
+          <% if !@room.owner_broadcast_only %>
+            <%= render "controls" %>
+          <% else %>
+            <% if @is_room_owner %>
+              <%= render "controls" %>
+            <% else %>
+              <p>The owner of the room does not allow participants to share audio/video</p>
+            <% end %>
+          <% end %>
           <%= button_tag 'Enter',  data: { action: 'room#enter' }, class: 'btn btn-primary d-block' %>
         </div>
       </div>
