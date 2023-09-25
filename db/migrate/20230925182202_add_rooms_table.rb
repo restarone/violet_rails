@@ -7,6 +7,7 @@ class AddRoomsTable < ActiveRecord::Migration[6.1]
       t.references :user, null: true, foreign_key: true
       t.boolean :require_authentication, default: true
       t.boolean :owner_broadcast_only, default: true
+      t.integer :participant_count, default: 0
 
       t.timestamps
     end

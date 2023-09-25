@@ -8,11 +8,14 @@
     Public Room ID: <%= @room.external_room_id %>
   <% end %>
 </p>
+<div id="room-stats">
+  <%= render 'rooms/participants', room: @room %>
+</div>
 
 <article
   class="room"
   data-controller="room"
-  data-room-id-value="<%= @room.id %>"
+  data-room-id-value="<%= @room.external_room_id %>"
   data-room-client-id-value="<%= @client.id %>"
 >
   <div class="media" id="media">

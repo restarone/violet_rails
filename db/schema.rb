@@ -485,6 +485,7 @@ ActiveRecord::Schema.define(version: 2023_09_25_182202) do
     t.bigint "user_id"
     t.boolean "require_authentication", default: true
     t.boolean "owner_broadcast_only", default: true
+    t.integer "participant_count", default: 0
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["external_room_id"], name: "index_rooms_on_external_room_id", unique: true
