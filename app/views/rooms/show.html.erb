@@ -20,7 +20,13 @@
         </div>
       <% end %>
       <div class="medium-actions">
-        <%= button_tag 'Enter',  data: { room_target: 'enter', action: 'room#enter' } %>
+        <%= label_tag "enable video?" %>
+        <%= check_box :video?, "allow_video" %>
+        <%= label_tag "enable audio?" %>
+        <%= check_box_tag :audio?, "allow_audio" %>
+        <div>
+          <%= button_tag 'Enter',  data: { room_target: 'enter', action: 'room#enter' }, class: 'btn btn-primary d-block' %>
+        </div>
       </div>
     </div>
   </div>

@@ -6,5 +6,9 @@
 </div>
 
 <%= form_with url: rooms_path do |form| %>
-  <%= form.submit 'Create Room' %>
+  <%= form.label "Room owner broadcast" %>
+  <%= form.check_box :one_to_many %>
+  <div>
+    <%= form.submit 'Create Room', class: 'btn btn-primary' %>
+  </div>
 <% end %>
