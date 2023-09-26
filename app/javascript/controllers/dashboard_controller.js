@@ -4,8 +4,6 @@ import 'daterangepicker';
 
 export default class extends Controller {
   initialize() {
-    $('[data-toggle="tooltip"]').tooltip();
-
     $('#reportrange').daterangepicker({
         opens: 'left',
         locale: {
