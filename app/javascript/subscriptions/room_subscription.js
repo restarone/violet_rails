@@ -1,4 +1,6 @@
-import { cable } from '@hotwired/turbo-rails'
+// importing 'cable' in typical way from @hotwired/turbo-rails attempts to register "turbo-frame" element multiple times. Due to this, imported cable in a peculiar way.
+// This is fixed in newer version but breaks the API's "search by properties" functionality.
+import * as cable from '@hotwired/turbo-rails/app/javascript/turbo/cable'
 
 export default class RoomSubscription {
   constructor ({ delegate, id, clientId }) {
