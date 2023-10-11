@@ -42,7 +42,7 @@ class Comfy::Admin::Cms::PagesController < Comfy::Admin::Cms::BaseController
     flash[:success] = I18n.t("comfy.admin.cms.pages.created")
     redirect_to action: :edit, id: @page
   rescue ActiveRecord::RecordInvalid
-    flash.now[:danger] = I18n.t("comfy.admin.cms.pages.creation_failure")
+    flash.now[:danger] = "#{I18n.t("comfy.admin.cms.pages.creation_failure")} because: #{@page.errors.full_messages.to_sentence}"
     render action: :new
   end
 
