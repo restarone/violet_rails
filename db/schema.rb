@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_09_13_160600) do
+ActiveRecord::Schema.define(version: 2023_09_25_182202) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -478,6 +478,20 @@ ActiveRecord::Schema.define(version: 2023_09_13_160600) do
     t.index ["api_resource_id"], name: "index_non_primitive_properties_on_api_resource_id"
   end
 
+  create_table "rooms", force: :cascade do |t|
+    t.string "name"
+    t.string "external_room_id", null: false
+    t.boolean "active", default: true
+    t.bigint "user_id"
+    t.boolean "require_authentication", default: true
+    t.boolean "owner_broadcast_only", default: true
+    t.integer "participant_count", default: 0
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["external_room_id"], name: "index_rooms_on_external_room_id", unique: true
+    t.index ["user_id"], name: "index_rooms_on_user_id"
+  end
+
   create_table "subdomain_requests", force: :cascade do |t|
     t.string "subdomain_name"
     t.string "email"
@@ -621,5 +635,6 @@ ActiveRecord::Schema.define(version: 2023_09_13_160600) do
   add_foreign_key "messages", "message_threads"
   add_foreign_key "non_primitive_properties", "api_namespaces"
   add_foreign_key "non_primitive_properties", "api_resources"
+  add_foreign_key "rooms", "users"
   add_foreign_key "webhook_verification_methods", "external_api_clients"
 end

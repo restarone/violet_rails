@@ -2,6 +2,7 @@ export default class Client {
   constructor (id) {
     this.callbacks = {}
     this.id = id
+    this.constraints = {}
   }
 
   get peerConnection () {

@@ -1,12 +1,21 @@
 <%= turbo_stream_from @room %>
 <%= turbo_stream_from @client.id %>
 
-<p>Room ID: <%= @room.id %></p>
+<p>
+  <% if @room.require_authentication %>
+    Secure Room ID: <%= @room.external_room_id %>
+  <% else %>
+    Public Room ID: <%= @room.external_room_id %>
+  <% end %>
+</p>
+<div id="room-stats">
+  <%= render 'rooms/participants', room: @room %>
+</div>
 
 <article
   class="room"
   data-controller="room"
-  data-room-id-value="<%= @room.id %>"
+  data-room-id-value="<%= @room.external_room_id %>"
   data-room-client-id-value="<%= @client.id %>"
 >
   <div class="media" id="media">
@@ -20,7 +29,18 @@
         </div>
       <% end %>
       <div class="medium-actions">
-        <%= button_tag 'Enter',  data: { room_target: 'enter', action: 'room#enter' } %>
+        <div class="enter" data-room-target="enter">
+          <% if !@room.owner_broadcast_only %>
+            <%= render "controls" %>
+          <% else %>
+            <% if @is_room_owner %>
+              <%= render "controls" %>
+            <% else %>
+              <p>The owner of the room does not allow participants to share audio/video</p>
+            <% end %>
+          <% end %>
+          <%= button_tag 'Enter',  data: { action: 'room#enter' }, class: 'btn btn-primary d-block' %>
+        </div>
       </div>
     </div>
   </div>
