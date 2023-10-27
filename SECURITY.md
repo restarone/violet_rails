@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-Its recommended to use the main/master branch of Violet Rails to stay up-date on security patches
+Its recommended to use the main/master branch of Violet Rails to stay up-to-date on security patches
 
 | Version | Supported          |
 | ------- | ------------------ |
@@ -11,7 +11,7 @@ Its recommended to use the main/master branch of Violet Rails to stay up-date on
 
 ## Reporting a Vulnerability
 
-Please use Github issues to document any vulnerabilities. Be sure to include: 
+Please use GitHub Issues to document any vulnerabilities. Be sure to include: 
 
 1. Version (if using Git Tags) or commit hash
 2. description
