@@ -28,14 +28,14 @@ To launch a review app, open a PR on this repository and add the `deploy-review-
 
 <img width="1059" alt="Screen Shot 2023-04-06 at 6 18 31 PM" src="https://user-images.githubusercontent.com/35935196/230504039-80dad0c7-9530-4942-b07a-be2ba41acb9d.png">
 
-This will trigger a Github Action that will launch an isolated environment for you to test your changes. The action will add a link to the app in a comment as well:  
+This will trigger a GitHub Actions that will launch an isolated environment for you to test your changes. The action will add a link to the app in a comment as well:  
 
 <img width="784" alt="Screen Shot 2023-04-06 at 6 20 11 PM" src="https://user-images.githubusercontent.com/35935196/230504198-c768a9b6-c837-4a3f-8529-4ca8ababa791.png">
 
 
 ### View Test coverage report 📋
 
-The test coverage report is generated when the test suite completes running (both in Github Actions and Locally). You can view it by clicking on "Details" next to the Ruby test jobs in Github Actions
+The test coverage report is generated when the test suite completes running (both in GitHub Actions and Locally). You can view it by clicking on "Details" next to the Ruby test jobs in GitHub Actions
 <img width="718" alt="Screen Shot 2023-04-06 at 6 22 15 PM" src="https://user-images.githubusercontent.com/35935196/230504513-68a24694-9214-4b0c-8ede-6b5b3abce7ae.png">
 
 and then clicking on Summary, 
@@ -94,7 +94,7 @@ and hit re-run:
 <img width="1728" alt="Screen Shot 2023-04-01 at 8 38 13 AM" src="https://user-images.githubusercontent.com/35935196/229289281-22bac08b-9800-4108-8893-6ba714c42ca8.png">
 
 ### Review app didnt launch? 
-You can launch a review app for your PR to evaluate your changes on a live production environment (isolated to you of course). Sometimes the CD job that handles deployment fails. To re-run it, select it from Github Actions and click on re-run
+You can launch a review app for your PR to evaluate your changes on a live production environment (isolated to you of course). Sometimes the CD job that handles deployment fails. To re-run it, select it from GitHub Actions and click on re-run.
 
 <img width="1728" alt="Screen Shot 2023-04-01 at 8 38 49 AM" src="https://user-images.githubusercontent.com/35935196/229289350-bac12a5e-f501-4d22-9e3e-f3d4ba27ac7e.png">
 
