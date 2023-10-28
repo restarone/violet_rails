@@ -128,3 +128,5 @@ gem "strong_migrations"
 gem "simple_calendar", "~> 3.0"
 
 gem "icalendar", "~> 2.9"
+
+gem "rails_admin", "~> 3.1"

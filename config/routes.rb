@@ -119,7 +119,9 @@ Rails.application.routes.draw do
     post '/users/sign_in/otp' => 'users/otp/sessions#create'
   end
   # system admin panel authentication (ensure public schema as well)
-  get 'sysadmin', to: 'admin/subdomain_requests#index'
+  # get 'sysadmin', to: 'admin/subdomain_requests#index'
+  mount RailsAdmin::Engine => '/sysadmin', as: 'rails_admin'
+
   namespace :admin do
     authenticate :user, lambda { |u| u.global_admin? } do
       mount Sidekiq::Web => '/sidekiq'
