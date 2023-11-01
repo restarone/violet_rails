@@ -125,7 +125,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
       assert_changes "User.all.size", +1 do
         post user_registration_url(subdomain: @public_subdomain.name), params: payload
         assert_response :redirect
-        assert_redirected_to root_url(subdomain: @public_subdomain.name)
+        assert_redirected_to root_url
         latest_user = User.last
         assert latest_user.email == email
         refute latest_user.global_admin

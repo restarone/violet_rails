@@ -72,9 +72,9 @@ class Comfy::Admin::Cms::PagesControllerTest < ActionDispatch::IntegrationTest
         } }, headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
       end
 
+      assert_response :redirect
+      assert_redirected_to action: :edit, id: @page
     end
-    assert_response :redirect
-    assert_redirected_to action: :edit, id: @page
   end
 
   test 'does not track page update (if tracking is enabled but cookies not consented)' do
@@ -95,9 +95,10 @@ class Comfy::Admin::Cms::PagesControllerTest < ActionDispatch::IntegrationTest
           ]
         } }
       end
+
+      assert_response :redirect
+      assert_redirected_to action: :edit, id: @page
     end
-    assert_response :redirect
-    assert_redirected_to action: :edit, id: @page
   end
 
   test 'does not track page update (if tracking is disabled)' do
@@ -118,9 +119,10 @@ class Comfy::Admin::Cms::PagesControllerTest < ActionDispatch::IntegrationTest
           ]
         } }
       end
+
+      assert_response :redirect
+      assert_redirected_to action: :edit, id: @page
     end
-    assert_response :redirect
-    assert_redirected_to action: :edit, id: @page
   end
 
   test 'does not track page update (if tracking is enabled and cookies disabled)' do
@@ -141,9 +143,10 @@ class Comfy::Admin::Cms::PagesControllerTest < ActionDispatch::IntegrationTest
           ]
         } }, headers: {"HTTP_COOKIE" => "cookies_accepted=false;"}
       end
+
+      assert_response :redirect
+      assert_redirected_to action: :edit, id: @page
     end
-    assert_response :redirect
-    assert_redirected_to action: :edit, id: @page
   end
 
   test 'does not track page update (if tracking is disabled and cookies enabled)' do
@@ -164,8 +167,9 @@ class Comfy::Admin::Cms::PagesControllerTest < ActionDispatch::IntegrationTest
           ]
         } }, headers: {"HTTP_COOKIE" => "cookies_accepted=true;"}
       end
+
+      assert_response :redirect
+      assert_redirected_to action: :edit, id: @page
     end
-    assert_response :redirect
-    assert_redirected_to action: :edit, id: @page
   end
 end

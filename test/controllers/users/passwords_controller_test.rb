@@ -26,7 +26,7 @@ class Users::PasswordsControllerTest < ActionDispatch::IntegrationTest
           assert_response :redirect
         end
   
-        assert_match "<p><a href=\"http://#{@root_subdomain.name}.", Devise::Mailer.deliveries.last.body.to_s
+        assert_match "<p><a href=\"http://localhost/users/password/edit", Devise::Mailer.deliveries.last.body.to_s
       end
     end
   
@@ -62,10 +62,9 @@ class Users::PasswordsControllerTest < ActionDispatch::IntegrationTest
         current_apartment_tenant_name = Apartment::Tenant.current
         current_subdomain_name = @root_subdomain.name
   
-        # Subdomain in url should be 'public'
-        assert_match "<p><a href=\"http://#{current_apartment_tenant_name}.", Devise::Mailer.deliveries.last.body.to_s
-        # Subdomain in url should not be 'root'
-        assert_no_match "<p><a href=\"http://#{current_subdomain_name}.", Devise::Mailer.deliveries.last.body.to_s
+        # no subdomain should be attached in url for 'public' tenant
+        assert_match "<p><a href=\"http://localhost", Devise::Mailer.deliveries.last.body.to_s
+        assert_no_match "<p><a href=\"http://#{current_apartment_tenant_name}.", Devise::Mailer.deliveries.last.body.to_s
       end
     end
   end
