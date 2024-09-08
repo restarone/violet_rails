@@ -16,7 +16,16 @@ class Ahoy::Store < Ahoy::DatabaseStore
   end
 end
 
-Ahoy::Controller.prepend(AhoyControllerPatch)
+if NextRails.next?
+  # Do things "the Rails 7 way"
+  Rails.application.config.to_prepare do
+    Ahoy::Controller.prepend(AhoyControllerPatch)
+  end
+
+else
+  # Do things "the Rails 6 way"
+  Ahoy::Controller.prepend(AhoyControllerPatch)
+end
 
 # set to true for JavaScript tracking
 Ahoy.api = false

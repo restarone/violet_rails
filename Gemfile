@@ -1,14 +1,23 @@
+def next?
+  File.basename(__FILE__) == "Gemfile.next"
+end
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 if ENV['RUBY_BUILD'] == '3.0.0'
   ruby '3.0.0'
 else
-  ruby '2.6.6'
+  ruby '3.2.1'
 end
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails', branch: 'main'
-gem 'rails', '~> 6.1.5'
+if next?
+  # Do things "the Rails 7.1 way"
+  gem 'rails', '~> 7.1'
+else
+  # Do things "the Rails 6.1 way"
+  gem 'rails', '~> 6.1.5'
+end
 # Use postgresql as the database for Active Record
 gem 'pg', '~> 1.1'
 # Use Puma as the app server
@@ -27,7 +36,14 @@ gem 'jbuilder', '~> 2.7'
 # Use Active Storage variant
 gem 'image_processing', '~> 1.12'
 
-gem 'ros-apartment', require: 'apartment'
+
+if next?
+  # Do things "the Rails 7.1 way"
+  gem 'ros-apartment', '3.1.0', require: 'apartment'
+else
+  # Do things "the Rails 6.1 way"
+  gem 'ros-apartment', '2.9.0', require: 'apartment'
+end
 gem 'ros-apartment-sidekiq', require: 'apartment-sidekiq'
 gem 'apartment-activejob'
 gem 'devise'
@@ -38,7 +54,14 @@ gem 'gravatar_image_tag'
 gem 'wicked' # for multi-step forms
 gem 'devise_invitable'
 gem "aws-sdk-s3", require: false
-gem 'meta-tags'
+if next?
+  # Do things "the Rails 7.1 way"
+  gem 'meta-tags', "2.22.0"
+else
+  # Do things "the Rails 6.1 way"
+  gem 'meta-tags', "2.14.0"
+end
+
 gem 'sitemap_generator'
 gem 'ahoy_matey'
 gem 'ransack'
@@ -106,7 +129,15 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem "graphql", "~> 2.0"
 gem 'graphiql-rails'
-gem "ember-cli-rails", "0.10.0"
+
+if next?
+  # Do things "the Rails 7.1 way"
+  p 'not loading ember-cli-rails in rails 7'
+else
+  # Do things "the Rails 6.1 way"
+  gem "ember-cli-rails", "0.10.0"
+end
+  
 # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
 gem 'web-console', '>= 4.1.0'
 gem "exception_notification", "~> 4.5"
@@ -120,7 +151,14 @@ gem "redis-namespace", "~> 1.8"
 
 gem 'stripe-rails'
 
-gem 'devise-two-factor', "4.0.2"
+
+if next?
+  # Do things "the Rails 7.1 way"
+  gem 'devise-two-factor', "5.1.0"
+else
+  # Do things "the Rails 6.1 way"
+  gem 'devise-two-factor', "4.0.2"
+end
 
 gem "slowpoke"
 
@@ -128,3 +166,5 @@ gem "strong_migrations"
 gem "simple_calendar", "~> 3.0"
 
 gem "icalendar", "~> 2.9"
+
+gem "next_rails", "~> 1.3"
