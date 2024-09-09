@@ -2,8 +2,9 @@ FROM ruby:2.6.6-alpine
 
 # Build ENV vars
 ENV APP_PATH /var/app
-ENV BUNDLE_VERSION 2.1.4
+ENV BUNDLE_VERSION 2.4.12
 ENV BUNDLE_PATH /usr/local/bundle/gems
+ENV GEM_HOME /usr/local/bundle/gems
 ENV TMP_PATH /tmp/
 ENV RAILS_LOG_TO_STDOUT true
 
@@ -49,11 +50,17 @@ RUN rm -rf /var/cache/apk/* \
 RUN gem install bundler --version "$BUNDLE_VERSION" \
 && rm -rf $GEM_HOME/cache/*
 
+RUN gem install rubygems-update -v 3.4.22
+
+RUN gem update --system
+
 # install ember
 RUN npm install -g ember-cli
 
 # Change to app dir
 WORKDIR $APP_PATH
+
+RUN gem install next_rails
 
 EXPOSE $RAILS_PORT
 

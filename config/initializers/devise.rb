@@ -14,24 +14,50 @@ class RSolutionsFailureApp < Devise::FailureApp
   end
 end
 
-class RSolutionsDeviseController < ApplicationController
-  class Responder < ActionController::Responder
-    def to_turbo_stream
-      controller.render(options.merge(formats: :html))
-    rescue ActionView::MissingTemplate => error
-      if get?
-        raise error
-      elsif has_errors? && default_action
-        render rendering_options.merge(formats: :html, status: :unprocessable_entity)
-      else
-        redirect_to navigation_location
+if NextRails.next?
+  # Do things "the Rails 7 way"
+  Rails.application.config.to_prepare do
+    class RSolutionsDeviseController < ApplicationController
+      class Responder < ActionController::Responder
+        def to_turbo_stream
+          controller.render(options.merge(formats: :html))
+        rescue ActionView::MissingTemplate => error
+          if get?
+            raise error
+          elsif has_errors? && default_action
+            render rendering_options.merge(formats: :html, status: :unprocessable_entity)
+          else
+            redirect_to navigation_location
+          end
+        end
       end
+    
+      self.responder = Responder
+      respond_to :html, :turbo_stream
     end
   end
-
-  self.responder = Responder
-  respond_to :html, :turbo_stream
+else
+# Do things "the Rails 6.1 way"
+  class RSolutionsDeviseController < ApplicationController
+    class Responder < ActionController::Responder
+      def to_turbo_stream
+        controller.render(options.merge(formats: :html))
+      rescue ActionView::MissingTemplate => error
+        if get?
+          raise error
+        elsif has_errors? && default_action
+          render rendering_options.merge(formats: :html, status: :unprocessable_entity)
+        else
+          redirect_to navigation_location
+        end
+      end
+    end
+  
+    self.responder = Responder
+    respond_to :html, :turbo_stream
+  end
 end
+
 
 # Assuming you have not yet modified this file, each configuration option below
 # is set to its default value. Note that some are commented out while others

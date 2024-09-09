@@ -11,8 +11,14 @@ module RSolutions
     # Ensuring that ActiveStorage routes are loaded before Comfy's globbing
     # route. Without this file serving routes are inaccessible.
     config.railties_order = [ActiveStorage::Engine, :main_app, :all]
-    # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 6.1
+    if NextRails.next?
+      # Do things "the Rails 7 way"
+      config.load_defaults 7.1
+    else
+      # Do things "the Rails 6.1 way"
+      # Initialize configuration defaults for originally generated Rails version.
+      config.load_defaults 6.1
+    end
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files

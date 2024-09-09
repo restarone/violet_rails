@@ -78,6 +78,7 @@ services:
     command: ['rails', 'server', '-p', '5250', '-b', '0.0.0.0']
     environment:
       RAILS_ENV: development
+      # BUNDLE_GEMFILE: Gemfile.next
     depends_on:
       - solutions_db
       - solutions_redis
