@@ -1,0 +1,52 @@
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: inherit;
+  font-weight: $headings-font-weight;
+  line-height: $headings-line-height;
+  margin-bottom: 1.5rem;
+  margin-top: 0;
+}
+
+h1 {
+  font-size: $h1-font-size;
+}
+
+h2 {
+  font-size: $h2-font-size;
+}
+
+h3 {
+  font-size: $h3-font-size;
+}
+
+h4 {
+  font-size: $h4-font-size;
+}
+
+h5 {
+  font-size: $h5-font-size;
+}
+
+h6 {
+  font-size: $h6-font-size;
+}
+
+p {
+  margin-bottom: 1.5rem;
+  margin-top: 0;
+}
+
+a {
+  color: $link-color;
+  font-weight: $font-weight-bold;
+  text-decoration: none;
+  transition: all ease .2s;
+
+  &:hover {
+    color: $link-color-hover;
+  }
+}

@@ -1,0 +1,10 @@
+.hero {
+  background: $color-background-dark;
+  color: $color-copy-bright;
+  padding: 10rem 0;
+
+  &__container {
+    @extend %section-spacings;
+    display: flex;
+  }
+}

@@ -1,0 +1,58 @@
+<% order = form.object %>
+
+<div class="address-step">
+  <fieldset class="address-step__billing" id="billing">
+    <legend>
+      <%= t("spree.billing_address") %>
+    </legend>
+
+    <%= form.fields_for :bill_address do |bill_form| %>
+      <%= render(
+        "checkouts/steps/address_step/address_inputs",
+        form: bill_form,
+        address_type: "billing",
+        address: order.bill_address
+      ) %>
+    <% end %>
+  </fieldset>
+
+  <fieldset class="address-step__shipping" id="shipping">
+    <legend>
+      <%= t('spree.shipping_address') %>
+    </legend>
+
+    <%= form.fields_for :ship_address do |ship_form| %>
+      <%= label_tag 'order_use_billing', class: 'checkbox-input' do %>
+        <%= check_box_tag('order[use_billing]', 1, order.shipping_eq_billing_address?) %>
+        <%= t('spree.use_billing_address') %>
+      <% end %>
+
+      <%= render(
+        "checkouts/steps/address_step/address_inputs",
+        form: ship_form,
+        address_type: "shipping",
+        address: order.ship_address
+       ) %>
+    <% end %>
+  </fieldset>
+
+  <div class="address-step__actions">
+    <%= form.button(
+      I18n.t("spree.save_and_continue"),
+      class: 'button-primary',
+      name: :commit
+    ) %>
+
+    <% if spree_current_user %>
+      <%= label_tag 'save-user-address', class: 'checkbox-input' do %>
+        <%= check_box_tag(
+          :save_user_address,
+          1,
+          spree_current_user.respond_to?(:persist_order_address),
+          id: 'save-user-address'
+        ) %>
+        <%= I18n.t("spree.save_my_address") %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

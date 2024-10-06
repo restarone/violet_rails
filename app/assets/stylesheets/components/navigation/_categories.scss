@@ -1,0 +1,30 @@
+.categories {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &__list {
+    display: flex;
+    justify-content: center;
+    padding: 0;
+
+    > li {
+      display: flex;
+      list-style-type: none;
+      margin: 0 1rem;
+      padding: 0;
+
+      &.current {
+        @extend %current-state-color-accent;
+      }
+    }
+  }
+
+  a {
+    height: fit-content;
+
+    @include tablet {
+      font-size: $font-size-base;
+    }
+  }
+}

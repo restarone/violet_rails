@@ -1,0 +1,34 @@
+<article class="auth-container" id="new-customer">
+  <h1><%= I18n.t('spree.new_customer') %></h1>
+
+  <%= render 'shared/error_messages', target: resource %>
+
+  <%= form_for resource, as: :spree_user, url: registration_path(resource), html: { class: "auth-form" } do |f| %>
+    <div class="auth-form__input-wrapper">
+      <div class="text-input">
+        <%= f.label :email, "#{t("spree.email")}:" %>
+        <%= f.email_field :email, placeholder: 'name@example.com' %>
+      </div>
+    </div>
+
+    <div class="auth-form__input-wrapper">
+      <div class="text-input">
+        <%= f.label :password, "#{t("spree.password")}:" %>
+        <%= f.password_field :password, placeholder: "p455w0rd" %>
+      </div>
+    </div>
+
+    <div class="auth-form__input-wrapper">
+      <div class="text-input">
+        <%= f.label :password_confirmation, "#{t("spree.confirm_password")}:" %>
+        <%= f.password_field :password_confirmation, placeholder: "p455w0rd" %>
+      </div>
+    </div>
+
+    <div class="auth-form__input-wrapper">
+      <%= f.button t("spree.create"), name: :commit, class: 'button-primary button-primary--full-width' %>
+    </div>
+
+    <%= I18n.t("spree.or") %> <%= link_to I18n.t("spree.login_as_existing"), login_path %>
+  <% end %>
+</article>

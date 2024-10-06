@@ -1,0 +1,16 @@
+.horizontal-input-group {
+  display: flex;
+
+  &__input {
+    padding-right: .8rem;
+    width: 26%;
+  }
+
+  &__action  {
+    width: 26%;
+
+    button {
+      width: 100%;
+    }
+  }
+}

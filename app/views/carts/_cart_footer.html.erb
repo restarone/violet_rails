@@ -1,0 +1,16 @@
+<% order = order_form.object %>
+
+<footer class="cart-footer">
+  <p class="cart-footer__total">
+    <%= t('spree.total') %>: <strong><%= order.display_total %></strong>
+  </p>
+
+  <div class="cart-footer__primary-action">
+    <%= order_form.button(
+      I18n.t('spree.checkout'),
+      class: 'button-primary',
+      id: 'checkout-link',
+      name: :checkout
+    ) %>
+  </div>
+</footer>

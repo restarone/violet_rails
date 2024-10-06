@@ -8,6 +8,12 @@ class SubdomainConstraint
 end
 
 Rails.application.routes.draw do
+  # This line mounts Solidus's routes at the root of your application.
+  # This means, any requests to URLs such as /products, will go to Spree::ProductsController.
+  # If you would like to change where this engine is mounted, simply change the :at option to something different.
+  #
+  # We ask that you don't use the :as option here, as Solidus relies on it being the default of "spree"
+
   get 'cookies', to: 'cookies#index'
   get 'cookies/fetch', to: 'cookies#fetch'
   # analytics dashboard
@@ -169,6 +175,10 @@ Rails.application.routes.draw do
   comfy_route :blog, path: "blog"
   comfy_route :blog_admin, path: "admin"
   mount SimpleDiscussion::Engine => "/forum"
+
+  get '/shop', to: 'pages#home'
+  mount Spree::Core::Engine, at: '/shop'
+
   # cms comes last because its a catch all
   comfy_route :cms, path: "/"
 

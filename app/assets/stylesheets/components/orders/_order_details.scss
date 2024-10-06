@@ -1,0 +1,16 @@
+.order-details {
+  &__info {
+    @include desktop {
+      display: flex;
+    }
+
+    > * {
+      margin-bottom: 2em;
+
+      @include desktop {
+        padding: 0 .8rem;
+        width: 25%;
+      }
+    }
+  }
+}

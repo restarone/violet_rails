@@ -1,0 +1,36 @@
+.search-bar {
+  border: 0;
+  border-radius: 2px;
+  display: flex;
+  font-size: $input-font-size;
+  height: 4.6rem;
+  position: relative;
+
+  &__select {
+    appearance: none;
+    background: $color-background-light;
+    border: 0;
+    border-radius: 0;
+    border-right: solid 1px $color-accent;
+    display: none;
+    padding: 0 2rem;
+  }
+
+  &__input {
+    border: 0;
+    border-bottom: 1px solid #d8d8dd;
+    border-radius: 0;
+    flex-grow: 1;
+    outline: none;
+    padding: 0 1rem;
+    -webkit-appearance: none;
+  }
+
+  &__button {
+    background: transparent;
+    border: 0;
+    color: $color-copy-light;
+    font-weight: $buttons-font-weight;
+    padding: 0 2rem 0 1rem;
+  }
+}

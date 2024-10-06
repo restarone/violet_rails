@@ -1,0 +1,18 @@
+<div class="product-submit">
+  <%= render 'cart_line_items/product_availability', product: product %>
+
+  <div class="horizontal-input-group">
+    <div class="horizontal-input-group__input">
+      <div class="text-input">
+        <%= text_field_tag :quantity, 1, type: :number, min: 1 %>
+      </div>
+    </div>
+    <div class="horizontal-input-group__action">
+      <%= button_tag(
+        t('spree.add_to_cart'),
+        class: 'button-primary',
+        id: 'add-to-cart-button'
+      ) %>
+    </div>
+  </div>
+</div>

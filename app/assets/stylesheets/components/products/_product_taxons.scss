@@ -1,0 +1,26 @@
+.product-taxons {
+  &__title {
+    font-size: $font-size-small;
+    font-weight: $font-weight-bold;
+  }
+
+  &__list {
+    display: flex;
+    font-size: $font-size-small;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      padding: 0 1rem 0 0;
+
+      a {
+        color: $link-color-accent;
+
+        &:hover {
+          color: $link-color-accent-hover;
+        }
+      }
+    }
+  }
+}

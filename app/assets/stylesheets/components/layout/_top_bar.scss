@@ -1,0 +1,44 @@
+.top-bar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 2rem 3rem;
+
+  @include desktop {
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+  }
+
+  .logo {
+    order: 1;
+
+    a {
+      display: flex;
+    }
+
+    img {
+      width: 125px;
+    }
+  }
+
+  &__search {
+    flex: 0 0 100%;
+    margin-top: 10px;
+    order: 4;
+
+    @include desktop {
+      flex: 1 0 auto;
+      margin: 0 2rem;
+      order: 2;
+    }
+  }
+
+  .auth-link {
+    order: 2;
+  }
+
+  .cart-link {
+    order: 3;
+  }
+}

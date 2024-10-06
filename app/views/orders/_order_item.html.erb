@@ -1,0 +1,30 @@
+<article class="order-item">
+  <div class="order-item__image">
+    <%= link_to(
+      render(ImageComponent.new(
+        image: item.variant.gallery.images.first || item.variant.product.gallery.images.first,
+        size: :small
+      )),
+      item.variant.product
+    ) %>
+  </div>
+
+  <%= render(
+    'orders/item_info',
+    line_item: item.variant.product,
+    stock_info: false,
+    variant: item.variant
+  ) %>
+
+  <div class="order-item__price-single">
+    <%= item.single_money.to_html %>
+  </div>
+
+  <div class="order-item__quantity">
+    &#10005;<%= item.quantity %>
+  </div>
+
+  <div class="order-item__price">
+    <strong><%= item.display_amount.to_html %></strong>
+  </div>
+</article>

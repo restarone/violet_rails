@@ -1,0 +1,20 @@
+<%= form_tag order_coupon_codes_path(@order), method: :post, class: "coupon-code" do %>
+  <div class="coupon-code__input">
+    <div class="text-input text-input--small">
+      <%= text_field_tag 'coupon_code',
+        nil,
+        id: 'order_coupon_code',
+        placeholder: t("spree.coupon_code"),
+        required: true
+      %>
+    </div>
+  </div>
+
+  <div class="coupon-code__action">
+    <%= button_tag(
+      t('spree.apply_code'),
+      class: 'button-primary button-primary--small',
+      name: :commit
+    ) %>
+  </div>
+<% end %>

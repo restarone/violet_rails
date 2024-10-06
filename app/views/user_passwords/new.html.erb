@@ -1,0 +1,22 @@
+<article class="auth-container" id="forgot-password">
+  <h1><%= I18n.t('spree.forgot_password') %></h1>
+
+  <%= form_for Spree::User.new, as: :spree_user, url: reset_password_path, html: { class: "auth-form" } do |f| %>
+    <div class="auth-form__input-wrapper">
+      <div class="text-input">
+        <%= f.label :email, "#{t("spree.email")}:" %>
+        <%= f.email_field :email, placeholder: 'name@example.com' %>
+      </div>
+    </div>
+
+    <div class="auth-form__input-wrapper">
+      <%= f.button(
+        t("spree.reset_password"),
+        class: 'button-primary button-primary--full-width',
+        name: :commit
+      ) %>
+    </div>
+
+    <%= I18n.t("spree.or") %> <%= link_to I18n.t("spree.create_a_new_account"), signup_path %>
+  <% end %>
+</article>

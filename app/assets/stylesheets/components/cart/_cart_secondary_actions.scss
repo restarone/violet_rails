@@ -1,0 +1,34 @@
+.cart-secondary-actions {
+  display: flex;
+  font-size: $font-size-small;
+  margin-bottom: 2rem;
+  margin-top: 4rem;
+  order: 2;
+
+  @media (min-width: 900px) {
+    margin-top: 0;
+    margin-bottom: 0;
+    order: initial;
+  }
+
+  &__continue {
+    &::before {
+      content: '';
+      font-size: $font-size-small - .2;
+      margin-right: .3rem;
+    }
+
+    &::after {
+      content: "or";
+      margin-right: .5rem;
+    }
+
+    a {
+      color: $link-color-accent;
+
+      &:hover {
+        color: $link-color-accent-hover;
+      }
+    }
+  }
+}

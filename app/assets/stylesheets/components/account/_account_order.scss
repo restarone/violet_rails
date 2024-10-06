@@ -1,0 +1,23 @@
+.account-order {
+  border-top: 1px solid $color-border-light;
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  padding: 1rem 0;
+
+  &:last-of-type {
+    border-bottom: 1px solid $color-border-light;
+  }
+
+  &__detail {
+    flex-grow: 1;
+
+    dt {
+      font-weight: bold;
+    }
+
+    dd {
+      margin: .5rem 0 0;
+    }
+  }
+}

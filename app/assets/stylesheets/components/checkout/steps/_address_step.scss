@@ -1,0 +1,21 @@
+.address-step {
+  margin-top: 2rem;
+
+  &__billing,
+  &__shipping {
+    background: $color-background-lighter;
+    border: solid 1px $color-border-light;
+    margin-bottom: 2rem;
+    padding: 3rem 1.5rem;
+
+    > legend {
+      font-size: $font-size-small;
+      font-weight: $font-weight-bolder;
+      text-transform: uppercase;
+    }
+  }
+
+  &__actions {
+    margin-top: 2rem;
+  }
+}

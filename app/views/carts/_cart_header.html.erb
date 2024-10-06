@@ -1,0 +1,13 @@
+<header class="cart-header">
+  <h1 class="cart-header__title">
+    <%= t('spree.shopping_cart') %>
+  </h1>
+
+  <div class="cart-header__actions">
+    <%= order_form.button(
+      t("spree.update"),
+      class: 'button-primary button-primary--bordered button-primary--small',
+      id: 'update-button'
+    ) %>
+  </div>
+</header>

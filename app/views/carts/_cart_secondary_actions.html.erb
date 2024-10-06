@@ -1,0 +1,15 @@
+<div class="cart-secondary-actions">
+  <div class="cart-secondary-actions__continue">
+    <%= link_to t('spree.continue_shopping'), products_path %>
+  </div>
+
+  <div class="cart-secondary-actions__empty">
+    <%= form_tag empty_cart_path, method: :put do %>
+      <%= button_tag(
+        t('spree.empty_cart'),
+        class: 'button-inline',
+        name: :commit
+      ) %>
+    <% end %>
+  </div>
+</div>

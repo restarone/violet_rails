@@ -1,0 +1,21 @@
+.flash {
+  color: $color-copy-bright;
+  font-size: $font-size-small;
+  font-weight: $font-weight-bold;
+  padding: 1.5rem;
+  text-align: center;
+
+  &.alert {
+    background: $color-background-alert;
+  }
+
+  &.error,
+  &.registration_error {
+    background: $color-background-error;
+  }
+
+  &.notice,
+  &.success {
+    background: $color-background-success;
+  }
+}

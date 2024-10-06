@@ -1,0 +1,55 @@
+<dl class="line-items" id="line-items">
+  <div>
+    <dt><%= t('spree.subtotal') %>:</dt>
+    <dd><%= order.display_item_total.to_html %></dd>
+  </div>
+
+  <% if order.line_item_adjustments.exists? %>
+    <% if order.line_item_adjustments.promotion.eligible.exists? %>
+      <div id="price-adjustments">
+        <% order.line_item_adjustments.promotion.eligible.group_by(&:label).each do |label, adjustments| %>
+          <dt><%= t('spree.promotion') %>:</dt>
+          <dd><%= Spree::Money.new(adjustments.sum(&:amount), currency: order.currency) %></dd>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+
+  <div id="shipment-total">
+    <% order.shipments.group_by { |s| s.selected_shipping_rate.name }.each do |name, shipments| %>
+      <dt><%= t('spree.shipping') %> &mdash; <%= name %>:</dt>
+      <dd><%= Spree::Money.new(shipments.sum(&:total_before_tax), currency: order.currency).to_html %></dd>
+    <% end %>
+  </div>
+
+  <% if order.all_adjustments.tax.exists? %>
+    <div id="tax-adjustments">
+      <% order.all_adjustments.tax.group_by(&:label).each do |label, adjustments| %>
+        <dt><%= t('spree.tax') %> &mdash; <%= label %>:</dt>
+        <dd><%= Spree::Money.new(adjustments.sum(&:amount), currency: order.currency) %></dd>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if order.total_applicable_store_credit > 0.0 %>
+    <div id="store-credit">
+      <dt><%= t('spree.store_credit.store_credit') %>:</dt>
+      <dd><%= order.display_total_applicable_store_credit.to_html %></dd>
+    </div>
+  <% end %>
+
+  <% order.adjustments.eligible.each do |adjustment| %>
+  <% next if (adjustment.source_type == 'Spree::TaxRate') and (adjustment.amount == 0) %>
+    <div id="order-charges">
+      <dt><%= adjustment.label %></dt>
+      <dd><%= adjustment.display_amount.to_html %></dd>
+    </div>
+  <% end %>
+
+  <div>
+    <dt><%= t('spree.order_total') %>:</dt>
+    <dd>
+      <strong><%= order.display_order_total_after_store_credit.to_html %></strong>
+    </dd>
+  </div>
+</dl>

@@ -1,0 +1,50 @@
+.shipment-items {
+  font-size: 1.4rem;
+  list-style-type: none;
+  margin: 0 0 3rem;
+  padding: 0;
+
+  > li {
+    align-items: center;
+    border-bottom: solid 1px $color-border-light;
+    display: flex;
+    padding: 1rem 0;
+
+    &:first-child {
+      border-top: solid 1px $color-border-light;
+    }
+  }
+
+  &__name {
+    flex-grow: 1;
+    font-weight: $font-weight-bold;
+    padding: 0 2rem;
+  }
+
+  &__image {
+    flex-basis: 8rem;
+    flex-grow: 0;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+    }
+  }
+
+  &__quantity {
+    font-weight: $font-weight-bold;
+    text-align: right;
+
+    &::before {
+      content: "✕";
+    }
+  }
+
+  &__price {
+    flex-basis: 8rem;
+    flex-grow: 0;
+    flex-shrink: 0;
+    font-weight: 700;
+    text-align: right;
+  }
+}

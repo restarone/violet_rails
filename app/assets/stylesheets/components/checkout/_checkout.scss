@@ -1,0 +1,25 @@
+.checkout {
+  @extend %section-wrapper;
+  margin: 0 auto;
+  max-width: 86rem;
+
+  @include desktop {
+    &__main {
+      display: flex;
+    }
+
+    &__step {
+      flex-grow: 1;
+    }
+  }
+
+  &__summary {
+    margin-top: 3rem;
+
+    @include desktop {
+      flex: 0 0 28rem;
+      margin-top: 0;
+      padding-left: 2rem;
+    }
+  }
+}

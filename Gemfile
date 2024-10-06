@@ -124,7 +124,21 @@ gem 'devise-two-factor', "4.0.2"
 
 gem "slowpoke"
 
-gem "strong_migrations"
+# gem "strong_migrations"
 gem "simple_calendar", "~> 3.0"
 
 gem "icalendar", "~> 2.9"
+
+
+gem 'geocoder'
+gem 'solidus_auth_devise'
+
+gem "solidus_core", "= 3.2"
+gem "solidus_backend", "= 3.2"
+gem "solidus_api", "= 3.2"
+gem "solidus_sample", "= 3.2"
+
+gem "canonical-rails", "~> 0.2.15"
+
+gem "truncate_html", "~> 0.9.3"
+gem 'font-awesome-sass'

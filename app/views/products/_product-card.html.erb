@@ -1,0 +1,38 @@
+<%
+  base_class = "product-card".freeze
+
+  # Optional props
+  classes = local_assigns.fetch(:classes, [])
+
+  # Classes
+  class_names = classes.push(base_class).join(" ")
+
+  url = product_path(product, taxon_id: @taxon.try(:id))
+  cached = @taxon.present? ?
+    [I18n.locale, current_pricing_options, @taxon, product] :
+    [I18n.locale, current_pricing_options, product]
+  product_id = "product_#{product.id}"
+%>
+
+<% cache cached do %>
+  <li class="<%= class_names %>" itemscope itemtype="http://schema.org/Product" id=<%= product_id %>>
+    <article>
+      <section class="product-card_image">
+        <%= link_to render(ImageComponent.new(image: product.gallery.images.first, size: :small, itemprop: "image")), url, itemprop: 'url' %>
+      </section>
+      <header class="product-card_header">
+        <h2>
+          <%= link_to truncate(product.name, length: 50), url, class: 'info', itemprop: "name", title: product.name %>
+        </h2>
+      </header>
+      <section class="product-card_price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+        <% if price = product.price_for_options(current_pricing_options)&.money %>
+          <span class="price selling" itemprop="price" content="<%= price.to_d %>">
+            <%= price.to_html %>
+          </span>
+        <% end %>
+        <span itemprop="priceCurrency" content="<%= current_pricing_options.currency %>"></span>
+      </section>
+    </article>
+  </li>
+<% end %>

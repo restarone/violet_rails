@@ -1,0 +1,25 @@
+.textarea-input {
+  label {
+    display: block;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: .3rem;
+    text-transform: uppercase;
+  }
+
+  textarea {
+    border: solid 1px $color-border;
+    border-radius: 1px;
+    display: block;
+    font-size: 1.3rem;
+    height: 8rem;
+    padding: 1rem;
+    width: 100%;
+
+    &:focus {
+      border-color: transparent;
+      box-shadow: none;
+      outline: solid 1px $color-border-dark;
+    }
+  }
+}

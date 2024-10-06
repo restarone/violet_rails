@@ -1,0 +1,35 @@
+<div class="order-details">
+  <div class="order-details__info">
+    <% if order.has_checkout_step?("address") %>
+      <%= render(
+        'orders/address_overview',
+        address: order.bill_address,
+        title: t('spree.billing_address')
+      ) %>
+    <% end %>
+
+    <% if order.has_checkout_step?("delivery") %>
+      <%= render(
+        'orders/address_overview',
+        address: order.ship_address,
+        title: t('spree.shipping_address')
+      ) %>
+
+      <%= render(
+        'orders/order_shipments',
+        order: order,
+        title: t('spree.shipments')
+      ) %>
+    <% end %>
+
+    <% if order.has_checkout_step?("payment") %>
+      <%= render(
+        'orders/payment_info',
+        order: order
+      ) %>
+    <% end %>
+  </div>
+
+  <%= render 'orders/order_items', order: order %>
+  <%= render 'orders/line_items', order: order %>
+</div>

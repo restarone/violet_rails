@@ -1,0 +1,27 @@
+.button-primary {
+  background: $color-accent;
+  border: 0;
+  border-radius: 2px;
+  color: $color-copy-bright;
+  font-size: $buttons-font-size-default;
+  font-weight: $buttons-font-weight;
+  height: 3.8rem;
+  padding: 0 2rem;
+  white-space: nowrap;
+
+  &--bordered {
+    background: none;
+    border: solid 1px $color-accent;
+    color: $color-accent;
+  }
+
+  &--full-width {
+    width: 100%;
+  }
+
+  &--small {
+    font-size: $buttons-font-size-small;
+    height: 3.2rem;
+    padding: 0 1.2rem;
+  }
+}

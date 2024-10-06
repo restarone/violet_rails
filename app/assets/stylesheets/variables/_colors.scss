@@ -1,0 +1,34 @@
+// -- Colors
+$color-dark:            #24282F;
+$color-white:           #FFFFFF;
+$color-blue:            #3C76F0;
+$color-blue-light:      #6391F3;
+$color-green:           #66C789;
+$color-green-light:     #90DFAD;
+$color-gray-light:      #ECECEC;
+$color-gray-lighter:    #FAFBFC;
+
+$color-accent: #3c76f0;
+
+$color-background-alert:   #fdd200;
+$color-background-dark:    #24282f;
+$color-background-error:   #e4361b;
+$color-background-light:   #f2f2f2;
+$color-background-lighter: #fafbfc;
+$color-background-success: #1bc16d;
+
+$color-border: #ddd;
+$color-border-dark: #222;
+$color-border-medium: #d8d8d8;
+$color-border-light: #f2f2f2;
+
+$color-copy: #222;
+$color-copy-light: #777;
+$color-copy-lighter: #999;
+$color-copy-bright: #fff;
+
+$link-color:                $color-copy;
+$link-color-hover:          $color-accent;
+
+$link-color-accent:         $color-accent;
+$link-color-accent-hover:   darken($color-accent, 10%);

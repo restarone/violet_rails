@@ -1,0 +1,27 @@
+<footer class="footer">
+  <p>
+    <%= t 'spree.powered_by' %> <%= link_to 'Solidus', 'http://solidus.io/' %>
+  </p>
+
+  <%
+    available_locales = current_store.available_locales.map do |locale|
+      [
+        I18n.t('spree.i18n.this_file_language',
+        locale: locale,
+        default: locale.to_s,
+        fallback: false), locale
+      ]
+    end.sort
+  %>
+
+  <% if available_locales.many? %>
+    <div class="locale-selector">
+      <%= form_tag select_locale_path do %>
+        <div class="locale-selector__select-input select-input">
+          <%= label_tag :switch_to_locale, "#{t('spree.i18n.language')}:" %>
+          <%= select_tag(:switch_to_locale, options_for_select(available_locales, I18n.locale)) %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</footer>

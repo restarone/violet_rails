@@ -1,0 +1,11 @@
+.cart-empty {
+  &__action {
+    a {
+      color: $link-color-accent;
+
+      &:hover {
+        color: $link-color-accent-hover;
+      }
+    }
+  }
+}

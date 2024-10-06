@@ -1,0 +1,33 @@
+.cart-link {
+  padding: 5px;
+}
+
+.cart-info {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  background: asset_data_url("icon-shopping-cart.svg") no-repeat;
+  background-size: 100% auto;
+  background-position: bottom;
+  position: relative;
+
+  .link-text {
+    $color-white:           #FFFFFF;
+    $color-blue:            #3C76F0;
+    $font-weight-bold:      600;
+    $font-size-base:        14px;
+
+    color: $color-white;
+    background: $color-blue;
+    font-weight: $font-weight-bold;
+    border-radius: 50px;
+    font-size: $font-size-base / 1.2;
+    text-align: center;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 22px;
+    height: 22px;
+    line-height: 22px;
+  }
+}

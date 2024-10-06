@@ -1,0 +1,38 @@
+.order-page {
+  margin: 0 auto;
+  max-width: 86rem;
+  padding: 8rem 2rem;
+
+  &__title {
+    margin: 0 0 5rem;
+    text-align: center;
+  }
+
+  &__completed {
+    color: $color-background-success;
+    font-size: $font-size-base;
+    font-weight: $font-weight-bold;
+    margin: -2.5rem 0 3rem;
+    text-align: center;
+  }
+
+  &__info {
+    border: solid 1px $color-border-light;
+    margin-bottom: 2rem;
+    padding: 3rem 1.5rem;
+
+    > legend {
+      font-size: $font-size-small;
+      font-weight: $font-weight-bolder;
+    }
+  }
+
+  &__actions {
+    margin-top: 3rem;
+    text-align: center;
+
+    > a {
+      margin: 0 1rem;
+    }
+  }
+}

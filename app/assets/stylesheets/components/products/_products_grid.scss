@@ -1,0 +1,18 @@
+.products-grid {
+  display: grid;
+  grid-column-gap: 2rem;
+  grid-row-gap: 5rem;
+  grid-template-columns: 1fr;
+  list-style-type: none;
+  margin: 0 auto;
+  max-width: 114rem;
+  padding: 3rem;
+
+  @include tablet {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include desktop {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

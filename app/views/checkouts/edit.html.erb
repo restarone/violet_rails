@@ -1,0 +1,16 @@
+<article class="checkout">
+  <%= render "shared/error_messages", target: @order %>
+  <%= render "checkout_header" %>
+
+  <div class="checkout__main">
+    <section class="checkout__step">
+      <%= render "checkout_step", order: @order %>
+    </section>
+
+    <% if @order.state != "confirm" %>
+      <div class="checkout__summary">
+        <%= render "checkout_summary", order: @order %>
+      </div>
+    <% end %>
+  </div>
+</article>

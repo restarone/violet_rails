@@ -1,0 +1,33 @@
+.item-info {
+  &__name {
+    font-size: $font-size-base;
+    margin-bottom: .5rem;
+
+    a {
+      font-weight: $headings-font-weight;
+    }
+  }
+
+  &__options {
+    margin-bottom: 1rem;
+  }
+
+  &__description {
+    color: $color-copy-light;
+    font-size: $h6-font-size;
+    font-style: italic;
+    margin: 0;
+  }
+
+  .order-items--summary & {
+    &__name {
+      @include desktop {
+        font-size: $font-size-small;
+      }
+    }
+
+    &__description {
+      display: none;
+    }
+  }
+}

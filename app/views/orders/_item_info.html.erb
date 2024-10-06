@@ -1,0 +1,32 @@
+<%
+  base_class = "item-info".freeze
+
+  # Optional props
+  stock_info = local_assigns.fetch(:stock_info, true)
+
+  # Classes
+  class_names = [base_class]
+  class_names = class_names.join(" ")
+%>
+
+<div class="<%= class_names %>">
+  <h2 class="<%= base_class %>__name">
+    <%= link_to line_item.name, product_path(variant.product) %>
+  </h2>
+
+  <p class="<%= base_class %>__options">
+    <%= variant.options_text %>
+  </p>
+
+  <% if stock_info && line_item.insufficient_stock? %>
+    <p class="<%= base_class %>__stock">
+      <%= t('spree.out_of_stock') %>
+    </p>
+  <% end %>
+
+  <p class="<%= base_class %>__description">
+    <%= variant.product.description.nil? ||  variant.product.description.empty? ?
+      t('spree.product_has_no_description') :
+      truncated_product_description(variant.product) %>
+  </p>
+</div>

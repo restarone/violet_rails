@@ -1,0 +1,23 @@
+.product-properties {
+  margin: 0 0 3rem;
+
+  &__title {
+    font-size: $h6-font-size;
+    text-transform: uppercase;
+  }
+
+  &__table {
+    border-collapse: collapse;
+    font-size: $font-size-small;
+
+    tr {
+      height: 2.8rem;
+    }
+
+    td:first-child {
+      color: $color-copy-lighter;
+      font-weight: $font-weight-bolder;
+      padding-right: 2.5rem;
+    }
+  }
+}

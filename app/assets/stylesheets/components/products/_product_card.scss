@@ -1,0 +1,32 @@
+.product-card {
+  &_image {
+    transition: transform .2s;
+
+    img {
+      width: 100%;
+    }
+  }
+
+  &_header {
+    text-align: center;
+    position: relative;
+
+    h2 {
+      font-size: $font-size-small;
+      font-weight: $font-weight-bold;
+      margin: 0 0 1rem;
+      text-transform: uppercase;
+    }
+  }
+
+  &_price {
+    color: $color-accent;
+    font-size: $font-size-small;
+    font-weight: $font-weight-bold;
+    text-align: center;
+  }
+
+  &:hover &_image {
+    transform: scale(1.1);
+  }
+}

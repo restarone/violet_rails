@@ -1,0 +1,39 @@
+.cart-page {
+  @extend %section-wrapper;
+  margin: 0 auto;
+  max-width: 86rem;
+
+  @media (min-width: 900px) {
+    padding-bottom: 18rem;
+  }
+
+  &__coupon-code {
+    display: flex;
+    justify-content: center;
+
+    @include desktop {
+      display: block;
+      margin-top: -7.5rem;
+    }
+
+    @media (min-width: 900px) {
+      margin-top: 0;
+      max-width: 286px;
+      justify-content: flex-end;
+    }
+  }
+
+  &__other-actions {
+    align-items: center;
+    flex-direction: column;
+    display: flex;
+
+    @media (min-width: 900px) {
+      background: #FBFAFA;
+      padding: 2rem 1rem;
+      flex-direction: row;
+      justify-content: space-between;
+      margin-top: -230px;
+    }
+  }
+}

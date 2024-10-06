@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="<%= I18n.locale %>">
+  <head>
+    <meta charset="utf-8">
+    <title><%= title %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <%== meta_data_tags %>
+    <%= canonical_tag(current_store.url) %>
+    <%= csrf_meta_tags %>
+
+    <%= javascript_include_tag 'solidus_starter_frontend' %>
+    <%= stylesheet_link_tag 'solidus_starter_frontend', media: 'screen' %>
+
+    <%= favicon_link_tag 'favicon.ico' %>
+    <%= yield :head %>
+  </head>
+  <body class="<%= body_class %>" id="<%= @body_id || 'default' %>">
+    <%= render 'layouts/header', taxons: @taxons, taxon: @taxon %>
+    <%= flash_messages %>
+    <%= render BreadcrumbsComponent.new(@taxon) %>
+    <main>
+      <%= yield %>
+    </main>
+    <%= yield :templates %>
+    <%= render 'layouts/footer' %>
+  </body>
+</html>

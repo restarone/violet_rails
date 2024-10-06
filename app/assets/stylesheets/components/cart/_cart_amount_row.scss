@@ -1,0 +1,11 @@
+.cart-amount-row {
+  display: flex;
+  justify-content: space-between;
+  margin-left: auto;
+  padding: .5rem 0;
+
+  &__type,
+  &__amount {
+    font-weight: $font-weight-bold;
+  }
+}

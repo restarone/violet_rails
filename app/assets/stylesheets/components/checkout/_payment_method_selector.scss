@@ -1,0 +1,14 @@
+.payment-method-selector {
+  display: flex;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+
+  > li {
+    margin-right: 1rem;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}

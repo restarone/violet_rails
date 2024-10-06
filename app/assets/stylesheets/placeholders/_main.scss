@@ -1,0 +1,25 @@
+%section-spacings {
+  margin: 0 auto;
+  max-width: 114rem;
+  padding: 1rem 3rem;
+}
+
+%section-wrapper {
+  padding: 3rem;
+
+  @include desktop {
+    padding: 8rem 3rem;
+  }
+}
+
+%current-state-underlined {
+  a {
+    border-bottom: 2px solid $color-border-dark;
+  }
+}
+
+%current-state-color-accent {
+  a {
+    color: $color-accent;
+  }
+}

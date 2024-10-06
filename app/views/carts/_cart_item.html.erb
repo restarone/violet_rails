@@ -1,0 +1,45 @@
+<% variant = line_item.variant %>
+
+<%= order_form.fields_for :line_items, line_item do |item_form| %>
+  <article class="cart-item">
+    <div class="cart-item__image">
+      <%= link_to(
+        render(ImageComponent.new(
+          image: variant.gallery.images.first || variant.product.gallery.images.first,
+          size: :small
+        )),
+        variant.product
+      ) %>
+    </div>
+
+    <%= render(
+      'orders/item_info',
+      line_item: line_item,
+      variant: variant,
+      classes: ['cart-item__info']
+    ) %>
+
+    <div class="cart-item__price-single">
+      <%= line_item.single_money.to_html %>
+    </div>
+
+    <div class="cart-item__quantity">
+      <div class="text-input">
+        <%= item_form.text_field :quantity, type: 'number', min: 0 %>
+      </div>
+    </div>
+
+    <div class="cart-item__price">
+      <strong><%= line_item.display_amount.to_html unless line_item.quantity.nil? %></strong>
+    </div>
+
+    <div class="cart-item__remove">
+      <%= order_form.submit(
+        'Remove',
+        class: 'delete',
+        id: "delete_#{dom_id(line_item)}",
+        data: { disable_with: 'Remove' }
+      ) %>
+    </div>
+  </article>
+<% end %>

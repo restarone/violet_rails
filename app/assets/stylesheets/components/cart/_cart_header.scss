@@ -1,0 +1,10 @@
+.cart-header {
+  align-items: center;
+  display: flex;
+  margin-bottom: 4rem;
+
+  &__title {
+    flex-grow: 1;
+    margin: 0;
+  }
+}

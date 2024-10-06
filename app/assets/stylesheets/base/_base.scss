@@ -1,0 +1,46 @@
+html {
+  box-sizing: border-box;
+  font-family: sans-serif;
+  font-size: 62.5%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.15;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  color: $color-copy;
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  font-weight: $font-weight-normal;
+  line-height: $line-height-base;
+  text-align: left;
+  text-rendering: optimizeLegibility;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+  color: inherit;
+  font-family: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+label {
+  font-weight: $label-font-weight;
+  margin-bottom: 1rem;
+}
+
+legend {
+  font-weight: $legend-font-weight;
+}
+
+code,
+pre {
+  font-family: $font-family-monospace;
+}

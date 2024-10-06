@@ -1,0 +1,26 @@
+.filter {
+  margin-bottom: 3rem;
+
+  &__title {
+    color: $color-copy-lighter;
+    font-size: $h6-font-size;
+    text-transform: uppercase;
+  }
+
+  &__list {
+    font-size: $font-size-small;
+    list-style: none;
+    margin: 0 0 3rem;
+    padding: 0;
+
+    li {
+      align-items: center;
+      display: flex;
+      margin: 0 0 1.2rem;
+    }
+
+    label {
+      margin: 0 0 0 .5rem;
+    }
+  }
+}

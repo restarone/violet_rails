@@ -1,0 +1,22 @@
+<article class="auth-container" id="guest_checkout">
+  <h1><%= I18n.t('spree.guest_user_account') %></h1>
+
+  <%= form_for @order,
+    url: checkout_guest_session_path,
+    method: :post,
+    html: { class: "auth-form", id: "checkout_form_registration" } do |f|
+  %>
+    <div class="auth-form__input-wrapper">
+      <div class="text-input">
+        <%= f.label :email, "#{t("spree.email")}:" %>
+        <%= f.email_field :email, placeholder: 'name@example.com' %>
+      </div>
+    </div>
+
+    <div class="auth-form__input-wrapper">
+      <%= f.button t("spree.continue"), name: :commit, class: 'button-primary button-primary--full-width' %>
+    </div>
+
+    <%= I18n.t("spree.or") %> <%= link_to I18n.t("spree.create_a_new_account"), signup_path %>
+  <% end %>
+</article>

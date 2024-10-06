@@ -8,6 +8,16 @@ Bundler.require(*Rails.groups)
 
 module RSolutions
   class Application < Rails::Application
+    if defined?(FactoryBotRails)
+      initializer after: "factory_bot.set_factory_paths" do
+        require 'spree/testing_support'
+        FactoryBot.definition_file_paths = [
+          *Spree::TestingSupport::FactoryBot.definition_file_paths,
+          Rails.root.join('spec/fixtures/factories'),
+        ]
+      end
+    end
+
     # Ensuring that ActiveStorage routes are loaded before Comfy's globbing
     # route. Without this file serving routes are inaccessible.
     config.railties_order = [ActiveStorage::Engine, :main_app, :all]

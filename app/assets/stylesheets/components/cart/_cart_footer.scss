@@ -1,0 +1,47 @@
+.cart-footer {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  font-size: $font-size-small;
+  margin: 3.5rem 0;
+
+  @media (min-width: 900px) {
+    margin-top: 105px;
+  }
+
+  & > * {
+    flex-grow: 1;
+  }
+
+  &__total {
+    align-items: center;
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    margin: 0;
+    text-align: center;
+
+    & > strong {
+      font-size: $font-size-large;
+      font-weight: $font-weight-bolder;
+      padding-left: 1rem;
+    }
+
+    @media (min-width: 900px) {
+      min-width: 286px;
+    }
+  }
+
+  &__primary-action {
+    padding: 3rem 0 0 0;
+    min-width: 100%;
+ 
+    @media (min-width: 900px) {
+      min-width: 286px;
+    }
+
+    button {
+      width: 100%;
+    }
+  }
+}

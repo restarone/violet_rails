@@ -1,0 +1,153 @@
+.cart-item {
+  align-items: center;
+  border-bottom: solid 1px $color-border-light;
+  display: grid;
+  font-size: $font-size-small;
+  grid-template-columns: repeat(3, 1fr);
+  grid-column-gap: 2rem;
+  padding: 2rem 0;
+
+  @include desktop {
+    align-items: center;
+    display: flex;
+
+    &__image {
+      flex-grow: 0;
+      flex-shrink: 0;
+      width: 20%;
+
+      img {
+        max-width: 100%;
+      }
+    }
+
+    &__info {
+      flex-grow: 1;
+      padding-left: 4rem;
+      padding-right: 2rem;
+    }
+
+    &__price-single,
+    &__price {
+      padding: 0 1rem;
+    }
+
+    &__quantity,
+    &__price,
+    &__remove {
+      margin: 0;
+    }
+
+    &__price {
+      font-size: 1.5rem;
+    }
+
+    &__quantity {
+      flex-grow: 0;
+      flex-shrink: 0;
+      width: 10%;
+    }
+
+    &__remove {
+      text-align: right;
+      width: 12%;
+    }
+  }
+
+  @media (min-width: 600px) {
+    display: flex;
+  }
+
+  &:first-child {
+    border-top: solid 1px $color-border-light;
+  }
+
+  &__image {
+    text-align: center;
+  }
+
+  &__quantity,
+  &__price,
+  &__remove {
+    margin: 10px 0 10px 0;
+    text-align: left;
+    width: auto;
+
+    @media (min-width: 900px) {
+      width: 8rem;
+      text-align: right;
+      margin: 10px 0 10px auto;
+    }
+  }
+
+  &__remove {
+    > input {
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      padding: 0;
+      text-decoration: underline;
+    }
+
+    .delete {
+      width: 26px;
+      height: 26px;
+      color: transparent;
+      background: asset_data_url("icon-delete.svg") no-repeat;
+      background-size: 100% auto;
+      background-position: center;
+    }
+  }
+
+  &__price-single,
+  &__price {
+    @media (min-width: 900px) {
+      padding: 0 4rem 0;
+    }
+  }
+
+  &__image img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+.cart-items {
+  &-header {
+    display: none;
+
+    @media (min-width: 900px) {
+      align-items: center;
+      display: flex;
+      border-bottom: 1px solid $color-gray-light;
+    }
+
+    &__title {
+      font-size: 1.3rem;
+      font-weight: $font-weight-bold;
+      text-transform: uppercase;
+    }
+
+    & > * {
+      flex-grow: 0;
+      flex-shrink: 0;
+
+      &:nth-child(2) {
+        padding: 0 4rem 0 4rem;
+      }
+
+      &:nth-child(3),
+      &:last-child {
+        @media (min-width: 900px){
+          padding: 0 4rem 0 0;
+        }
+      }
+
+      &:first-child {
+        @media (min-width: 900px){
+          width: 55%;
+        }
+      }
+    }
+  }
+}

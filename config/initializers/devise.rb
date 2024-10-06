@@ -398,3 +398,12 @@ Devise.setup do |config|
   # config.sign_in_after_change_password = true
 end
 require Rails.root.join("lib/devise-two-factor/strategies/otp_attempt_authenticatable.rb")
+
+# Devise.setup do |config|
+#   config.parent_controller = 'StoreDeviseController'
+#   config.mailer = 'UserMailer'
+# end
+Devise.setup do |config|
+  config.parent_controller = 'StoreDeviseController'
+  config.mailer = 'UserMailer'
+end

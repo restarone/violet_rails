@@ -1,0 +1,26 @@
+.select-input {
+  label {
+    display: block;
+    font-size: $label-font-size;
+    font-weight: $label-font-weight;
+    margin-bottom: .3rem;
+  }
+
+  select {
+    appearance: none;
+    background: $color-copy-bright;
+    border: solid 1px $color-border;
+    border-radius: 1px;
+    display: block;
+    font-size: $input-font-size;
+    height: 3.8rem;
+    padding: 0 1rem;
+    width: 100%;
+
+    &:focus {
+      border-color: transparent;
+      box-shadow: none;
+      outline: solid 1px $color-border-dark;
+    }
+  }
+}

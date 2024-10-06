@@ -1,0 +1,23 @@
+.products {
+  @extend %section-spacings;
+  @extend %section-wrapper;
+
+  @include desktop {
+    display: flex;
+  }
+
+  &__taxon-title {
+    @include desktop {
+      padding: 0 3rem;
+    }
+  }
+
+  &__results-title {
+    font-size: $font-size-base;
+    font-weight: $font-weight-base;
+
+    @include desktop {
+      padding: 0 3rem;
+    }
+  }
+}

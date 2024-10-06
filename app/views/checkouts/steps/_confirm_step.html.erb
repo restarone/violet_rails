@@ -1,0 +1,25 @@
+<div class="confirm-step">
+  <fieldset class="confirm-step__info">
+    <legend>
+      <%= t('spree.confirm') %>
+    </legend>
+
+    <%= render 'orders/order_details', order: @order %>
+  </fieldset>
+
+  <div class="terms_and_conditions">
+    <%= render 'checkouts/terms_and_conditions' %>
+    <%= check_box_tag :accept_terms_and_conditions, 'accepted', false %>
+    <%= label_tag :accept_terms_and_conditions, t('spree.agree_to_terms_of_service') %>
+  </div>
+
+  <%= button_tag(
+    I18n.t('spree.place_order'),
+    class: 'button-primary',
+    name: :commit,
+  ) %>
+</div>
+
+<script>
+  Solidus.disableSaveOnClick();
+</script>

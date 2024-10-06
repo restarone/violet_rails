@@ -1,0 +1,21 @@
+<ul class="shipment-items">
+  <% shipment_items.each do |shipment_item| %>
+    <li>
+      <div class="shipment-items__image">
+        <%= render(ImageComponent.new(
+          image: shipment_item.variant.gallery.images.first || shipment_item.variant.product.gallery.images.first,
+          size: :small
+        )) %>
+      </div>
+      <div class="shipment-items__name">
+        <%= shipment_item.variant.name %>
+      </div>
+      <div class="shipment-items__quantity">
+        <%= shipment_item.quantity %>
+      </div>
+      <div class="shipment-items__price">
+        <%= display_price(shipment_item.variant) %>
+      </div>
+    </li>
+  <% end %>
+</ul>

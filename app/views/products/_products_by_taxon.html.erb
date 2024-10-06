@@ -1,0 +1,7 @@
+<section class="products-by-taxon">
+  <h5 class="products-by-taxon__title">
+    <%= link_to products_by_taxon.name, taxon_seo_url(products_by_taxon) %>
+  </h5>
+
+  <%= render 'products/products', products: taxon_preview(products_by_taxon), taxon: products_by_taxon %>
+</section>

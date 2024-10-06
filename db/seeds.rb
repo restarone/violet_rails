@@ -182,3 +182,5 @@ end
 # Populate event analytics in mass
 # docker-compose run -e SEED_ANALYTICS=true --rm solutions_app rails db:seed
 VioletSeeds.populate_event_analytics_data if ENV['SEED_ANALYTICS'] == 'true'
+Spree::Core::Engine.load_seed if defined?(Spree::Core)
+Spree::Auth::Engine.load_seed if defined?(Spree::Auth)

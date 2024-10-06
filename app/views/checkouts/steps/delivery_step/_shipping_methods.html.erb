@@ -1,0 +1,10 @@
+<ul class="shipping-methods">
+  <% shipping_rates.each do |rate| %>
+    <li class="shipping-methods__rate">
+      <%= form.label :selected_shipping_rate_id, value: rate.id, class: "radio-input" do %>
+        <%= form.radio_button(:selected_shipping_rate_id, rate.id) %>
+        <%= "#{rate.name} #{rate.display_cost}" %>
+      <% end %>
+    </li>
+  <% end %>
+</ul>

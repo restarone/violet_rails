@@ -1,0 +1,26 @@
+.checkout-header {
+  margin-bottom: 3rem;
+
+  @include tablet {
+    align-items: center;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  &__title {
+    margin-bottom: 0;
+    margin-right: 0;
+
+    @include tablet {
+      margin-right: 20px;
+    }
+  }
+
+  &__steps {
+    margin-top: 1.5rem;
+
+    @include desktop {
+      margin-top: 0;
+    }
+  }
+}

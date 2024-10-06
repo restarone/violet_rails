@@ -1,0 +1,18 @@
+<div class="proposed-shipment">
+  <h2 class="proposed-shipment__title">
+    <%= t('spree.package_from') %>
+    <%= ship_form.object.stock_location.name %>
+  </h2>
+
+  <%= render "checkouts/steps/delivery_step/shipment_items", shipment_items: ship_form.object.manifest %>
+
+  <h3 class="proposed-shipment__secondary-title">
+    <%= t('spree.shipping_method') %>:
+  </h3>
+
+  <%= render(
+    "checkouts/steps/delivery_step/shipping_methods",
+    form: ship_form,
+    shipping_rates: ship_form.object.shipping_rates
+  ) %>
+</div>

@@ -1,0 +1,22 @@
+.locale-selector {
+  margin: 3rem auto;
+  width: 20rem;
+
+  &__select-input {
+    position: relative;
+
+    select {
+      padding: 0 3rem 0 1rem;
+    }
+
+    &::after {
+      content: '\2304';
+      font-size: 2rem;
+      pointer-events: none;
+      position: absolute;
+      right: 1rem;
+      bottom: 0;
+      margin-bottom: .8rem;
+    }
+  }
+}

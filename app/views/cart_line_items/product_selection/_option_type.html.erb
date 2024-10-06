@@ -1,0 +1,30 @@
+<div class="modules_product-display-page_product-selection">
+  <div class = "optionType<%= option_type.presentation %>">
+    <%= option_type.presentation %>:
+
+    <span class="selected-value" id='<%= "selected-#{option_type.name}" %>' >
+      <%= option_values(product: product, option_type: option_type).first&.presentation %>
+    </span>
+
+    <div class="selection-container">
+      <% option_values(product: product, option_type: option_type).each_with_index do |option_value, i| %>
+        <label class="selection-item">
+          <%= tag(
+            :input,
+            class: "selection-items",
+            type: "radio",
+            value: option_value.id,
+            checked: i.zero?,
+            name: "#{option_type.name}",
+            "data-action": "clickOnSelection",
+            "data-presentation": option_value.presentation,
+            "data-option-index": index
+          ) %>
+          <span class='<%= "selection-#{option_type.presentation.downcase}" %> <%= "selected-#{option_value.name.downcase}" %>'>
+            <span class="value"><%= option_value.presentation %></span>
+          </span>
+        </label>
+      <% end %>
+    </div>
+  </div>
+</div>

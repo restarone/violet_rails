@@ -1,0 +1,11 @@
+.gateway-payment-method {
+  margin-top: 2rem;
+
+  > div {
+    margin-top: 1.5rem;
+
+    &:first-child {
+      margin: 0;
+    }
+  }
+}

@@ -1,0 +1,30 @@
+.payment-info {
+  font-size: $font-size-small;
+
+  &__title {
+    display: inline;
+    font-size: $h6-font-size;
+    font-weight: $font-weight-bold;
+  }
+
+  &__edit {
+    font-size: $h6-font-size;
+    margin-left: .3rem;
+    text-decoration: none;
+  }
+
+  &__info {
+    font-size: $font-size-small;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    > li {
+      margin: .5rem 0;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}

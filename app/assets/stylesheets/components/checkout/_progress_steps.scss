@@ -1,0 +1,39 @@
+.progress-steps {
+  color: $color-copy-light;
+  display: flex;
+  font-size: $h6-font-size;
+  justify-content: space-between;
+  line-height: 2.2rem;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+
+  @include tablet {
+    min-width: 360px;
+  }
+
+  > li {
+    &.completed,
+    &.completed-first {
+      font-weight: $font-weight-bold;
+    }
+
+    &.current,
+    &.current-first {
+      color: $color-accent;
+      font-weight: $font-weight-bold;
+
+      &::before {
+        content: "➝";
+        font-size: $font-size-small;
+        margin-right: .5rem;
+      }
+    }
+  }
+
+  a {
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
