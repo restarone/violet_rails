@@ -3,6 +3,7 @@ class EMailer < ApplicationMailer
     @message = params[:message]
     @message_thread = params[:message_thread]
     @subdomain = Subdomain.current
+    @recipients = @message_thread.recipients
     @from = if @subdomain.email_name.present?
               "#{@subdomain.email_name} <#{@subdomain.name}@#{ENV["APP_HOST"]}>"
             else
@@ -30,7 +31,7 @@ class EMailer < ApplicationMailer
 
     mail_settings = {
       # This will make the mail addresses visible to all (no Blank Carbon Copy)
-      to: @message_thread.recipients, 
+      to: @recipients, 
       subject: @message_thread.subject,
       from: @from,
       message_id: email_message_id(@message)

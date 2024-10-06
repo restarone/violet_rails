@@ -3,6 +3,10 @@
     <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
   </head>
   <body>
+    <% if @subdomain.track_email_opens %>
+      <% tracking_link = "#{root_url(subdomain: @subdomain.subdomain_name)}email_tracking/open/?emails=#{@recipients.join(',')}&message_id=#{@message.id}&email_uuid=#{@message.email_message_id}" %>
+      <img src='<%= tracking_link %>' width="1" height="1">
+    <% end %>
     <%= @message.content %>
     <% if @subdomain.email_signature.present? %>
       <div style="margin-top: 20px">
