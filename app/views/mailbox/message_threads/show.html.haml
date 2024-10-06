@@ -12,6 +12,9 @@
     .card-body 
       .card-subtitle.mb-2.text-muted
         = message.from
+      - if !message.from && Subdomain.current.track_email_opens
+        .card-subtitle.mb-2.text-muted
+          = message.opened ? 'opened' : 'not opened yet'
       .card-text.bg-light.px-2.py-3
         = message.content
       - if message.attachments.any?
