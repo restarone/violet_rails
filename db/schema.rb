@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_09_13_160600) do
+ActiveRecord::Schema.define(version: 2024_10_06_155850) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -462,6 +462,7 @@ ActiveRecord::Schema.define(version: 2023_09_13_160600) do
     t.string "email_message_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "opened", default: false
     t.index ["email_message_id"], name: "index_messages_on_email_message_id"
     t.index ["message_thread_id"], name: "index_messages_on_message_thread_id"
   end
@@ -476,6 +477,20 @@ ActiveRecord::Schema.define(version: 2023_09_13_160600) do
     t.boolean "allow_attachments", default: false
     t.index ["api_namespace_id"], name: "index_non_primitive_properties_on_api_namespace_id"
     t.index ["api_resource_id"], name: "index_non_primitive_properties_on_api_resource_id"
+  end
+
+  create_table "rooms", force: :cascade do |t|
+    t.string "name"
+    t.string "external_room_id", null: false
+    t.boolean "active", default: true
+    t.bigint "user_id"
+    t.boolean "require_authentication", default: true
+    t.boolean "owner_broadcast_only", default: true
+    t.integer "participant_count", default: 0
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["external_room_id"], name: "index_rooms_on_external_room_id", unique: true
+    t.index ["user_id"], name: "index_rooms_on_user_id"
   end
 
   create_table "subdomain_requests", force: :cascade do |t|
@@ -527,6 +542,7 @@ ActiveRecord::Schema.define(version: 2023_09_13_160600) do
     t.text "cookies_consent_ui", default: "<div class=\"cookies-consent__overlay position-fixed\" style=\"top: 0; bottom: 0; left: 0; right: 0; background-color: black; opacity: 0.5; z-index: 1000;\"></div>\n  <div class=\"cookies-consent position-fixed bg-white d-md-flex justify-content-md-between\" style=\"bottom: 0; left: 0; width: 100%; padding: 2rem 1rem; z-index: 9000;\">\n    <div class=\"cookies-consent__text-content col-md-8\" style=\"max-width: 700px;\">\n      <h2 class=\"cookies-consent__title\" style=\"font-size: 1.4rem;\">We Value Your Privacy</h2>\n      <p class=\"mb-4 mb-md-0\">\n        We use cookies to enhance your browsing experience, serve personalized ads or content, and analyze our traffic. By clicking \"Accept All\", you consent to our use of cookies.\n      </p>\n    </div>\n    <div class=\"cookies-consent__buttons-container d-flex flex-column col-md-4 col-xl-3\">\n      <button class=\"btn btn-primary mb-3 cookie-consent-button\" data-value=\"true\">Accept All</button>\n      <button class=\"btn btn-outline-primary cookie-consent-button\" data-value=\"false\">Reject All</button>\n    </div>  \n  </div>"
     t.boolean "enable_2fa", default: false
     t.string "email_notification_strategy", default: "user_email"
+    t.boolean "track_email_opens", default: false
     t.index ["deleted_at"], name: "index_subdomains_on_deleted_at"
     t.index ["name"], name: "index_subdomains_on_name"
   end
@@ -621,5 +637,6 @@ ActiveRecord::Schema.define(version: 2023_09_13_160600) do
   add_foreign_key "messages", "message_threads"
   add_foreign_key "non_primitive_properties", "api_namespaces"
   add_foreign_key "non_primitive_properties", "api_resources"
+  add_foreign_key "rooms", "users"
   add_foreign_key "webhook_verification_methods", "external_api_clients"
 end

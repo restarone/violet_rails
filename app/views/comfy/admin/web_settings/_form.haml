@@ -82,10 +82,15 @@
       = f.check_box :forum_enabled
       %label
         Forum
+    .form-group
+      = f.check_box :track_email_opens
+      %label
+        Email Tracking
     .form-group#tracking-checkbox
       = f.check_box :tracking_enabled
       %label
-        Tracking
+        Web Visit Tracking
+
       
       .form-group.consent-text
         = f.label :cookies_consent_ui

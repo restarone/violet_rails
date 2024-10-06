@@ -46,7 +46,8 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
       :email_name,
       :email_signature,
       :enable_2fa,
-      :email_notification_strategy
+      :email_notification_strategy, 
+      :track_email_opens,
     )
   end
 end

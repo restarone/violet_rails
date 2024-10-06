@@ -51,6 +51,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # email tracking
+  get 'email_tracking/open', to: 'mailbox/tracking#open'
+
   # calendar / meetings functionality
   resources :calendars, controller: 'comfy/admin/calendars'
   resources :meetings
