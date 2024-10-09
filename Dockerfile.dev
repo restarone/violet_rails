@@ -49,6 +49,10 @@ RUN rm -rf /var/cache/apk/* \
 RUN gem install bundler --version "$BUNDLE_VERSION" \
 && rm -rf $GEM_HOME/cache/*
 
+RUN gem install rubygems-update -v 3.4.22
+RUN update_rubygems 
+RUN gem update --system
+
 # install ember
 RUN npm install -g ember-cli
 
