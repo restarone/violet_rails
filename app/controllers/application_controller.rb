@@ -29,6 +29,10 @@ class ApplicationController < ActionController::Base
       return root_url(subdomain: Apartment::Tenant.current)
     end
   end
+  
+  def require_global_admin
+    redirect_to root_path unless current_user && current_user.global_admin?
+  end
 
 
   private

@@ -128,6 +128,7 @@ Rails.application.routes.draw do
       mount Sidekiq::Web => '/sidekiq'
       mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/graphql"
       get 'web_console', to: 'web_console#index'
+      mount Blazer::Engine, at: "blazer"
     end
     resources :subdomain_requests, except: [:new, :create] do
       member do
