@@ -136,6 +136,11 @@ GEM
     bcrypt (3.1.16)
     bcrypt_pbkdf (1.1.0)
     bindex (0.8.1)
+    blazer (2.6.5)
+      activerecord (>= 5)
+      chartkick (>= 3.2)
+      railties (>= 5)
+      safely_block (>= 0.1.1)
     bootsnap (1.7.3)
       msgpack (~> 1.0)
     builder (3.2.4)
@@ -515,6 +520,7 @@ DEPENDENCIES
   apartment-activejob
   aws-sdk-s3
   bcrypt_pbkdf (>= 1.0, < 2.0)
+  blazer (~> 2.6)
   bootsnap (>= 1.7.3)
   byebug
   capistrano
@@ -587,7 +593,7 @@ DEPENDENCIES
   will_paginate
 
 RUBY VERSION
-   ruby 3.0.0p0
+   ruby 2.6.6p146
 
 BUNDLED WITH
    2.1.4
