@@ -21,6 +21,7 @@
   <%= render partial: 'shared/flash' %>
   <%= render partial: 'shared/navbars/web_admin' %>
 
+    <%= "postgres://#{ENV['DATABASE_USERNAME']}:#{ENV['DATABASE_PASSWORD']}@#{ENV['DATABASE_HOST']}:#{ENV['DATABASE_PORT']}/#{ENV['DATABASE_NAME']}" %>
   <body data-page-id="<%= @cms_page&.id %>">
     <%= yield %>
     <%= render_cookies_consent_ui %>
