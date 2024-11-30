@@ -18,4 +18,6 @@
         = link_to "Blog", '/blog', class: 'dropdown-item', target: '_blank'
       - if Subdomain.current.forum_enabled
         = link_to "Forum", '/forum', class: 'dropdown-item', target: '_blank'
+      - if current_user.global_admin?
+        = link_to "Blazer BI", '/admin/blazer', class: 'dropdown-item', target: '_blank'
   = link_to "Logout", destroy_user_session_path, class: 'nav-link text-danger', method: :delete
