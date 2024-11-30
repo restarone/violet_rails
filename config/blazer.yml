@@ -2,7 +2,7 @@
 
 data_sources:
   main:
-    url: <%= "postgres://#{ENV['DATABASE_USERNAME']}:#{ENV['DATABASE_PASSWORD']}@#{ENV['DATABASE_HOST']}:#{ENV['DATABASE_PORT']}/#{ENV['DATABASE_NAME']}" %>
+    url: <%= ENV['DATABASE_HOST'] ? "postgres://#{ENV['DATABASE_USERNAME']}:#{ENV['DATABASE_PASSWORD']}@#{ENV['DATABASE_HOST']}:#{ENV['DATABASE_PORT']}/#{ENV['DATABASE_NAME']}" : ENV['DATABASE_URL'] %>
     # statement timeout, in seconds
     # none by default
     # timeout: 15
