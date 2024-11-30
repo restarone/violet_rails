@@ -48,7 +48,7 @@ audit: true
 # user_name: name
 
 # custom before_action to use for auth
-# before_action_method: require_admin
+before_action_method: require_global_admin
 
 # email to send checks from
 # from_email: blazer@example.org
