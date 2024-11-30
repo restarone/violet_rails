@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Add public IP to AWS security group
-        uses: sohelamin/aws-security-group-add-ip-action@1.0.1
+        uses: sohelamin/aws-security-group-add-ip-action@master
         with:
           aws-access-key-id: ${{ secrets.DOKKU_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.DOKKU_AWS_SECRET_ACCESS_KEY }}

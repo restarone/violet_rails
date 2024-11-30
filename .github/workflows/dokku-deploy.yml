@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
 
       - name: Add public IP to AWS security group
-        uses: sohelamin/aws-security-group-add-ip-action@1.0.1
+        uses: sohelamin/aws-security-group-add-ip-action@master
         with:
           aws-access-key-id: ${{ secrets.DOKKU_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.DOKKU_AWS_SECRET_ACCESS_KEY }}
@@ -49,7 +49,7 @@ jobs:
           fetch-depth: 0
 
       - name: Add public IP to AWS security group
-        uses: sohelamin/aws-security-group-add-ip-action@1.0.1
+        uses: sohelamin/aws-security-group-add-ip-action@master
         with:
           aws-access-key-id: ${{ secrets.DOKKU_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.DOKKU_AWS_SECRET_ACCESS_KEY }}
@@ -114,7 +114,7 @@ jobs:
     if: github.event_name == 'pull_request' && ((github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'deploy-review-app')) || (github.event.pull_request.state == 'open' && github.event.action == 'unlabeled' && needs.checklabel.outputs.deploy_review_app_removed))
     steps:
       - name: Add public IP to AWS security group
-        uses: sohelamin/aws-security-group-add-ip-action@1.0.1
+        uses: sohelamin/aws-security-group-add-ip-action@master
         with:
           aws-access-key-id: ${{ secrets.DOKKU_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.DOKKU_AWS_SECRET_ACCESS_KEY }}
