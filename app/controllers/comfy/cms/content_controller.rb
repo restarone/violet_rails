@@ -15,6 +15,11 @@ class Comfy::Cms::ContentController < Comfy::Cms::BaseController
                 only: :show
 
   def show
+    if params[:s2_redirect_to] && params[:s2_query] && params[:s2_url_params] && params[:s2_subdomain]
+      # s2 link detected, process accordingly
+      return redirect_to "https://#{params[:s2_redirect_to]}"
+    end
+
     if @cms_page.target_page.present?
       redirect_to @cms_page.target_page.url(relative: true)
     else
