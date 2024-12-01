@@ -59,4 +59,6 @@ class ActiveSupport::TestCase
   class ActionMailbox::TestCase
     include ActiveJob::TestHelper
   end
+
+  Rack::Attack.enabled = false
 end
