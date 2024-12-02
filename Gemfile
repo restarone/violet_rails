@@ -124,9 +124,13 @@ gem 'devise-two-factor', "4.0.2"
 
 gem "slowpoke"
 
-gem "strong_migrations"
+# gem "strong_migrations"
 gem "simple_calendar", "~> 3.0"
 
 gem "icalendar", "~> 2.9"
 
 gem "blazer", "~> 2.6"
+
+gem "spree", "~> 4.6"
+gem "spree_auth_devise", "~> 4.6"
+gem "spree_gateway", "~> 3.11"
