@@ -2,3 +2,10 @@
   = form.check_box :is_restricted
 .form-group
   = form.text_area :preview_content, data: {'cms-cm-mode' => 'text/html'}
+.form-group
+  = form.file_field :og_image, class: 'form-control', data: {'cms-cm-mode' => 'text/html'}, label: false
+- if form.object.og_image.present?
+  .form-group.text-right
+    = image_tag(url_for(form.object.og_image), class: 'img-thumbnail', width: '100', height: 'auto') 
+
+
