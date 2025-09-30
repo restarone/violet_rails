@@ -36,7 +36,7 @@ services:
     depends_on:
       - solutions_db
       - solutions_redis
-    image: violet_rails_solutions_app
+    image: violet_rails-solutions_app
     container_name: solutions_sidekiq
     command: sidekiq -c 1
     volumes:
@@ -82,7 +82,7 @@ services:
       - solutions_db
       - solutions_redis
   solutions_test:
-    image: violet_rails_solutions_app
+    image: violet_rails-solutions_app
     container_name: solutions_test
     volumes:
       - .:/var/app
