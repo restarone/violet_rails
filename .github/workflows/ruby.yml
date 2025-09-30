@@ -88,7 +88,7 @@ jobs:
     - name: Run Tests
       run: bin/rails test -f
     - name: Save code coverage report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: code-coverage-report(Ruby - ${{ matrix.ruby_version }}, Node.js - ${{ matrix.node_version }})
         path: coverage/
