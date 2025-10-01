@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 if ENV['RUBY_BUILD'] == '3.0.0'
-  ruby '3.0.0'
+  ruby '3.1.0'
 else
   ruby '2.6.6'
 end

@@ -35,7 +35,7 @@ jobs:
     strategy:
       matrix:
         node_version: [14.x, 10.x]
-        ruby_version: [2.6.6, 3.0.0]
+        ruby_version: [2.6.6, 3.1.0]
     steps:
     - name: Configure sysctl limits
       run: |
