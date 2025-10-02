@@ -71,7 +71,7 @@ jobs:
           ssh_host_key: ${{ secrets.DOKKU_SSH_HOST_KEY }}
           git_push_flags: '--force'
 
-      - name: Add TSL/SSL certificate to the review-app
+      - name: Add TLS/SSL certificate to the review-app
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DOKKU_HOST }}
