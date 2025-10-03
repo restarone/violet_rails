@@ -16,6 +16,10 @@ class SimpleDiscussion::UserMailerTest < ActionMailer::TestCase
     @forum_thread.save!
   end
 
+  teardown do
+    ENV["APP_HOST"] = "restarone.com"
+  end
+
   test 'sends email successfully when the forum-post has non-image attachment' do
     file_path = Rails.root.join('test','fixtures', 'files', 'fixture_file.pdf')
     attachment = ActiveStorage::Blob.create_and_upload!(io: File.open(file_path), filename: 'fixture_file', content_type: 'application/pdf', metadata: nil)
