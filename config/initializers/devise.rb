@@ -62,7 +62,7 @@ Devise.setup do |config|
   # Configure the e-mail address which will be shown in Devise::Mailer,
   # note that it will be overwritten if you use your own mailer class
   # with default "from" parameter.
-  config.mailer_sender = "#{Rails.env == 'production' ? 'violet-system' : "violet-#{Rails.env}" }@#{ENV['APP_HOST']}"
+  config.mailer_sender = "#{Subdomain.current.name}@#{ENV['APP_HOST']}"
 
   # Configure the class responsible to send e-mails.
   # config.mailer = 'Devise::Mailer'
