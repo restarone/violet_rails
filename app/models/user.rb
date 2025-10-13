@@ -155,6 +155,10 @@ class User < ApplicationRecord
           otp_secret: nil
          )
     end
+
+    def devise_mailer
+      DeviseMailer
+    end
   
   
   private
