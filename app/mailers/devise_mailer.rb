@@ -4,11 +4,10 @@ class DeviseMailer < Devise::Mailer
   def invitation_instructions(record, token, opts = {})
     @resource = record
     @token = token
-
     mail_settings = {
       to: @resource.email, 
       subject: "Your invitation to #{@resource.subdomain}",
-      from: @from,
+      from: "#{@resource.subdomain}@#{ENV["APP_HOST"]}",
     }
 
     mail(mail_settings) do |format|
