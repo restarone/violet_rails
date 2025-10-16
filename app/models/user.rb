@@ -157,7 +157,10 @@ class User < ApplicationRecord
     end
 
     def devise_mailer
-      DeviseMailer
+      Apartment::Tenant.switch Apartment::Tenant.current do
+        # switch to current schema before initializing devise mailer
+        DeviseMailer
+      end
     end
   
   
