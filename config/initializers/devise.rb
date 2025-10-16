@@ -62,8 +62,8 @@ Devise.setup do |config|
   # Configure the e-mail address which will be shown in Devise::Mailer,
   # note that it will be overwritten if you use your own mailer class
   # with default "from" parameter.
-  # 2025 Oct- with the launch of restarone.cloud - hosted Violet Rails, we are setting the sender from the mailer instead of at boot-time  
-  # config.mailer_sender = "#{Rails.env == 'production' ? 'violet-system' : "violet-#{Rails.env}" }@#{ENV['APP_HOST']}"
+  # 2025 Oct- with the launch of restarone.cloud - hosted Violet Rails, we are setting a safe default at boot-time; which is the domain apex. Which will get overridden by the mailer at run-time with more accurate sender information
+  config.mailer_sender = Rails.env == 'production' ? "noreply@#{ENV['APP_HOST']}" : "violet-#{Rails.env}@#{ENV['APP_HOST']}"
 
   # Configure the class responsible to send e-mails.
   # config.mailer = 'Devise::Mailer'
