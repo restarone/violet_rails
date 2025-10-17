@@ -12,6 +12,7 @@
       .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
         = active_link_to "Analytics", dashboard_path, class: 'dropdown-item'
         = active_link_to "Analytics V2", v2_dashboard_path, class: 'dropdown-item'
+        = active_link_to "Sales Collateral", sales_collateral_path, class: 'dropdown-item'
   = active_link_to "My Settings", edit_user_registration_path, class: 'nav-link'
 %li{class: 'nav-item'}
   %li.nav-item.dropdown

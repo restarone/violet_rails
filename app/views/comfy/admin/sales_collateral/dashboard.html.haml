@@ -1,0 +1,62 @@
+.page-header
+  .d-flex.my-2.justify-content-between.align-items-center
+    .h2.mb-0
+      Sales Collateral
+
+.card
+  .card-header
+    %strong
+      Info
+  .card-body
+    .form-group.card.p-2
+      %label
+        HTML title:
+      .form-control
+        = Subdomain.current.html_title
+    .form-group.card.p-2
+      %label
+        SEO description:
+      .form-control
+        = Subdomain.current.description
+    .form-group.card.p-2
+      %label
+        SEO keywords:
+      .form-control
+        = Subdomain.current.keywords
+
+
+
+.card.my-5
+  .card-header
+    %strong
+      Graphics
+  .card-body
+    .form-group.card.p-2
+      %label
+        Company logo: 
+      .m-2
+        = render_logo(Subdomain.current)
+
+    .form-group.card.p-2
+      %label
+        Favicon: 
+      .m-2
+        = render_favicon(Subdomain.current)
+
+    .form-group.card.p-2
+      %label
+        open-graph image: 
+      .m-2
+        = render_og_image(Subdomain.current)
+
+
+.card.my-5
+  .card-header
+    %strong
+      Inbound
+  .card-body
+    .form-group
+      %label
+        QR Code:
+      .m-2
+        = image_tag(Subdomain.current.qr_code)

@@ -22,6 +22,8 @@ Rails.application.routes.draw do
 
   get 'v2/dashboard', to: 'comfy/admin/v2/dashboard#dashboard'
 
+  get 'sales_collateral', to: 'comfy/admin/sales_collateral#dashboard'
+
   # video calling, lock down new/create actions-- and allow public show action
   get 'rooms', to: 'comfy/admin/rooms#new'
   post 'rooms', to: 'comfy/admin/rooms#create'
