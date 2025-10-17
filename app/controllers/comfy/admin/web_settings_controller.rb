@@ -2,6 +2,8 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
   layout "comfy/admin/cms"
   before_action :ensure_authority_to_manage_web_settings
 
+  before_action :load_qr_code, on: [:edit]
+
   def edit
   end
 
@@ -15,6 +17,10 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
   end
 
   private
+
+  def load_qr_code
+    Subdomain.current.subdomain_qr_code
+  end
 
   def subdomain_params
     params.require(:subdomain).permit(

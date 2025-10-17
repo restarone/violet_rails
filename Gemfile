@@ -130,3 +130,5 @@ gem "simple_calendar", "~> 3.0"
 gem "icalendar", "~> 2.9"
 
 gem "blazer", "~> 2.6"
+
+gem "rqrcode", "~> 2.2"

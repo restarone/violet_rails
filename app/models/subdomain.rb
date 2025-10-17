@@ -13,6 +13,7 @@ class Subdomain < ApplicationRecord
   has_one_attached :logo
   has_one_attached :favicon
   has_one_attached :og_image
+  has_one_attached :qr_code
   has_rich_text :email_signature
 
 
@@ -167,6 +168,45 @@ class Subdomain < ApplicationRecord
     self.name == Subdomain::ROOT_DOMAIN_NAME ? 'www' : self.name
   end
 
+  def generate_qrcode
+    # Get the host
+    subdomain = Apartment::Tenant.current
+    subdomain_resolved_for_apex = subdomain == 'public' || subdomain == 'root' ? "https://#{ENV['APP_HOST']}" : "https://#{subdomain}.#{ENV['APP_HOST']}" 
+    host = subdomain_resolved_for_apex
+
+    # Create the QR code object
+    qrcode = RQRCode::QRCode.new(host)
+
+    # Create a new PNG object
+    png = qrcode.as_png(
+      bit_depth: 1,
+      border_modules: 4,
+      color_mode: ChunkyPNG::COLOR_GRAYSCALE,
+      color: "black",
+      file: nil,
+      fill: "white",
+      module_px_size: 6,
+      resize_exactly_to: false,
+      resize_gte_to: false,
+      size: 120,
+    )
+
+    # Attach the QR code to the active storage
+    self.qr_code.attach(
+      io: StringIO.new(png.to_s),
+      filename: "#{host}.png",
+      content_type: "image/png",
+    )
+  end
+
+  def subdomain_qr_code
+    if self.qr_code.attached?
+      return self.qr_code
+    else
+      self.generate_qrcode
+    end
+  end
+
   private
 
   def change_2fa_setting 
@@ -241,4 +281,5 @@ class Subdomain < ApplicationRecord
     subdomain = Subdomain.new(name: 'public')
     Subdomain.all.to_a.push(subdomain)
   end
+  
 end
