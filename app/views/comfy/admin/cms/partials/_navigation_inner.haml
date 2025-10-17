@@ -11,7 +11,7 @@
 %li{class: 'nav-item'}
   %li.nav-item.dropdown
     %a#navbarDropdown.nav-link.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
-      = "#{Subdomain.current.name.capitalize} Shortcuts"
+      = "#{Subdomain.current.name.capitalize.truncate(12)} Shortcuts"
     .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
       = link_to "Website", '/', class: 'dropdown-item', target: '_blank'
       - if Subdomain.current.blog_enabled
