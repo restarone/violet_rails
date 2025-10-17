@@ -219,6 +219,16 @@
       %label
         Analytics report frequency:
       = f.select :analytics_report_frequency, options_for_select(Subdomain::REPORT_FREQUENCY_MAPPING, Subdomain.current.analytics_report_frequency)
+.card.my-5
+  .card-header
+    %strong
+      Marketing Assets
+  .card-body
+    .form-group
+      %label
+        QR Code:
+      .m-2
+        = image_tag(Subdomain.current.qr_code)
 
 
 = f.submit "Save", class: 'btn btn-primary'
