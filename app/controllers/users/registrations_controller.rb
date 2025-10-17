@@ -7,6 +7,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   before_action :verify_ability_to_self_signup, only: [:new, :create]
 
   include TwofactorAuthenticable
+  layout :resolve_layout
 
   # GET /resource/sign_up
   # def new
@@ -116,6 +117,15 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   private
+
+  def resolve_layout
+    case action_name
+    when "edit"
+      'layouts/comfy/admin/cms'
+    else
+      'layouts/devise'
+    end
+  end
 
   def resolve_redirect
     after_sign_up_path = Subdomain.current.after_sign_up_path
