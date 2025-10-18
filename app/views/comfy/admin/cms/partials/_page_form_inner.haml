@@ -1,4 +1,9 @@
 .form-group
+  .form-group.row
+    .col-sm-10.offset-sm-2
+      = link_to 'Open Page', @page.url, target: "_blank", class: 'btn btn-info'
+      = link_to 'Analytics', v2_dashboard_path(page: @page.id), class: 'btn btn-dark'
+.form-group
   = form.check_box :is_restricted
 .form-group
   = form.text_area :preview_content, data: {'cms-cm-mode' => 'text/html'}
