@@ -15,7 +15,7 @@
         %li{class: 'nav-item'}
           %li.nav-item.dropdown
             %a#navbarDropdown.nav-link.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
-              = "#{Subdomain.current.name.capitalize} Web / App"
+              = "App Management"
             .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
               = active_link_to comfy_admin_cms_site_layouts_path(@site), class: "dropdown-item" do
                 = t('comfy.admin.cms.base.layouts')
@@ -25,6 +25,8 @@
                 = t('comfy.admin.cms.base.snippets')
               = active_link_to comfy_admin_cms_site_files_path(@site), class: "dropdown-item" do
                 = t('comfy.admin.cms.base.files')
+              = active_link_to edit_web_settings_path, class: 'dropdown-item' do
+                = "App Settings"
 
 
       = cms_hook :navigation

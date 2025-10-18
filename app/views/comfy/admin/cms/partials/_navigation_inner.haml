@@ -4,7 +4,7 @@
   = active_link_to "Calendar", calendars_path, class: 'nav-link'
   = active_link_to "Video Rooms", '/rooms', class: 'nav-link'
   = active_link_to "API", api_namespaces_path, class: 'nav-link'
-  = active_link_to "App Settings", edit_web_settings_path, class: 'nav-link'
+  
   %li{class: 'nav-item'}
     %li.nav-item.dropdown
       %a#navbarDropdown.nav-link.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
@@ -13,11 +13,11 @@
         = active_link_to "Analytics", dashboard_path, class: 'dropdown-item'
         = active_link_to "Analytics V2", v2_dashboard_path, class: 'dropdown-item'
         = active_link_to "Sales Collateral", sales_collateral_path, class: 'dropdown-item'
-  = active_link_to "My Settings", edit_user_registration_path, class: 'nav-link'
+  
 %li{class: 'nav-item'}
   %li.nav-item.dropdown
     %a#navbarDropdown.nav-link.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
-      = "#{Subdomain.current.name.capitalize.truncate(12)} Apps"
+      = "#{Subdomain.current.name.capitalize.truncate(12)} Shortcuts"
     .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
       = link_to "Website", '/', class: 'dropdown-item', target: '_blank'
       - if Subdomain.current.blog_enabled
@@ -26,4 +26,5 @@
         = link_to "Forum", '/forum', class: 'dropdown-item', target: '_blank'
       - if current_user.global_admin?
         = link_to "Blazer BI", '/admin/blazer', class: 'dropdown-item', target: '_blank'
+  = active_link_to "My Settings", edit_user_registration_path, class: 'nav-link'  
   = link_to "Logout", destroy_user_session_path, class: 'nav-link text-danger', method: :delete
