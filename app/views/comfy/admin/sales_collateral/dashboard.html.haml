@@ -2,6 +2,7 @@
   .d-flex.my-2.justify-content-between.align-items-center
     .h2.mb-0
       Sales Collateral
+    = link_to 'Sales Collateral Builder - coming soon', sales_collateral_path, role: 'button', class: 'btn btn-primary'
 
 .card
   .card-header
@@ -57,6 +58,38 @@
   .card-body
     .form-group
       %label
+        Website:
+      .m-2
+        = @website
+    .form-group
+      %label
+        Email:
+      .m-2
+        = @email
+    .form-group
+      %label
         QR Code:
       .m-2
         = image_tag(Subdomain.current.qr_code)
+
+.card.my-5
+  .card-header
+    %strong
+      Community
+  .card-body
+    .form-group
+      %label
+        Forum:
+      .m-2
+        = "Coming Soon!"
+
+.card.my-5
+  .card-header
+    %strong
+      Publications
+  .card-body
+    .form-group
+      %label
+        From the company archives:
+      .m-2
+        = "Coming Soon!"
