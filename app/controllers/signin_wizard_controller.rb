@@ -12,7 +12,7 @@ class SigninWizardController < ApplicationController
   end
 
   def finish_wizard_path
-    root_url(subdomain: params[:schema])
+    root_url
   end
 
   private
