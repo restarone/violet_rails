@@ -132,3 +132,5 @@ gem "icalendar", "~> 2.9"
 gem "blazer", "~> 2.6"
 
 gem "rqrcode", "~> 2.2"
+
+gem "puppeteer-ruby", "~> 0.45.6"

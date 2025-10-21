@@ -35,6 +35,18 @@ less \
 zsh \
 sqlite-dev \
 npm \
+nss \
+freetype \
+harfbuzz \
+dbus \
+mesa-egl \
+mesa-gl \
+libxkbcommon \
+ttf-freefont \
+alsa-lib \
+udev \
+chromium \
+chromium-chromedriver \
 gcompat
 
 

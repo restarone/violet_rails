@@ -207,6 +207,15 @@ class Subdomain < ApplicationRecord
     end
   end
 
+  def puppeteer_capture
+    Puppeteer.launch(headless: true, args: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage']) do |browser|
+      page = browser.new_page
+      byebug
+      page.goto("https://github.com/YusukeIwaki")
+      page.screenshot(path: "YusukeIwaki.png")
+    end
+  end
+
   private
 
   def change_2fa_setting 
