@@ -208,9 +208,8 @@ class Subdomain < ApplicationRecord
   end
 
   def puppeteer_capture
-    Puppeteer.launch(headless: true, args: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage']) do |browser|
+    Puppeteer.launch(headless: true, executable_path: '/usr/bin/chromium-browser' , args: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage']) do |browser|
       page = browser.new_page
-      byebug
       page.goto("https://github.com/YusukeIwaki")
       page.screenshot(path: "YusukeIwaki.png")
     end
