@@ -1,0 +1,14 @@
+.page-header
+  .h2
+    = 'Email Templates'
+.container
+  #VioletEmailEditor
+
+:javascript
+  const app = Revolvapp('#VioletEmailEditor', {
+    editor: {
+      path: '/revolvapp-2-3-10/',
+      template: '/revolvapp-2-3-10/templates/index.html',
+    }
+  });
+  app.start()
