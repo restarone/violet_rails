@@ -1,8 +1,20 @@
 .page-header
   .h2
     = 'Email Templates'
+  .container.m-2
+    .h3
+      = "AI prompt:"
+    .p
+      = "this is re-html, used by revolvapp,"
+    .p
+      = "... copy pasted editor code"
+    .p
+      = "using the above markup language create me a..."
 .container
   #VioletEmailEditor
+
+%button#VioletEmailEditorSubmit
+  = "Save"
 
 :javascript
   const app = Revolvapp('#VioletEmailEditor', {
@@ -12,3 +24,25 @@
     }
   });
   app.start()
+
+  $('#VioletEmailEditorSubmit').click(function() {
+    $("#VioletEmailEditorSubmit").prop("disabled", true)
+    let authenticityToken = $('meta[name="csrf-token"]').attr('content');
+
+    let htmldoc = app.editor.getHtml()
+    let redoc = app.editor.getTemplate(true)
+    const endpoint = "#{mailbox_email_templates_path}"
+
+    $.ajax({
+      url: endpoint,
+      type: 'POST',
+      headers: {
+          'X-CSRF-Token': authenticityToken
+      },
+      data: JSON.stringify({ htmldoc: htmldoc, redoc: redoc }),
+      contentType: "application/json; charset=utf-8",
+      success: function(response) {
+        window.location.href = `${endpoint}/${response.id}`
+      }
+    });
+  });
