@@ -2,9 +2,14 @@ source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 if ENV['RUBY_BUILD'] == '3.0.0'
+  # production/bleeding-edge ruby version
   ruby '3.0.0'
-else
+elsif ENV['RUBY_BUILD'] == '2.7.8'
+  # development/develop ruby version
   ruby '2.7.8'
+else
+  # production/stable ruby version
+  ruby '2.6.6'
 end
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails', branch: 'main'
