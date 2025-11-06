@@ -208,10 +208,14 @@ class Subdomain < ApplicationRecord
   end
 
   def puppeteer_capture
-    Puppeteer.launch(headless: true, executable_path: '/usr/bin/chromium-browser' , args: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage']) do |browser|
+    screenshot_dir = Rails.root.join('tmp', 'screenshots', self.name)
+    FileUtils.mkdir_p(screenshot_dir)
+    screenshot_path = screenshot_dir.join("capture_#{Time.now.to_i}.png")
+    
+    Puppeteer.launch(headless: true, args: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage']) do |browser|
       page = browser.new_page
       page.goto("https://github.com/YusukeIwaki")
-      page.screenshot(path: "YusukeIwaki.png")
+      page.screenshot(path: screenshot_path.to_s)
     end
   end
 
