@@ -1,4 +1,4 @@
-FROM ruby:2.6.6-alpine
+FROM ruby:2.7-alpine
 
 # Build ENV vars
 ENV APP_PATH /var/app
@@ -20,8 +20,7 @@ RUN apk --no-cache update \
 && apk --no-cache upgrade \
 && apk add --no-cache \ 
 build-base \
-python2 \
-ttf-ubuntu-font-family \
+python3 \
 git \
 postgresql-dev \
 postgresql-client \

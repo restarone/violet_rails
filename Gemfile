@@ -4,7 +4,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 if ENV['RUBY_BUILD'] == '3.0.0'
   ruby '3.0.0'
 else
-  ruby '2.6.6'
+  ruby '2.7.8'
 end
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails', branch: 'main'
@@ -134,3 +134,4 @@ gem "blazer", "~> 2.6"
 gem "rqrcode", "~> 2.2"
 
 gem "puppeteer-ruby", "~> 0.45.6"
+
