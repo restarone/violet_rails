@@ -207,6 +207,18 @@ class Subdomain < ApplicationRecord
     end
   end
 
+  def puppeteer_capture
+    screenshot_dir = Rails.root.join('tmp', 'screenshots', self.name)
+    FileUtils.mkdir_p(screenshot_dir)
+    screenshot_path = screenshot_dir.join("capture_#{Time.now.to_i}.png")
+    
+    Puppeteer.launch(headless: true, args: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage']) do |browser|
+      page = browser.new_page
+      page.goto("https://github.com/YusukeIwaki")
+      page.screenshot(path: screenshot_path.to_s)
+    end
+  end
+
   private
 
   def change_2fa_setting 
