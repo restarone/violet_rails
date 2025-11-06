@@ -23,3 +23,8 @@ require("./common")
 require("./turbo")
 
 import "controllers"
+
+
+import Revolvapp from '../../../public/revolvapp-2-3-10/revolvapp.js';
+import '../../../public/revolvapp-2-3-10/css/revolvapp.min.css'
+import '../../../public/revolvapp-2-3-10/css/revolvapp-frame.min.css'
