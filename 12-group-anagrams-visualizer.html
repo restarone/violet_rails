@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Anagrams - Interactive Visualizer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #3B82F6;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #3B82F6;
+            padding-bottom: 10px;
+        }
+
+        .input-section {
+            background: #F9FAFB;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #E5E7EB;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #D1D5DB;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #3B82F6;
+        }
+
+        .preset-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #3B82F6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563EB;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: #10B981;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-tertiary {
+            background: #F59E0B;
+            color: white;
+        }
+
+        .btn-tertiary:hover {
+            background: #D97706;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .visualization-area {
+            background: #F9FAFB;
+            padding: 30px;
+            border-radius: 12px;
+            min-height: 400px;
+        }
+
+        .step-indicator {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3B82F6;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .step-indicator strong {
+            color: #3B82F6;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .words-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .word-card {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .word-card.processing {
+            border-color: #F59E0B;
+            transform: scale(1.1);
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.4);
+        }
+
+        .word-card.grouped {
+            opacity: 0.6;
+        }
+
+        .word-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 5px;
+        }
+
+        .word-signature {
+            font-size: 12px;
+            color: #6B7280;
+            font-family: 'Courier New', monospace;
+        }
+
+        .hash-map-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .hash-map-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #3B82F6;
+            margin-bottom: 15px;
+        }
+
+        .hash-entry {
+            background: #EFF6FF;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #3B82F6;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .hash-key {
+            font-family: 'Courier New', monospace;
+            color: #F59E0B;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .hash-values {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .hash-value {
+            background: #10B981;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .result-container {
+            margin-top: 30px;
+        }
+
+        .result-group {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .result-group-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .result-words {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .result-word {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stats {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .stat-value {
+            color: #3B82F6;
+            font-weight: 700;
+        }
+
+        .complexity-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .complexity-time {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .complexity-space {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Group Anagrams Visualizer</h1>
+            <p>Watch how hash maps efficiently group anagrams together!</p>
+            <div style="margin-top: 15px;">
+                <span class="complexity-badge complexity-time">Time: O(N × K log K)</span>
+                <span class="complexity-badge complexity-space">Space: O(N × K)</span>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Input Section -->
+            <div class="section">
+                <h2>📝 Input</h2>
+                <div class="input-section">
+                    <div class="input-group">
+                        <label for="wordsInput">Enter words (comma-separated):</label>
+                        <input
+                            type="text"
+                            id="wordsInput"
+                            placeholder='e.g., eat, tea, tan, ate, nat, bat'
+                            value="eat, tea, tan, ate, nat, bat"
+                        />
+                    </div>
+                    <div class="preset-buttons">
+                        <button class="btn btn-tertiary btn-small" onclick="loadPreset1()">
+                            Example 1
+                        </button>
+                        <button class="btn btn-tertiary btn-small" onclick="loadPreset2()">
+                            Example 2
+                        </button>
+                        <button class="btn btn-tertiary btn-small" onclick="loadPreset3()">
+                            Example 3
+                        </button>
+                    </div>
+                    <div class="controls">
+                        <button class="btn btn-primary" onclick="startVisualization()">
+                            ▶ Start Visualization
+                        </button>
+                        <button class="btn btn-secondary" onclick="stepThrough()">
+                            ⏭ Step Through
+                        </button>
+                        <button class="btn btn-tertiary" onclick="reset()">
+                            🔄 Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualization Section -->
+            <div class="section">
+                <h2>🎬 Visualization</h2>
+                <div class="visualization-area">
+                    <div id="stepIndicator" class="step-indicator">
+                        <strong>Ready to start!</strong>
+                        <p>Click "Start Visualization" to begin</p>
+                    </div>
+
+                    <div id="wordsDisplay" class="words-container">
+                        <!-- Words will be displayed here -->
+                    </div>
+
+                    <div id="hashMapDisplay" class="hash-map-container" style="display: none;">
+                        <div class="hash-map-title">📊 Hash Map (Signature → Words)</div>
+                        <div id="hashMapContent">
+                            <!-- Hash map entries will appear here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="section">
+                <h2>✅ Results</h2>
+                <div id="resultsDisplay">
+                    <p style="color: #6B7280;">Results will appear here after processing...</p>
+                </div>
+            </div>
+
+            <!-- Statistics Section -->
+            <div class="section">
+                <h2>📊 Statistics</h2>
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total Words:</span>
+                        <span class="stat-value" id="statTotalWords">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Number of Groups:</span>
+                        <span class="stat-value" id="statGroups">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Unique Signatures:</span>
+                        <span class="stat-value" id="statSignatures">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Time Complexity:</span>
+                        <span class="stat-value">O(N × K log K)</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Space Complexity:</span>
+                        <span class="stat-value">O(N × K)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let words = [];
+        let currentStep = 0;
+        let hashMap = new Map();
+        let isAnimating = false;
+        let stepMode = false;
+
+        // Preset examples
+        function loadPreset1() {
+            document.getElementById('wordsInput').value = 'eat, tea, tan, ate, nat, bat';
+        }
+
+        function loadPreset2() {
+            document.getElementById('wordsInput').value = 'listen, silent, enlist, hello, world, below';
+        }
+
+        function loadPreset3() {
+            document.getElementById('wordsInput').value = 'abc, bca, cab, xyz, zyx, yxz';
+        }
+
+        // Parse input
+        function parseInput() {
+            const input = document.getElementById('wordsInput').value;
+            return input.split(',').map(w => w.trim()).filter(w => w.length > 0);
+        }
+
+        // Display words
+        function displayWords() {
+            const container = document.getElementById('wordsDisplay');
+            container.innerHTML = '';
+
+            words.forEach((word, index) => {
+                const card = document.createElement('div');
+                card.className = 'word-card';
+                card.id = `word-${index}`;
+
+                const signature = word.split('').sort().join('');
+
+                card.innerHTML = `
+                    <div class="word-text">"${word}"</div>
+                    <div class="word-signature">sig: ${signature}</div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        // Update step indicator
+        function updateStepIndicator(step, message) {
+            const indicator = document.getElementById('stepIndicator');
+            indicator.innerHTML = `
+                <strong>Step ${step + 1} of ${words.length}</strong>
+                <p>${message}</p>
+            `;
+        }
+
+        // Update hash map display
+        function updateHashMapDisplay() {
+            const container = document.getElementById('hashMapContent');
+            container.innerHTML = '';
+
+            hashMap.forEach((values, key) => {
+                const entry = document.createElement('div');
+                entry.className = 'hash-entry';
+
+                const valuesHTML = values.map(v =>
+                    `<span class="hash-value">"${v}"</span>`
+                ).join('');
+
+                entry.innerHTML = `
+                    <div class="hash-key">Key: "${key}"</div>
+                    <div class="hash-values">${valuesHTML}</div>
+                `;
+
+                container.appendChild(entry);
+            });
+        }
+
+        // Process single step
+        async function processStep(index) {
+            if (index >= words.length) {
+                showResults();
+                return;
+            }
+
+            const word = words[index];
+            const signature = word.split('').sort().join('');
+
+            // Highlight current word
+            const wordCard = document.getElementById(`word-${index}`);
+            wordCard.classList.add('processing');
+
+            updateStepIndicator(index,
+                `Processing word "${word}" with signature "${signature}"`
+            );
+
+            // Wait for animation
+            await sleep(800);
+
+            // Add to hash map
+            if (!hashMap.has(signature)) {
+                hashMap.set(signature, []);
+            }
+            hashMap.get(signature).push(word);
+
+            // Show hash map
+            document.getElementById('hashMapDisplay').style.display = 'block';
+            updateHashMapDisplay();
+
+            // Mark as grouped
+            wordCard.classList.remove('processing');
+            wordCard.classList.add('grouped');
+
+            await sleep(600);
+
+            if (!stepMode) {
+                currentStep++;
+                processStep(currentStep);
+            } else {
+                currentStep++;
+            }
+        }
+
+        // Show final results
+        function showResults() {
+            const container = document.getElementById('resultsDisplay');
+            container.innerHTML = '';
+
+            const groups = Array.from(hashMap.values());
+
+            groups.forEach((group, index) => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'result-group';
+
+                const wordsHTML = group.map(w =>
+                    `<span class="result-word">"${w}"</span>`
+                ).join('');
+
+                groupDiv.innerHTML = `
+                    <div class="result-group-title">Group ${index + 1}</div>
+                    <div class="result-words">${wordsHTML}</div>
+                `;
+
+                container.appendChild(groupDiv);
+            });
+
+            // Update statistics
+            updateStatistics();
+
+            updateStepIndicator(words.length - 1,
+                '✅ Complete! All words have been grouped.'
+            );
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            document.getElementById('statTotalWords').textContent = words.length;
+            document.getElementById('statGroups').textContent = hashMap.size;
+            document.getElementById('statSignatures').textContent = hashMap.size;
+        }
+
+        // Helper: sleep function
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Start visualization
+        async function startVisualization() {
+            if (isAnimating) return;
+
+            words = parseInput();
+            if (words.length === 0) {
+                alert('Please enter some words!');
+                return;
+            }
+
+            reset();
+            displayWords();
+
+            isAnimating = true;
+            stepMode = false;
+            currentStep = 0;
+
+            await processStep(currentStep);
+            isAnimating = false;
+        }
+
+        // Step through mode
+        function stepThrough() {
+            if (currentStep === 0) {
+                words = parseInput();
+                if (words.length === 0) {
+                    alert('Please enter some words!');
+                    return;
+                }
+                displayWords();
+                stepMode = true;
+            }
+
+            if (currentStep < words.length) {
+                processStep(currentStep);
+            }
+        }
+
+        // Reset
+        function reset() {
+            currentStep = 0;
+            hashMap = new Map();
+            isAnimating = false;
+            stepMode = false;
+
+            document.getElementById('wordsDisplay').innerHTML = '';
+            document.getElementById('hashMapDisplay').style.display = 'none';
+            document.getElementById('hashMapContent').innerHTML = '';
+            document.getElementById('resultsDisplay').innerHTML =
+                '<p style="color: #6B7280;">Results will appear here after processing...</p>';
+
+            document.getElementById('stepIndicator').innerHTML = `
+                <strong>Ready to start!</strong>
+                <p>Click "Start Visualization" to begin</p>
+            `;
+
+            updateStatistics();
+        }
+
+        // Initialize
+        window.onload = function() {
+            displayWords();
+        };
+    </script>
+</body>
+</html>
