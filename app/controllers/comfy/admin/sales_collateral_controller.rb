@@ -10,4 +10,10 @@ class Comfy::Admin::SalesCollateralController < Comfy::Admin::Cms::BaseControlle
     @website = host
     @email = email_resolved_for_apex
   end
+
+  def generate
+    subdomain = Subdomain.current
+    subdomain.generate_default_sales_assets
+    redirect_to sales_collateral_path
+  end
 end

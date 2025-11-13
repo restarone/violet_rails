@@ -2,7 +2,9 @@
   .d-flex.my-2.justify-content-between.align-items-center
     .h2.mb-0
       Sales Collateral
-    = link_to 'Sales Collateral Builder - coming soon', sales_collateral_path, role: 'button', class: 'btn btn-primary'
+    .d-flex
+      = link_to 'Sales Collateral Builder - coming soon', sales_collateral_path, role: 'button', class: 'btn btn-primary m-2'
+      = link_to 'Refresh', sales_collateral_generate_path, role: 'button', class: 'btn btn-secondary m-2'
 
 .card
   .card-header
@@ -71,6 +73,51 @@
         QR Code:
       .m-2
         = image_tag(Subdomain.current.qr_code)
+
+
+
+.card.my-5
+  .card-header
+    %strong
+      Outbound
+  .card-body
+    %p.m-2 
+      Apex
+    #accordion
+      .card
+        #headingOne.card-header
+          %h5.mb-0
+            %button.btn.btn-link{"aria-controls" => "collapseOne", "aria-expanded" => "false", "data-target" => "#collapseOne", "data-toggle" => "collapse"}
+              Square Post:
+        #collapseOne.collapse.show{"aria-labelledby" => "headingOne", "data-parent" => "#accordion"}
+          .card-body
+            .container
+              .img-fluid
+                = image_tag(Subdomain.current.square_post) if Subdomain.current.square_post.attached?
+      .card
+        #headingTwo.card-header
+          %h5.mb-0
+            %button.btn.btn-link.collapsed{"aria-controls" => "collapseTwo", "aria-expanded" => "false", "data-target" => "#collapseTwo", "data-toggle" => "collapse"}
+              Story Post:
+        #collapseTwo.collapse{"aria-labelledby" => "headingTwo", "data-parent" => "#accordion"}
+          .card-body
+            .container
+              .img-fluid
+                = image_tag(Subdomain.current.story_post) if Subdomain.current.story_post.attached?
+      .card
+        #headingThree.card-header
+          %h5.mb-0
+            %button.btn.btn-link.collapsed{"aria-controls" => "collapseThree", "aria-expanded" => "false", "data-target" => "#collapseThree", "data-toggle" => "collapse"}
+              Landscape Post:
+        #collapseThree.collapse{"aria-labelledby" => "headingThree", "data-parent" => "#accordion"}
+          .card-body
+            .container
+              .img-fluid
+                = image_tag(Subdomain.current.landscape_post) if Subdomain.current.landscape_post.attached?
+    %p.m-2 
+      CMS Pages    
+    - Comfy::Cms::Page.all.each do |page|
+      = page.full_path
 
 .card.my-5
   .card-header
