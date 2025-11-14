@@ -1,0 +1,333 @@
+<style>
+  .algorithm-detail {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .detail-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+  }
+  .detail-section {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .detail-section h3 {
+    color: #667eea;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+  }
+  .complexity-table {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+  }
+  .complexity-table code {
+    font-size: 1.1em;
+    color: #d63384;
+  }
+  .tag-pill {
+    display: inline-block;
+    padding: 5px 12px;
+    margin: 3px;
+    background: #e9ecef;
+    border-radius: 15px;
+    font-size: 0.9em;
+  }
+  .insight-box {
+    background: #e7f3ff;
+    border-left: 4px solid #0366d6;
+    padding: 15px;
+    margin: 15px 0;
+  }
+  .analogy-box {
+    background: #fff4e5;
+    border-left: 4px solid #ff9800;
+    padding: 15px;
+    margin: 15px 0;
+  }
+  .practice-box {
+    background: #f0f9ff;
+    border: 2px dashed #0284c7;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  .nav-buttons {
+    position: sticky;
+    top: 20px;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .visual-placeholder {
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    padding: 40px;
+    text-align: center;
+    border-radius: 8px;
+    margin: 20px 0;
+  }
+</style>
+
+<% if @api_resource %>
+<div class="container mt-4 algorithm-detail">
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/algorithms">Algorithms</a></li>
+      <li class="breadcrumb-item"><a href="/learning-path">Phase <%= @api_resource.properties['learning_phase'] %></a></li>
+      <li class="breadcrumb-item active"><%= @api_resource.properties['name'] %></li>
+    </ol>
+  </nav>
+
+  <!-- Header -->
+  <div class="detail-header">
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <h1 class="mb-3">
+          <%= @api_resource.properties['name'] %>
+        </h1>
+        <div class="mb-2">
+          <span class="badge badge-light badge-pill mr-2" style="font-size: 1em;">
+            <%= @api_resource.properties['difficulty'] %>
+          </span>
+          <span class="badge badge-light badge-pill mr-2" style="font-size: 1em;">
+            Phase <%= @api_resource.properties['learning_phase'] %>
+          </span>
+          <span class="badge badge-light badge-pill" style="font-size: 1em;">
+            <%= @api_resource.properties['primary_data_structure'] %>
+          </span>
+        </div>
+      </div>
+      <div class="col-md-4 text-md-right">
+        <h2 class="mb-0">Problem #<%= @api_resource.properties['problem_number'] %></h2>
+        <small>Priority: <%= @api_resource.properties['priority'] %></small>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Main Content -->
+    <div class="col-md-8">
+      <!-- Problem Hook -->
+      <div class="detail-section">
+        <h3>🎯 <%= @api_resource.properties['problem_hook_title'] %></h3>
+        <div class="analogy-box">
+          <strong>Think of it like this:</strong>
+          <p class="mb-0 mt-2"><%= @api_resource.properties['problem_hook_analogy'] %></p>
+        </div>
+        <% if @api_resource.properties['real_world_analogy'] %>
+          <p class="mt-3"><strong>Real-world analogy:</strong> <%= @api_resource.properties['real_world_analogy'] %></p>
+        <% end %>
+      </div>
+
+      <!-- Learning Objective -->
+      <% if @api_resource.properties['learning_objective'] %>
+      <div class="detail-section">
+        <h3>📚 What You'll Learn</h3>
+        <p><%= @api_resource.properties['learning_objective'] %></p>
+        <% if @api_resource.properties['learning_domain'] %>
+          <small class="text-muted"><strong>Learning Domain:</strong> <%= @api_resource.properties['learning_domain'] %></small>
+        <% end %>
+      </div>
+      <% end %>
+
+      <!-- Key Insights -->
+      <% if @api_resource.properties['key_insights'] %>
+      <div class="detail-section">
+        <h3>💡 Key Insights</h3>
+        <div class="insight-box">
+          <%= simple_format(@api_resource.properties['key_insights']) %>
+        </div>
+      </div>
+      <% end %>
+
+      <!-- Walkthrough Content -->
+      <% if @api_resource.properties['walkthrough_content'] %>
+      <div class="detail-section">
+        <h3>📖 Algorithm Walkthrough</h3>
+        <div>
+          <%= raw @api_resource.properties['walkthrough_content'] %>
+        </div>
+      </div>
+      <% end %>
+
+      <!-- Visual Elements -->
+      <% if @api_resource.properties['key_visual_elements'] %>
+      <div class="detail-section">
+        <h3>🎨 Visualization</h3>
+        <% if @api_resource.properties['visual_url'] && !@api_resource.properties['visual_url'].empty? %>
+          <div class="embed-responsive embed-responsive-16by9">
+            <iframe class="embed-responsive-item" src="<%= @api_resource.properties['visual_url'] %>"></iframe>
+          </div>
+        <% else %>
+          <div class="visual-placeholder">
+            <h5>Visual Coming Soon</h5>
+            <p class="text-muted">
+              <strong>Recommended:</strong> <%= @api_resource.properties['recommended_medium'] %><br>
+              <strong>Complexity:</strong> <%= @api_resource.properties['visual_complexity'] %>
+            </p>
+            <small><%= @api_resource.properties['key_visual_elements'] %></small>
+          </div>
+        <% end %>
+      </div>
+      <% end %>
+
+      <!-- Practice Challenge -->
+      <% if @api_resource.properties['practice_challenge'] %>
+      <div class="detail-section">
+        <h3>🏆 Practice Challenge</h3>
+        <div class="practice-box">
+          <strong>Try this:</strong>
+          <p class="mb-0 mt-2"><%= @api_resource.properties['practice_challenge'] %></p>
+        </div>
+      </div>
+      <% end %>
+
+      <!-- Related Algorithms -->
+      <% if @api_resource.properties['related_algorithms'] %>
+      <div class="detail-section">
+        <h3>🔗 Related Algorithms</h3>
+        <p><%= @api_resource.properties['related_algorithms'] %></p>
+      </div>
+      <% end %>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4">
+      <div class="nav-buttons">
+        <!-- Navigation -->
+        <a href="/algorithms" class="btn btn-secondary btn-block mb-3">
+          ← Back to All Algorithms
+        </a>
+        <a href="/learning-path" class="btn btn-info btn-block mb-3">
+          View Learning Path
+        </a>
+
+        <!-- Complexity -->
+        <div class="detail-section">
+          <h5>⏱️ Complexity Analysis</h5>
+          <div class="complexity-table">
+            <p class="mb-2">
+              <strong>Time:</strong><br>
+              <code><%= @api_resource.properties['time_complexity'] %></code>
+            </p>
+            <p class="mb-0">
+              <strong>Space:</strong><br>
+              <code><%= @api_resource.properties['space_complexity'] %></code>
+            </p>
+          </div>
+          <% if @api_resource.properties['cognitive_load'] %>
+            <p class="mt-3 mb-0">
+              <strong>Cognitive Load:</strong> <%= @api_resource.properties['cognitive_load'] %>
+            </p>
+          <% end %>
+        </div>
+
+        <!-- Prerequisites -->
+        <% if @api_resource.properties['prerequisites'] && @api_resource.properties['prerequisites'] != 'None' %>
+        <div class="detail-section">
+          <h5>📋 Prerequisites</h5>
+          <p class="mb-0"><%= @api_resource.properties['prerequisites'] %></p>
+        </div>
+        <% end %>
+
+        <!-- Production Info -->
+        <% if @api_resource.properties['estimated_production_time'] %>
+        <div class="detail-section">
+          <h5>🎬 Production Info</h5>
+          <p class="mb-1">
+            <strong>Status:</strong>
+            <% status = @api_resource.properties['production_status'] || 'Not Started' %>
+            <span class="badge badge-<%= status == 'Completed' ? 'success' : status == 'In Progress' ? 'warning' : 'secondary' %>">
+              <%= status %>
+            </span>
+          </p>
+          <p class="mb-0">
+            <strong>Est. Time:</strong> <%= @api_resource.properties['estimated_production_time'] %>
+          </p>
+        </div>
+        <% end %>
+
+        <!-- Quick Actions -->
+        <div class="detail-section">
+          <h5>✅ Quick Actions</h5>
+          <button class="btn btn-outline-success btn-sm btn-block" onclick="markCompleted(<%= @api_resource.id %>)">
+            Mark as Completed
+          </button>
+          <button class="btn btn-outline-primary btn-sm btn-block" onclick="addToStudyList(<%= @api_resource.id %>)">
+            Add to Study List
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="detail-section mt-4">
+    <div class="row">
+      <div class="col-6">
+        <button class="btn btn-outline-primary" onclick="navigatePrev()">← Previous Algorithm</button>
+      </div>
+      <div class="col-6 text-right">
+        <button class="btn btn-outline-primary" onclick="navigateNext()">Next Algorithm →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function markCompleted(algorithmId) {
+  let completed = JSON.parse(localStorage.getItem('completed_algorithms') || '[]');
+  if (!completed.includes(algorithmId)) {
+    completed.push(algorithmId);
+    localStorage.setItem('completed_algorithms', JSON.stringify(completed));
+    alert('Algorithm marked as completed! 🎉');
+  } else {
+    alert('You have already completed this algorithm!');
+  }
+}
+
+function addToStudyList(algorithmId) {
+  let studyList = JSON.parse(localStorage.getItem('study_list') || '[]');
+  if (!studyList.includes(algorithmId)) {
+    studyList.push(algorithmId);
+    localStorage.setItem('study_list', JSON.stringify(studyList));
+    alert('Added to your study list! 📚');
+  } else {
+    alert('This algorithm is already in your study list!');
+  }
+}
+
+function navigatePrev() {
+  const currentId = <%= @api_resource.id %>;
+  // This would need to fetch the previous algorithm ID
+  // For now, just go back
+  window.history.back();
+}
+
+function navigateNext() {
+  const currentId = <%= @api_resource.id %>;
+  // This would need to fetch the next algorithm ID
+  // For now, just go to list
+  window.location.href = '/algorithms';
+}
+</script>
+
+<% else %>
+<div class="container mt-5">
+  <div class="alert alert-warning">
+    <h4>Algorithm Not Found</h4>
+    <p>The requested algorithm could not be found.</p>
+    <a href="/algorithms" class="btn btn-primary">View All Algorithms</a>
+  </div>
+</div>
+<% end %>
