@@ -45,6 +45,11 @@ class Comfy::Cms::Page < ActiveRecord::Base
   # -- Scopes ------------------------------------------------------------------
   scope :published, -> { where(is_published: true) }
 
+  # -- Violet customizations ------
+  has_one_attached :og_image
+  has_one_attached :story_post
+  has_one_attached :landscape_post
+
   # -- Class Methods -----------------------------------------------------------
   # Tree-like structure for pages
   def self.options_for_select(site:, current_page: nil, exclude_self: false)
