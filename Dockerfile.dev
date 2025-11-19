@@ -60,8 +60,11 @@ RUN rm -rf /var/cache/apk/* \
 RUN gem install bundler --version "$BUNDLE_VERSION" \
 && rm -rf $GEM_HOME/cache/*
 
+# set legacy peer deps - use legacy peer dependencies to maintain compatibility with older versions of node.js 
+RUN npm config set legacy-peer-deps true -g
+
 # install ember
-RUN npm install -g ember-cli
+RUN npm install -g ember-cli --legacy-peer-deps
 
 # Change to app dir
 WORKDIR $APP_PATH
