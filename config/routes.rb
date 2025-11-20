@@ -51,6 +51,7 @@ Rails.application.routes.draw do
         patch 'add_categories'
       end
     end
+    resources :email_templates, controller: 'mailbox/email_templates'
   end
 
   # email tracking

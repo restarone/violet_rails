@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Revolvapp</title>
+    <meta charset="utf-8">
+
+    <!-- revolvapp css -->
+    <link rel="stylesheet" href="./css/revolvapp.min.css" />
+</head>
+<body>
+    <p style="max-width: 1000px; margin-left: auto; margin-right: auto;">
+        This page must be run over http or https in order for the Revolvapp frame to display by CORS policy.
+    </p>
+
+    <!-- element -->
+    <div id="myemail" style="max-width: 1000px; margin-left: auto; margin-right: auto;"></div>
+
+    <!-- revolvapp js -->
+    <script src="revolvapp.js"></script>
+
+    <!-- call -->
+    <script>
+    Revolvapp('#myemail', {
+        editor: {
+            font: 'Inter, Arial, Helvetica, sans-serif',
+            path: './',
+            template: './templates/index.html'
+        }
+    });
+    </script>
+</body>
+</html>
