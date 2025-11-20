@@ -1,4 +1,4 @@
-FROM ruby:2.6.6-alpine
+FROM ruby:2.7-alpine
 
 # Build ENV vars
 ENV APP_PATH /var/app
@@ -20,8 +20,7 @@ RUN apk --no-cache update \
 && apk --no-cache upgrade \
 && apk add --no-cache \ 
 build-base \
-python2 \
-ttf-ubuntu-font-family \
+python3 \
 git \
 postgresql-dev \
 postgresql-client \
@@ -35,6 +34,18 @@ less \
 zsh \
 sqlite-dev \
 npm \
+nss \
+freetype \
+harfbuzz \
+dbus \
+mesa-egl \
+mesa-gl \
+libxkbcommon \
+ttf-freefont \
+alsa-lib \
+udev \
+chromium \
+chromium-chromedriver \
 gcompat
 
 
@@ -49,8 +60,11 @@ RUN rm -rf /var/cache/apk/* \
 RUN gem install bundler --version "$BUNDLE_VERSION" \
 && rm -rf $GEM_HOME/cache/*
 
+# set legacy peer deps - use legacy peer dependencies to maintain compatibility with older versions of node.js 
+RUN npm config set legacy-peer-deps true -g
+
 # install ember
-RUN npm install -g ember-cli
+RUN npm install -g ember-cli --legacy-peer-deps
 
 # Change to app dir
 WORKDIR $APP_PATH
