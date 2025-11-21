@@ -1,9 +1,13 @@
 import Sortable from 'sortablejs';
 import jQuery from 'jquery';
+import Revolvapp from '../../../../../public/revolvapp-2-3-10/revolvapp.js';
+import '../../../../../public/revolvapp-2-3-10/css/revolvapp.min.css'
+import '../../../../../public/revolvapp-2-3-10/css/revolvapp-frame.min.css'
 import "controllers";
 import "chartkick/chart.js";
 
 global.$ = global.jQuery = jQuery;
+window.Revolvapp = Revolvapp;
 
 window.addEventListener('DOMContentLoaded', (event) => {
 
