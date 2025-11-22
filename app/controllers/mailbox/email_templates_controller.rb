@@ -33,7 +33,32 @@ class Mailbox::EmailTemplatesController < Mailbox::BaseController
     render json: { id: email_template.id }
   end
 
-  def destroy
+  def test_send
+    email_template = EmailTemplate.find(params[:id])
+    dynamic_segments = email_template.dynamic_segments
+    symbol_mapping = ActiveSupport::HashWithIndifferentAccess.new
+    dynamic_segments.each do |segment|
+      symbol_mapping[segment] = params[segment]
+    end
 
+    email_body = email_template.inject_dynamic_segments(symbol_mapping)
+    from_address = "#{Apartment::Tenant.current}@#{ENV['APP_HOST']}"
+    email_subject = "#{email_template.name} test email"
+    email_thread = MessageThread.create!(recipients: [current_user.email], subject: email_subject)
+    email_message = email_thread.messages.create!(
+      content: email_body.html_safe,
+      from: from_address
+    )
+    EMailer.with(message: email_message, message_thread: email_thread).ship.deliver_later
+
+    flash.notice = "Template test email sent to #{current_user.email}"
+    redirect_to edit_mailbox_email_template_path(email_template.id)
+  end
+
+  def destroy
+    email_template = EmailTemplate.find(params[:id])
+    flash.notice = "#{email_template.name} destroyed!"
+    email_template.destroy!
+    redirect_to mailbox_email_templates_path
   end
 end
