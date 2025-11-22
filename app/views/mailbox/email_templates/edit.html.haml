@@ -1,24 +1,12 @@
 .page-header
   .h2
-    = 'Email Templates'
-  .container.m-2
-    .h3
-      = "Docs:"
-    %a{href: "https://imperavi.com/legacy/revolvapp/docs/syntax/tags/", target: '_blank'}
-      Imperavi Revolvapp
-  .container.m-2
-    .h3
-      = "AI prompt:"
-    .p
-      = "this is re-html, used by revolvapp,"
-    .p
-      = "... copy pasted editor code"
-    .p
-      = "using the above markup language create me a..."
+    = link_to 'Email Templates', mailbox_email_templates_path
 .container.my-2
   = label_tag "name"
-  = text_field_tag "name", nil, id: 'email_template_name'
-
+  = text_field_tag "name", @email_template.name, id: 'email_template_name'
+.container.my-2
+  = label_tag "Slug: "
+  = @email_template.slug
 .container
   #VioletEmailEditor
 
@@ -26,11 +14,13 @@
   = "Save"
 
 :javascript
+  let template = "#{escape_javascript(@email_template.template)}"
+  let id = "#{@email_template.id}"
   const app = Revolvapp('#VioletEmailEditor', {
     editor: {
-      path: '/revolvapp-2-3-10/',
-      template: '/revolvapp-2-3-10/templates/index.html',
-    }
+      path: '/revolvapp-2-3-10/',   
+    },
+    content: template
   });
   app.start()
 
@@ -41,18 +31,20 @@
     let htmldoc = app.editor.getHtml()
     let redoc = app.editor.getTemplate(true)
     let name = $('#email_template_name').val()
-    const endpoint = "#{mailbox_email_templates_path}"
+    const endpoint = "#{mailbox_email_template_path}"
+
     if (name && htmldoc) {
       $.ajax({
         url: endpoint,
-        type: 'POST',
+        type: 'PATCH',
         headers: {
             'X-CSRF-Token': authenticityToken
         },
-        data: JSON.stringify({ htmldoc: htmldoc, redoc: redoc, name: name }),
+        data: JSON.stringify({ htmldoc: htmldoc, redoc: redoc, name: name, id: id }),
         contentType: "application/json; charset=utf-8",
         success: function(response) {
           window.location.href = `${endpoint}/${response.id}/edit`
+          window.location.reload()
         }
       });
     } else {
