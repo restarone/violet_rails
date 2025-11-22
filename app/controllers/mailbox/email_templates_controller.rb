@@ -46,7 +46,7 @@ class Mailbox::EmailTemplatesController < Mailbox::BaseController
     email_subject = "#{email_template.name} test email"
     email_thread = MessageThread.create!(recipients: [current_user.email], subject: email_subject)
     email_message = email_thread.messages.create!(
-      content: email_body.html_safe,
+      content: email_body,
       from: from_address
     )
     EMailer.with(message: email_message, message_thread: email_thread).ship.deliver_later
