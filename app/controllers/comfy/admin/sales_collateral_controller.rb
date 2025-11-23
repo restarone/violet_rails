@@ -1,6 +1,8 @@
 class Comfy::Admin::SalesCollateralController < Comfy::Admin::Cms::BaseController
   before_action :ensure_authority_to_manage_analytics
 
+  before_action :load_qr_code, on: [:dashboard]
+
   def dashboard
     # Get the host
     subdomain = Apartment::Tenant.current
@@ -48,7 +50,7 @@ class Comfy::Admin::SalesCollateralController < Comfy::Admin::Cms::BaseControlle
     id = params[:id]
     @sales_asset = SalesAsset.find(id)
     binary_output = @sales_asset.render
-    send_data binary_output, type: 'image/jpeg', disposition: 'attachment', filename: 'generated_image.jpg'
+    send_data binary_output, type: 'image/jpeg', disposition: 'attachment', filename: "#{@sales_asset.name}.jpg"
   end
 
   def destroy
@@ -58,4 +60,11 @@ class Comfy::Admin::SalesCollateralController < Comfy::Admin::Cms::BaseControlle
     @sales_asset.destroy!
     redirect_to sales_collateral_index_path
   end
+
+  private
+
+  def load_qr_code
+    Subdomain.current.subdomain_qr_code
+  end
+
 end

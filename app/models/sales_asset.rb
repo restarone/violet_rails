@@ -27,7 +27,7 @@ class SalesAsset < ApplicationRecord
       page.viewport = Puppeteer::Viewport.new(width: width, height: height)
       screenshot_settings = {
         type: 'jpeg',
-        quality: ENV["PUPPETEER_SCREENSHOT_QUALITY"] ? ENV["PUPPETEER_SCREENSHOT_QUALITY"].to_i : 50
+        quality: ENV["PUPPETEER_SCREENSHOT_QUALITY"] ? ENV["PUPPETEER_SCREENSHOT_QUALITY"].to_i : 100
       }
       screenshot = page.screenshot(**screenshot_settings)
       binary_output = screenshot
