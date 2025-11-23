@@ -22,7 +22,7 @@
 .container
   #VioletEmailEditor
 
-%button#VioletEmailEditorSubmit
+%button#VioletEmailEditorSubmit.btn.btn-primary.my-2
   = "Save"
 
 :javascript
@@ -32,7 +32,6 @@
       template: '/revolvapp-2-3-10/templates/index.html',
     }
   });
-  app.start()
 
   $('#VioletEmailEditorSubmit').click(function() {
     $("#VioletEmailEditorSubmit").prop("disabled", true)
@@ -49,7 +48,7 @@
         headers: {
             'X-CSRF-Token': authenticityToken
         },
-        data: JSON.stringify({ htmldoc: htmldoc, redoc: redoc, name: name }),
+        data: JSON.stringify({ htmldoc: btoa(htmldoc), redoc: redoc, name: name }),
         contentType: "application/json; charset=utf-8",
         success: function(response) {
           window.location.href = `${endpoint}/${response.id}/edit`

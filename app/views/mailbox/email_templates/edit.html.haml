@@ -17,6 +17,9 @@
       = label_tag(segment.to_sym, "#{segment}:")
       = text_field_tag(segment.to_sym, nil, class: 'form-control', required: true)
     = submit_tag("Email me this template!", class: 'btn btn-secondary my-2')
+.container.my-2
+  = label_tag "Copy HTML: "
+  = button_tag "Copy to clipboard", id: 'copyRevolvHtml' 
 
 .container
   #VioletEmailEditor
@@ -34,7 +37,15 @@
     },
     content: template
   });
-  app.start()
+
+  $('#copyRevolvHtml').click(function() {
+    let htmldoc = app.editor.getHtml()
+
+    navigator.clipboard.writeText(htmldoc);
+
+    // Alert the copied text
+    alert("Copied html");
+  });
 
   $('#VioletEmailEditorSubmit').click(function() {
     $("#VioletEmailEditorSubmit").prop("disabled", true)
@@ -52,7 +63,7 @@
         headers: {
             'X-CSRF-Token': authenticityToken
         },
-        data: JSON.stringify({ htmldoc: htmldoc, redoc: redoc, name: name, id: id }),
+        data: JSON.stringify({ htmldoc: btoa(htmldoc), redoc: redoc, name: name, id: id }),
         contentType: "application/json; charset=utf-8",
         success: function(response) {
           window.location.href = `${endpoint}/${response.id}/edit`

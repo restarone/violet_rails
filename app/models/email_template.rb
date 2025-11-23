@@ -6,7 +6,8 @@ class EmailTemplate < ApplicationRecord
   SYMBOL_CAPTURE_PATTERN = /(?<=\{\{)[a-z]+(?:\.[a-z]+)*(?=\}\})/
 
   def dynamic_segments
-    self.html.scan(SYMBOL_CAPTURE_PATTERN)
+    html_doc = Base64.decode64(self.html)
+    html_doc.scan(SYMBOL_CAPTURE_PATTERN)
   end
 
   def inject_dynamic_segments(properties_obj = {})
@@ -16,7 +17,7 @@ class EmailTemplate < ApplicationRecord
   # works by extracting any variable defined between: {{}} 
   # example of including a variable called 'name': {{name}}
     
-    html_doc = self.html
+    html_doc = Base64.decode64(self.html)
     symbols = self.dynamic_segments
     symbol_mapping = ActiveSupport::HashWithIndifferentAccess.new
     output = html_doc
@@ -39,7 +40,6 @@ class EmailTemplate < ApplicationRecord
       raise "dynamic segment token has no value, please ensure a value is provided" if mapped_value.nil? || mapped_value.empty?
       output = output.gsub("{{#{symbol}}}", mapped_value)
     end
-    
     return output
   end
 end

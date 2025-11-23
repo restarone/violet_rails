@@ -14,6 +14,7 @@ class Mailbox::EmailTemplatesController < Mailbox::BaseController
     html_doc = params[:htmldoc]
     re_doc = params[:redoc]
     name = params[:name]
+    
     email_template = EmailTemplate.create!(html: html_doc, template: re_doc, name: name)
 
     render json: { id: email_template.id }
@@ -45,6 +46,8 @@ class Mailbox::EmailTemplatesController < Mailbox::BaseController
     from_address = "#{Apartment::Tenant.current}@#{ENV['APP_HOST']}"
     email_subject = "#{email_template.name} test email"
     email_thread = MessageThread.create!(recipients: [current_user.email], subject: email_subject)
+    email_body.encode!('UTF-16', 'UTF-8', :invalid => :replace, :replace => '')
+    email_body.encode!('UTF-8', 'UTF-16')
     email_message = email_thread.messages.create!(
       content: email_body,
       from: from_address
