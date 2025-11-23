@@ -14,6 +14,11 @@ class Subdomain < ApplicationRecord
   has_one_attached :favicon
   has_one_attached :og_image
   has_one_attached :qr_code
+  has_one_attached :story_post
+  has_one_attached :landscape_post
+  has_one_attached :square_post
+
+
   has_rich_text :email_signature
 
 
@@ -218,6 +223,73 @@ class Subdomain < ApplicationRecord
       page.screenshot(path: screenshot_path.to_s)
     end
   end
+
+  def generate_default_sales_assets
+    # Get the host
+    subdomain = Apartment::Tenant.current
+    subdomain_resolved_for_apex = subdomain == 'public' || subdomain == 'root' ? "http://#{ENV['APP_HOST']}" : "http://#{subdomain}.#{ENV['APP_HOST']}" 
+    url = subdomain_resolved_for_apex
+    Puppeteer.launch(headless: true, args: ['--no-sandbox', '--headless', '--disable-gpu', '--disable-dev-shm-usage']) do |browser|
+      page = browser.new_page
+      page.goto(url)
+      page.viewport = Puppeteer::Viewport.new(width: 1080, height: 1920)
+      screenshot_settings = {
+        type: 'jpeg',
+        quality: ENV["PUPPETEER_SCREENSHOT_QUALITY"] ? ENV["PUPPETEER_SCREENSHOT_QUALITY"].to_i : 50
+      }
+      # optioanlly remove Violet Cookie banner
+      dimensions = page.evaluate(<<~JAVASCRIPT)
+      () => {
+
+        // Source - https://stackoverflow.com/a
+        // Posted by Johan Dettmar, modified by community. See post 'Timeline' for change history
+        // Retrieved 2025-11-12, License - CC BY-SA 4.0
+
+        Element.prototype.remove = function() {
+            this.parentElement.removeChild(this);
+        }
+        NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
+            for(var i = this.length - 1; i >= 0; i--) {
+                if(this[i] && this[i].parentElement) {
+                    this[i].parentElement.removeChild(this[i]);
+                }
+            }
+        }
+        document.getElementById("cookie-consent-wrapper").remove();      
+      }
+      JAVASCRIPT
+
+      screenshot = page.screenshot(**screenshot_settings)
+      binary_output = screenshot
+      self.story_post.attach(
+        io: StringIO.new(binary_output),
+        filename: "story.jpeg",
+        content_type: "image/jpeg",
+        identify: false
+      )
+
+      page.viewport = Puppeteer::Viewport.new(width: 1920, height: 1080)
+      screenshot = page.screenshot(**screenshot_settings)
+      binary_output = screenshot
+      self.landscape_post.attach(
+        io: StringIO.new(binary_output),
+        filename: "landscape.jpeg",
+        content_type: "image/jpeg",
+        identify: false
+      )
+
+      page.viewport = Puppeteer::Viewport.new(width: 1080, height: 1080)
+      screenshot = page.screenshot(**screenshot_settings)
+      binary_output = screenshot
+      self.square_post.attach(
+        io: StringIO.new(binary_output),
+        filename: "square.jpeg",
+        content_type: "image/jpeg",
+        identify: false
+      )
+      browser.close
+    end
+  end 
 
   private
 
