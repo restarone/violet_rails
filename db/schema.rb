@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_11_30_190941) do
+ActiveRecord::Schema.define(version: 2025_11_23_170133) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -533,6 +533,16 @@ ActiveRecord::Schema.define(version: 2024_11_30_190941) do
     t.boolean "allow_attachments", default: false
     t.index ["api_namespace_id"], name: "index_non_primitive_properties_on_api_namespace_id"
     t.index ["api_resource_id"], name: "index_non_primitive_properties_on_api_resource_id"
+  end
+
+  create_table "sales_assets", force: :cascade do |t|
+    t.string "name"
+    t.string "slug"
+    t.integer "width"
+    t.integer "height"
+    t.text "html"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "subdomain_requests", force: :cascade do |t|
