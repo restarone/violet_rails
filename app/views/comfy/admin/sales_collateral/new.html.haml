@@ -1,0 +1,29 @@
+.page-header
+  .h2
+    = 'Sales Assets'
+  .container.m-2
+    .h3
+      = "Docs:"
+    %a{href: "https://www.w3schools.com/html/", target: '_blank'}
+      Learn HTML from W3 Schools 
+  .container.m-2
+    .h3
+      = "AI prompt:"
+    .p
+      = "Using HTML and CSS create me a ... - use <img> tag for image"
+.container.my-2
+  = form_with method: :post, url: sales_collateral_index_path do |f| 
+    .form-group
+      = label_tag "name"
+      = f.text_field "name", id: 'sales_asset_name', class: 'form-control'
+    .form-group
+      = label_tag "width (px)"
+      = f.number_field "width", id: 'sales_asset_width', class: 'form-control'
+    .form-group
+      = label_tag "height (px)"
+      = f.number_field "height", id: 'sales_asset_height', class: 'form-control'
+    .form-group
+      = label_tag "HTML"
+      = f.text_area :html, class: 'form-control'
+    .form-group
+      = f.button "submit", class: 'btn btn-primary'
