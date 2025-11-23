@@ -48,7 +48,7 @@ class Comfy::Admin::SalesCollateralController < Comfy::Admin::Cms::BaseControlle
     id = params[:id]
     @sales_asset = SalesAsset.find(id)
     binary_output = @sales_asset.render
-    send_data StringIO.new(binary_output), type: 'image/jpeg', disposition: 'attachment', filename: 'generated_image.jpg'
+    send_data binary_output, type: 'image/jpeg', disposition: 'attachment', filename: 'generated_image.jpg'
   end
 
   def destroy
