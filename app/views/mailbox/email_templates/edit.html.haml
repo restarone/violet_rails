@@ -8,7 +8,7 @@
   = label_tag "Slug: "
   = @email_template.slug
 .container.my-2
-  = label_tag "Dynamic segments: "
+  = label_tag "Dynamic segments ( defined as {{}} ): "
   = @email_template.dynamic_segments.join(', ')
 .container.my-2
   = label_tag "Test send: "
