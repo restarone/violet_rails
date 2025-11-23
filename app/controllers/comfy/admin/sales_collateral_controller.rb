@@ -14,7 +14,7 @@ class Comfy::Admin::SalesCollateralController < Comfy::Admin::Cms::BaseControlle
   end
 
   def index
-    @sales_assets = SalesAsset.all
+    @sales_assets = SalesAsset.all.order(updated_at: :desc)
   end
 
   def create
