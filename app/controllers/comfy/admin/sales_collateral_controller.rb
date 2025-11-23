@@ -10,4 +10,52 @@ class Comfy::Admin::SalesCollateralController < Comfy::Admin::Cms::BaseControlle
     @website = host
     @email = email_resolved_for_apex
   end
+
+  def index
+    @sales_assets = SalesAsset.all
+  end
+
+  def create
+    sales_asset = SalesAsset.create!(
+      name: params[:name],
+      width: params[:width].to_i,
+      height: params[:height].to_i,
+      html: params[:html],
+    )
+    flash.notice = "#{sales_asset.name} created!"
+    redirect_to edit_sales_collateral_path(sales_asset.id)
+  end
+
+  def edit
+    id = params[:id]
+    @sales_asset = SalesAsset.find(id)
+  end
+
+  def update
+    id = params[:id]
+    @sales_asset = SalesAsset.find(id)
+    @sales_asset.update!(
+      name: params[:sales_asset][:name],
+      width: params[:sales_asset][:width].to_i,
+      height: params[:sales_asset][:height].to_i,
+      html: params[:sales_asset][:html],
+    )
+    flash.notice = "#{@sales_asset.name} updated!"
+    redirect_to edit_sales_collateral_path(@sales_asset.id)
+  end
+
+  def export
+    id = params[:id]
+    @sales_asset = SalesAsset.find(id)
+    binary_output = @sales_asset.render
+    send_data StringIO.new(binary_output), type: 'image/jpeg', disposition: 'attachment', filename: 'generated_image.jpg'
+  end
+
+  def destroy
+    id = params[:id]
+    @sales_asset = SalesAsset.find(id)
+    flash.notice = "#{@sales_asset.name} deleted!"
+    @sales_asset.destroy!
+    redirect_to sales_collateral_index_path
+  end
 end

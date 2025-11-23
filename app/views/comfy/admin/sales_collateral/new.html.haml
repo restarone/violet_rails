@@ -1,0 +1,33 @@
+.page-header
+  .h2
+    = 'Sales Assets'
+  .container.m-2
+    .h3
+      = "Docs:"
+    %a{href: "https://imperavi.com/legacy/revolvapp/docs/syntax/tags/", target: '_blank'}
+      Imperavi Revolvapp
+  .container.m-2
+    .h3
+      = "AI prompt:"
+    .p
+      = "this is re-html, used by revolvapp,"
+    .p
+      = "... copy pasted editor code"
+    .p
+      = "using the above markup language create me a..."
+.container.my-2
+  = form_with method: :post, url: sales_collateral_index_path do |f| 
+    .form-group
+      = label_tag "name"
+      = f.text_field "name", id: 'sales_asset_name', class: 'form-control'
+    .form-group
+      = label_tag "width (px)"
+      = f.number_field "width", id: 'sales_asset_width', class: 'form-control'
+    .form-group
+      = label_tag "height (px)"
+      = f.number_field "height", id: 'sales_asset_height', class: 'form-control'
+    .form-group
+      = label_tag "HTML"
+      = f.text_area :html, class: 'form-control'
+    .form-group
+      = f.button "submit", class: 'btn btn-primary'

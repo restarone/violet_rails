@@ -1,0 +1,23 @@
+.page-header
+  .h2
+    = link_to 'Sales Assets', sales_collateral_index_path
+.container.my-2
+  = label_tag "Export sales asset: "
+  = link_to "download", export_sales_collateral_path(@sales_asset.id)
+.container.my-2
+  = form_with model: @sales_asset, method: :patch, url: sales_collateral_path do |f| 
+    .form-group
+      = label_tag "name"
+      = f.text_field "name", id: 'sales_asset_name', class: 'form-control'
+    .form-group
+      = label_tag "width (px)"
+      = f.number_field "width", id: 'sales_asset_width', class: 'form-control'
+    .form-group
+      = label_tag "height (px)"
+      = f.number_field "height", id: 'sales_asset_height', class: 'form-control'
+    .form-group
+      = label_tag "HTML"
+      = f.text_area :html, class: 'form-control'
+    .form-group
+      = f.button "submit", class: 'btn btn-primary'
+      = link_to "Delete", sales_collateral_path(@sales_asset.id), method: :delete, class: 'btn btn-danger', data: { confirm: 'Are you sure?' }

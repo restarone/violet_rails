@@ -1,0 +1,9 @@
+.page-header
+  = link_to 'New Asset', new_sales_collateral_path, class: 'btn btn-secondary float-right mx-1'
+  %h2 
+    = link_to "Sales Collat Dashboard", sales_collateral_dashboard_path 
+    > Assets
+%ol
+  - @sales_assets.each do |sales_asset|
+    %li
+      = link_to sales_asset.name, edit_sales_collateral_path(sales_asset.id)
