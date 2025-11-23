@@ -1,13 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  revolvapp_html: MyText
-  revolvapp_template: MyText
+  html: MyText
+  template: MyText
   name: MyString
   slug: MyString
 
 two:
-  revolvapp_html: MyText
-  revolvapp_template: MyText
+  html: MyText
+  template: MyText
   name: MyString
   slug: MyString
