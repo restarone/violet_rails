@@ -16,6 +16,8 @@ class Subdomain < ApplicationRecord
   has_one_attached :qr_code
   has_rich_text :email_signature
 
+  has_many :shortcuts
+  accepts_nested_attributes_for :shortcuts
 
   enum email_notification_strategy: { user_email: 'user_email', system_email: 'system_email' }
 

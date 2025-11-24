@@ -54,6 +54,7 @@ class Comfy::Admin::WebSettingsController < Comfy::Admin::Cms::BaseController
       :enable_2fa,
       :email_notification_strategy, 
       :track_email_opens,
+      shortcuts_attributes: [:name, :path],
     )
   end
 end
