@@ -22,7 +22,13 @@ Rails.application.routes.draw do
 
   get 'v2/dashboard', to: 'comfy/admin/v2/dashboard#dashboard'
 
-  get 'sales_collateral', to: 'comfy/admin/sales_collateral#dashboard'
+  get 'sales_collateral_dashboard', to: 'comfy/admin/sales_collateral#dashboard'
+
+  resources :sales_collateral, controller: 'comfy/admin/sales_collateral' do
+    member do
+      get 'export'
+    end
+  end
 
   # video calling, lock down new/create actions-- and allow public show action
   get 'rooms', to: 'comfy/admin/rooms#new'
