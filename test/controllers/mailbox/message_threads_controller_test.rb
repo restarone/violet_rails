@@ -225,4 +225,35 @@ class Mailbox::MessageThreadsControllerTest < ActionDispatch::IntegrationTest
   test 'viewing unread thread sets unread:true' do
     # todo test https://github.com/restarone/violet_rails/blob/9476c661537a1688a81c95802d5f49a6617f0678/app/controllers/mailbox/message_threads_controller.rb
   end
+
+  test 'renders email content with style tags properly' do
+    sign_in(@user)
+    
+    # Create a message with HTML content including a style tag (like Revolvapp templates)
+    html_content = <<~HTML
+      <style>
+        .test-class { color: red; }
+      </style>
+      <div class="test-class">Test content</div>
+    HTML
+    
+    Apartment::Tenant.switch @subdomain.name do
+      message_thread = MessageThread.create!(
+        unread: true, 
+        subject: 'Test Email with Styles', 
+        recipients: [@user.email]
+      )
+      message = message_thread.messages.create!(content: html_content)
+      
+      get mailbox_message_thread_url(subdomain: @subdomain.name, id: message_thread.id)
+      assert_response :success
+      
+      # Verify that the style tag is present in the response and not escaped
+      assert_match(/<style>/, response.body)
+      assert_match(/\.test-class \{ color: red; \}/, response.body)
+      
+      # Verify that the style tag content is not displayed as escaped HTML entities
+      refute_match(/&lt;style&gt;/, response.body)
+    end
+  end
 end
