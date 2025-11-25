@@ -229,9 +229,11 @@ class Mailbox::MessageThreadsControllerTest < ActionDispatch::IntegrationTest
   test 'renders email content with style tags properly' do
     sign_in(@user)
     
-    # Create a message with HTML content including a style tag (like Revolvapp templates)
+    # Create a message with HTML content including meta, style, and title tags (like Revolvapp templates)
     html_content = <<~HTML
-      <style>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <title>My Email</title>
+      <style type="text/css">
         .test-class { color: red; }
       </style>
       <div class="test-class">Test content</div>
@@ -248,12 +250,22 @@ class Mailbox::MessageThreadsControllerTest < ActionDispatch::IntegrationTest
       get mailbox_message_thread_url(subdomain: @subdomain.name, id: message_thread.id)
       assert_response :success
       
-      # Verify that the style tag is present in the response and not escaped
-      assert_match(/<style>/, response.body)
-      assert_match(/\.test-class \{ color: red; \}/, response.body)
+      # Extract the message content area from the response
+      # The message content is rendered in a div with class 'card-text bg-light px-2 py-3'
+      message_content_match = response.body.match(/<div class='card-text bg-light px-2 py-3'>(.*?)<\/div>/m)
+      assert message_content_match, "Could not find message content in response"
+      message_content = message_content_match[1]
       
-      # Verify that the style tag content is not displayed as escaped HTML entities
-      refute_match(/&lt;style&gt;/, response.body)
+      # Verify that meta, style, title tags are NOT present in the message content
+      refute_match(/<meta/, message_content, "Meta tags should be removed from message content")
+      refute_match(/<style/, message_content, "Style tags should be removed from message content")
+      refute_match(/<title/, message_content, "Title tags should be removed from message content")
+      
+      # Verify that the actual content IS present
+      assert_match(/Test content/, message_content, "Message content should be present")
+      
+      # Verify that style tag content is not displayed as text
+      refute_match(/\.test-class \{ color: red; \}/, message_content, "CSS code should not be visible as text")
     end
   end
 end

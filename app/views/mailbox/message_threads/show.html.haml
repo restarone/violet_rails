@@ -16,10 +16,12 @@
         .card-subtitle.mb-2.text-muted
           = message.opened ? 'opened' : 'not opened yet'
       .card-text.bg-light.px-2.py-3
-        = message.content.to_s.html_safe
+        = render_email_content(message)
       - if message.attachments.any?
         .card-text.bg-dark.px-2.py-3.text-white
           Attachments
           %ul{class: 'list-group'}
             - message.attachments.each do |attachment|
               = link_to attachment.filename, rails_blob_path(attachment, disposition: 'attachment')
+
+
