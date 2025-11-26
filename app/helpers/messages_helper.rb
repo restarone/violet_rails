@@ -25,29 +25,13 @@ module MessagesHelper
     doc.css('title').remove
     doc.css('link').remove
     
-    # Remove HTML comments (like <!--[if mso]>)
-    doc.xpath('//comment()').remove
+    # Get the HTML string
+    result = doc.to_html
     
-    # Clean up: remove empty text nodes and whitespace-only nodes at the start
-    cleaned_children = []
-    found_real_content = false
-    
-    doc.children.each do |node|
-      # Skip whitespace-only text nodes before real content
-      if node.text? && !found_real_content
-        next if node.text.strip.empty?
-        # Skip standalone text nodes before first element (like "My Email")
-        next unless node.text.strip.empty?
-      end
-      
-      # Mark that we found real content when we hit an element
-      found_real_content = true if node.element?
-      
-      cleaned_children << node if found_real_content
-    end
-    
-    # Rebuild the document with cleaned children
-    result = cleaned_children.map(&:to_html).join
+    # Remove leading text nodes that appear before the first HTML tag
+    # This handles orphaned text like "My Email" from the title tag
+    # Match any text at the beginning that comes before the first < character
+    result = result.sub(/\A([^<]*?)(<)/, '\2')
     
     result.html_safe
   end
