@@ -1,0 +1,78 @@
+.page-header
+  .h2
+    = link_to 'Email Templates', mailbox_email_templates_path
+.container.my-2
+  = label_tag "name"
+  = text_field_tag "name", @email_template.name, id: 'email_template_name'
+.container.my-2
+  = label_tag "Slug: "
+  = @email_template.slug
+.container.my-2
+  = label_tag "Dynamic segments ( defined as {{}} ): "
+  = @email_template.dynamic_segments.join(', ')
+.container.my-2
+  = label_tag "Test send: "
+  = form_tag(test_send_mailbox_email_template_path(@email_template.id), method: "POST", class: 'form-group') do
+    - @email_template.dynamic_segments.each do |segment|
+      = label_tag(segment.to_sym, "#{segment}:")
+      = text_field_tag(segment.to_sym, nil, class: 'form-control', required: true)
+    = submit_tag("Email me this template!", class: 'btn btn-secondary my-2')
+.container.my-2
+  = label_tag "Copy HTML: "
+  = button_tag "Copy to clipboard", id: 'copyRevolvHtml' 
+
+.container
+  #VioletEmailEditor
+
+  %button#VioletEmailEditorSubmit.btn.btn-primary.my-2
+    = "Save"
+  = link_to "Delete", mailbox_email_template_path(@email_template.id), method: :delete, class: 'btn btn-danger', data: { confirm: 'Are you sure?' }
+    
+:javascript
+  let template = "#{escape_javascript(@email_template.template)}"
+  let id = "#{@email_template.id}"
+  const app = Revolvapp('#VioletEmailEditor', {
+    editor: {
+      path: '/revolvapp-2-3-10/',   
+    },
+    content: template
+  });
+
+  $('#copyRevolvHtml').click(function() {
+    let htmldoc = app.editor.getHtml()
+
+    navigator.clipboard.writeText(htmldoc);
+
+    // Alert the copied text
+    alert("Copied html");
+  });
+
+  $('#VioletEmailEditorSubmit').click(function() {
+    $("#VioletEmailEditorSubmit").prop("disabled", true)
+    let authenticityToken = $('meta[name="csrf-token"]').attr('content');
+
+    let htmldoc = app.editor.getHtml()
+    let redoc = app.editor.getTemplate(true)
+    let name = $('#email_template_name').val()
+    const endpoint = "#{mailbox_email_template_path}"
+
+    if (name && htmldoc) {
+      $.ajax({
+        url: endpoint,
+        type: 'PATCH',
+        headers: {
+            'X-CSRF-Token': authenticityToken
+        },
+        data: JSON.stringify({ htmldoc: btoa(htmldoc), redoc: redoc, name: name, id: id }),
+        contentType: "application/json; charset=utf-8",
+        success: function(response) {
+          window.location.href = `${endpoint}/${response.id}/edit`
+          window.location.reload()
+        }
+      });
+    } else {
+      window.alert('Please give your template a name and set its content')
+    }
+
+    $("#VioletEmailEditorSubmit").prop("disabled", false)
+  });

@@ -403,6 +403,15 @@ ActiveRecord::Schema.define(version: 2025_11_23_170133) do
     t.index ["page_id"], name: "index_comfy_cms_translations_on_page_id"
   end
 
+  create_table "email_templates", force: :cascade do |t|
+    t.text "html"
+    t.text "template"
+    t.string "name"
+    t.string "slug"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "external_api_clients", force: :cascade do |t|
     t.bigint "api_namespace_id", null: false
     t.string "slug", null: false
