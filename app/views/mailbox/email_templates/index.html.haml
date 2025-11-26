@@ -1,0 +1,9 @@
+.page-header
+  = link_to 'New Email Template', new_mailbox_email_template_path, class: 'btn btn-secondary float-right mx-1'
+  %h2 
+    = link_to "Email", mailbox_path 
+    Templates
+%ol
+  - @email_templates.each do |email_template|
+    %li
+      = link_to email_template.name, edit_mailbox_email_template_path(email_template.id)
