@@ -16,7 +16,7 @@ class ApplicationController < ActionController::Base
         after_sign_in_path
       else
         # tenant
-        root_url(subdomain: Apartment::Tenant.current)
+        root_url
       end
     end
   end
@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
     if after_sign_up_path
       return after_sign_up_path
     else
-      return root_url(subdomain: Apartment::Tenant.current)
+      return root_url
     end
   end
   
