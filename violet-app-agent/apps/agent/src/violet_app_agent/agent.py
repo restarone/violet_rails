@@ -11,6 +11,7 @@ import argparse
 import os
 
 from deepagents import create_deep_agent
+from langchain_anthropic import ChatAnthropic
 
 from .prompts import QUICK_QUESTIONS, SYSTEM_PROMPT, print_welcome
 from .subagents import (
@@ -30,20 +31,23 @@ from .tools import (
 
 
 def create_violet_app_agent(
-    model: str = "anthropic:claude-sonnet-4-20250514",
+    model_name: str = "claude-sonnet-4-20250514",
     use_memory: bool = True,
 ):
     """
     Create the Violet App Builder agent.
 
     Args:
-        model: Model identifier to use (default: Claude Sonnet 4)
+        model_name: Model name to use (default: Claude Sonnet 4)
         use_memory: Whether to enable memory/checkpointing
 
     Returns:
         Configured deep agent instance
     """
     running_in_langgraph_api = os.getenv("LANGGRAPH_API_URL") is not None
+
+    # Create the model instance
+    model = ChatAnthropic(model=model_name)
 
     return create_deep_agent(
         model=model,

@@ -1,22 +1,17 @@
-"""Subdomain creation tools - calls Violet Rails API."""
+"""Subdomain creation tools - uses direct Rails model access.
+
+DHH-approved pattern: Direct model access via rails runner instead of
+non-existent API endpoints. This is the Rails way.
+"""
 
 import os
 import re
 
-import httpx
 from langchain_core.tools import tool
 
-VIOLET_API_URL = os.getenv("VIOLET_API_URL", "http://localhost:5250")
-VIOLET_API_KEY = os.getenv("VIOLET_API_KEY", "")
+from .rails_runner import create_subdomain as rails_create_subdomain
+
 APP_HOST = os.getenv("APP_HOST", "localhost:5250")
-
-
-def _get_api_headers() -> dict:
-    """Get standard API headers."""
-    return {
-        "Authorization": f"Bearer {VIOLET_API_KEY}",
-        "Content-Type": "application/json",
-    }
 
 
 @tool
@@ -56,39 +51,18 @@ def create_subdomain(subdomain_name: str) -> str:
     if len(subdomain_name) < 1:
         return "Error: Subdomain name cannot be empty."
 
-    try:
-        response = httpx.post(
-            f"{VIOLET_API_URL}/api/v1/subdomains",
-            headers=_get_api_headers(),
-            json={"subdomain": {"name": subdomain_name}},
-            timeout=30.0,
-        )
+    # Use Rails runner for direct model access (DHH-approved)
+    success, result = rails_create_subdomain(subdomain_name)
 
-        if response.status_code == 201:
-            return f"""✓ Subdomain created successfully!
+    if success:
+        return f"""✓ Subdomain created successfully!
 
-**App URL:** https://{subdomain_name}.{APP_HOST}
-**Admin Panel:** https://{subdomain_name}.{APP_HOST}/admin
+**App URL:** http://{subdomain_name}.{APP_HOST}
+**Admin Panel:** http://{subdomain_name}.{APP_HOST}/admin
+
+{result}
 """
-        elif response.status_code == 422:
-            errors = response.json().get("errors", {})
-            if "name" in errors:
-                error_msg = errors["name"]
-                if isinstance(error_msg, list):
-                    error_msg = ", ".join(error_msg)
-                return f"Error: Subdomain name issue - {error_msg}"
-            return f"Error: Subdomain '{subdomain_name}' already exists or is invalid."
-        elif response.status_code == 401:
-            return "Error: Unauthorized. Please check your API key configuration."
-        else:
-            return f"Error creating subdomain: {response.status_code} - {response.text}"
-
-    except httpx.ConnectError:
-        return (
-            f"Error: Could not connect to Violet Rails at {VIOLET_API_URL}.\n"
-            "Please ensure the server is running."
-        )
-    except httpx.TimeoutException:
-        return "Error: Request timed out. The server might be busy."
-    except httpx.RequestError as e:
-        return f"Error connecting to Violet Rails: {e}"
+    else:
+        if "already been taken" in result.lower():
+            return f"Error: Subdomain '{subdomain_name}' already exists."
+        return f"Error creating subdomain: {result}"

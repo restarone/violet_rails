@@ -1,23 +1,17 @@
-"""API Namespace creation tools."""
+"""API Namespace creation tools - uses direct Rails model access.
+
+DHH-approved pattern: Direct model access via rails runner instead of
+non-existent API endpoints. This is the Rails way.
+"""
 
 import json
 import os
 
-import httpx
 from langchain_core.tools import tool
 
-VIOLET_API_URL = os.getenv("VIOLET_API_URL", "http://localhost:5250")
-VIOLET_API_KEY = os.getenv("VIOLET_API_KEY", "")
+from .rails_runner import create_api_namespace as rails_create_namespace
 
-
-def _get_api_headers(subdomain: str) -> dict:
-    """Get API headers with subdomain context."""
-    return {
-        "Authorization": f"Bearer {VIOLET_API_KEY}",
-        "Content-Type": "application/json",
-        "X-Subdomain": subdomain,
-    }
-
+APP_HOST = os.getenv("APP_HOST", "localhost:5250")
 
 # Valid property types in Violet Rails
 VALID_PROPERTY_TYPES = {
@@ -87,40 +81,21 @@ def create_namespace(
             + f"\n\nValid types are: {valid_list}"
         )
 
-    # Make API request
-    try:
-        response = httpx.post(
-            f"{VIOLET_API_URL}/api/v1/namespaces",
-            headers=_get_api_headers(subdomain),
-            json={
-                "api_namespace": {
-                    "name": name,
-                    "slug": slug,
-                    "version": 1,
-                    "properties": properties,
-                    "is_renderable": is_renderable,
-                    "requires_authentication": False,
-                }
-            },
-            timeout=30.0,
-        )
+    # Use Rails runner for direct model access (DHH-approved)
+    success, result = rails_create_namespace(subdomain, name, slug, properties)
 
-        if response.status_code == 201:
-            form_note = " (form auto-generated)" if is_renderable else ""
-            return f"✓ API namespace '{name}' created with {len(properties)} properties{form_note}"
-        elif response.status_code == 422:
-            errors = response.json().get("errors", {})
-            return f"Error creating namespace: {errors}"
-        elif response.status_code == 404:
+    if success:
+        form_note = " (form auto-generated)" if is_renderable else ""
+        return f"""✓ API namespace '{name}' created with {len(properties)} properties{form_note}
+
+**API Endpoint:** http://{subdomain}.{APP_HOST}/api/v1/{slug}/
+**Admin Panel:** http://{subdomain}.{APP_HOST}/api_namespaces
+
+{result}
+"""
+    else:
+        if "doesn't exist" in result.lower() or "not found" in result.lower():
             return f"Error: Subdomain '{subdomain}' not found. Create it first."
-        elif response.status_code == 401:
-            return "Error: Unauthorized. Please check your API key."
-        else:
-            return f"Error creating namespace: {response.status_code} - {response.text}"
-
-    except httpx.ConnectError:
-        return f"Error: Could not connect to Violet Rails at {VIOLET_API_URL}"
-    except httpx.TimeoutException:
-        return "Error: Request timed out."
-    except httpx.RequestError as e:
-        return f"Error connecting to Violet Rails: {e}"
+        if "already been taken" in result.lower():
+            return f"Error: API namespace '{slug}' already exists in subdomain '{subdomain}'."
+        return f"Error creating namespace: {result}"

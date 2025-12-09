@@ -1,22 +1,17 @@
-"""CMS page creation tools."""
+"""CMS page creation tools - uses direct Rails model access.
+
+DHH-approved pattern: Direct model access via rails runner instead of
+non-existent API endpoints. This is the Rails way.
+"""
 
 import os
 from typing import Literal
 
-import httpx
 from langchain_core.tools import tool
 
-VIOLET_API_URL = os.getenv("VIOLET_API_URL", "http://localhost:5250")
-VIOLET_API_KEY = os.getenv("VIOLET_API_KEY", "")
+from .rails_runner import create_cms_page as rails_create_page
 
-
-def _get_api_headers(subdomain: str) -> dict:
-    """Get API headers with subdomain context."""
-    return {
-        "Authorization": f"Bearer {VIOLET_API_KEY}",
-        "Content-Type": "application/json",
-        "X-Subdomain": subdomain,
-    }
+APP_HOST = os.getenv("APP_HOST", "localhost:5250")
 
 
 @tool
@@ -61,47 +56,26 @@ def create_page(
     if page_type == "index":
         generated_content = f"{{{{ cms:helper render_api_namespace_resource_index '{namespace_slug}' }}}}"
     elif page_type == "show":
-        # Show pages are typically handled dynamically
         generated_content = f"{{{{ cms:helper render_api_namespace_resource '{namespace_slug}' }}}}"
     elif page_type == "form":
-        # Form pages embed the namespace form
         generated_content = f"{{{{ cms:helper render_api_form '{namespace_slug}' }}}}"
     else:
         generated_content = content or "<p>Welcome to your new page!</p>"
 
-    try:
-        response = httpx.post(
-            f"{VIOLET_API_URL}/api/v1/pages",
-            headers=_get_api_headers(subdomain),
-            json={
-                "page": {
-                    "title": title,
-                    "slug": slug,
-                    "type": page_type,
-                    "namespace_slug": namespace_slug,
-                    "content": generated_content,
-                }
-            },
-            timeout=30.0,
-        )
+    # Use Rails runner for direct model access (DHH-approved)
+    success, result = rails_create_page(subdomain, title, slug, generated_content)
 
-        if response.status_code == 201:
-            data = response.json()
-            page_url = data.get("url", f"/{slug}")
-            return f"✓ Page '{title}' created at {page_url}"
-        elif response.status_code == 422:
-            errors = response.json().get("errors", {})
-            return f"Error creating page: {errors}"
-        elif response.status_code == 404:
+    if success:
+        return f"""✓ Page '{title}' created successfully!
+
+**Page URL:** http://{subdomain}.{APP_HOST}/{slug}
+**Admin Panel:** http://{subdomain}.{APP_HOST}/admin/cms
+
+{result}
+"""
+    else:
+        if "doesn't exist" in result.lower() or "not found" in result.lower():
             return f"Error: Subdomain '{subdomain}' not found."
-        elif response.status_code == 401:
-            return "Error: Unauthorized. Please check your API key."
-        else:
-            return f"Error creating page: {response.status_code} - {response.text}"
-
-    except httpx.ConnectError:
-        return f"Error: Could not connect to Violet Rails at {VIOLET_API_URL}"
-    except httpx.TimeoutException:
-        return "Error: Request timed out."
-    except httpx.RequestError as e:
-        return f"Error connecting to Violet Rails: {e}"
+        if "No CMS site found" in result:
+            return f"Error: CMS not initialized for subdomain '{subdomain}'."
+        return f"Error creating page: {result}"
