@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Violet App Agent | Build Apps with Natural Language</title>
+  <meta name="description" content="Describe your app in plain English. Get a deployed Rails app in under a minute.">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Violet App Agent | Build Apps with Natural Language">
+  <meta property="og:description" content="Describe your app in plain English. Get a deployed Rails app in under a minute.">
+  <meta property="og:type" content="website">
+
+  <style>
+    :root {
+      --cream: #fdf6e3;
+      --paper: #fffef9;
+      --ink: #2d3436;
+      --ink-light: #636e72;
+      --teal: #2a9d8f;
+      --teal-dark: #1e7268;
+      --coral: #e76f51;
+      --coral-dark: #d35d42;
+      --purple: #6c5ce7;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: var(--cream);
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header */
+    header {
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--purple);
+      text-decoration: none;
+    }
+
+    .nav-links a {
+      margin-left: 32px;
+      color: var(--ink-light);
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+
+    .nav-links a:hover {
+      color: var(--ink);
+    }
+
+    .nav-links .try-it-nav {
+      background: var(--coral);
+      color: white !important;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+
+    .nav-links .try-it-nav:hover {
+      background: var(--coral-dark);
+      color: white !important;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 80px 0 60px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      line-height: 1.15;
+      margin-bottom: 24px;
+      font-weight: normal;
+    }
+
+    .hero h1 span {
+      color: var(--teal);
+    }
+
+    .hero .subtitle {
+      font-size: 1.4rem;
+      color: var(--ink-light);
+      margin-bottom: 40px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 16px 32px;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--teal);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--teal-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: var(--paper);
+      color: var(--ink);
+      border: 2px solid var(--ink);
+    }
+
+    .btn-secondary:hover {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    /* Demo Section */
+    .demo-section {
+      padding: 60px 0;
+    }
+
+    .demo-container {
+      background: var(--paper);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+
+    .demo-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .demo-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .demo-dot.red { background: #ff5f56; }
+    .demo-dot.yellow { background: #ffbd2e; }
+    .demo-dot.green { background: #27ca3f; }
+
+    .demo-title {
+      margin-left: 16px;
+      font-size: 0.9rem;
+      color: var(--ink-light);
+    }
+
+    .demo-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+
+    @media (max-width: 768px) {
+      .demo-content {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .demo-input {
+      background: #1e1e2e;
+      border-radius: 12px;
+      padding: 24px;
+      color: #cdd6f4;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.95rem;
+    }
+
+    .demo-input .prompt {
+      color: var(--teal);
+      margin-bottom: 8px;
+    }
+
+    .demo-input .user-text {
+      color: #f5e0dc;
+      line-height: 1.8;
+    }
+
+    .demo-output h3 {
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+      color: var(--ink);
+    }
+
+    .tool-call {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .tool-call:last-child {
+      border-bottom: none;
+    }
+
+    .tool-check {
+      color: var(--teal);
+      font-size: 1.2rem;
+    }
+
+    .tool-name {
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.9rem;
+      color: var(--purple);
+    }
+
+    .tool-result {
+      color: var(--ink-light);
+      font-size: 0.85rem;
+    }
+
+    .tool-time {
+      margin-left: auto;
+      font-size: 0.8rem;
+      color: var(--ink-light);
+    }
+
+    /* Result Preview */
+    .result-preview {
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    .result-preview h3 {
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+    }
+
+    .result-frame {
+      background: var(--paper);
+      border: 2px solid var(--ink);
+      border-radius: 12px;
+      overflow: hidden;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .result-url {
+      background: var(--cream);
+      padding: 12px 20px;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 0.85rem;
+      color: var(--ink-light);
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .result-content {
+      padding: 40px;
+      background: var(--cream);
+    }
+
+    .result-content h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .result-content p {
+      color: var(--ink-light);
+      margin-bottom: 24px;
+    }
+
+    .result-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .result-btn {
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      text-decoration: none;
+    }
+
+    .result-btn.teal {
+      background: var(--teal);
+      color: white;
+    }
+
+    .result-btn.coral {
+      background: var(--coral);
+      color: white;
+    }
+
+    /* Hackathon CTA */
+    .hackathon-section {
+      padding: 80px 0;
+      background: linear-gradient(135deg, var(--purple) 0%, #a29bfe 100%);
+      color: white;
+      margin-top: 60px;
+    }
+
+    .hackathon-content {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .hackathon-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .hackathon-content h2 {
+      font-size: 2.8rem;
+      margin-bottom: 20px;
+      font-weight: normal;
+    }
+
+    .hackathon-content .desc {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      margin-bottom: 32px;
+      line-height: 1.7;
+    }
+
+    .hackathon-tracks {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+
+    .track-card {
+      background: rgba(255,255,255,0.15);
+      padding: 20px 28px;
+      border-radius: 12px;
+      text-align: left;
+      backdrop-filter: blur(10px);
+    }
+
+    .track-card.featured {
+      background: rgba(255,255,255,0.95);
+      color: var(--purple);
+    }
+
+    .track-card h4 {
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    .track-card p {
+      font-size: 0.85rem;
+      opacity: 0.8;
+    }
+
+    .track-card.featured p {
+      color: var(--ink-light);
+    }
+
+    .judge-note {
+      font-size: 1rem;
+      opacity: 0.85;
+      margin-bottom: 32px;
+      font-style: italic;
+    }
+
+    .btn-hackathon {
+      background: white;
+      color: var(--purple);
+      padding: 18px 48px;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .btn-hackathon:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+
+    /* Features */
+    .features {
+      padding: 80px 0;
+    }
+
+    .features h2 {
+      text-align: center;
+      font-size: 2.2rem;
+      margin-bottom: 48px;
+      font-weight: normal;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+
+    @media (max-width: 768px) {
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .feature-card {
+      background: var(--paper);
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 16px;
+    }
+
+    .feature-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 12px;
+    }
+
+    .feature-card p {
+      color: var(--ink-light);
+      font-size: 0.95rem;
+    }
+
+    /* Footer */
+    footer {
+      padding: 40px 0;
+      text-align: center;
+      border-top: 1px solid rgba(0,0,0,0.08);
+    }
+
+    footer p {
+      color: var(--ink-light);
+      font-size: 0.9rem;
+    }
+
+    footer a {
+      color: var(--teal);
+    }
+
+    /* Animation */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate {
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+
+    /* Typing animation */
+    .typing-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1.2em;
+      background: var(--teal);
+      animation: blink 1s infinite;
+      vertical-align: text-bottom;
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-content">
+      <a href="#" class="logo">Violet Rails</a>
+      <nav class="nav-links">
+        <a href="../chat_ui_streaming.html" class="try-it-nav">Try It Live</a>
+        <a href="#demo">Demo</a>
+        <a href="#features">Features</a>
+        <a href="#hackathon">Hackathon</a>
+        <a href="https://github.com/restarone/violet_rails">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container">
+        <h1 class="animate">
+          One sentence.<br>
+          <span>One deployed app.</span>
+        </h1>
+        <p class="subtitle animate delay-1">
+          Describe your app in plain English. Get a styled, working Rails app in under a minute.
+        </p>
+        <div class="hero-cta animate delay-2">
+          <a href="../chat_ui_streaming.html" class="btn btn-primary">Try It Live</a>
+          <a href="#demo" class="btn btn-secondary">Watch Demo</a>
+          <a href="#hackathon" class="btn btn-secondary">Join Hackathon</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo -->
+    <section id="demo" class="demo-section">
+      <div class="container">
+        <div class="demo-container animate delay-3">
+          <div class="demo-header">
+            <span class="demo-dot red"></span>
+            <span class="demo-dot yellow"></span>
+            <span class="demo-dot green"></span>
+            <span class="demo-title">Violet App Agent</span>
+          </div>
+
+          <div class="demo-content">
+            <div class="demo-input">
+              <div class="prompt">You:</div>
+              <div class="user-text">
+                Build me a blog called<br>
+                "The Cosmic Observer"<br>
+                about astronomy.<br>
+                Make a home page with<br>
+                a hero section.<span class="typing-cursor"></span>
+              </div>
+            </div>
+
+            <div class="demo-output">
+              <h3>Agent Workflow</h3>
+              <div class="tool-call">
+                <span class="tool-check">&#10003;</span>
+                <span class="tool-name">create_subdomain</span>
+                <span class="tool-result">cosmic-observer</span>
+                <span class="tool-time">2.3s</span>
+              </div>
+              <div class="tool-call">
+                <span class="tool-check">&#10003;</span>
+                <span class="tool-name">generate_styled_page</span>
+                <span class="tool-result">Home + 90s CSS</span>
+                <span class="tool-time">1.8s</span>
+              </div>
+              <div class="tool-call">
+                <span class="tool-check">&#10003;</span>
+                <span class="tool-name">create_page</span>
+                <span class="tool-result">/home</span>
+                <span class="tool-time">0.9s</span>
+              </div>
+              <div class="tool-call">
+                <span class="tool-check">&#10003;</span>
+                <span class="tool-name">verify_page</span>
+                <span class="tool-result">200 OK</span>
+                <span class="tool-time">0.4s</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Result Preview -->
+          <div class="result-preview">
+            <h3>Result: cosmic-observer.localhost</h3>
+            <div class="result-frame">
+              <div class="result-url">
+                https://cosmic-observer.yourdomain.com/home
+              </div>
+              <div class="result-content">
+                <h1>The Cosmic Observer</h1>
+                <p>Exploring the wonders of the universe</p>
+                <div class="result-buttons">
+                  <a href="#" class="result-btn teal">Read Stories</a>
+                  <a href="#" class="result-btn coral">Share Your Story</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="features">
+      <div class="container">
+        <h2>Built for developers who value their time</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">&#x1F4AC;</div>
+            <h3>Natural Language</h3>
+            <p>Describe what you want in plain English. No YAML configs. No boilerplate.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">&#x1F3A8;</div>
+            <h3>90s Nostalgia CSS</h3>
+            <p>Cream backgrounds. Georgia serif. Teal and coral accents. Designed, not generated.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">&#x2713;</div>
+            <h3>Verified Templates</h3>
+            <p>Only uses Liquid tags that actually exist. No hallucinated code. No runtime errors.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">&#x1F916;</div>
+            <h3>LangGraph Agents</h3>
+            <p>Specialized subagents for architecture, CMS design, security, and deployment.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">&#x1F6E4;</div>
+            <h3>Rails Runner</h3>
+            <p>Direct database access via Rails runner. DHH-approved patterns.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">&#x1F680;</div>
+            <h3>Deploy Anywhere</h3>
+            <p>Local, GitHub, or Heroku. One command deployment with GitHub Actions.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hackathon CTA -->
+    <section id="hackathon" class="hackathon-section">
+      <div class="container hackathon-content">
+        <div class="hackathon-badge">Coming Soon</div>
+        <h2>Violet Rails Hackathon</h2>
+        <p class="desc">
+          Take this agent and make it do something we haven't thought of.
+          Deploy a marketplace. Generate a SaaS. Build the next big thing.
+        </p>
+
+        <div class="hackathon-tracks">
+          <div class="track-card featured">
+            <h4>Building with AI</h4>
+            <p>Extend the agent's capabilities</p>
+          </div>
+          <div class="track-card">
+            <h4>Best UI/UX</h4>
+            <p>Most polished user experience</p>
+          </div>
+          <div class="track-card">
+            <h4>Most Creative</h4>
+            <p>Unexpected use cases</p>
+          </div>
+        </div>
+
+        <p class="judge-note">
+          I'll be judging the "Building with AI" track. Show me what you've got.
+        </p>
+
+        <a href="#" class="btn btn-hackathon">Register for Hackathon</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>
+        Built with <a href="https://github.com/restarone/violet_rails">Violet Rails</a>
+        &bull;
+        Powered by LangGraph
+        &bull;
+        <a href="https://github.com/restarone/violet_rails/pull/1724">View PR #1724</a>
+      </p>
+    </div>
+  </footer>
+</body>
+</html>
