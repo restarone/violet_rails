@@ -530,7 +530,7 @@ def create_template_designer_subagent():
     return create_react_agent(
         model,
         tools,
-        state_modifier=TEMPLATE_SUBAGENT_PROMPT,
+        prompt=TEMPLATE_SUBAGENT_PROMPT,
     )
 
 

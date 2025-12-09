@@ -20,6 +20,12 @@ from violet_app_agent.subagents import (
     content_researcher_subagent,
     deployer_subagent,
     security_subagent,
+    create_template_designer_subagent,
+    list_templates,
+    select_template,
+    get_liquid_tag,
+    generate_styled_page,
+    verify_page,
 )
 from violet_app_agent.tools import (
     create_namespace,
@@ -62,6 +68,12 @@ def create_violet_app_agent(
             create_namespace,
             # CMS and pages
             create_page,
+            # Template Designer tools (deterministic, verified Liquid tags)
+            list_templates,
+            select_template,
+            get_liquid_tag,
+            generate_styled_page,
+            verify_page,
             # Deployment
             trigger_deployment,
         ],
@@ -71,6 +83,7 @@ def create_violet_app_agent(
             content_researcher_subagent,
             deployer_subagent,
             security_subagent,
+            create_template_designer_subagent(),  # Deterministic template generation
         ],
         system_prompt=SYSTEM_PROMPT,
         checkpointer=True if (use_memory and not running_in_langgraph_api) else None,
