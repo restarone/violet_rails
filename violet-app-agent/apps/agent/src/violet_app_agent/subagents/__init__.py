@@ -6,7 +6,7 @@ from violet_app_agent.subagents.content_researcher import content_researcher_sub
 from violet_app_agent.subagents.deployer import deployer_subagent
 from violet_app_agent.subagents.security import security_subagent
 from violet_app_agent.subagents.template_designer import (
-    create_template_designer_subagent,
+    template_designer_subagent,
     list_templates,
     select_template,
     get_liquid_tag,
@@ -24,7 +24,7 @@ __all__ = [
     "deployer_subagent",
     "security_subagent",
     # Template Designer subagent and tools
-    "create_template_designer_subagent",
+    "template_designer_subagent",
     "list_templates",
     "select_template",
     "get_liquid_tag",

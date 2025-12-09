@@ -512,31 +512,31 @@ def generate_styled_page(
     }
 
 
-def create_template_designer_subagent():
-    """Create the Template Designer subagent."""
-    model = ChatAnthropic(
-        model="claude-sonnet-4-20250514",
-        temperature=0,
-    )
+from deepagents import SubAgent
 
-    tools = [
+template_designer_subagent: SubAgent = {
+    "name": "template-designer-subagent",
+    "description": """Use this subagent for blog/CMS page creation with verified templates:
+- Selecting appropriate page templates (home, category, write, about)
+- Getting correct Liquid tag syntax (NEVER hallucinate tags)
+- Generating styled HTML with 90s nostalgia CSS
+- Verifying pages render correctly after creation
+
+CRITICAL: Only uses VERIFIED Liquid tags. Never uses render_api_form (doesn't exist).""",
+    "system_prompt": TEMPLATE_SUBAGENT_PROMPT,
+    "tools": [
         list_templates,
         select_template,
         get_liquid_tag,
         generate_styled_page,
         verify_page,
-    ]
-
-    return create_react_agent(
-        model,
-        tools,
-        prompt=TEMPLATE_SUBAGENT_PROMPT,
-    )
+    ],
+}
 
 
 # Export for use in main agent
 __all__ = [
-    "create_template_designer_subagent",
+    "template_designer_subagent",
     "list_templates",
     "select_template",
     "get_liquid_tag",
