@@ -211,6 +211,166 @@
             margin-left: 20px;
             font-size: 0.9rem;
         }
+        /* Act Phase - Build Progress */
+        .build-tracker {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            color: white;
+        }
+        .build-tracker h4 {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .build-tracker h4 .pulse {
+            width: 10px;
+            height: 10px;
+            background: #4caf50;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        .build-step {
+            display: flex;
+            align-items: flex-start;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .build-step:last-child { border-bottom: none; }
+        .build-step .step-number {
+            background: rgba(102, 126, 234, 0.3);
+            color: #a3b3ff;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-right: 12px;
+            min-width: 50px;
+            text-align: center;
+        }
+        .build-step.complete .step-number {
+            background: rgba(76, 175, 80, 0.3);
+            color: #a5d6a7;
+        }
+        .build-step.running .step-number {
+            background: rgba(33, 150, 243, 0.3);
+            color: #90caf9;
+            animation: pulse 1s infinite;
+        }
+        .build-step .step-content {
+            flex: 1;
+        }
+        .build-step .step-name {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        .build-step .step-detail {
+            font-size: 0.85rem;
+            color: #a0a0a0;
+        }
+        .build-step .step-icon {
+            font-size: 1.2rem;
+            margin-left: 10px;
+        }
+        .build-step.pending .step-icon { color: #666; }
+        .build-step.running .step-icon { color: #2196f3; }
+        .build-step.complete .step-icon { color: #4caf50; }
+        .build-step.error .step-icon { color: #e74c3c; }
+
+        /* Verify Phase - Success Summary */
+        .verify-summary {
+            background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            color: white;
+        }
+        .verify-summary h4 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .verify-summary .resource-list {
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .verify-summary .resource-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .verify-summary .resource-item:last-child { border-bottom: none; }
+        .verify-summary .resource-item a {
+            color: #a5d6a7;
+            text-decoration: none;
+        }
+        .verify-summary .resource-item a:hover {
+            text-decoration: underline;
+        }
+        .verify-summary .next-steps {
+            background: rgba(255,255,255,0.15);
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .verify-summary .next-steps h5 {
+            margin-bottom: 10px;
+            color: #c8e6c9;
+        }
+        .verify-summary .next-steps ul {
+            margin-left: 20px;
+        }
+        .verify-summary .next-steps li {
+            margin-bottom: 5px;
+        }
+
+        /* Plan Approval Buttons */
+        .plan-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .plan-actions button {
+            flex: 1;
+            padding: 14px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .plan-actions .btn-approve {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            border: none;
+        }
+        .plan-actions .btn-approve:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+        }
+        .plan-actions .btn-modify {
+            background: white;
+            color: #ff9800;
+            border: 2px solid #ff9800;
+        }
+        .plan-actions .btn-modify:hover {
+            background: #fff3e0;
+        }
+        .plan-actions .btn-restart {
+            background: transparent;
+            color: #999;
+            border: 1px solid #999;
+        }
+        .plan-actions .btn-restart:hover {
+            color: #666;
+            border-color: #666;
+        }
     </style>
 </head>
 <body>
@@ -276,18 +436,40 @@ Try: "Build a recipe app with ingredients and instructions"</div>
             if (e.key === 'Enter') sendMessage();
         }
 
-        // Build progress tracking
-        let buildSteps = [];
-        let currentStepIndex = 0;
+        // Build progress tracking - Act Phase State Machine
+        let buildState = {
+            phase: 'idle', // idle, plan, act, verify
+            steps: [],
+            currentStep: -1,
+            resources: [],
+            subdomainUrl: null,
+            adminUrl: null
+        };
+
+        // Tool name to human-readable step name mapping
+        const TOOL_DISPLAY_NAMES = {
+            'create_subdomain': 'Creating subdomain',
+            'create_namespace': 'Building data model',
+            'create_page': 'Creating page',
+            'diagnose_requirements': 'Analyzing requirements',
+            'generate_specification': 'Generating specification',
+            'trigger_deployment': 'Deploying app'
+        };
 
         function detectBuildPhase(content) {
             // Detect if this is a Plan Preview with YAML specification
             if (content.includes('subdomain_name:') || content.includes('```yaml')) {
+                buildState.phase = 'plan';
                 return 'plan-preview';
             }
             // Detect if this is the Verify Phase with completion summary
             if (content.includes('Your') && (content.includes('is ready!') || content.includes('is LIVE!'))) {
+                buildState.phase = 'verify';
                 return 'verify-complete';
+            }
+            // Detect Act phase by tool calls
+            if (buildState.phase === 'act') {
+                return 'act-building';
             }
             return 'normal';
         }
@@ -312,13 +494,25 @@ Try: "Build a recipe app with ingredients and instructions"</div>
             const yamlMatch = content.match(/```yaml([\s\S]*?)```/);
             if (yamlMatch) {
                 const yaml = yamlMatch[1].trim();
+
+                // Parse YAML to count items for the plan summary
+                const subdomainMatch = yaml.match(/subdomain_name:\s*(\S+)/);
+                const namespaceCount = (yaml.match(/- name:/g) || []).length;
+
                 return `
                     <div class="plan-preview">
                         <h4>Your App Plan</h4>
                         <pre>${yaml}</pre>
-                        <div style="margin-top: 15px; display: flex; gap: 10px;">
-                            <button onclick="sendApproval('yes')" style="background: #4caf50;">Approve Plan</button>
-                            <button onclick="sendApproval('adjust')" style="background: #ff9800;">Adjust</button>
+                        <div class="plan-actions">
+                            <button class="btn-approve" onclick="sendApproval('Looks good! Build it.')">
+                                Approve & Build
+                            </button>
+                            <button class="btn-modify" onclick="showModifyInput()">
+                                Modify Plan
+                            </button>
+                            <button class="btn-restart" onclick="sendApproval('Start over')">
+                                Start Over
+                            </button>
                         </div>
                     </div>
                 `;
@@ -327,8 +521,128 @@ Try: "Build a recipe app with ingredients and instructions"</div>
         }
 
         function sendApproval(response) {
+            buildState.phase = 'act';
+            buildState.steps = [];
+            buildState.currentStep = -1;
             document.getElementById('input').value = response;
             sendMessage();
+        }
+
+        function showModifyInput() {
+            const input = document.getElementById('input');
+            input.value = 'Please change ';
+            input.focus();
+        }
+
+        // Act Phase: Build Tracker
+        function renderBuildTracker() {
+            if (buildState.steps.length === 0) return '';
+
+            const isComplete = buildState.steps.every(s => s.status === 'complete');
+            const header = isComplete
+                ? '<h4>Build Complete!</h4>'
+                : '<h4><span class="pulse"></span> Building Your App...</h4>';
+
+            const stepsHtml = buildState.steps.map((step, i) => {
+                const icon = step.status === 'complete' ? '✓'
+                    : step.status === 'running' ? '◉'
+                    : step.status === 'error' ? '✗'
+                    : '○';
+                return `
+                    <div class="build-step ${step.status}">
+                        <span class="step-number">${i + 1}/${buildState.steps.length}</span>
+                        <div class="step-content">
+                            <div class="step-name">${step.name}</div>
+                            ${step.detail ? `<div class="step-detail">${step.detail}</div>` : ''}
+                        </div>
+                        <span class="step-icon">${icon}</span>
+                    </div>
+                `;
+            }).join('');
+
+            return `<div class="build-tracker" id="build-tracker">${header}${stepsHtml}</div>`;
+        }
+
+        function addBuildStep(toolName, status = 'running', detail = '') {
+            const displayName = TOOL_DISPLAY_NAMES[toolName] || toolName;
+
+            // Check if step already exists
+            const existingIndex = buildState.steps.findIndex(s => s.toolName === toolName);
+            if (existingIndex >= 0) {
+                buildState.steps[existingIndex].status = status;
+                if (detail) buildState.steps[existingIndex].detail = detail;
+            } else {
+                buildState.steps.push({
+                    toolName,
+                    name: displayName,
+                    status,
+                    detail
+                });
+            }
+
+            // Update or create the build tracker in the chat
+            updateBuildTrackerUI();
+        }
+
+        function updateBuildTrackerUI() {
+            const existing = document.getElementById('build-tracker');
+            const html = renderBuildTracker();
+
+            if (existing) {
+                existing.outerHTML = html;
+            } else if (html) {
+                const chat = document.getElementById('chat');
+                chat.insertAdjacentHTML('beforeend', html);
+                chat.scrollTop = chat.scrollHeight;
+            }
+        }
+
+        // Verify Phase: Success Summary
+        function renderVerifySummary(content) {
+            // Extract URLs from content
+            const urlMatch = content.match(/http:\/\/[\w.-]+:\d+/g) || [];
+            const mainUrl = urlMatch[0] || buildState.subdomainUrl || 'http://localhost:5250';
+            const adminUrl = urlMatch.find(u => u.includes('/admin')) || mainUrl + '/admin';
+
+            // Build resource list from buildState
+            const resources = buildState.steps
+                .filter(s => s.status === 'complete')
+                .map(s => ({
+                    name: s.name,
+                    detail: s.detail || 'Created successfully'
+                }));
+
+            const resourcesHtml = resources.map(r => `
+                <div class="resource-item">
+                    <span>${r.name}</span>
+                    <span>✓ ${r.detail}</span>
+                </div>
+            `).join('');
+
+            return `
+                <div class="verify-summary">
+                    <h4>Your App is LIVE!</h4>
+                    <div class="resource-list">
+                        ${resourcesHtml}
+                        <div class="resource-item">
+                            <span>App URL</span>
+                            <a href="${mainUrl}" target="_blank">${mainUrl}</a>
+                        </div>
+                        <div class="resource-item">
+                            <span>Admin Panel</span>
+                            <a href="${adminUrl}" target="_blank">${adminUrl}</a>
+                        </div>
+                    </div>
+                    <div class="next-steps">
+                        <h5>What You'll Add Next:</h5>
+                        <ul>
+                            <li>Your actual content and stories</li>
+                            <li>Images and media</li>
+                            <li>Your personal voice and style</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
         }
 
         function renderBuildProgress(steps) {
@@ -359,6 +673,13 @@ Try: "Build a recipe app with ingredients and instructions"</div>
                 const planPreview = renderPlanPreview(content);
                 if (planPreview) {
                     formattedContent = content.replace(/```yaml[\s\S]*?```/, '') + planPreview;
+                }
+
+                // Check for verify phase - add success summary
+                if (phase === 'verify-complete') {
+                    const verifySummary = renderVerifySummary(content);
+                    formattedContent = formattedContent + verifySummary;
+                    buildState.phase = 'idle'; // Reset state
                 }
 
                 // Convert markdown-like formatting
@@ -519,12 +840,36 @@ Try: "Build a recipe app with ingredients and instructions"</div>
                                         if (lastMsg.tool_calls && lastMsg.tool_calls.length > 0) {
                                             for (const tool of lastMsg.tool_calls) {
                                                 updateThinking(`Running ${tool.name}...`);
-                                                addToolCall(tool.name, 'running');
+                                                // Use build tracker for act phase tools
+                                                if (buildState.phase === 'act' && TOOL_DISPLAY_NAMES[tool.name]) {
+                                                    addBuildStep(tool.name, 'running');
+                                                } else {
+                                                    addToolCall(tool.name, 'running');
+                                                }
                                             }
                                         } else if (lastMsg.type === 'tool') {
-                                            // Tool result
+                                            // Tool result - parse for details
                                             const preview = lastMsg.content.substring(0, 100);
-                                            addToolCall(lastMsg.name || 'tool', 'success', preview);
+                                            const toolName = lastMsg.name || 'tool';
+
+                                            // Extract useful details from result
+                                            let detail = '';
+                                            try {
+                                                const result = JSON.parse(lastMsg.content);
+                                                if (result.name) detail = result.name;
+                                                if (result.slug) detail = `/${result.slug}`;
+                                                if (result.subdomain_count !== undefined) detail = `${result.subdomain_count} subdomains`;
+                                            } catch (e) {
+                                                // Not JSON, use preview
+                                                detail = preview;
+                                            }
+
+                                            // Update build tracker or tool call display
+                                            if (buildState.phase === 'act' && TOOL_DISPLAY_NAMES[toolName]) {
+                                                addBuildStep(toolName, 'complete', detail);
+                                            } else {
+                                                addToolCall(toolName, 'success', detail);
+                                            }
                                         } else if (lastMsg.role === 'assistant' || lastMsg.type === 'ai') {
                                             // Final AI response
                                             removeThinking();

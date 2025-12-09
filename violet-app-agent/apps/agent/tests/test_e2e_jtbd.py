@@ -317,5 +317,115 @@ class TestSubdomainValidation:
             assert "Error" in result or "Invalid" in result, f"Should reject: {name}"
 
 
+class TestDatabaseVerification:
+    """
+    Test database persistence verification (INC-20251208-003 remediation).
+
+    These tests ensure that:
+    1. Database health check works
+    2. Create operations verify data exists after creation
+    3. Verification failures are properly reported
+    """
+
+    @pytest.mark.integration
+    def test_db_health_check(self):
+        """Test that database health check works and returns expected format."""
+        from violet_app_agent.tools.rails_runner import check_db_health
+
+        healthy, result = check_db_health()
+
+        if healthy:
+            # Verify the output is valid JSON with expected fields
+            status = json.loads(result)
+            assert status.get("status") == "healthy"
+            assert "database" in status
+            assert "subdomain_count" in status
+            assert "rails_env" in status
+        else:
+            # If unhealthy, should contain meaningful error
+            assert "Failed" in result or "error" in result.lower()
+
+    @pytest.mark.integration
+    def test_create_subdomain_returns_verified_true(self):
+        """Test that create_subdomain includes 'verified: true' in response."""
+        from violet_app_agent.tools.rails_runner import create_subdomain
+        import uuid
+
+        # Create a unique subdomain name for testing
+        test_name = f"test-{uuid.uuid4().hex[:8]}"
+
+        success, result = create_subdomain(test_name)
+
+        if success:
+            data = json.loads(result)
+            # Verification should be explicit in response
+            assert data.get("verified") is True, "Response must include verified: true"
+            assert data.get("name") == test_name
+            assert "id" in data
+
+    @pytest.mark.integration
+    def test_create_namespace_returns_verified_true(self):
+        """Test that create_namespace includes 'verified: true' in response."""
+        from violet_app_agent.tools.rails_runner import create_subdomain, create_api_namespace
+        import uuid
+
+        # First create a subdomain
+        subdomain_name = f"test-{uuid.uuid4().hex[:8]}"
+        success, _ = create_subdomain(subdomain_name)
+        if not success:
+            pytest.skip("Could not create test subdomain")
+
+        # Create namespace
+        namespace_name = "TestEntity"
+        namespace_slug = f"test-entities-{uuid.uuid4().hex[:4]}"
+        properties = {"name": "String", "value": "Integer"}
+
+        success, result = create_api_namespace(
+            subdomain_name, namespace_name, namespace_slug, properties
+        )
+
+        if success:
+            data = json.loads(result)
+            assert data.get("verified") is True, "Response must include verified: true"
+            assert data.get("slug") == namespace_slug
+            assert "id" in data
+
+    @pytest.mark.integration
+    def test_create_page_returns_verified_true(self):
+        """Test that create_page includes 'verified: true' in response."""
+        from violet_app_agent.tools.rails_runner import create_subdomain, create_cms_page
+        import uuid
+
+        # First create a subdomain
+        subdomain_name = f"test-{uuid.uuid4().hex[:8]}"
+        success, _ = create_subdomain(subdomain_name)
+        if not success:
+            pytest.skip("Could not create test subdomain")
+
+        # Create page
+        page_title = "Test Page"
+        page_slug = f"test-page-{uuid.uuid4().hex[:4]}"
+        page_content = "<h1>Test Content</h1>"
+
+        success, result = create_cms_page(
+            subdomain_name, page_title, page_slug, page_content
+        )
+
+        if success:
+            data = json.loads(result)
+            assert data.get("verified") is True, "Response must include verified: true"
+            assert "id" in data
+
+    @pytest.mark.integration
+    def test_rails_runner_environment_has_spring_disabled(self):
+        """Test that rails_runner has DISABLE_SPRING in environment (INC-20251208-003)."""
+        from violet_app_agent.tools.rails_runner import RAILS_ENV
+
+        assert RAILS_ENV.get("DISABLE_SPRING") == "1", \
+            "DISABLE_SPRING must be set to prevent fork issues"
+        assert RAILS_ENV.get("OBJC_DISABLE_INITIALIZE_FORK_SAFETY") == "YES", \
+            "OBJC_DISABLE_INITIALIZE_FORK_SAFETY must be set for macOS"
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

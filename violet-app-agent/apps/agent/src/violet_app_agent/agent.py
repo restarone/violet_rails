@@ -29,6 +29,7 @@ from violet_app_agent.tools import (
     generate_specification,
     trigger_deployment,
 )
+from violet_app_agent.tools.rails_runner import check_db_health
 
 
 def create_violet_app_agent(
@@ -75,6 +76,24 @@ def create_violet_app_agent(
         checkpointer=True if (use_memory and not running_in_langgraph_api) else None,
     )
 
+
+# Run DB health check at startup (fail fast if DB unavailable)
+def _startup_health_check():
+    """Check database connectivity at module load time."""
+    import sys
+    healthy, result = check_db_health()
+    if healthy:
+        import json
+        try:
+            status = json.loads(result)
+            print(f"[Startup] DB healthy: {status.get('database', 'unknown')} ({status.get('subdomain_count', 0)} subdomains)")
+        except json.JSONDecodeError:
+            print(f"[Startup] DB check passed: {result}")
+    else:
+        print(f"[Startup] WARNING: DB health check failed: {result}", file=sys.stderr)
+        # Don't exit - allow agent to start but warn loudly
+
+_startup_health_check()
 
 # Default agent instance for LangGraph deployment
 agent = create_violet_app_agent()
