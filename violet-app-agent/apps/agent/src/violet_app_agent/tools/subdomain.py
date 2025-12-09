@@ -9,7 +9,7 @@ import re
 
 from langchain_core.tools import tool
 
-from .rails_runner import create_subdomain as rails_create_subdomain
+from violet_app_agent.tools.rails_runner import create_subdomain as rails_create_subdomain
 
 APP_HOST = os.getenv("APP_HOST", "localhost:5250")
 

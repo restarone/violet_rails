@@ -2,7 +2,7 @@
 
 from deepagents import SubAgent
 
-from ..tools import create_page
+from violet_app_agent.tools import create_page
 
 CMS_DESIGNER_SYSTEM_PROMPT = """You are the CMS Designer subagent for Violet Rails App Builder.
 

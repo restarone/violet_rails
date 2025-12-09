@@ -2,7 +2,7 @@
   "python_version": "3.11",
   "dependencies": ["./apps/agent"],
   "graphs": {
-    "violet-app-agent": "./apps/agent/src/violet_app_agent/agent:agent"
+    "violet-app-agent": "./apps/agent/src/violet_app_agent/agent.py:agent"
   },
   "env": "./apps/agent/.env"
 }

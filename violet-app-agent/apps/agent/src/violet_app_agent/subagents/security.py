@@ -2,7 +2,7 @@
 
 from deepagents import SubAgent
 
-from ..tools import diagnose_requirements
+from violet_app_agent.tools import diagnose_requirements
 
 SECURITY_SYSTEM_PROMPT = """You are the Security subagent for Violet Rails App Builder.
 

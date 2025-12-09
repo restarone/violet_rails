@@ -9,7 +9,7 @@ import os
 
 from langchain_core.tools import tool
 
-from .rails_runner import create_api_namespace as rails_create_namespace
+from violet_app_agent.tools.rails_runner import create_api_namespace as rails_create_namespace
 
 APP_HOST = os.getenv("APP_HOST", "localhost:5250")
 

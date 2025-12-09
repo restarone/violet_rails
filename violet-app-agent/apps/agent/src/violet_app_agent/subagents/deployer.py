@@ -2,7 +2,7 @@
 
 from deepagents import SubAgent
 
-from ..tools import trigger_deployment
+from violet_app_agent.tools import trigger_deployment
 
 DEPLOYER_SYSTEM_PROMPT = """You are the Deployer subagent for Violet Rails App Builder.
 

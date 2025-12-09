@@ -13,14 +13,15 @@ import os
 from deepagents import create_deep_agent
 from langchain_anthropic import ChatAnthropic
 
-from .prompts import QUICK_QUESTIONS, SYSTEM_PROMPT, print_welcome
-from .subagents import (
+from violet_app_agent.prompts import QUICK_QUESTIONS, SYSTEM_PROMPT, print_welcome
+from violet_app_agent.subagents import (
     architect_subagent,
     cms_designer_subagent,
+    content_researcher_subagent,
     deployer_subagent,
     security_subagent,
 )
-from .tools import (
+from violet_app_agent.tools import (
     create_namespace,
     create_page,
     create_subdomain,
@@ -66,6 +67,7 @@ def create_violet_app_agent(
         subagents=[
             architect_subagent,
             cms_designer_subagent,
+            content_researcher_subagent,
             deployer_subagent,
             security_subagent,
         ],

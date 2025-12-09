@@ -2,7 +2,7 @@
 
 from deepagents import SubAgent
 
-from ..tools import diagnose_requirements, generate_specification
+from violet_app_agent.tools import diagnose_requirements, generate_specification
 
 ARCHITECT_SYSTEM_PROMPT = """You are the App Architect subagent for Violet Rails App Builder.
 

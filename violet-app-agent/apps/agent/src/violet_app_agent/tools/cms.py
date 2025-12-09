@@ -9,7 +9,7 @@ from typing import Literal
 
 from langchain_core.tools import tool
 
-from .rails_runner import create_cms_page as rails_create_page
+from violet_app_agent.tools.rails_runner import create_cms_page as rails_create_page
 
 APP_HOST = os.getenv("APP_HOST", "localhost:5250")
 
