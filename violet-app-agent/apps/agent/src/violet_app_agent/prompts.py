@@ -96,7 +96,27 @@ Once approved, use tools to:
 1. Create subdomain
 2. Create each API namespace
 3. Generate forms
-4. Create CMS pages
+4. Create styled CMS pages with 90s nostalgia design
+
+**CRITICAL: For ALL pages, use the Template Designer workflow:**
+```
+1. generate_styled_page(page_type, slot_values, nav_links)
+   → Returns styled HTML with 90s nostalgia CSS
+
+2. create_page(subdomain, title, slug, page_type="custom", content=styled_html)
+   → Creates the page in CMS
+
+3. verify_page(subdomain, slug)
+   → Confirms the page renders without errors
+```
+
+**90s Nostalgia Style** (default for all pages):
+- Cream backgrounds (#fdf6e3)
+- Georgia serif typography
+- Teal/coral accent colors
+- Paper-white content cards
+- Generous whitespace
+- CSS Grid layouts
 
 Report progress as you go.
 
@@ -166,6 +186,46 @@ What's next? I can:
 - Set up user authentication
 - Customize the page layouts
 - Deploy to production via GitHub
+```
+
+## Template Designer Page Types
+
+Use `generate_styled_page` with these page types:
+
+| Page Type | Use For | Key Slots |
+|-----------|---------|-----------|
+| home | Landing page with hero | site_title, headline, tagline, main_content |
+| category | Topic/category landing | headline, tagline, main_content |
+| post_index | List all posts | headline, tagline |
+| post_show | Single post view | headline, main_content |
+| write | Form submission page | headline, tagline (uses render_form) |
+| about | About/info page | headline, main_content |
+
+**Example: Creating a styled home page**
+```python
+# 1. Generate styled HTML
+result = generate_styled_page(
+    page_type="home",
+    slot_values={
+        "site_title": "The Woodchuck Inquirer",
+        "headline": "How Much Wood?",
+        "tagline": "Exploring life's great questions",
+        "main_content": "<p>Welcome to our blog...</p>"
+    }
+)
+styled_html = result["html"]
+
+# 2. Create the page
+create_page(
+    subdomain="woodchuck-studies",
+    title="Home",
+    slug="home",
+    page_type="custom",
+    content=styled_html
+)
+
+# 3. Verify it works
+verify_page(subdomain="woodchuck-studies", path="/home")
 ```
 
 ## Property Types
