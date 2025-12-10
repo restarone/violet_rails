@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Violet App Builder</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: #1a1a2e;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .header h1 { font-size: 1.5rem; margin-bottom: 5px; }
+        .header p { font-size: 0.9rem; opacity: 0.8; }
+        .chat-area {
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        .message.user { align-items: flex-end; }
+        .message.agent { align-items: flex-start; }
+        .message-content {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            line-height: 1.5;
+        }
+        .message.user .message-content {
+            background: #667eea;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .message.agent .message-content {
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-bottom-left-radius: 4px;
+        }
+        .message-label {
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .tool-call {
+            background: #e8f4fd;
+            border-left: 3px solid #2196f3;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+        .input-area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover { background: #5a6fd6; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .examples {
+            padding: 15px 20px;
+            background: #f0f0f0;
+            border-top: 1px solid #e0e0e0;
+        }
+        .examples h3 { font-size: 0.9rem; margin-bottom: 10px; color: #666; }
+        .example-btn {
+            display: inline-block;
+            padding: 8px 12px;
+            margin: 4px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .example-btn:hover { background: #667eea; color: white; border-color: #667eea; }
+        .status {
+            text-align: center;
+            padding: 10px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        .status.error { color: #e74c3c; background: #fdecea; }
+        .status.success { color: #27ae60; background: #e8f8f0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Violet App Builder</h1>
+            <p>Describe your app idea in plain English</p>
+        </div>
+
+        <div id="status" class="status">
+            Connecting to agent...
+        </div>
+
+        <div class="chat-area" id="chat">
+            <div class="message agent">
+                <span class="message-label">Violet App Builder</span>
+                <div class="message-content">
+                    Hi! I can help you build web apps. Just describe what you want, like:
+                    <br><br>
+                    "Build me a task manager with title, description, and due date"
+                    <br><br>
+                    I'll create the subdomain, data model, and pages for you!
+                </div>
+            </div>
+        </div>
+
+        <div class="examples">
+            <h3>Try these examples:</h3>
+            <span class="example-btn" onclick="setInput('Build a recipe sharing app with name, ingredients, and instructions')">Recipe App</span>
+            <span class="example-btn" onclick="setInput('Create a simple blog with title, content, and author')">Blog</span>
+            <span class="example-btn" onclick="setInput('Make a contact list with name, email, and phone')">Contacts</span>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="input" placeholder="Describe your app..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()" id="sendBtn">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const LANGGRAPH_URL = 'http://localhost:8123';
+        let threadId = null;
+
+        async function checkConnection() {
+            const status = document.getElementById('status');
+            try {
+                const response = await fetch(`${LANGGRAPH_URL}/ok`);
+                if (response.ok) {
+                    status.textContent = 'Connected to Violet App Builder';
+                    status.className = 'status success';
+                } else {
+                    throw new Error('Not healthy');
+                }
+            } catch (e) {
+                status.textContent = 'Agent not running. Start with: langgraph dev --port 8123';
+                status.className = 'status error';
+            }
+        }
+
+        function setInput(text) {
+            document.getElementById('input').value = text;
+            document.getElementById('input').focus();
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        function addMessage(content, isUser = false, isToolCall = false) {
+            const chat = document.getElementById('chat');
+            const msg = document.createElement('div');
+            msg.className = `message ${isUser ? 'user' : 'agent'}`;
+
+            if (isToolCall) {
+                msg.innerHTML = `<div class="tool-call">${content}</div>`;
+            } else {
+                msg.innerHTML = `
+                    <span class="message-label">${isUser ? 'You' : 'Violet App Builder'}</span>
+                    <div class="message-content">${content}</div>
+                `;
+            }
+
+            chat.appendChild(msg);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('input');
+            const sendBtn = document.getElementById('sendBtn');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            addMessage(message, true);
+            input.value = '';
+            sendBtn.disabled = true;
+
+            try {
+                // Create thread if needed
+                if (!threadId) {
+                    const threadRes = await fetch(`${LANGGRAPH_URL}/threads`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({})
+                    });
+                    const thread = await threadRes.json();
+                    threadId = thread.thread_id;
+                }
+
+                // Send message
+                const response = await fetch(`${LANGGRAPH_URL}/threads/${threadId}/runs`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        assistant_id: 'violet-app-agent',
+                        input: {
+                            messages: [{ role: 'user', content: message }]
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                // Process response
+                if (result.messages && result.messages.length > 0) {
+                    const lastMsg = result.messages[result.messages.length - 1];
+                    addMessage(lastMsg.content.replace(/\n/g, '<br>'));
+                }
+
+            } catch (e) {
+                addMessage(`Error: ${e.message}. Make sure LangGraph is running with ANTHROPIC_API_KEY set.`);
+            }
+
+            sendBtn.disabled = false;
+        }
+
+        // Check connection on load
+        checkConnection();
+    </script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+{
+  "project": {
+    "name": "violet-app-agent",
+    "description": "Deep Agent for natural language app deployment on Violet Rails",
+    "version": "0.1.0",
+    "repository": "restarone/violet_rails",
+    "epic_title": "Web UI Agent for Natural Language App Deployment"
+  },
+  "architecture": {
+    "pattern": "Deep Agent (PRIW/Trace Mineral style)",
+    "principles": [
+      "DIAGNOSE - Understand before acting with structured questions",
+      "MULTI-EXPERT - Specialized subagents for different concerns",
+      "ARTIFACT-FIRST - Every session produces concrete deliverables",
+      "DOMAIN-NATIVE - Speak Violet Rails language naturally"
+    ],
+    "stack": {
+      "agent": {
+        "language": "Python 3.11+",
+        "framework": "LangGraph + deepagents",
+        "llm": "Claude Sonnet 4 (claude-sonnet-4-20250514)",
+        "deployment": "LangGraph Cloud"
+      },
+      "api": {
+        "language": "Ruby",
+        "framework": "Rails 6.1.5",
+        "database": "PostgreSQL with Apartment (multi-tenancy)"
+      }
+    }
+  },
+  "components": {
+    "agent": {
+      "path": "violet-app-agent/apps/agent/src/violet_app_agent",
+      "files": {
+        "agent.py": "Main deep agent definition with tools and subagents",
+        "prompts.py": "System prompts - THE MAGIC (~300 lines)",
+        "tools/__init__.py": "Tool exports",
+        "tools/diagnostic.py": "App requirements assessment",
+        "tools/specification.py": "Generate app specs (YAML)",
+        "tools/subdomain.py": "Create subdomains via API",
+        "tools/namespace.py": "Create API namespaces",
+        "tools/cms.py": "Create pages/layouts",
+        "tools/github.py": "GitHub integration",
+        "subagents/__init__.py": "Subagent exports",
+        "subagents/architect.py": "App architecture design",
+        "subagents/cms_designer.py": "Page/form design",
+        "subagents/deployer.py": "GitHub/deployment",
+        "subagents/security.py": "Security review"
+      }
+    },
+    "rails_api": {
+      "path": "app/controllers/api/v1",
+      "endpoints": {
+        "subdomains": {
+          "create": "POST /api/v1/subdomains",
+          "show": "GET /api/v1/subdomains/:id"
+        },
+        "namespaces": {
+          "create": "POST /api/v1/namespaces",
+          "index": "GET /api/v1/namespaces",
+          "show": "GET /api/v1/namespaces/:id"
+        },
+        "pages": {
+          "create": "POST /api/v1/pages"
+        },
+        "deployments": {
+          "create": "POST /api/v1/deployments",
+          "show": "GET /api/v1/deployments/:id"
+        }
+      }
+    },
+    "docs": {
+      "path": "violet-app-agent/docs",
+      "files": {
+        "ARCHITECTURE.md": "Deep Agent principles, tool/subagent design",
+        "README.md": "Quick start and overview",
+        "JOBS_TO_BE_DONE.md": "User personas and use cases",
+        "UX_PRINCIPLES.md": "Don't Make Me Think approach"
+      }
+    },
+    "memories": {
+      "path": "violet-app-agent/apps/agent/src/violet_app_agent/memories",
+      "files": {
+        "violet_architecture.md": "Violet Rails architecture reference",
+        "api_patterns.md": "API namespace patterns",
+        "cms_templates.md": "CMS template examples"
+      }
+    }
+  },
+  "phases": {
+    "1_foundation": {
+      "name": "Foundation",
+      "description": "Create agent package structure and core tools",
+      "tasks": [
+        "Create agent package directory structure",
+        "Write pyproject.toml with dependencies",
+        "Create langgraph.json configuration",
+        "Write system prompts (prompts.py)",
+        "Implement diagnostic tool",
+        "Implement specification generator tool",
+        "Create .env.example"
+      ]
+    },
+    "2_rails_api": {
+      "name": "Rails API Integration",
+      "description": "Create Rails API endpoints for agent to call",
+      "tasks": [
+        "Add API routes for v1 namespace",
+        "Create Api::V1::SubdomainsController",
+        "Create Api::V1::NamespacesController",
+        "Create Api::V1::PagesController",
+        "Add API key authentication",
+        "Write controller tests"
+      ]
+    },
+    "3_agent_tools": {
+      "name": "Agent Tools",
+      "description": "Implement tools that call Rails API",
+      "tasks": [
+        "Implement subdomain creation tool",
+        "Implement namespace creation tool",
+        "Implement CMS page creation tool",
+        "Implement GitHub deployment tool",
+        "Write tool unit tests",
+        "Write integration tests with mocked API"
+      ]
+    },
+    "4_subagents": {
+      "name": "Subagents",
+      "description": "Implement specialized subagents",
+      "tasks": [
+        "Implement architect subagent",
+        "Implement CMS designer subagent",
+        "Implement deployer subagent",
+        "Implement security reviewer subagent",
+        "Write subagent tests"
+      ]
+    },
+    "5_documentation": {
+      "name": "Documentation & Polish",
+      "description": "Write documentation and finalize",
+      "tasks": [
+        "Write ARCHITECTURE.md",
+        "Write README.md",
+        "Write JOBS_TO_BE_DONE.md",
+        "Write UX_PRINCIPLES.md",
+        "Create memory files for agent context",
+        "E2E testing with live LLM",
+        "Error handling refinement"
+      ]
+    }
+  },
+  "github_epic": {
+    "title": "Web UI Agent for Natural Language App Deployment",
+    "labels": ["epic", "feature", "agent", "deep-agent"],
+    "milestone": "v2.0",
+    "issues": [
+      {
+        "number": 1,
+        "title": "feat(agent): Create violet-app-agent package structure",
+        "type": "feature",
+        "phase": "1_foundation",
+        "priority": "P0",
+        "estimate": "2h"
+      },
+      {
+        "number": 2,
+        "title": "feat(agent): Write system prompts for Violet App Builder",
+        "type": "feature",
+        "phase": "1_foundation",
+        "priority": "P0",
+        "estimate": "3h"
+      },
+      {
+        "number": 3,
+        "title": "feat(agent): Implement diagnostic and specification tools",
+        "type": "feature",
+        "phase": "1_foundation",
+        "priority": "P0",
+        "estimate": "4h"
+      },
+      {
+        "number": 4,
+        "title": "feat(api): Create subdomain management API endpoint",
+        "type": "feature",
+        "phase": "2_rails_api",
+        "priority": "P0",
+        "estimate": "3h"
+      },
+      {
+        "number": 5,
+        "title": "feat(api): Create namespace management API endpoint",
+        "type": "feature",
+        "phase": "2_rails_api",
+        "priority": "P0",
+        "estimate": "3h"
+      },
+      {
+        "number": 6,
+        "title": "feat(api): Create CMS pages API endpoint",
+        "type": "feature",
+        "phase": "2_rails_api",
+        "priority": "P1",
+        "estimate": "2h"
+      },
+      {
+        "number": 7,
+        "title": "feat(agent): Implement subdomain and namespace creation tools",
+        "type": "feature",
+        "phase": "3_agent_tools",
+        "priority": "P0",
+        "estimate": "4h"
+      },
+      {
+        "number": 8,
+        "title": "feat(agent): Implement CMS and GitHub tools",
+        "type": "feature",
+        "phase": "3_agent_tools",
+        "priority": "P1",
+        "estimate": "4h"
+      },
+      {
+        "number": 9,
+        "title": "feat(agent): Implement architect and CMS designer subagents",
+        "type": "feature",
+        "phase": "4_subagents",
+        "priority": "P1",
+        "estimate": "3h"
+      },
+      {
+        "number": 10,
+        "title": "feat(agent): Implement deployer and security subagents",
+        "type": "feature",
+        "phase": "4_subagents",
+        "priority": "P2",
+        "estimate": "3h"
+      },
+      {
+        "number": 11,
+        "title": "docs: Write agent documentation and memory files",
+        "type": "docs",
+        "phase": "5_documentation",
+        "priority": "P1",
+        "estimate": "4h"
+      },
+      {
+        "number": 12,
+        "title": "test: E2E testing and error handling refinement",
+        "type": "test",
+        "phase": "5_documentation",
+        "priority": "P1",
+        "estimate": "4h"
+      }
+    ]
+  },
+  "references": {
+    "priw_agent": "/Users/shambhavi/Documents/projects/priw",
+    "trace_mineral_agent": "/Users/shambhavi/Documents/projects/trace-mineral-agent",
+    "violet_rails": "/Users/shambhavi/Documents/projects/violet_rails",
+    "subdomain_model": "app/models/subdomain.rb",
+    "api_namespace_model": "app/models/api_namespace.rb",
+    "existing_api": "app/controllers/api/base_controller.rb"
+  },
+  "success_metrics": {
+    "time_to_working_app": "<15 minutes",
+    "specification_accuracy": ">90%",
+    "creation_success_rate": ">95%",
+    "user_satisfaction": ">4.5/5"
+  }
+}
