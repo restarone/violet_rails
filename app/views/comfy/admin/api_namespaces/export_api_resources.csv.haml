@@ -24,7 +24,7 @@
     - if non_primitive_property.present? && non_primitive_property.richtext?
       - row_data << non_primitive_property.content.to_s
     - elsif non_primitive_property.present? && non_primitive_property.file?
-      - row_data << (non_primitive_property.attachment.attached? ? rails_blob_url(non_primitive_property.attachment, subdomain: Apartment::Tenant.current) : '')
+      - row_data << (non_primitive_property.attachment.attached? ? rails_blob_url(non_primitive_property.attachment) : '')
     - else
       - row_data << ''
 

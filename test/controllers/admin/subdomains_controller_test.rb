@@ -20,14 +20,13 @@ class Admin::SubdomainsControllerTest < ActionDispatch::IntegrationTest
     assert_template layout: "admin"
   end
 
-  test 'allows #index if global admin (restarone)' do
+  test 'denies #index if global admin (restarone)' do
     @restarone_user.update(global_admin: true)
     Apartment::Tenant.switch @restarone_subdomain.name do
       sign_in(@restarone_user)
       get admin_subdomains_url
-      assert_response :success
-      assert_template :index
-      assert_template layout: "admin"
+      assert flash.alert
+      assert_response :redirect
     end
   end
 
