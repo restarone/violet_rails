@@ -1,9 +1,12 @@
+def next?
+  File.basename(__FILE__) == "Gemfile.next"
+end
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-if ENV['RUBY_BUILD'] == '3.0.0'
+if ENV['RUBY_BUILD'] == '3.1.0'
   # production/bleeding-edge ruby version
-  ruby '3.0.0'
+  ruby '3.1.7'
 elsif ENV['RUBY_BUILD'] == '2.7.8'
   # development/develop ruby version
   ruby '2.7.8'
@@ -13,15 +16,32 @@ else
 end
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails', branch: 'main'
-gem 'rails', '~> 6.1.5'
+if next?
+  gem 'rails', '~> 7.0.0'
+else
+  gem 'rails', '~> 6.1.5'
+end
 # Use postgresql as the database for Active Record
 gem 'pg', '~> 1.1'
 # Use Puma as the app server
-gem 'puma', '~> 5.6'
+if next?
+  gem 'puma', '~> 5.6'
+else
+  gem 'puma', '~> 5.6'
+end
 # Use SCSS for stylesheets
-gem 'sass-rails', '>= 6'
+if next?
+  gem 'sassc-rails', '>= 2.1.1'
+else
+  gem 'sass-rails', '>= 6'
+end
 # Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
-gem 'webpacker', '~> 5.0'
+if next?
+  # Use jsbundling-rails for Rails 7
+  gem 'jsbundling-rails'
+else
+  gem 'webpacker', '~> 5.0'
+end
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.7'
 # Use Redis adapter to run Action Cable in production
@@ -32,7 +52,11 @@ gem 'jbuilder', '~> 2.7'
 # Use Active Storage variant
 gem 'image_processing', '~> 1.12'
 
-gem 'ros-apartment', require: 'apartment'
+if next?
+  gem 'ros-apartment', '~> 3.0', require: 'apartment'
+else
+  gem 'ros-apartment', require: 'apartment'
+end
 gem 'ros-apartment-sidekiq', require: 'apartment-sidekiq'
 gem 'apartment-activejob'
 gem 'devise'
@@ -43,7 +67,11 @@ gem 'gravatar_image_tag'
 gem 'wicked' # for multi-step forms
 gem 'devise_invitable'
 gem "aws-sdk-s3", require: false
-gem 'meta-tags'
+if next?
+  gem 'meta-tags', '~> 2.20'
+else
+  gem 'meta-tags'
+end
 gem 'sitemap_generator'
 gem 'ahoy_matey'
 gem 'ransack'
@@ -119,7 +147,11 @@ gem "exception_notification", "~> 4.5"
 
 gem "turnout", "~> 2.5"
 
-gem "turbo-rails", "~> 1.1"
+if next?
+  gem "turbo-rails", "~> 2.0"
+else
+  gem "turbo-rails", "~> 1.1"
+end
 
 gem "redis-namespace", "~> 1.8"
 
