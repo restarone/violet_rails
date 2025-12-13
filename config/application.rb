@@ -8,11 +8,9 @@ Bundler.require(*Rails.groups)
 
 module RSolutions
   class Application < Rails::Application
-    # Ensuring that ActiveStorage routes are loaded before Comfy's globbing
-    # route. Without this file serving routes are inaccessible.
-    config.railties_order = [ActiveStorage::Engine, :main_app, :all]
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.1
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
@@ -20,14 +18,5 @@ module RSolutions
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
-
-    # The default locale is :en (english) and all translations from config/locales/*.rb,yml are auto loaded.
-    config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
-    config.i18n.default_locale = :en
-    config.i18n.available_locales = [:en]
-    config.i18n.fallbacks = [:en]
-
-    # since web console usage depends on subdomain rules
-    config.web_console.development_only = false
   end
 end
