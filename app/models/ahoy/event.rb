@@ -107,9 +107,11 @@ class Ahoy::Event < ApplicationRecord
 
         { success: true, message: message }
       end
-    rescue => e
+    rescue ActiveRecord::StatementInvalid => e
       error_message = delete_events ? "Deleting specific events failed due to: #{e.message}" : "Deleting associated visits of specific events failed due to: #{e.message}"
-
+      { success: false, message: "Database Error: #{e.message}" }
+    rescue StandardError => e
+      error_message = delete_events ? "Deleting specific events failed due to: #{e.message}" : "Deleting associated visits of specific events failed due to: #{e.message}"
       { success: false, message: e.message }
     end
   end

@@ -212,14 +212,15 @@ class ApiNamespace < ApplicationRecord
               new_executed_api_action.save!
             end
           end
-        end
+end
 
         { success: true, data: new_api_namespace }
       end
-    rescue => e
+    rescue ActiveRecord::RecordInvalid => e
+      { success: false, message: "Validation Error: #{e.message}" }
+    rescue StandardError => e
       { success: false, message: e.message }
     end
-  end
 
   def export_as_json(include_associations: false)
     if include_associations
@@ -355,7 +356,11 @@ class ApiNamespace < ApplicationRecord
 
         { success: true, data: new_api_namespace }
       end
-    rescue => e
+    rescue ActiveRecord::RecordInvalid => e
+      { success: false, message: "Validation Error: #{e.message}" }
+    rescue JSON::ParserError => e
+      { success: false, message: "JSON Parse Error: #{e.message}" }
+    rescue StandardError => e
       { success: false, message: e.message }
     end
   end
