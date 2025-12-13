@@ -110,7 +110,10 @@ class ApiAction < ApplicationRecord
     begin
       ApiActionMailer.send_email(self).deliver_now
       self.update(lifecycle_stage: 'complete', lifecycle_message: email)
-    rescue Exception => e
+    rescue Net::SMTPSyntaxError, Net::SMTPFatalError, Net::SMTPServerBusy => e
+      execute_error_actions("SMTP Error: #{e.message}") if run_error_action
+      raise
+    rescue StandardError => e
       execute_error_actions(e.message) if run_error_action
       raise
     end
@@ -125,8 +128,11 @@ class ApiAction < ApplicationRecord
       else
         execute_error_actions(response.to_s)
       end 
-    rescue => e
-      execute_error_actions(e.message) if run_error_action 
+    rescue HTTParty::Error, SocketError => e
+      execute_error_actions("HTTP Error: #{e.message}") if run_error_action 
+      raise
+    rescue StandardError => e
+      execute_error_actions(e.message) if run_error_action
       raise
     end
   end
@@ -139,7 +145,10 @@ class ApiAction < ApplicationRecord
       response = custom_api_action.run_custom_action(api_action: self, api_namespace: self.api_resource&.api_namespace, api_resource: self.api_resource, current_visit: Current.visit, current_user: Current.user)
 
       self.update(lifecycle_stage: 'complete', lifecycle_message: response.to_json)
-    rescue => e
+    rescue NameError, NoMethodError => e
+      execute_error_actions("Custom Action Error: #{e.message}") if run_error_action
+      raise
+    rescue StandardError => e
       execute_error_actions(e.message) if run_error_action
       raise
     end
