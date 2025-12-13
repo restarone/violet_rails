@@ -146,7 +146,7 @@ class ApiNamespace < ApplicationRecord
   end
 
   def rerun_api_actions
-    executed_api_actions.where(lifecycle_stage: 'failed').each(&:execute_action)
+    executed_api_actions.where(lifecycle_stage: 'failed').find_each(&:execute_action)
   end
 
   def discard_failed_actions
