@@ -139,6 +139,19 @@ Rails.application.routes.draw do
       end
     end
     resources :subdomains
+
+    # Creator Legal Review Agent - AI-powered contract analysis for creators
+    resources :creator_legal_reviews do
+      collection do
+        get 'analytics'
+      end
+      member do
+        post 'analyze'
+        post 'approve'
+        post 'escalate'
+        post 'add_notes'
+      end
+    end
   end
 
   

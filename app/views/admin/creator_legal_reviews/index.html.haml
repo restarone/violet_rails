@@ -1,0 +1,90 @@
+.container-fluid
+  .row.mb-4
+    .col-12
+      .d-flex.justify-content-between.align-items-center
+        %h1 Creator Legal Reviews
+        = link_to 'New Review', new_admin_creator_legal_review_path, class: 'btn btn-primary'
+
+  .row.mb-4
+    .col-12
+      .card
+        .card-header
+          %h5 Filters
+        .card-body
+          = form_tag admin_creator_legal_reviews_path, method: :get, class: 'd-flex flex-wrap gap-3' do
+            .form-group
+              = label_tag :domain, 'Domain Type'
+              = select_tag :domain, options_for_select([['All', '']] + CreatorLegalReview::DOMAIN_TYPES.map { |k, v| [v[:name], k] }, params[:domain]), class: 'form-control'
+            .form-group
+              = label_tag :status, 'Status'
+              = select_tag :status, options_for_select([['All', ''], ['Pending', 'pending'], ['Analyzing', 'analyzing'], ['Reviewed', 'reviewed'], ['Escalated', 'escalated'], ['Completed', 'completed']], params[:status]), class: 'form-control'
+            .form-group.d-flex.align-items-end
+              .form-check.mr-3
+                = check_box_tag :needs_review, 'true', params[:needs_review] == 'true', class: 'form-check-input'
+                = label_tag :needs_review, 'Needs Human Review', class: 'form-check-label'
+            .form-group.d-flex.align-items-end
+              .form-check.mr-3
+                = check_box_tag :high_risk, 'true', params[:high_risk] == 'true', class: 'form-check-input'
+                = label_tag :high_risk, 'High Risk Only', class: 'form-check-label'
+            .form-group.d-flex.align-items-end
+              = submit_tag 'Filter', class: 'btn btn-secondary'
+              = link_to 'Clear', admin_creator_legal_reviews_path, class: 'btn btn-outline-secondary ml-2'
+
+  .row.mb-4
+    .col-12
+      = link_to 'View Analytics Dashboard', analytics_admin_creator_legal_reviews_path, class: 'btn btn-info'
+
+  .row
+    .col-12
+      - if @reviews.any?
+        .table-responsive
+          %table.table.table-hover
+            %thead.thead-light
+              %tr
+                %th Title
+                %th Domain
+                %th Creator
+                %th Status
+                %th Risk
+                %th Quality
+                %th Created
+                %th Actions
+            %tbody
+              - @reviews.each do |review|
+                %tr{ class: review.needs_human_review? ? 'table-warning' : '' }
+                  %td
+                    = link_to review.title, admin_creator_legal_review_path(review)
+                  %td
+                    %span.badge.badge-secondary= review.domain_config[:name]
+                  %td
+                    = review.creator_name || review.creator_email || 'N/A'
+                  %td
+                    - status_class = case review.status
+                    - when 'pending' then 'badge-secondary'
+                    - when 'analyzing' then 'badge-info'
+                    - when 'reviewed' then 'badge-success'
+                    - when 'escalated' then 'badge-warning'
+                    - when 'completed' then 'badge-primary'
+                    - else 'badge-light'
+                    %span.badge{ class: status_class }= review.status.humanize
+                  %td
+                    - if review.overall_risk_score
+                      %span{ title: review.risk_label }= "#{review.risk_emoji} #{review.overall_risk_score}/10"
+                    - else
+                      %span.text-muted Not assessed
+                  %td
+                    - if review.composite_score
+                      = "#{review.composite_score}/10"
+                      %small.text-muted= "(#{review.quality_status})"
+                    - else
+                      %span.text-muted N/A
+                  %td
+                    = review.created_at.strftime('%Y-%m-%d %H:%M')
+                  %td
+                    .btn-group.btn-group-sm
+                      = link_to 'View', admin_creator_legal_review_path(review), class: 'btn btn-outline-primary'
+                      - if review.status == 'pending' && review.document_text.present?
+                        = link_to 'Analyze', analyze_admin_creator_legal_review_path(review), method: :post, class: 'btn btn-outline-success'
+      - else
+        .alert.alert-info
+          No reviews found. Create your first legal review to get started.

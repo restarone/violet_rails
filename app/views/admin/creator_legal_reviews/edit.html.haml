@@ -1,0 +1,70 @@
+.container-fluid
+  .row.mb-4
+    .col-12
+      = link_to '&larr; Back to Review'.html_safe, admin_creator_legal_review_path(@review), class: 'btn btn-outline-secondary mb-3'
+      %h1 Edit Legal Review
+
+  .row
+    .col-md-8
+      .card
+        .card-header
+          %h5 Edit Review: #{@review.title}
+        .card-body
+          = form_for @review, url: admin_creator_legal_review_path(@review), method: :patch, html: { class: 'needs-validation' } do |f|
+            .form-group
+              = f.label :title, 'Review Title *'
+              = f.text_field :title, class: 'form-control', required: true
+
+            .form-group
+              = f.label :domain_type, 'Domain Type *'
+              = f.select :domain_type, CreatorLegalReview::DOMAIN_TYPES.map { |k, v| [v[:name], k] }, {}, class: 'form-control', required: true
+
+            %hr
+
+            %h6 Creator Information
+            .row
+              .col-md-6
+                .form-group
+                  = f.label :creator_name, 'Creator Name'
+                  = f.text_field :creator_name, class: 'form-control'
+              .col-md-6
+                .form-group
+                  = f.label :creator_email, 'Creator Email'
+                  = f.email_field :creator_email, class: 'form-control'
+
+            %hr
+
+            %h6 Document Text
+            .form-group
+              = f.label :document_text, 'Document Text'
+              = f.text_area :document_text, class: 'form-control', rows: 15
+              %small.form-text.text-muted
+                Edit the extracted document text if needed before re-analysis
+
+            %hr
+
+            %h6 Reviewer Notes
+            .form-group
+              = f.label :reviewer_notes, 'Notes'
+              = f.text_area :reviewer_notes, class: 'form-control', rows: 5
+
+            %hr
+
+            .form-group
+              = f.submit 'Update Review', class: 'btn btn-primary btn-lg'
+              = link_to 'Cancel', admin_creator_legal_review_path(@review), class: 'btn btn-outline-secondary btn-lg ml-2'
+
+    .col-md-4
+      .card.mb-4
+        .card-header
+          %h5 Current Status
+        .card-body
+          %dl
+            %dt Status
+            %dd= @review.status.humanize
+            %dt Domain
+            %dd= @review.domain_config[:name]
+            %dt Risk Score
+            %dd= @review.overall_risk_score ? "#{@review.overall_risk_score}/10" : 'Not assessed'
+            %dt Created
+            %dd= @review.created_at.strftime('%Y-%m-%d %H:%M')

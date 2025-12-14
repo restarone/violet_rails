@@ -140,3 +140,7 @@ gem "rqrcode", "~> 2.2"
 
 gem "puppeteer-ruby", "~> 0.45.6"
 
+# Creator Legal Review Agent - AI integration
+gem "pdf-reader", "~> 2.11" # For parsing PDF contracts
+gem "docx", "~> 0.8"        # For parsing DOCX contracts
+

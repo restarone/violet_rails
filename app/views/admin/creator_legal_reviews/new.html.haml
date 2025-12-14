@@ -1,0 +1,85 @@
+.container-fluid
+  .row.mb-4
+    .col-12
+      = link_to '&larr; Back to Reviews'.html_safe, admin_creator_legal_reviews_path, class: 'btn btn-outline-secondary mb-3'
+      %h1 New Legal Review
+
+  .row
+    .col-md-8
+      .card
+        .card-header
+          %h5 Create New Legal Review
+        .card-body
+          = form_for @review, url: admin_creator_legal_reviews_path, html: { multipart: true, class: 'needs-validation' } do |f|
+            .form-group
+              = f.label :title, 'Review Title *'
+              = f.text_field :title, class: 'form-control', required: true, placeholder: 'e.g., Nike Brand Deal Q1 2024'
+
+            .form-group
+              = f.label :domain_type, 'Domain Type *'
+              = f.select :domain_type, CreatorLegalReview::DOMAIN_TYPES.map { |k, v| [v[:name], k] }, { prompt: 'Select domain type...' }, class: 'form-control', required: true
+
+            %hr
+
+            %h6 Creator Information
+            .row
+              .col-md-6
+                .form-group
+                  = f.label :creator_name, 'Creator Name'
+                  = f.text_field :creator_name, class: 'form-control', placeholder: 'Full name'
+              .col-md-6
+                .form-group
+                  = f.label :creator_email, 'Creator Email'
+                  = f.email_field :creator_email, class: 'form-control', placeholder: 'email@example.com'
+
+            .form-group
+              %label Creator Context (JSON)
+              %textarea.form-control{ name: 'creator_legal_review[creator_context]', rows: 4, placeholder: '{"follower_count": 250000, "platform": "Instagram", "niche": "Fitness", "previous_deals": 5}' }
+              %small.form-text.text-muted
+                Optional: Provide additional context about the creator as JSON
+
+            %hr
+
+            %h6 Document
+            .form-group
+              %label Upload Contract Document
+              %input.form-control-file{ type: 'file', name: 'document', accept: '.pdf,.docx,.txt' }
+              %small.form-text.text-muted
+                Accepted formats: PDF, DOCX, TXT
+
+            .form-group
+              = f.label :document_text, 'Or Paste Document Text'
+              = f.text_area :document_text, class: 'form-control', rows: 10, placeholder: 'Paste the contract text here if you cannot upload a file...'
+              %small.form-text.text-muted
+                You can either upload a document or paste the text directly
+
+            %hr
+
+            .form-group
+              = f.submit 'Create Review', class: 'btn btn-primary btn-lg'
+              = link_to 'Cancel', admin_creator_legal_reviews_path, class: 'btn btn-outline-secondary btn-lg ml-2'
+
+    .col-md-4
+      .card.mb-4
+        .card-header
+          %h5 Domain Types Guide
+        .card-body
+          %dl
+            - CreatorLegalReview::DOMAIN_TYPES.each do |key, config|
+              %dt
+                %strong= config[:name]
+              %dd
+                = config[:description]
+                %br
+                %small.text-muted
+                  Complexity: #{config[:legal_complexity].humanize}
+
+      .card
+        .card-header
+          %h5 Tips
+        .card-body
+          %ul.mb-0
+            %li Upload the original contract document for best results
+            %li Include creator context for more personalized analysis
+            %li The AI will extract terms, identify risks, and suggest negotiation points
+            %li High-risk reviews will be flagged for human review

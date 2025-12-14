@@ -1,0 +1,22 @@
+{
+  "name": "creator-legal-review-e2e",
+  "version": "1.0.0",
+  "description": "End-to-end tests for Creator Legal Review Agent",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright show-report",
+    "test:brand-deals": "playwright test --grep 'Brand Deal'",
+    "test:mcn": "playwright test --grep 'MCN'",
+    "test:business": "playwright test --grep 'Business Formation'",
+    "test:merchandise": "playwright test --grep 'Merchandise'",
+    "test:team-hire": "playwright test --grep 'Team Hire'",
+    "test:jtbd": "playwright test --grep 'JTBD'"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.10.0"
+  }
+}
