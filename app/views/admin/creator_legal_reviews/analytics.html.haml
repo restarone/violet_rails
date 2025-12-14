@@ -1,0 +1,159 @@
+.container-fluid
+  .row.mb-4
+    .col-12
+      = link_to '&larr; Back to Reviews'.html_safe, admin_creator_legal_reviews_path, class: 'btn btn-outline-secondary mb-3'
+      %h1 Legal Review Analytics Dashboard
+
+  / Key Metrics
+  .row.mb-4
+    .col-md-3
+      .card.text-white.bg-primary
+        .card-body
+          %h2.card-title= @total_reviews
+          %p.card-text Total Reviews
+    .col-md-3
+      .card.text-white.bg-warning
+        .card-body
+          %h2.card-title= "#{@escalation_rate}%"
+          %p.card-text Escalation Rate
+    .col-md-3
+      .card.text-white.bg-success
+        .card-body
+          %h2.card-title= @quality_breakdown[:production_ready]
+          %p.card-text Production Ready
+    .col-md-3
+      .card.text-white.bg-danger
+        .card-body
+          %h2.card-title= @quality_breakdown[:not_acceptable]
+          %p.card-text Not Acceptable
+
+  .row.mb-4
+    / Reviews by Domain
+    .col-md-6
+      .card
+        .card-header
+          %h5 Reviews by Domain
+        .card-body
+          - if @reviews_by_domain.any?
+            %table.table
+              %thead
+                %tr
+                  %th Domain
+                  %th Count
+                  %th Avg Risk
+              %tbody
+                - @reviews_by_domain.each do |domain, count|
+                  %tr
+                    %td= CreatorLegalReview::DOMAIN_TYPES[domain.to_sym]&.dig(:name) || domain.humanize
+                    %td= count
+                    %td= @average_risk_by_domain[domain] ? "#{@average_risk_by_domain[domain].round(1)}/10" : 'N/A'
+          - else
+            %p.text-muted No data yet
+
+    / Reviews by Status
+    .col-md-6
+      .card
+        .card-header
+          %h5 Reviews by Status
+        .card-body
+          - if @reviews_by_status.any?
+            %table.table
+              %thead
+                %tr
+                  %th Status
+                  %th Count
+                  %th Percentage
+              %tbody
+                - @reviews_by_status.each do |status, count|
+                  %tr
+                    %td
+                      - status_class = case status
+                      - when 'pending' then 'badge-secondary'
+                      - when 'analyzing' then 'badge-info'
+                      - when 'reviewed' then 'badge-success'
+                      - when 'escalated' then 'badge-warning'
+                      - when 'completed' then 'badge-primary'
+                      - else 'badge-light'
+                      %span.badge{ class: status_class }= status.humanize
+                    %td= count
+                    %td= "#{(@total_reviews > 0 ? (count.to_f / @total_reviews * 100).round(1) : 0)}%"
+          - else
+            %p.text-muted No data yet
+
+  .row.mb-4
+    / Quality Breakdown
+    .col-md-6
+      .card
+        .card-header
+          %h5 Quality Score Distribution
+        .card-body
+          %table.table
+            %thead
+              %tr
+                %th Quality Level
+                %th Count
+                %th Threshold
+            %tbody
+              %tr.table-success
+                %td Production Ready
+                %td= @quality_breakdown[:production_ready]
+                %td >= 8.0
+              %tr.table-warning
+                %td Acceptable with Review
+                %td= @quality_breakdown[:acceptable_with_review]
+                %td 7.0 - 7.9
+              %tr.table-info
+                %td Needs Improvement
+                %td= @quality_breakdown[:needs_improvement]
+                %td 6.0 - 6.9
+              %tr.table-danger
+                %td Not Acceptable
+                %td= @quality_breakdown[:not_acceptable]
+                %td < 6.0
+
+    / Risk Distribution
+    .col-md-6
+      .card
+        .card-header
+          %h5 Risk Level Guide
+        .card-body
+          %table.table
+            %thead
+              %tr
+                %th Level
+                %th Range
+                %th Recommended Action
+            %tbody
+              - CreatorLegalReview::RISK_LEVELS.each do |_, config|
+                %tr
+                  %td= "#{config[:emoji]} #{config[:label]}"
+                  %td= "#{config[:range].min} - #{config[:range].max}"
+                  %td= config[:action]
+
+  .row
+    .col-12
+      .card
+        .card-header
+          %h5 Recent Reviews
+        .card-body
+          - if @recent_reviews.any?
+            %table.table.table-sm
+              %thead
+                %tr
+                  %th Title
+                  %th Domain
+                  %th Status
+                  %th Risk
+                  %th Quality
+                  %th Created
+              %tbody
+                - @recent_reviews.each do |review|
+                  %tr
+                    %td= link_to review.title, admin_creator_legal_review_path(review)
+                    %td= review.domain_config[:name]
+                    %td= review.status.humanize
+                    %td= review.overall_risk_score ? "#{review.risk_emoji} #{review.overall_risk_score}" : '-'
+                    %td= review.composite_score || '-'
+                    %td= review.created_at.strftime('%Y-%m-%d')
+          - else
+            %p.text-muted No reviews yet

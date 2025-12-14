@@ -1,0 +1,246 @@
+.container-fluid
+  .row.mb-4
+    .col-12
+      = link_to '&larr; Back to Reviews'.html_safe, admin_creator_legal_reviews_path, class: 'btn btn-outline-secondary mb-3'
+
+      .d-flex.justify-content-between.align-items-center
+        %h1= @review.title
+        .btn-group
+          - if @review.status == 'pending' && @review.document_text.present?
+            = link_to 'Start Analysis', analyze_admin_creator_legal_review_path(@review), method: :post, class: 'btn btn-success', data: { confirm: 'Start AI analysis? This may take a few minutes.' }
+          - if @review.status == 'reviewed'
+            = link_to 'Approve', approve_admin_creator_legal_review_path(@review), method: :post, class: 'btn btn-primary', data: { confirm: 'Approve this review?' }
+          - unless @review.status == 'escalated'
+            = link_to 'Escalate', escalate_admin_creator_legal_review_path(@review), method: :post, class: 'btn btn-warning', data: { confirm: 'Escalate for human review?' }
+          = link_to 'Edit', edit_admin_creator_legal_review_path(@review), class: 'btn btn-outline-primary'
+          = link_to 'Delete', admin_creator_legal_review_path(@review), method: :delete, class: 'btn btn-outline-danger', data: { confirm: 'Are you sure?' }
+
+  .row
+    .col-md-8
+      / Status and Risk Overview
+      .card.mb-4
+        .card-header
+          %h5 Review Status
+        .card-body
+          .row
+            .col-md-3
+              %h6 Status
+              - status_class = case @review.status
+              - when 'pending' then 'badge-secondary'
+              - when 'analyzing' then 'badge-info'
+              - when 'reviewed' then 'badge-success'
+              - when 'escalated' then 'badge-warning'
+              - when 'completed' then 'badge-primary'
+              - else 'badge-light'
+              %span.badge.badge-lg{ class: status_class }= @review.status.humanize
+            .col-md-3
+              %h6 Domain
+              %span.badge.badge-secondary= @review.domain_config[:name]
+            .col-md-3
+              %h6 Overall Risk
+              - if @review.overall_risk_score
+                %span{ style: 'font-size: 1.5em' }= @review.risk_emoji
+                %span= "#{@review.overall_risk_score}/10"
+                %br
+                %small.text-muted= @review.risk_label
+              - else
+                %span.text-muted Not assessed
+            .col-md-3
+              %h6 Quality Score
+              - if @review.composite_score
+                %span.h4= "#{@review.composite_score}/10"
+                %br
+                %small{ class: @review.production_ready? ? 'text-success' : (@review.acceptable_with_review? ? 'text-warning' : 'text-danger') }
+                  = @review.quality_status
+              - else
+                %span.text-muted Not evaluated
+
+      / Recommended Action
+      - if @review.recommended_action.present?
+        .card.mb-4
+          .card-header
+            %h5 Recommended Action
+          .card-body
+            - action_config = { 'sign_as_is' => ['success', 'Proceed with signing'], 'negotiate' => ['warning', 'Negotiate key terms before signing'], 'escalate_to_lawyer' => ['danger', 'Consult with a human lawyer'], 'walk_away' => ['dark', 'Consider declining this deal'] }
+            - config = action_config[@review.recommended_action] || ['secondary', @review.recommended_action.humanize]
+            .alert{ class: "alert-#{config[0]}" }
+              %strong= config[1]
+
+      / Plain English Summary
+      - if @review.plain_english_summary.present?
+        .card.mb-4
+          .card-header
+            %h5 Plain English Summary
+          .card-body
+            = simple_format(@review.plain_english_summary)
+
+      / Risk Scores by Category
+      - if @review.risk_scores.present? && @review.risk_scores.any?
+        .card.mb-4
+          .card-header
+            %h5 Risk Scores by Category
+          .card-body
+            .table-responsive
+              %table.table
+                %thead
+                  %tr
+                    %th Category
+                    %th Score
+                    %th Risk Level
+                %tbody
+                  - @review.risk_scores.each do |category, score|
+                    %tr
+                      %td= category.to_s.humanize
+                      %td
+                        .progress{ style: 'height: 20px; width: 200px;' }
+                          - bar_class = score.to_f <= 3 ? 'bg-success' : (score.to_f <= 5 ? 'bg-warning' : (score.to_f <= 7 ? 'bg-orange' : 'bg-danger'))
+                          .progress-bar{ class: bar_class, style: "width: #{score.to_f * 10}%", role: 'progressbar' }
+                            = "#{score}/10"
+                      %td
+                        - level = CreatorLegalReview::RISK_LEVELS.find { |_, c| c[:range].include?(score.to_f) }&.last
+                        = level ? "#{level[:emoji]} #{level[:label]}" : 'N/A'
+
+      / Negotiation Points
+      - if @review.negotiation_points.present? && @review.negotiation_points.any?
+        .card.mb-4
+          .card-header
+            %h5 Suggested Negotiation Points
+          .card-body
+            %ul.list-group
+              - @review.negotiation_points.each do |point|
+                %li.list-group-item= point
+
+      / Extracted Terms
+      - if @review.extracted_terms.present? && @review.extracted_terms.any?
+        .card.mb-4
+          .card-header
+            %h5 Extracted Terms
+          .card-body
+            %pre.bg-light.p-3{ style: 'max-height: 400px; overflow-y: auto;' }
+              = JSON.pretty_generate(@review.extracted_terms)
+
+      / Full Analysis
+      - if @review.analysis_result.present? && @review.analysis_result.any?
+        .card.mb-4
+          .card-header.d-flex.justify-content-between.align-items-center
+            %h5.mb-0 Full AI Analysis
+            %button.btn.btn-sm.btn-outline-secondary{ type: 'button', data: { toggle: 'collapse', target: '#fullAnalysis' } }
+              Toggle Details
+          .card-body.collapse#fullAnalysis
+            %pre.bg-light.p-3{ style: 'max-height: 600px; overflow-y: auto;' }
+              = JSON.pretty_generate(@review.analysis_result)
+
+      / Document Text
+      - if @review.document_text.present?
+        .card.mb-4
+          .card-header.d-flex.justify-content-between.align-items-center
+            %h5.mb-0 Original Document Text
+            %button.btn.btn-sm.btn-outline-secondary{ type: 'button', data: { toggle: 'collapse', target: '#documentText' } }
+              Toggle Document
+          .card-body.collapse#documentText
+            %pre.bg-light.p-3{ style: 'max-height: 600px; overflow-y: auto; white-space: pre-wrap;' }
+              = @review.document_text
+
+    .col-md-4
+      / Creator Info
+      .card.mb-4
+        .card-header
+          %h5 Creator Information
+        .card-body
+          %dl
+            %dt Name
+            %dd= @review.creator_name || 'N/A'
+            %dt Email
+            %dd= @review.creator_email || 'N/A'
+            - if @review.creator_context.present? && @review.creator_context.any?
+              - @review.creator_context.each do |key, value|
+                %dt= key.to_s.humanize
+                %dd= value
+
+      / Evaluation Scores
+      - if @review.evaluation_scores.present? && @review.evaluation_scores.any?
+        .card.mb-4
+          .card-header
+            %h5 Evaluation Scores
+          .card-body
+            - CreatorLegalReview::EVALUATION_DIMENSIONS.each do |dimension, config|
+              - score = @review.evaluation_scores[dimension.to_s]
+              - next unless score
+              .mb-3
+                .d-flex.justify-content-between
+                  %strong= dimension.to_s.humanize
+                  %span= "#{score}/10 (#{(config[:weight] * 100).to_i}% weight)"
+                .progress{ style: 'height: 10px;' }
+                  .progress-bar{ style: "width: #{score.to_f * 10}%", role: 'progressbar' }
+                %small.text-muted= config[:description]
+
+      / Document Info
+      .card.mb-4
+        .card-header
+          %h5 Document Information
+        .card-body
+          - if @review.original_document.attached?
+            %p
+              %strong Original File:
+              = @review.document_metadata['original_filename']
+            %p
+              %strong Type:
+              = @review.document_metadata['content_type']
+            %p
+              %strong Size:
+              = number_to_human_size(@review.document_metadata['size'])
+            = link_to 'Download Original', rails_blob_path(@review.original_document, disposition: 'attachment'), class: 'btn btn-sm btn-outline-primary'
+          - else
+            %p.text-muted No document attached
+
+      / Review Notes
+      .card.mb-4
+        .card-header
+          %h5 Reviewer Notes
+        .card-body
+          - if @review.reviewer_notes.present?
+            = simple_format(@review.reviewer_notes)
+            %hr
+            %small.text-muted
+              Reviewed by User ##{@review.reviewed_by_user_id} on #{@review.reviewed_at&.strftime('%Y-%m-%d %H:%M')}
+          - else
+            %p.text-muted No notes yet
+          %hr
+          = form_tag add_notes_admin_creator_legal_review_path(@review), method: :post do
+            .form-group
+              = text_area_tag :notes, '', class: 'form-control', rows: 3, placeholder: 'Add reviewer notes...'
+            = submit_tag 'Add Notes', class: 'btn btn-sm btn-primary'
+
+      / Escalation Info
+      - if @review.escalation_reason.present?
+        .card.mb-4.border-warning
+          .card-header.bg-warning
+            %h5.mb-0 Escalation Reason
+          .card-body
+            = @review.escalation_reason
+
+      / AI Processing Info
+      .card.mb-4
+        .card-header
+          %h5 Processing Details
+        .card-body
+          %dl
+            %dt Model Used
+            %dd= @review.ai_model_used || 'N/A'
+            %dt Processing Time
+            %dd= @review.processing_time_ms ? "#{@review.processing_time_ms}ms" : 'N/A'
+            %dt Created
+            %dd= @review.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            %dt Updated
+            %dd= @review.updated_at.strftime('%Y-%m-%d %H:%M:%S')
+
+      / AI Conversation Log
+      - if @review.ai_conversation_log.present? && @review.ai_conversation_log.any?
+        .card.mb-4
+          .card-header.d-flex.justify-content-between.align-items-center
+            %h5.mb-0 AI Conversation Log
+            %button.btn.btn-sm.btn-outline-secondary{ type: 'button', data: { toggle: 'collapse', target: '#conversationLog' } }
+              Toggle Log
+          .card-body.collapse#conversationLog
+            %pre.bg-light.p-3{ style: 'max-height: 400px; overflow-y: auto; font-size: 0.75em;' }
+              = JSON.pretty_generate(@review.ai_conversation_log)
