@@ -7,7 +7,7 @@
       <% tracking_link = "#{root_url(subdomain: @subdomain.subdomain_name)}email_tracking/open/?emails=#{@recipients.join(',')}&message_id=#{@message.id}&email_uuid=#{@message.email_message_id}" %>
       <img src='<%= tracking_link %>' width="1" height="1">
     <% end %>
-    <%= @message.content %>
+    <%= render_email_content(@message).html_safe %>
     <% if @subdomain.email_signature.present? %>
       <div style="margin-top: 20px">
         <%= @subdomain.email_signature %>

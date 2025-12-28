@@ -9,17 +9,19 @@
   = render partial: 'messages/form', locals: { f: f, render_submit: true }
 - @message_thread.messages.each do |message|
   .card.my-3
-    .card-body 
+    .card-body
       .card-subtitle.mb-2.text-muted
         = message.from
       - if !message.from && Subdomain.current.track_email_opens
         .card-subtitle.mb-2.text-muted
           = message.opened ? 'opened' : 'not opened yet'
       .card-text.bg-light.px-2.py-3
-        = message.content
+        = render_email_content(message)
       - if message.attachments.any?
         .card-text.bg-dark.px-2.py-3.text-white
           Attachments
           %ul{class: 'list-group'}
             - message.attachments.each do |attachment|
               = link_to attachment.filename, rails_blob_path(attachment, disposition: 'attachment')
+
+
