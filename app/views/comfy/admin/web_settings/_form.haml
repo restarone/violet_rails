@@ -204,6 +204,24 @@
 .card.mt-5
   .card-header
     %strong
+      Custom shortcuts
+  .card-body
+    .form-group
+      %label
+        Define labels and paths (relative path, eg: foobuilder => /foo )
+      .d-block
+        - Subdomain.current.shortcuts.each do |shortcut|
+          = f.fields_for :shortcuts, shortcut do |shortcut_subform|
+            = shortcut_subform.text_field :name, placeholder: 'name'
+            = shortcut_subform.text_field :path, placeholder: 'path'
+      .d-block
+        = f.fields_for :shortcut, Subdomain.current.shortcuts.build do |shortcut_subform|
+          = shortcut_subform.text_field :name, placeholder: 'name'
+          = shortcut_subform.text_field :path, placeholder: 'path'
+
+.card.mt-5
+  .card-header
+    %strong
       Maintenance
   .card-body
     .form-group

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_11_23_170133) do
+ActiveRecord::Schema.define(version: 2025_11_24_220144) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -554,6 +554,16 @@ ActiveRecord::Schema.define(version: 2025_11_23_170133) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "shortcuts", force: :cascade do |t|
+    t.string "path"
+    t.string "name"
+    t.string "slug"
+    t.bigint "subdomain_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["subdomain_id"], name: "index_shortcuts_on_subdomain_id"
+  end
+
   create_table "subdomain_requests", force: :cascade do |t|
     t.string "subdomain_name"
     t.string "email"
@@ -698,5 +708,6 @@ ActiveRecord::Schema.define(version: 2025_11_23_170133) do
   add_foreign_key "messages", "message_threads"
   add_foreign_key "non_primitive_properties", "api_namespaces"
   add_foreign_key "non_primitive_properties", "api_resources"
+  add_foreign_key "shortcuts", "subdomains"
   add_foreign_key "webhook_verification_methods", "external_api_clients"
 end
