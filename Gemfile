@@ -140,3 +140,5 @@ gem "rqrcode", "~> 2.2"
 
 gem "puppeteer-ruby", "~> 0.45.6"
 
+
+gem "reversed", "~> 0.4.2"

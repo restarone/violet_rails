@@ -40,7 +40,9 @@ class ApplicationController < ActionController::Base
   def prepare_exception_notifier
     request.env["exception_notifier.exception_data"] = {
       current_user: current_user,
-      current_visit: current_visit
+      current_visit: current_visit,
+      ip_reverse_lookup_domain: Reversed.lookup(request.ip),
+      client_cookies_accepted: cookies[:cookies_accepted],
     }
   end
 
