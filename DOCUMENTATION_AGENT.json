@@ -1,0 +1,391 @@
+{
+  "project": {
+    "name": "Violet Rails",
+    "type": "multi-tenant SaaS platform",
+    "framework": "Ruby on Rails 6.1.5",
+    "architecture": "Docker-based development with PostgreSQL multi-tenancy"
+  },
+  
+  "dependencies": {
+    "ruby": {
+      "current": "2.6.6 (stable), 2.7.8 (dev), 3.0.0 (production)",
+      "latest_stable": "3.2.3 (LTS)",
+      "breaking_changes": {
+        "2.6_to_3.0": "Keyword argument delegation changes, constant assignment order changes, find pattern no longer experimental",
+        "3.0_to_3.2": "Anonymous rest/keyword arguments, constant assignment evaluation consistency, YJIT performance improvements"
+      },
+      "core_gems": {
+        "rails": {
+          "current": "6.1.5",
+          "latest_stable": "7.1.5",
+          "breaking_changes": {
+            "6_to_7": "Sprockets now optional, webpacker default changes, Zeitwerk auto-loading, encrypted credentials changes, stimulus/turbo defaults"
+          }
+        },
+        "pg": {
+          "current": "1.1+", 
+          "latest_stable": "1.5+",
+          "breaking_changes": "JSON operators, MERGE command, logical replication improvements, performance enhancements"
+        },
+        "puma": "5.6+",
+        "webpacker": "5.0",
+        "sass-rails": "6+",
+        "jbuilder": "2.7+"
+      },
+      "multi_tenancy": {
+        "ros-apartment": "PostgreSQL schema-based multi-tenancy",
+        "ros-apartment-sidekiq": "Multi-tenant background jobs",
+        "apartment-activejob": "ActiveJob integration"
+      },
+      "authentication": {
+        "devise": "User authentication",
+        "devise_invitable": "User invitations",
+        "devise-two-factor": "Two-factor authentication"
+      },
+      "cms_engines": {
+        "comfortable_mexican_sofa": "Content management system",
+        "comfy_blog": "Blogging functionality",
+        "simple_discussion": "Forum/community features"
+      },
+      "frontend": {
+        "bootstrap": "4.6.0 - CSS framework",
+        "jquery": "3.6.0 - JavaScript library",
+        "chart.js": "3.3.0 - Data visualization",
+        "stimulus": "3.2.1 - JavaScript framework"
+      },
+      "utilities": {
+        "ahoy_matey": "Analytics and tracking",
+        "ransack": "Search functionality",
+        "will_paginate": "Pagination",
+        "friendly_id": "Sluggable URLs",
+        "httparty": "HTTP client"
+      }
+    },
+    "node": {
+      "current": "16.x || 14.x || 10.x",
+      "latest_stable": "20.18.0 (LTS)",
+      "package_manager": "yarn 1.22.x",
+      "breaking_changes": {
+        "16_to_18": "OpenSSL 3.x upgrade, global fetch() experimental, stricter crypto behaviors",
+        "18_to_20": "Built-in fetch() stable, updated V8 engine, stricter ES modules, enhanced permission model"
+      },
+      "core_packages": {
+        "@rails/webpacker": {
+          "current": "5.2.1",
+          "latest_stable": "5.4.4",
+          "notes": "Consider migrating to esbuild or vite for better performance"
+        },
+        "@hotwired/turbo-rails": {
+          "current": "7.1.3", 
+          "latest_stable": "8.0.5",
+          "breaking_changes": "Frame element changes, stream source modifications"
+        },
+        "bootstrap": {
+          "current": "4.6.0",
+          "latest_stable": "5.3.3",
+          "breaking_changes": {
+            "4_to_5": "Dropped jQuery dependency, requires Popper.js v2, vanilla JavaScript, no IE support, new CSS variables, built-in icons"
+          }
+        },
+        "chart.js": {
+          "current": "3.3.0",
+          "latest_stable": "4.4.2"
+        },
+        "jquery": {
+          "current": "3.6.0",
+          "latest_stable": "4.0.0",
+          "breaking_changes": {
+            "3_to_4": "Removed auto-execution of scripts without dataType, script tags for all async requests, toggleClass signature changes"
+          }
+        },
+        "stimulus": {
+          "current": "3.2.1",
+          "latest_stable": "3.2.2"
+        }
+      }
+    },
+    "infrastructure": {
+      "docker": {
+        "current": "v1 (docker-compose.yml)",
+        "latest_stable": "v5 (docker compose)",
+        "breaking_changes": {
+          "v1_to_v2": "Command syntax change (docker-compose -> docker compose), buildkit integration, new compose file format"
+        },
+        "app_container": "solutions_app - Rails application",
+        "db_container": "solutions_db - PostgreSQL 12.5",
+        "redis_container": "solutions_redis - Redis 4.0",
+        "sidekiq_container": "solutions_sidekiq - Background jobs",
+        "nginx_container": "nginx - Load balancer",
+        "mailcatcher_container": "mailcatcher - Email testing"
+      },
+      "databases": {
+        "postgresql": {
+          "current": "12.5-alpine",
+          "latest_stable": "15.8",
+          "breaking_changes": {
+            "12_to_15": "MERGE command, logical replication enhancements, zstd compression, structured logging, performance improvements"
+          }
+        },
+        "redis": {
+          "current": "4.0-alpine",
+          "latest_stable": "7.4.0",
+          "breaking_changes": {
+            "4_to_7": "ACL changes, Redis functions breaking changes, memory leak fixes, new data structures"
+          }
+        }
+      }
+    }
+  },
+
+  "development_tools": {
+    "bash_commands": {
+      "container_management": {
+        "start_all": "docker-compose up",
+        "stop_all": "docker-compose down",
+        "build_containers": "docker-compose build",
+        "rebuild_app": "docker-compose build solutions_app",
+        "attach_app": "docker attach solutions_app",
+        "view_logs": {
+          "app": "docker-compose logs solutions_app",
+          "db": "docker-compose logs solutions_db",
+          "redis": "docker-compose logs solutions_redis",
+          "sidekiq": "docker-compose logs solutions_sidekiq"
+        }
+      },
+      "database_operations": {
+        "create_db": "docker-compose run --rm solutions_app rails db:create",
+        "migrate": "docker-compose run --rm solutions_app rails db:migrate",
+        "rollback": "docker-compose run --rm solutions_app rails db:rollback",
+        "reset": "docker-compose run --rm solutions_app rails db:reset",
+        "seed": "docker-compose run --rm solutions_app rails db:seed",
+        "console": "docker-compose run --rm solutions_app rails db"
+      },
+      "testing": {
+        "full_suite": "./clean_run_tests.sh",
+        "quick_test": "./run_tests.sh",
+        "single_test": "docker-compose run --rm solutions_test rails test path/to/test.rb",
+        "test_method": "docker-compose run --rm solutions_test rails test path/to/test.rb::test_method_name",
+        "prepare_test_db": "docker-compose run --rm solutions_test rails db:test:prepare",
+        "coverage": "COVERAGE=true ./clean_run_tests.sh"
+      },
+      "assets": {
+        "precompile": "docker-compose run --rm solutions_app rails assets:precompile",
+        "clobber": "docker-compose run --rm solutions_app rails assets:clobber",
+        "webpack": "docker-compose run --rm solutions_app rails webpacker:compile"
+      },
+      "rails_generators": {
+        "model": "docker-compose run --rm solutions_app rails generate model ModelName field:type",
+        "controller": "docker-compose run --rm solutions_app rails generate controller ControllerName action1 action2",
+        "migration": "docker-compose run --rm solutions_app rails generate migration MigrationName",
+        "scaffold": "docker-compose run --rm solutions_app rails generate scaffold ModelName field:type"
+      },
+      "rake_tasks": {
+        "list_tasks": "docker-compose run --rm solutions_app rails -T",
+        "maintenance": "docker-compose run --rm solutions_app rails maintenance:clear_old_ahoy_visits",
+        "ahoy": "docker-compose run --rm solutions_app rails ahoy:fill_empty_location_entries"
+      }
+    },
+    "unix_first_principles": {
+      "file_operations": {
+        "find_files": "find . -name '*.rb' | head -20",
+        "search_content": "grep -r 'class User' app/models/",
+        "replace_text": "sed -i 's/old_text/new_text/g' file.rb",
+        "batch_rename": "for file in *.txt; do mv \"$file\" \"${file%.txt}.rb\"; done"
+      },
+      "process_management": {
+        "find_pids": "ps aux | grep rails",
+        "kill_process": "kill -9 <PID>",
+        "port_usage": "lsof -i :5250",
+        "memory_usage": "docker stats",
+        "disk_usage": "df -h"
+      },
+      "network_operations": {
+        "test_connectivity": "curl -f http://localhost:5250/health",
+        "port_scan": "netstat -tulpn | grep :5250",
+        "dns_check": "nslookup lvh.me",
+        "ssl_check": "openssl s_client -connect domain.com:443"
+      },
+      "text_processing": {
+        "count_lines": "wc -l file.rb",
+        "filter_unique": "sort file.txt | uniq",
+        "extract_columns": "awk '{print $1, $3}' file.txt",
+        "pattern_match": "grep -E 'class|module' app/models/*.rb"
+      }
+    }
+  },
+
+  "workflows": {
+    "development": {
+      "setup": [
+        "git clone repository",
+        "cd violet_rails",
+        "docker-compose build",
+        "docker-compose up -d",
+        "docker-compose run --rm solutions_app rails db:create",
+        "docker-compose run --rm solutions_app rails db:migrate",
+        "docker-compose run --rm solutions_app rails db:seed",
+        "docker-compose run --rm solutions_app rails assets:precompile"
+      ],
+      "daily_workflow": [
+        "git checkout -b feature/branch-name",
+        "docker-compose up -d",
+        "docker attach solutions_app",
+        "make changes",
+        "./run_tests.sh",
+        "git add .",
+        "git commit -m 'message'",
+        "git push origin feature/branch-name"
+      ]
+    },
+    "testing": {
+      "unit_tests": "docker-compose run --rm solutions_test rails test test/models/",
+      "integration_tests": "docker-compose run --rm solutions_test rails test test/integration/",
+      "system_tests": "docker-compose run --rm solutions_test rails test test/system/",
+      "parallel_tests": "./clean_run_tests.sh",
+      "coverage_report": "open coverage/index.html"
+    },
+    "deployment": {
+      "staging": "git checkout rc && git merge feature/branch && git push origin rc",
+      "production": "git checkout master && git merge rc && git push origin master",
+      "capistrano_staging": "bundle exec cap staging deploy",
+      "capistrano_production": "bundle exec cap production deploy",
+      "rollback": "bundle exec cap production rollback"
+    }
+  },
+
+  "multi_tenancy_patterns": {
+    "tenant_switching": {
+      "syntax": "Apartment::Tenant.switch('tenant_name') { /* code */ }",
+      "get_current": "Apartment::Tenant.current",
+      "list_tenants": "Apartment::Tenant.tenant_names",
+      "create_tenant": "Apartment::Tenant.create('new_tenant')",
+      "drop_tenant": "Apartment::Tenant.drop('old_tenant')"
+    },
+    "public_schema": {
+      "access": "Apartment::Tenant.switch('public') { /* shared data */ }",
+      "subdomains": "Subdomain.all_with_public_schema",
+      "shared_models": ["Subdomain", "User", "ApiNamespace"]
+    },
+    "rake_pattern": "Subdomain.all_with_public_schema.each do |subdomain| Apartment::Tenant.switch(subdomain.name) { /* operations */ } end"
+  },
+
+  "file_structure": {
+    "models": "app/models/ - ActiveRecord models inherit from ApplicationRecord",
+    "controllers": "app/controllers/ - Inherit from ApplicationController",
+    "views": "app/views/ - ERB templates, partials prefixed with '_'",
+    "helpers": "app/helpers/ - View helper methods",
+    "jobs": "app/jobs/ - Sidekiq background jobs",
+    "mailers": "app/mailers/ - Action Mailer classes",
+    "channels": "app/channels/ - Action Cable WebSocket channels",
+    "assets": {
+      "javascripts": "app/javascript/ - ES6 modules",
+      "stylesheets": "app/stylesheets/ - SCSS files",
+      "images": "app/images/ - Image assets"
+    },
+    "tests": {
+      "unit": "test/models/ - Model tests",
+      "functional": "test/controllers/ - Controller tests",
+      "integration": "test/integration/ - Integration tests",
+      "system": "test/system/ - Capybara system tests",
+      "fixtures": "test/fixtures/ - Test data"
+    },
+    "config": {
+      "environments": "config/environments/ - Environment-specific configs",
+      "initializers": "config/initializers/ - Rails initialization",
+      "routes": "config/routes.rb - URL routing",
+      "database": "config/database.yml - Database configuration"
+    }
+  },
+
+  "debugging_tools": {
+    "rails_console": "docker-compose run --rm solutions_app rails c",
+    "byebug": "Add 'byebug' in code for debugging",
+    "pry": "Add 'binding.pry' in code for debugging",
+    "logs": {
+      "development": "log/development.log",
+      "production": "log/production.log",
+      "test": "log/test.log"
+    },
+    "profiling": {
+      "memory": "docker-compose run --rm solutions_app rails runner 'require \"memory_profiler\"; puts MemoryProfiler.report { User.all }.pretty_print'",
+      "sql": "docker-compose run --rm solutions_app rails db:explain",
+      "performance": "docker-compose run --rm solutions_app rails runner 'require \"benchmark\"; puts Benchmark.measure { User.count }'"
+    }
+  },
+
+  "security_tools": {
+    "brakeman": "docker-compose run --rm solutions_app brakeman",
+    "bundle_audit": "docker-compose run --rm solutions_app bundle audit --update",
+    "secrets": "docker-compose run --rm solutions_app rails credentials:edit",
+    "ssl_check": "openssl s_client -connect domain.com:443",
+    "dependency_check": "docker-compose run --rm solutions_app bundle outdated"
+  },
+
+  "performance_tools": {
+    "load_testing": "k6 run load_test.js",
+    "database_indexing": "docker-compose run --rm solutions_app rails generate migration AddIndexes",
+    "query_optimization": "docker-compose run --rm solutions_app rails db:explain",
+    "caching": "Rails.cache.fetch('key') { /* expensive operation */ }",
+    "background_jobs": "docker-compose run --rm solutions_app sidekiq-web"
+  },
+
+  "api_development": {
+    "routes": "docker-compose run --rm solutions_app rails routes",
+    "api_docs": "Visit /api/v1/swagger.yaml",
+    "postman": "Import collection from API documentation",
+    "testing": "docker-compose run --rm solutions_test rails test test/api/"
+  },
+
+  "common_patterns": {
+    "error_handling": "begin; rescue => e; Rails.logger.error e.message; end",
+    "background_jobs": "SomeJob.perform_later(args)",
+    "file_uploads": "model.attachments.attach(io: file, filename: 'name')",
+    "email_sending": "UserMailer.method(user).deliver_later",
+    "caching": "Rails.cache.fetch('key') { /* expensive operation */ }",
+    "authentication": "before_action :authenticate_user!",
+    "authorization": "load_and_authorize_resource",
+    "pagination": "Model.page(params[:page]).per(20)",
+    "api_responses": "render json: { data: data, status: :ok }",
+    "multi_tenant": "Apartment::Tenant.switch(tenant) { /* operations */ }",
+    "form_handling": "params.require(:model).permit(:field1, :field2)",
+    "callbacks": "before_action :set_tenant, after_action :log_activity"
+  }
+  },
+
+  "automation_scripts": {
+    "daily_maintenance": "docker-compose run --rm solutions_app rails maintenance:clear_old_ahoy_visits",
+    "backup_database": "docker-compose run --rm solutions_app rails db:backup",
+    "cleanup_logs": "find log/ -name '*.log' -mtime +7 -delete",
+    "update_dependencies": "docker-compose run --rm solutions_app bundle update && yarn upgrade"
+  },
+
+  "version_benchmarks": {
+    "current_stack": {
+      "ruby": "2.6.6",
+      "rails": "6.1.5", 
+      "postgresql": "12.5",
+      "redis": "4.0",
+      "node": "16.x",
+      "bootstrap": "4.6.0",
+      "jquery": "3.6.0"
+    },
+    "latest_stack": {
+      "ruby": "3.2.3 (LTS)",
+      "rails": "7.1.5",
+      "postgresql": "15.8", 
+      "redis": "7.4.0",
+      "node": "20.18.0 (LTS)",
+      "bootstrap": "5.3.3",
+      "jquery": "4.0.0"
+    },
+    "performance_gains": {
+      "ruby_3.2": "20-30% faster execution with YJIT",
+      "postgresql_15": "15-25% better query performance, improved indexing",
+      "redis_7.4": "40-50% lower memory usage, better clustering",
+      "node_20": "10-15% faster startup, improved ES module support",
+      "bootstrap_5.3": "20-30% smaller bundle size, better CSS performance"
+    }
+  }
+}
+  }
+}
