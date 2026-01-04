@@ -124,7 +124,7 @@ module ApiActionable
   def track_create_event
     ahoy.track(
       "api-resource-create",
-      { visit_id: current_visit.id, api_resource_id: @api_resource.id, api_namespace_id: @api_namespace.id, user_id: current_user&.id }
+      { visit_id: current_visit.id, api_resource_id: @api_resource.id, api_namespace_id: @api_namespace.id, user_id: current_user&.id, ip_reverse_lookup_domain: Reversed.lookup(request.ip) }
     ) if tracking_enabled? && current_visit
   end
 
