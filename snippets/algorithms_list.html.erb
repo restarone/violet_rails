@@ -1,0 +1,274 @@
+<style>
+  .algorithm-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-bottom: 20px;
+  }
+  .algorithm-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .badge-Easy { background-color: #28a745; }
+  .badge-Medium { background-color: #ffc107; color: #000; }
+  .badge-Hard { background-color: #dc3545; }
+  .complexity-badge {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85em;
+    background-color: #f8f9fa;
+    color: #495057;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+  .filter-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+  }
+  .filter-group {
+    margin-bottom: 15px;
+  }
+  .stats-bar {
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+</style>
+
+<div class="container mt-4">
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="row text-center">
+      <div class="col-md-3">
+        <h4 class="mb-0"><%= @api_resources.count %></h4>
+        <small class="text-muted">Total Algorithms</small>
+      </div>
+      <div class="col-md-3">
+        <h4 class="mb-0 text-success"><%= @api_resources.select { |a| a.properties['difficulty'] == 'Easy' }.count %></h4>
+        <small class="text-muted">Easy</small>
+      </div>
+      <div class="col-md-3">
+        <h4 class="mb-0 text-warning"><%= @api_resources.select { |a| a.properties['difficulty'] == 'Medium' }.count %></h4>
+        <small class="text-muted">Medium</small>
+      </div>
+      <div class="col-md-3">
+        <h4 class="mb-0 text-danger"><%= @api_resources.select { |a| a.properties['difficulty'] == 'Hard' }.count %></h4>
+        <small class="text-muted">Hard</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-section">
+    <h5 class="mb-3">Filter & Sort Algorithms</h5>
+    <div class="row">
+      <div class="col-md-3 filter-group">
+        <label for="difficulty-filter"><strong>Difficulty</strong></label>
+        <select id="difficulty-filter" class="form-control">
+          <option value="">All Difficulties</option>
+          <option value="Easy">Easy</option>
+          <option value="Medium">Medium</option>
+          <option value="Hard">Hard</option>
+        </select>
+      </div>
+      <div class="col-md-3 filter-group">
+        <label for="phase-filter"><strong>Learning Phase</strong></label>
+        <select id="phase-filter" class="form-control">
+          <option value="">All Phases</option>
+          <option value="1">Phase 1 - Foundation</option>
+          <option value="2">Phase 2 - Core Patterns</option>
+          <option value="3">Phase 3 - Stack Mastery</option>
+          <option value="4">Phase 4 - Binary Search</option>
+          <option value="5">Phase 5 - Dynamic Programming</option>
+          <option value="6">Phase 6 - Advanced Structures</option>
+          <option value="7">Phase 7 - Complex Algorithms</option>
+        </select>
+      </div>
+      <div class="col-md-3 filter-group">
+        <label for="structure-filter"><strong>Data Structure</strong></label>
+        <select id="structure-filter" class="form-control">
+          <option value="">All Structures</option>
+          <option value="Array">Arrays</option>
+          <option value="Hash">Hash Map</option>
+          <option value="Stack">Stack</option>
+          <option value="Tree">Trees</option>
+          <option value="Graph">Graphs</option>
+          <option value="Heap">Heap</option>
+          <option value="LinkedList">Linked List</option>
+        </select>
+      </div>
+      <div class="col-md-3 filter-group">
+        <label for="sort-select"><strong>Sort By</strong></label>
+        <select id="sort-select" class="form-control">
+          <option value="priority">Priority (Recommended)</option>
+          <option value="name">Name (A-Z)</option>
+          <option value="difficulty">Difficulty</option>
+          <option value="phase">Learning Phase</option>
+        </select>
+      </div>
+    </div>
+    <div class="mt-2">
+      <button id="reset-filters" class="btn btn-sm btn-secondary">Reset All Filters</button>
+    </div>
+  </div>
+
+  <!-- Results Counter -->
+  <div class="mb-3">
+    <h6>Showing <span id="results-count"><%= @api_resources.count %></span> algorithms</h6>
+  </div>
+
+  <!-- Algorithm Grid -->
+  <div class="row" id="algorithms-grid">
+    <% @api_resources.sort_by { |a| a.properties['priority'].to_i }.each do |algo| %>
+      <div class="col-md-4 algorithm-card-wrapper"
+           data-difficulty="<%= algo.properties['difficulty'] %>"
+           data-phase="<%= algo.properties['learning_phase'] %>"
+           data-structure="<%= algo.properties['primary_data_structure'] %>"
+           data-name="<%= algo.properties['name'] %>"
+           data-priority="<%= algo.properties['priority'] %>">
+
+        <div class="card h-100 algorithm-card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <h5 class="card-title mb-0">
+                <%= algo.properties['name'] %>
+              </h5>
+              <span class="badge badge-<%= algo.properties['difficulty'] %> ml-2">
+                <%= algo.properties['difficulty'] %>
+              </span>
+            </div>
+
+            <p class="text-muted mb-2">
+              <small>
+                <strong>Phase <%= algo.properties['learning_phase'] %>:</strong>
+                <%
+                  phase_names = {
+                    1 => 'Foundation', 2 => 'Core Patterns', 3 => 'Stack Mastery',
+                    4 => 'Binary Search', 5 => 'Dynamic Programming',
+                    6 => 'Advanced Structures', 7 => 'Complex Algorithms'
+                  }
+                %>
+                <%= phase_names[algo.properties['learning_phase'].to_i] %>
+              </small>
+            </p>
+
+            <div class="mb-2">
+              <strong class="text-primary">🎯 <%= algo.properties['problem_hook_title'] %></strong>
+            </div>
+
+            <p class="card-text">
+              <small><%= algo.properties['real_world_analogy'] %></small>
+            </p>
+
+            <div class="mb-3">
+              <span class="badge badge-light"><%= algo.properties['primary_data_structure'] %></span>
+            </div>
+
+            <div class="metadata mb-3">
+              <small>
+                <strong>⏱️ Time:</strong> <span class="complexity-badge"><%= algo.properties['time_complexity'] %></span><br>
+                <strong>💾 Space:</strong> <span class="complexity-badge"><%= algo.properties['space_complexity'] %></span>
+              </small>
+            </div>
+
+            <% if algo.properties['learning_objective'] %>
+              <div class="alert alert-light py-2 mb-3">
+                <small><strong>💡 You'll learn:</strong> <%= algo.properties['learning_objective'].truncate(80) %></small>
+              </div>
+            <% end %>
+
+            <a href="/algorithms-show?id=<%= algo.id %>" class="btn btn-primary btn-block">
+              View Full Details →
+            </a>
+          </div>
+          <div class="card-footer text-muted">
+            <small>Priority #<%= algo.properties['priority'] %> | Problem #<%= algo.properties['problem_number'] %></small>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- No Results Message -->
+  <div id="no-results" class="alert alert-info" style="display: none;">
+    <p class="mb-0">No algorithms match your filters. Try adjusting your selection.</p>
+  </div>
+</div>
+
+<script>
+(function() {
+  const cards = document.querySelectorAll('.algorithm-card-wrapper');
+  const difficultyFilter = document.getElementById('difficulty-filter');
+  const phaseFilter = document.getElementById('phase-filter');
+  const structureFilter = document.getElementById('structure-filter');
+  const sortSelect = document.getElementById('sort-select');
+  const resetButton = document.getElementById('reset-filters');
+  const resultsCount = document.getElementById('results-count');
+  const noResults = document.getElementById('no-results');
+  const grid = document.getElementById('algorithms-grid');
+
+  function applyFilters() {
+    const difficulty = difficultyFilter.value;
+    const phase = phaseFilter.value;
+    const structure = structureFilter.value;
+
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+      const matchesDifficulty = !difficulty || card.dataset.difficulty === difficulty;
+      const matchesPhase = !phase || card.dataset.phase === phase;
+      const matchesStructure = !structure || card.dataset.structure.includes(structure);
+
+      if (matchesDifficulty && matchesPhase && matchesStructure) {
+        card.style.display = 'block';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    resultsCount.textContent = visibleCount;
+    noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+  }
+
+  function applySorting() {
+    const sortBy = sortSelect.value;
+    const cardsArray = Array.from(cards);
+
+    cardsArray.sort((a, b) => {
+      if (sortBy === 'name') {
+        return a.dataset.name.localeCompare(b.dataset.name);
+      } else if (sortBy === 'difficulty') {
+        const diffOrder = { 'Easy': 1, 'Medium': 2, 'Hard': 3 };
+        return diffOrder[a.dataset.difficulty] - diffOrder[b.dataset.difficulty];
+      } else if (sortBy === 'phase') {
+        return parseInt(a.dataset.phase) - parseInt(b.dataset.phase);
+      } else {
+        return parseInt(a.dataset.priority) - parseInt(b.dataset.priority);
+      }
+    });
+
+    cardsArray.forEach(card => grid.appendChild(card));
+  }
+
+  function resetFilters() {
+    difficultyFilter.value = '';
+    phaseFilter.value = '';
+    structureFilter.value = '';
+    sortSelect.value = 'priority';
+    applyFilters();
+    applySorting();
+  }
+
+  // Event listeners
+  difficultyFilter.addEventListener('change', applyFilters);
+  phaseFilter.addEventListener('change', applyFilters);
+  structureFilter.addEventListener('change', applyFilters);
+  sortSelect.addEventListener('change', applySorting);
+  resetButton.addEventListener('click', resetFilters);
+
+  // Apply initial sort
+  applySorting();
+})();
+</script>

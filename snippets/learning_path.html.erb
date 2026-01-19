@@ -1,0 +1,360 @@
+<style>
+  .learning-path {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .path-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 10px;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+  .phase-container {
+    margin-bottom: 40px;
+  }
+  .phase-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 30px;
+    position: relative;
+    border-left: 5px solid;
+  }
+  .phase-card.phase-1 { border-left-color: #e91e63; }
+  .phase-card.phase-2 { border-left-color: #9c27b0; }
+  .phase-card.phase-3 { border-left-color: #3f51b5; }
+  .phase-card.phase-4 { border-left-color: #2196f3; }
+  .phase-card.phase-5 { border-left-color: #00bcd4; }
+  .phase-card.phase-6 { border-left-color: #4caf50; }
+  .phase-card.phase-7 { border-left-color: #ff9800; }
+  .phase-number {
+    position: absolute;
+    top: -15px;
+    left: 30px;
+    background: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  .progress-bar-container {
+    background: #e9ecef;
+    height: 30px;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-top: 15px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+  }
+  .algorithm-item {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s;
+  }
+  .algorithm-item:hover {
+    background: #e9ecef;
+    transform: translateX(5px);
+  }
+  .algorithm-item.completed {
+    background: #d4edda;
+    border-left: 4px solid #28a745;
+  }
+  .checkbox-custom {
+    width: 24px;
+    height: 24px;
+    margin-right: 15px;
+    cursor: pointer;
+  }
+  .overall-progress {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin-bottom: 40px;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+  .stat-card {
+    text-align: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+  }
+  .stat-number {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #667eea;
+  }
+  .timeline-connector {
+    width: 4px;
+    height: 40px;
+    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+    margin: 0 auto;
+  }
+</style>
+
+<div class="container mt-4 learning-path">
+  <!-- Header -->
+  <div class="path-header">
+    <h1 class="mb-3">🚀 DSA Learning Path</h1>
+    <p class="mb-0">Master 30 essential algorithms across 7 progressive learning phases</p>
+  </div>
+
+  <!-- Overall Progress -->
+  <div class="overall-progress">
+    <h2 class="mb-3">Your Progress</h2>
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" id="overall-progress-bar" style="width: 0%">
+        <span id="overall-progress-text">0%</span>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="total-completed">0</div>
+        <div class="text-muted">Completed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="total-in-progress">0</div>
+        <div class="text-muted">In Progress</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="total-remaining">30</div>
+        <div class="text-muted">Remaining</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="current-phase">1</div>
+        <div class="text-muted">Current Phase</div>
+      </div>
+    </div>
+  </div>
+
+  <%
+    # Group algorithms by phase
+    algorithms_by_phase = {}
+    @api_resources.each do |algo|
+      phase = algo.properties['learning_phase'].to_i
+      algorithms_by_phase[phase] ||= []
+      algorithms_by_phase[phase] << algo
+    end
+
+    phase_info = {
+      1 => { name: 'Foundation Patterns', desc: 'Basic array manipulation and simple data structures' },
+      2 => { name: 'Core Patterns', desc: 'Essential algorithmic patterns you will use everywhere' },
+      3 => { name: 'Stack Mastery', desc: 'Stack-based problem solving techniques' },
+      4 => { name: 'Binary Search', desc: 'Search optimization and divide-and-conquer' },
+      5 => { name: 'Dynamic Programming', desc: 'Memoization, tabulation, and optimal substructure' },
+      6 => { name: 'Advanced Structures', desc: 'Linked lists, heaps, LRU cache, and more' },
+      7 => { name: 'Complex Algorithms', desc: 'Multi-dimensional and graph problems' }
+    }
+  %>
+
+  <!-- Learning Phases -->
+  <% (1..7).each do |phase_num| %>
+    <% phase = phase_info[phase_num] %>
+    <% algorithms = (algorithms_by_phase[phase_num] || []).sort_by { |a| a.properties['priority'].to_i } %>
+
+    <div class="phase-container" id="phase-<%= phase_num %>">
+      <div class="phase-card phase-<%= phase_num %>">
+        <div class="phase-number">Phase <%= phase_num %></div>
+
+        <h3 class="mt-2 mb-2"><%= phase[:name] %></h3>
+        <p class="text-muted mb-3"><%= phase[:desc] %></p>
+
+        <div class="mb-3">
+          <small class="text-muted">
+            <strong><%= algorithms.count %> algorithms</strong> •
+            Difficulty Range:
+            <% difficulties = algorithms.map { |a| a.properties['difficulty'] }.uniq %>
+            <%= difficulties.join(', ') %>
+          </small>
+        </div>
+
+        <!-- Phase Progress -->
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill phase-progress" data-phase="<%= phase_num %>" style="width: 0%">
+            <span class="phase-progress-text">0%</span>
+          </div>
+        </div>
+
+        <!-- Algorithms in Phase -->
+        <div class="mt-4">
+          <% algorithms.each do |algo| %>
+            <div class="algorithm-item" data-algorithm-id="<%= algo.id %>" data-phase="<%= phase_num %>">
+              <input type="checkbox"
+                     class="checkbox-custom algorithm-checkbox"
+                     data-id="<%= algo.id %>"
+                     data-phase="<%= phase_num %>">
+
+              <div class="flex-grow-1">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <strong><%= algo.properties['name'] %></strong>
+                    <span class="badge badge-<%=
+                      algo.properties['difficulty'] == 'Easy' ? 'success' :
+                      algo.properties['difficulty'] == 'Medium' ? 'warning' :
+                      'danger'
+                    %> ml-2">
+                      <%= algo.properties['difficulty'] %>
+                    </span>
+                  </div>
+                  <a href="/algorithms-show?id=<%= algo.id %>" class="btn btn-sm btn-outline-primary">
+                    View →
+                  </a>
+                </div>
+                <small class="text-muted d-block mt-1">
+                  <%= algo.properties['problem_hook_title'] %>
+                </small>
+                <small class="text-muted">
+                  <strong>Time:</strong> <%= algo.properties['time_complexity'] %> •
+                  <strong>Space:</strong> <%= algo.properties['space_complexity'] %>
+                </small>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <% if phase_num < 7 %>
+      <div class="timeline-connector"></div>
+    <% end %>
+  <% end %>
+
+  <!-- Action Buttons -->
+  <div class="text-center mt-5 mb-5">
+    <button class="btn btn-outline-danger btn-lg mr-2" onclick="resetProgress()">
+      Reset All Progress
+    </button>
+    <a href="/algorithms" class="btn btn-primary btn-lg">
+      Browse All Algorithms
+    </a>
+  </div>
+</div>
+
+<script>
+(function() {
+  // Load completed algorithms from localStorage
+  function getCompletedAlgorithms() {
+    return JSON.parse(localStorage.getItem('completed_algorithms') || '[]');
+  }
+
+  function saveCompletedAlgorithms(completed) {
+    localStorage.setItem('completed_algorithms', JSON.stringify(completed));
+  }
+
+  function updateProgress() {
+    const completed = getCompletedAlgorithms();
+    const checkboxes = document.querySelectorAll('.algorithm-checkbox');
+    const totalAlgorithms = checkboxes.length;
+
+    // Update checkboxes
+    checkboxes.forEach(checkbox => {
+      const algorithmId = parseInt(checkbox.dataset.id);
+      const item = checkbox.closest('.algorithm-item');
+
+      if (completed.includes(algorithmId)) {
+        checkbox.checked = true;
+        item.classList.add('completed');
+      } else {
+        checkbox.checked = false;
+        item.classList.remove('completed');
+      }
+    });
+
+    // Update overall progress
+    const completedCount = completed.length;
+    const percentage = totalAlgorithms > 0 ? Math.round((completedCount / totalAlgorithms) * 100) : 0;
+
+    document.getElementById('overall-progress-bar').style.width = percentage + '%';
+    document.getElementById('overall-progress-text').textContent = percentage + '%';
+    document.getElementById('total-completed').textContent = completedCount;
+    document.getElementById('total-remaining').textContent = totalAlgorithms - completedCount;
+
+    // Update phase progress
+    for (let phase = 1; phase <= 7; phase++) {
+      const phaseCheckboxes = document.querySelectorAll(`.algorithm-checkbox[data-phase="${phase}"]`);
+      const phaseTotal = phaseCheckboxes.length;
+      const phaseCompleted = Array.from(phaseCheckboxes).filter(cb => cb.checked).length;
+      const phasePercentage = phaseTotal > 0 ? Math.round((phaseCompleted / phaseTotal) * 100) : 0;
+
+      const progressBar = document.querySelector(`.phase-progress[data-phase="${phase}"]`);
+      if (progressBar) {
+        progressBar.style.width = phasePercentage + '%';
+        progressBar.querySelector('.phase-progress-text').textContent =
+          phasePercentage + '%' + (phaseTotal > 0 ? ` (${phaseCompleted}/${phaseTotal})` : '');
+      }
+    }
+
+    // Update current phase (first incomplete phase)
+    let currentPhase = 7; // Default to last phase
+    for (let phase = 1; phase <= 7; phase++) {
+      const phaseCheckboxes = document.querySelectorAll(`.algorithm-checkbox[data-phase="${phase}"]`);
+      const allCompleted = Array.from(phaseCheckboxes).every(cb => cb.checked);
+      if (!allCompleted) {
+        currentPhase = phase;
+        break;
+      }
+    }
+    document.getElementById('current-phase').textContent = currentPhase;
+
+    // Highlight current phase
+    document.querySelectorAll('.phase-card').forEach(card => {
+      card.style.opacity = '0.6';
+    });
+    const currentPhaseCard = document.getElementById(`phase-${currentPhase}`);
+    if (currentPhaseCard) {
+      currentPhaseCard.querySelector('.phase-card').style.opacity = '1';
+    }
+  }
+
+  // Checkbox change handler
+  document.querySelectorAll('.algorithm-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      const algorithmId = parseInt(this.dataset.id);
+      let completed = getCompletedAlgorithms();
+
+      if (this.checked) {
+        if (!completed.includes(algorithmId)) {
+          completed.push(algorithmId);
+        }
+      } else {
+        completed = completed.filter(id => id !== algorithmId);
+      }
+
+      saveCompletedAlgorithms(completed);
+      updateProgress();
+    });
+  });
+
+  // Reset progress
+  window.resetProgress = function() {
+    if (confirm('Are you sure you want to reset all your progress? This cannot be undone.')) {
+      localStorage.removeItem('completed_algorithms');
+      updateProgress();
+      alert('Progress has been reset!');
+    }
+  };
+
+  // Initial update
+  updateProgress();
+})();
+</script>
