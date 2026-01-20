@@ -1,4 +1,5 @@
-<% og_image = og_image_url(Subdomain.current) %>
+<% og_image = @cms_page.present? && @cms_page.og_image.attached? ? rails_blob_url(@cms_page.og_image) : og_image_url(Subdomain.current) %>
+
 <% set_meta_tags      site: forum_html_title(Subdomain.current),
                       title: html_title(Subdomain.current),
                       description: site_description(Subdomain.current),
