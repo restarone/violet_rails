@@ -327,7 +327,7 @@ GEM
       mime-types (>= 3.0)
       websocket-driver (>= 0.6.0)
     racc (1.6.0)
-    rack (2.2.3.1)
+    rack (2.2.6.4)
     rack-accept (0.4.5)
       rack (>= 0.4)
     rack-cors (1.1.1)
