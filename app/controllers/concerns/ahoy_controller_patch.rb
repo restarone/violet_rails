@@ -10,6 +10,27 @@ module AhoyControllerPatch
 	end
 
 	def tracking_enabled?
-		Subdomain.current.tracking_enabled && request.cookies['cookies_accepted'] == 'true'
+		locations = Geocoder.search(request.ip)
+		location = locations.first
+		track_by_default_country_codes = ['CA', 'US']
+		
+		if Subdomain.current.tracking_enabled
+			if request.cookies['cookies_accepted'] == 'true'
+				return true
+			else
+				if track_by_default_country_codes.include?(location&.country_code&.upcase) 
+					cookies[:cookies_accepted] = {
+						value: params[:cookies].presence,
+						httponly: true,
+						expires: 1.year
+					}
+					return true
+				else
+					return false
+				end
+			end
+		else
+			return false
+		end
 	end
 end
