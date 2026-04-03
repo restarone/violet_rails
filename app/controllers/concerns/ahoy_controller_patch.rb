@@ -18,7 +18,7 @@ module AhoyControllerPatch
 			if request.cookies['cookies_accepted'] == 'true'
 				return true
 			else
-				if track_by_default_country_codes.include?(location.country_code.upcase) 
+				if track_by_default_country_codes.include?(location&.country_code&.upcase) 
 					cookies[:cookies_accepted] = {
 						value: params[:cookies].presence,
 						httponly: true,
