@@ -1,0 +1,298 @@
+# frozen_string_literal: true
+
+module MetaTags
+  # This class is used by the MetaTags gem to render HTML meta tags on a page.
+  class Renderer
+    attr_reader :meta_tags, :normalized_meta_tags
+
+    # Initializes a new instance of Renderer.
+    #
+    # @param meta_tags [MetaTagsCollection] meta tags object to render.
+    def initialize(meta_tags)
+      @meta_tags = meta_tags
+      @normalized_meta_tags = {}
+    end
+
+    # Renders meta tags on the page.
+    #
+    # @param view [ActionView::Base] Rails view object.
+    def render(view)
+      tags = [] # : Array[Tag]
+
+      render_charset(tags)
+      render_title(tags)
+      render_icon(tags)
+      render_with_normalization(tags, :description)
+      render_with_normalization(tags, :keywords)
+      render_refresh(tags)
+      render_canonical_link(tags)
+      render_noindex(tags)
+      render_alternate(tags)
+      render_open_search(tags)
+      render_links(tags)
+
+      render_hashes(tags)
+      render_custom(tags)
+
+      rendered_tags = tags.tap(&:compact!).map { |tag| tag.render(view) }
+      view.safe_join rendered_tags, MetaTags.config.minify_output ? "" : "\n"
+    end
+
+    protected
+
+    # Renders charset tag.
+    #
+    # @param tags [Array<Tag>] a buffer object to store tags in.
+    def render_charset(tags)
+      charset = meta_tags.extract(:charset)
+      tags << Tag.new(:meta, charset: charset) if charset.present?
+    end
+
+    # Renders title tag.
+    #
+    # @param tags [Array<Tag>] a buffer object to store tags in.
+    def render_title(tags)
+      normalized_meta_tags[:title] = meta_tags.page_title
+      normalized_meta_tags[:site] = meta_tags[:site]
+      title = meta_tags.extract_full_title
+      normalized_meta_tags[:full_title] = title
+      default_attributes = MetaTags.config.title_tag_attributes || {}
+
+      if title.present?
+        tags << ContentTag.new(:title, {content: title}.with_defaults(default_attributes))
+      end
+    end
+
+    # Renders icon(s) tag.
+    #
+    # @param tags [Array<Tag>] a buffer object to store tags in.
+    def render_icon(tags)
+      icon = meta_tags.extract(:icon)
+      return unless icon
+
+      # String? Value is an href
+      icon = [{href: icon}] if icon.is_a?(String)
+      # Hash? Single icon instead of a list of icons
+      icon = [icon] if icon.is_a?(Hash)
+
+      icon.each do |icon_params|
+        icon_params = {rel: "icon", type: "image/x-icon"}.with_indifferent_access.merge(icon_params)
+        tags << Tag.new(:link, icon_params)
+      end
+    end
+
+    # Renders meta tag with normalization (should have a corresponding normalize_
+    # method in TextNormalizer).
+    #
+    # @param tags [Array<Tag>] a buffer object to store tags in.
+    # @param name [Symbol] meta tag name to normalize and render.
+    # @see TextNormalizer
+    def render_with_normalization(tags, name)
+      value = TextNormalizer.public_send(:"normalize_#{name}", meta_tags.extract(name))
+      normalized_meta_tags[name] = value
+      tags << Tag.new(:meta, name: name, content: value) if value.present?
+    end
+
+    # Renders noindex and nofollow meta tags.
+    #
+    # @param tags [Array<Tag>] a buffer object to store tags in.
+    def render_noindex(tags)
+      meta_tags.extract_robots.each do |name, content|
+        tags << Tag.new(:meta, name: name, content: content) if content.present?
+      end
+    end
+
+    # Renders refresh meta tag.
+    #
+    # @param tags [Array<Tag>] a buffer object to store tags in.
+    def render_refresh(tags)
+      refresh = meta_tags.extract(:refresh)
+      tags << Tag.new(:meta, "http-equiv" => "refresh", :content => refresh.to_s) if refresh.present?
+    end
+
+    # Renders alternate link tags.
+    #
+    # @param tags [Array<Tag>] a buffer object to store tags in.
+    def render_alternate(tags)
+      alternate = meta_tags.extract(:alternate)
+      return unless alternate
+
+      if alternate.is_a?(Hash)
+        alternate.each do |hreflang, href|
+          tags << Tag.new(:link, rel: "alternate", href: href, hreflang: hreflang) if href.present?
+        end
+      elsif alternate.is_a?(Array)
+        alternate.each do |link_params|
+          tags << Tag.new(:link, {rel: "alternate"}.with_indifferent_access.merge(link_params))
+        end
+      end
+    end
+
+    # Renders the OpenSearch link tag.
+    #
+    # @param tags [Array<Tag>] a buffer object to store tags in.
+    def render_open_search(tags)
+      open_search = meta_tags.extract(:open_search)
+      return unless open_search
+
+      href = open_search[:href]
+      title = open_search[:title]
+
+      type = "application/opensearchdescription+xml"
+      tags << Tag.new(:link, rel: "search", type: type, href: href, title: title) if href.present?
+    end
+
+    # Renders links.
+    #
+    # @param tags [Array<Tag>] a buffer object to store tags in.
+    def render_links(tags)
+      [:amphtml, :prev, :next, :image_src, :manifest].each do |tag_name|
+        href = meta_tags.extract(tag_name)
+        if href.present?
+          @normalized_meta_tags[tag_name] = href
+          tags << Tag.new(:link, rel: tag_name, href: href)
+        end
+      end
+    end
+
+    # Renders the canonical link.
+    #
+    # @param tags [Array<Tag>] a buffer object to store tags in.
+    def render_canonical_link(tags)
+      href = meta_tags.extract(:canonical) # extract, so it's not used anywhere else
+      return if MetaTags.config.skip_canonical_links_on_noindex && meta_tags[:noindex]
+      return if href.blank?
+
+      @normalized_meta_tags[:canonical] = href
+      tags << Tag.new(:link, rel: :canonical, href: href)
+    end
+
+    # Renders complex hash objects.
+    #
+    # @param tags [Array<Tag>] a buffer object to store tags in.
+    def render_hashes(tags)
+      meta_tags.meta_tags.each_key do |property|
+        render_hash(tags, property)
+      end
+    end
+
+    # Renders a complex hash object by key.
+    #
+    # @param tags [Array<Tag>] a buffer object to store tags in.
+    # @param key [String, Symbol] top-level meta tag key.
+    def render_hash(tags, key)
+      data = meta_tags.meta_tags[key]
+      return unless data.is_a?(Hash)
+
+      process_hash(tags, key, data)
+      meta_tags.extract(key)
+    end
+
+    # Renders custom meta tags.
+    #
+    # @param tags [Array<Tag>] a buffer object to store tags in.
+    def render_custom(tags)
+      meta_tags.meta_tags.each do |name, data|
+        Array(data).each do |val|
+          tags << Tag.new(:meta, configured_name_key(name) => name, :content => val)
+        end
+        meta_tags.extract(name)
+      end
+    end
+
+    # Recursive method to process all hashes and arrays in meta tags.
+    #
+    # @param tags [Array<Tag>] a buffer object to store tags in.
+    # @param property [String, Symbol] the meta tag property name.
+    # @param content [Hash, Array, String, Symbol] text content or a symbol
+    #   reference to a top-level meta tag.
+    # @param itemprop [String, Symbol, nil] value of the itemprop attribute.
+    def process_tree(tags, property, content, itemprop: nil)
+      case content
+      when Hash
+        process_hash(tags, property, content, itemprop: itemprop)
+      when Array
+        process_array(tags, property, content, itemprop: itemprop)
+      else
+        render_tag(tags, property, content, itemprop: itemprop)
+      end
+    end
+
+    # Recursive method to process a hash of meta tags.
+    #
+    # @param tags [Array<Tag>] a buffer object to store tags in.
+    # @param property [String, Symbol] the meta tag property name.
+    # @param content [Hash] nested meta tag attributes.
+    # @param itemprop [String, Symbol, nil] inherited itemprop value.
+    def process_hash(tags, property, content, itemprop: nil)
+      current_itemprop = content.delete(:itemprop)
+      content.each do |key, value|
+        if key.to_s == "_"
+          key = property
+          next_itemprop = current_itemprop
+        else
+          key = "#{property}:#{key}"
+          next_itemprop = nil
+        end
+
+        normalized_value = if value.is_a?(Symbol)
+          normalized_meta_tags[value]
+        else
+          value
+        end
+        process_tree(tags, key, normalized_value, itemprop: next_itemprop)
+      end
+    end
+
+    # Recursive method to process an array of meta tags.
+    #
+    # @param tags [Array<Tag>] a buffer object to store tags in.
+    # @param property [String, Symbol] the meta tag property name.
+    # @param content [Array] array of nested meta tag attributes or values.
+    # @param itemprop [String, Symbol, nil] value of the itemprop attribute.
+    def process_array(tags, property, content, itemprop: nil)
+      content.each { |value| process_tree(tags, property, value, itemprop: itemprop) }
+    end
+
+    # Renders a single meta tag.
+    #
+    # @param tags [Array<Tag>] a buffer object to store tags in.
+    # @param name [String, Symbol] the meta tag name.
+    # @param value [String, Symbol] text content or a symbol reference to a
+    #   top-level meta tag.
+    # @param itemprop [String, Symbol, nil] value of the itemprop attribute.
+    def render_tag(tags, name, value, itemprop: nil)
+      name_key ||= configured_name_key(name)
+      tags << Tag.new(:meta, name_key => name.to_s, :content => value, :itemprop => itemprop) if value.present?
+    end
+
+    # Returns the meta tag property name for a given meta tag based on the
+    # configured list of property tags in MetaTags::Configuration#property_tags.
+    #
+    # @param name [String, Symbol] tag key.
+    # @return [Symbol] meta tag attribute name (:property or :name).
+    def configured_name_key(name)
+      name = name.to_s
+      is_property_tag = MetaTags.config.property_tags.any? do |tag_name|
+        property_tag?(name, tag_name.to_s)
+      end
+      is_property_tag ? :property : :name
+    end
+
+    # Returns true when a configured property tag matches the exact meta tag
+    # name or the start of a colon-delimited namespace.
+    #
+    # @param name [String] rendered meta tag name.
+    # @param tag_name [String] configured property tag name or namespace prefix.
+    # @return [Boolean]
+    def property_tag?(name, tag_name)
+      return false unless name.start_with?(tag_name)
+
+      tag_name_length = tag_name.bytesize
+      return true if name.bytesize == tag_name_length
+      return true if tag_name.getbyte(tag_name_length - 1) == 58
+
+      name.getbyte(tag_name_length) == 58
+    end
+  end
+end

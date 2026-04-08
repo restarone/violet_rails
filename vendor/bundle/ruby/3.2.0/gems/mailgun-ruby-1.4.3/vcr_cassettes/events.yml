@@ -1,0 +1,69 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.mailgun.net/events?limit=1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - mailgun-sdk-ruby/1.3.2
+      Accept:
+      - "*/*"
+      Authorization:
+      - Basic xxx
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 26 Feb 2025 18:43:10 GMT
+      Content-Length:
+      - '0'
+    body:
+      encoding: UTF-8
+      string: "{\n  \"items\": [], \n  \"paging\": {\n    \"next\": \"https://api.mailgun.net/v3/DOMAIN.TEST/events/W3siYiI6ICIyMDE3LTA1LTEwVDIwOjA2OjU0LjU3NiswMDowMCIsICJlIjogIjIwMTctMDUtMDhUMjA6MDY6NTQuNTc3KzAwOjAwIn0sIHsiYiI6ICIyMDE3LTA1LTEwVDIwOjA2OjU0LjU3NiswMDowMCIsICJlIjogIjIwMTctMDUtMDhUMjA6MDY6NTQuNTc3KzAwOjAwIn0sIFsiZiJdLCBudWxsLCBbWyJhY2NvdW50LmlkIiwgIjU4MDUyMTg2NzhmYTE2MTNjNzkwYjUwZiJdLCBbImRvbWFpbi5uYW1lIiwgInNhbmRib3gyOTcwMTUyYWYzZDM0NTU5YmZjN2U3MTcwM2E2Y2YyNC5tYWlsZ3VuLm9yZyJdXSwgMTAwLCBudWxsXQ==\",
+        \n    \"last\": \"https://api.mailgun.net/v3/DOMAIN.TEST/events/W3siYiI6ICIyMDE3LTA1LTEwVDIwOjA2OjU0LjU3NiswMDowMCIsICJlIjogIjIwMTctMDUtMDhUMjA6MDY6NTQuNTc3KzAwOjAwIn0sIHsiYiI6ICIyMDE3LTA1LTA4VDIwOjA2OjU0LjU3NyswMDowMCIsICJlIjogIjIwMTctMDUtMTBUMjA6MDY6NTQuNTc2KzAwOjAwIn0sIFsicCIsICJmIl0sIG51bGwsIFtbImFjY291bnQuaWQiLCAiNTgwNTIxODY3OGZhMTYxM2M3OTBiNTBmIl0sIFsiZG9tYWluLm5hbWUiLCAic2FuZGJveDI5NzAxNTJhZjNkMzQ1NTliZmM3ZTcxNzAzYTZjZjI0Lm1haWxndW4ub3JnIl1dLCAxMDAsIG51bGxd\",
+        \n    \"first\": \"https://api.mailgun.net/v3/DOMAIN.TEST/events/W3siYiI6ICIyMDE3LTA1LTEwVDIwOjA2OjU0LjU3NiswMDowMCIsICJlIjogIjIwMTctMDUtMDhUMjA6MDY6NTQuNTc3KzAwOjAwIn0sIHsiYiI6ICIyMDE3LTA1LTEwVDIwOjA2OjU0LjU3NiswMDowMCIsICJlIjogIjIwMTctMDUtMDhUMjA6MDY6NTQuNTc3KzAwOjAwIn0sIFsiZiJdLCBudWxsLCBbWyJhY2NvdW50LmlkIiwgIjU4MDUyMTg2NzhmYTE2MTNjNzkwYjUwZiJdLCBbImRvbWFpbi5uYW1lIiwgInNhbmRib3gyOTcwMTUyYWYzZDM0NTU5YmZjN2U3MTcwM2E2Y2YyNC5tYWlsZ3VuLm9yZyJdXSwgMTAwLCBudWxsXQ==\",
+        \n    \"previous\": \"https://api.mailgun.net/v3/DOMAIN.TEST/events/W3siYiI6ICIyMDE3LTA1LTEwVDIwOjA2OjU0LjU3NiswMDowMCIsICJlIjogIjIwMTctMDUtMDhUMjA6MDY6NTQuNTc3KzAwOjAwIn0sIHsiYiI6ICIyMDE3LTA1LTEwVDIwOjA2OjU0LjU3NiswMDowMCIsICJlIjogIjIwMTctMDUtMTBUMjA6MDY6NTQuNTc3KzAwOjAwIn0sIFsicCIsICJmIl0sIG51bGwsIFtbImFjY291bnQuaWQiLCAiNTgwNTIxODY3OGZhMTYxM2M3OTBiNTBmIl0sIFsiZG9tYWluLm5hbWUiLCAic2FuZGJveDI5NzAxNTJhZjNkMzQ1NTliZmM3ZTcxNzAzYTZjZjI0Lm1haWxndW4ub3JnIl1dLCAxMDAsIG51bGxd\"\n
+        \ }\n}"
+    http_version:
+  recorded_at: Wed, 26 Feb 2025 18:43:10 GMT
+- request:
+    method: get
+    uri: https://api.mailgun.net/events
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - mailgun-sdk-ruby/1.3.2
+      Accept:
+      - "*/*"
+      Authorization:
+      - Basic xxx
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 26 Feb 2025 18:43:10 GMT
+      Content-Length:
+      - '0'
+    body:
+      encoding: UTF-8
+      string: "{\n  \"items\": [], \n  \"paging\": {\n    \"next\": \"https://api.mailgun.net/v3/DOMAIN.TEST/events/W3siYiI6ICIyMDE3LTA1LTEwVDIwOjA2OjU0LjU3NiswMDowMCIsICJlIjogIjIwMTctMDUtMDhUMjA6MDY6NTQuNTc3KzAwOjAwIn0sIHsiYiI6ICIyMDE3LTA1LTEwVDIwOjA2OjU0LjU3NiswMDowMCIsICJlIjogIjIwMTctMDUtMDhUMjA6MDY6NTQuNTc3KzAwOjAwIn0sIFsiZiJdLCBudWxsLCBbWyJhY2NvdW50LmlkIiwgIjU4MDUyMTg2NzhmYTE2MTNjNzkwYjUwZiJdLCBbImRvbWFpbi5uYW1lIiwgInNhbmRib3gyOTcwMTUyYWYzZDM0NTU5YmZjN2U3MTcwM2E2Y2YyNC5tYWlsZ3VuLm9yZyJdXSwgMTAwLCBudWxsXQ==\",
+        \n    \"last\": \"https://api.mailgun.net/v3/DOMAIN.TEST/events/W3siYiI6ICIyMDE3LTA1LTEwVDIwOjA2OjU0LjU3NiswMDowMCIsICJlIjogIjIwMTctMDUtMDhUMjA6MDY6NTQuNTc3KzAwOjAwIn0sIHsiYiI6ICIyMDE3LTA1LTA4VDIwOjA2OjU0LjU3NyswMDowMCIsICJlIjogIjIwMTctMDUtMTBUMjA6MDY6NTQuNTc2KzAwOjAwIn0sIFsicCIsICJmIl0sIG51bGwsIFtbImFjY291bnQuaWQiLCAiNTgwNTIxODY3OGZhMTYxM2M3OTBiNTBmIl0sIFsiZG9tYWluLm5hbWUiLCAic2FuZGJveDI5NzAxNTJhZjNkMzQ1NTliZmM3ZTcxNzAzYTZjZjI0Lm1haWxndW4ub3JnIl1dLCAxMDAsIG51bGxd\",
+        \n    \"first\": \"https://api.mailgun.net/v3/DOMAIN.TEST/events/W3siYiI6ICIyMDE3LTA1LTEwVDIwOjA2OjU0LjU3NiswMDowMCIsICJlIjogIjIwMTctMDUtMDhUMjA6MDY6NTQuNTc3KzAwOjAwIn0sIHsiYiI6ICIyMDE3LTA1LTEwVDIwOjA2OjU0LjU3NiswMDowMCIsICJlIjogIjIwMTctMDUtMDhUMjA6MDY6NTQuNTc3KzAwOjAwIn0sIFsiZiJdLCBudWxsLCBbWyJhY2NvdW50LmlkIiwgIjU4MDUyMTg2NzhmYTE2MTNjNzkwYjUwZiJdLCBbImRvbWFpbi5uYW1lIiwgInNhbmRib3gyOTcwMTUyYWYzZDM0NTU5YmZjN2U3MTcwM2E2Y2YyNC5tYWlsZ3VuLm9yZyJdXSwgMTAwLCBudWxsXQ==\",
+        \n    \"previous\": \"https://api.mailgun.net/v3/DOMAIN.TEST/events/W3siYiI6ICIyMDE3LTA1LTEwVDIwOjA2OjU0LjU3NiswMDowMCIsICJlIjogIjIwMTctMDUtMDhUMjA6MDY6NTQuNTc3KzAwOjAwIn0sIHsiYiI6ICIyMDE3LTA1LTEwVDIwOjA2OjU0LjU3NiswMDowMCIsICJlIjogIjIwMTctMDUtMTBUMjA6MDY6NTQuNTc3KzAwOjAwIn0sIFsicCIsICJmIl0sIG51bGwsIFtbImFjY291bnQuaWQiLCAiNTgwNTIxODY3OGZhMTYxM2M3OTBiNTBmIl0sIFsiZG9tYWluLm5hbWUiLCAic2FuZGJveDI5NzAxNTJhZjNkMzQ1NTliZmM3ZTcxNzAzYTZjZjI0Lm1haWxndW4ub3JnIl1dLCAxMDAsIG51bGxd\"\n
+        \ }\n}"
+    http_version:
+  recorded_at: Wed, 26 Feb 2025 18:43:10 GMT
+recorded_with: VCR 3.0.3

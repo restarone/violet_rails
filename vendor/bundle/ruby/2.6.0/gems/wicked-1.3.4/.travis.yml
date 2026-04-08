@@ -1,0 +1,28 @@
+language: ruby
+rvm:
+  - 1.9.3
+  - 2.0.0
+  - 2.1.1
+  - 2.2.2
+  - ruby-head
+  - jruby-19mode
+
+sudo: false
+
+gemfile:
+  - gemfiles/3.1.gemfile
+  - gemfiles/3.2.gemfile
+  - gemfiles/4.0.gemfile
+  - gemfiles/4.1.gemfile
+  - gemfiles/4.2.gemfile
+matrix:
+  include:
+    - gemfile: gemfiles/5.0.beta2.gemfile
+      rvm: 2.2.2
+  allow_failures:
+    - gemfile: gemfiles/3.0.gemfile
+      rvm: 2.0.0
+    - gemfile: gemfiles/3.0.gemfile
+      rvm: 2.1.1
+    - rvm: ruby-head
+

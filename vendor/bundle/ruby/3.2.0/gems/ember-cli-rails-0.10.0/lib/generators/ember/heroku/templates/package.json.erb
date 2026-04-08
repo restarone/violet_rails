@@ -1,0 +1,8 @@
+{
+  <% if EmberCli.any?(&:bower?) %>
+  "dependencies": {
+    "bower": "*"
+  },
+  <% end %>
+  "cacheDirectories": <%= cache_directories.to_json %>
+}

@@ -1,0 +1,82 @@
+module Wicked
+  module Wizard
+    module Translated
+      extend ActiveSupport::Concern
+      include Wicked::Wizard
+
+      included do
+        skip_before_action :setup_wizard
+        before_action :setup_wizard_translated
+
+        helper_method      :wizard_translate, :wizard_value
+      end
+
+      # creates a hash where keys are translated steps, values are the name of the view file
+      #
+      #  es:
+      #    hello: "hola mundo"
+      #    wicked:
+      #      first: "uno"
+      #      second: "dos"
+      #
+      #   steps :first, :second
+      #
+      # {:uno   => :first, :dos    => :second} # spanish
+      # {:first => :first, :second => :second} # english
+      #
+      def wizard_translations
+        @wizard_translations ||= steps.inject(ActiveSupport::OrderedHash.new) do |hash, step|
+          step              = step.to_s.split(".").last
+          translation       = wizard_translate(step)
+          hash[translation] = step.to_s
+          hash
+        end
+      end
+
+      # takes a canonical wizard value and translates to correct language
+      #
+      # es.yml
+      # wicked:
+      #   first: "uno"
+      #
+      #   wizard_translate("first") # => :uno
+      def wizard_translate(step_name)
+        I18n.t("wicked.#{step_name}")
+      end
+
+      # takes an already translated value and converts to a canonical wizard value
+      #
+      # es.yml
+      # wicked:
+      #   first: "uno"
+      #
+      #   wizard_value("uno") # => :first
+      #
+      def wizard_value(step_name)
+        wizard_translations["#{step_name}"]
+      end
+
+
+      # sets up a translated wizard controller
+      # translations are expected under the 'wicked' namespace
+      #
+      #  es:
+      #    hello: "hola mundo"
+      #    wicked:
+      #      first: "uno"
+      #      second: "dos"
+      #
+      # translation keys can be provided to `steps` with or without the 'wicked' key:
+      #
+      #     steps :first, :second
+      # or
+      #
+      #     steps "wicked.first", "wicked.second"
+      #
+      private def setup_wizard_translated
+        self.steps = wizard_translations.keys     # must come before setting previous/next steps
+        setup_wizard
+      end
+    end
+  end
+end

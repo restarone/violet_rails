@@ -1,0 +1,11 @@
+require 'responders'
+require "stripe/rails/version"
+require 'stripe/engine'
+require 'stripe/configuration_builder'
+require 'stripe/current_api_version'
+require 'stripe/plans'
+require 'stripe/prices'
+require 'stripe/billing_tier'
+require 'stripe/coupons'
+require 'stripe/products'
+require 'stripe/callbacks'

@@ -1,0 +1,6 @@
+pkg
+doc
+coverage
+ri
+*.swp
+Gemfile.lock

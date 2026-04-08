@@ -1,0 +1,13 @@
+.bundle/
+log/*.log
+pkg/
+demo/db/*.sqlite3
+demo/log/*.log
+demo/yarn.lock
+demo/tmp/
+*.gem
+.rbenv-gemsets
+*.swp
+Gemfile.lock
+.ruby-version
+coverage/

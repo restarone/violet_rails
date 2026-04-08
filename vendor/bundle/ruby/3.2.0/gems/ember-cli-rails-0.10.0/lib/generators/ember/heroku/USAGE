@@ -1,0 +1,18 @@
+Description:
+    Configures a project for deploying to Heroku.
+
+    Once the generator is complete, execute the following:
+
+        $ heroku buildpacks:clear
+        $ heroku buildpacks:add --index 1 heroku/nodejs
+        $ heroku buildpacks:add --index 2 heroku/ruby
+        $ heroku config:unset SKIP_EMBER
+
+Example:
+    rails generate ember:heroku
+
+    This will install the following gems:
+        rails_12factor
+
+    This will create:
+        package.json

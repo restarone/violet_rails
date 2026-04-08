@@ -1,0 +1,20 @@
+module MetaTags
+  type meta_tags = Hash[Renderer::meta_key, Renderer::meta_value]
+
+  self.@config: Configuration
+
+  def self.config: () -> Configuration
+  def self.configure: () { (Configuration) -> void } -> void
+
+  interface _Stringish
+    def to_str: () -> String
+  end
+
+  interface _Timish
+    def iso8601: () -> String
+  end
+
+  interface _MetaTagish
+    def to_meta_tags: () -> meta_tags
+  end
+end

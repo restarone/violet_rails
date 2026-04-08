@@ -1,0 +1,26 @@
+# frozen_string_literal: true
+
+require 'mocha/backtrace_filter'
+
+module Mocha
+  class Logger
+    class << self
+      attr_writer :logger
+
+      def warning(*args, **kwargs)
+        logger.warning(*args, **kwargs)
+      end
+
+      def logger
+        @logger ||= new
+      end
+    end
+
+    def warning(message, category: nil)
+      filter = BacktraceFilter.new
+      location = filter.filtered_locations(caller_locations)[0]
+      prefix = ['Mocha', category, 'warning'].compact.join(' ')
+      warn("#{prefix}: #{message} (at #{location.path}:#{location.lineno})")
+    end
+  end
+end

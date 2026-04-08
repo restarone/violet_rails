@@ -1,0 +1,277 @@
+# frozen_string_literal: true
+
+module Railgun
+  # Railgun::Mailer is an ActionMailer provider for sending mail through
+  # Mailgun.
+  class Mailer
+    # List of the headers that will be ignored when copying headers from `mail.header_fields`
+    IGNORED_HEADERS = %w[to from subject reply-to mime-version template].freeze
+
+    # [Hash] config ->
+    #   Requires *at least* `api_key` and `domain` keys.
+    attr_accessor :config, :domain, :settings
+
+    # Initialize the Railgun mailer.
+    #
+    # @param [Hash] config Hash of config values, typically from `app_config.action_mailer.mailgun_config`
+    def initialize(config)
+      @config = config
+
+      %i[api_key domain].each do |k|
+        raise Railgun::ConfigurationError.new("Config requires `#{k}` key", @config) unless @config.key?(k)
+      end
+
+      @mg_client = Mailgun::Client.new(
+        config[:api_key],
+        config[:api_host] || 'api.mailgun.net',
+        config[:api_version] || 'v3',
+        config[:api_ssl].nil? || config[:api_ssl],
+        false,
+        config[:timeout]
+      )
+      @domain = @config[:domain]
+
+      # To avoid exception in mail gem v2.6
+      @settings = { return_response: true }
+
+      return unless @config[:fake_message_send] || false
+
+      Rails.logger.info 'NOTE: fake message sending has been enabled for mailgun-ruby!'
+      @mg_client.enable_test_mode!
+    end
+
+    def deliver!(mail)
+      @mg_domain = mg_domain(mail)
+      @mg_client.set_api_key(mail[:api_key].value) if mail[:api_key].present?
+      @mg_client.set_subaccount(mail[:subaccount_id].value) if mail[:subaccount_id].present?
+
+      mail[:domain] = nil if mail[:domain].present?
+      mail[:api_key] = nil if mail[:api_key].present?
+      mail[:subaccount_id] = nil if mail[:subaccount_id].present?
+
+      mg_message = Railgun.transform_for_mailgun(mail)
+      response = @mg_client.send_message(@mg_domain, mg_message)
+
+      if response.code == 200
+        mg_id = response.to_h['id']
+        mail.message_id = mg_id
+      end
+      response
+    end
+
+    def mailgun_client
+      @mg_client
+    end
+
+    private
+
+    # Set @mg_domain from mail[:domain] header if present, then remove it to prevent being sent.
+    def mg_domain(mail)
+      return mail[:domain].value if mail[:domain]
+
+      domain
+    end
+  end
+
+  module_function
+
+  # Performs a series of transformations on the `mailgun*` attributes.
+  # After prefixing them with the proper option type, they are added to
+  # the message hash where they will then be sent to the API as JSON.
+  #
+  # It is important to note that headers set in `mailgun_headers` on the message
+  # WILL overwrite headers set via `mail.headers()`.
+  #
+  # @param [Mail::Message] mail message to transform
+  #
+  # @return [Hash] transformed message hash
+  def transform_for_mailgun(mail)
+    message = build_message_object(mail)
+
+    # o:* attributes (options)
+    mail.mailgun_options.try(:each) do |k, v|
+      message["o:#{k}"] = v.dup
+    end
+
+    # t:* attributes (options)
+    mail.mailgun_template_variables.try(:each) do |k, v|
+      message["t:#{k}"] = v.dup
+    end
+
+    # support for using ActionMailer's `headers()` inside of the mailer
+    # note: this will filter out parameters such as `from`, `to`, and so forth
+    #       as they are accepted as POST parameters on the message endpoint.
+
+    msg_headers = {}
+
+    # h:* attributes (headers)
+
+    # Let's set all of these headers on the [Mail::Message] so that
+    # the are created inside of a [Mail::Header] instance and processed there.
+    mail.headers(mail.mailgun_headers || {})
+    mail.header_fields.each do |field|
+      header = field.name.downcase
+      msg_headers[header] = if msg_headers.include? header
+                              [msg_headers[header], field.value].flatten
+                            else
+                              field.value
+                            end
+    end
+
+    msg_headers.each do |k, v|
+      if Railgun::Mailer::IGNORED_HEADERS.include? k.downcase
+        Rails.logger.debug("[railgun] ignoring header (using envelope instead): #{k}")
+        next
+      end
+
+      # Cover cases like `cc`, `bcc` where parameters are valid
+      # headers BUT they are submitted as separate POST params
+      # and already exist on the message because of the call to
+      # `build_message_object`.
+      if message.include? k.downcase
+        Rails.logger.debug("[railgun] ignoring header (already set): #{k}")
+        next
+      end
+
+      message["h:#{k}"] = v
+    end
+
+    # recipient variables
+    message['recipient-variables'] = mail.mailgun_recipient_variables.to_json if mail.mailgun_recipient_variables
+
+    # reject blank values
+    message.delete_if do |_k, v|
+      next true if v.nil?
+
+      # if it's an array remove empty elements
+      v.delete_if { |i| i.respond_to?(:empty?) && i.empty? } if v.is_a?(Array)
+
+      v.respond_to?(:empty?) && v.empty?
+    end
+
+    message
+  end
+
+  # Acts on a Rails/ActionMailer message object and uses Mailgun::MessageBuilder
+  # to construct a new message.
+  #
+  # @param [Mail::Message] mail message to transform
+  #
+  # @returns [Hash] Message hash from Mailgun::MessageBuilder
+  def build_message_object(mail)
+    mb = Mailgun::MessageBuilder.new
+
+    mb.from mail[:from]
+    mb.reply_to(mail[:reply_to].to_s) if mail[:reply_to].present?
+    mb.template(mail[:template].to_s) if mail[:template].present?
+    mb.subject mail.subject
+    mb.body_html extract_body_html(mail)
+    mb.body_text extract_body_text(mail)
+    mb.amp_html extract_amp_html(mail)
+
+    %i[to cc bcc].each do |rcpt_type|
+      addrs = mail[rcpt_type] || nil
+      case addrs
+      when String
+        # Likely a single recipient
+        mb.add_recipient rcpt_type.to_s, addrs
+      when Array
+        addrs.each do |addr|
+          mb.add_recipient rcpt_type.to_s, addr
+        end
+      when Mail::Field
+        mb.add_recipient rcpt_type.to_s, addrs.to_s
+      end
+    end
+
+    # v:* attributes (variables)
+    mail.mailgun_variables.try(:each) do |name, value|
+      mb.variable(name, value)
+    end
+
+    return mb.message if mail.attachments.empty?
+
+    mail.attachments.each do |attach|
+      attach = Attachment.new(attach, encoding: 'ascii-8bit', inline: attach.inline?)
+      attach.attach_to_message! mb
+    end
+
+    mb.message
+  end
+
+  # Returns the decoded HTML body from the Mail::Message object if available,
+  # otherwise nil.
+  #
+  # @param [Mail::Message] mail message to transform
+  #
+  # @return [String]
+  def extract_body_html(mail)
+    retrieve_html_part(mail).body.decoded || nil
+  rescue StandardError
+    nil
+  end
+
+  # Returns the decoded text body from the Mail::Message object if it is available,
+  # otherwise nil.
+  #
+  # @param [Mail::Message] mail message to transform
+  #
+  # @return [String]
+  def extract_body_text(mail)
+    retrieve_text_part(mail).body.decoded || nil
+  rescue StandardError
+    nil
+  end
+
+  # Returns the decoded AMP HTML from the Mail::Message object if it is available,
+  # otherwise nil.
+  #
+  # @param [Mail::Message] mail message to transform
+  #
+  # @return [String]
+  def extract_amp_html(mail)
+    retrieve_amp_part(mail).body.decoded || nil
+  rescue StandardError
+    nil
+  end
+
+  # Returns the mail object from the Mail::Message object if text part exists,
+  # (decomposing multipart into individual format if necessary)
+  # otherwise nil.
+  #
+  # @param [Mail::Message] mail message to transform
+  #
+  # @return [Mail::Message] mail message with its content-type = text/plain
+  def retrieve_text_part(mail)
+    return mail.text_part if mail.multipart?
+
+    (mail.mime_type =~ %r{^text/plain$}i) && mail
+  end
+
+  # Returns the mail object from the Mail::Message object if html part exists,
+  # (decomposing multipart into individual format if necessary)
+  # otherwise nil.
+  #
+  # @param [Mail::Message] mail message to transform
+  #
+  # @return [Mail::Message] mail message with its content-type = text/html
+  def retrieve_html_part(mail)
+    return mail.html_part if mail.multipart?
+
+    (mail.mime_type =~ %r{^text/html$}i) && mail
+  end
+
+  # Returns the mail object from the Mail::Message object if AMP part exists,
+  # (decomposing multipart into individual format if necessary)
+  # otherwise nil.
+  #
+  # @param [Mail::Message] mail message to transform
+  #
+  # @return [Mail::Message] mail message with its content-type = text/x-amp-html
+  def retrieve_amp_part(mail)
+    # AMP emails should always be multipart, with an HTML fallback.
+    return unless mail.multipart?
+
+    mail.find_first_mime_type('text/x-amp-html')
+  end
+end

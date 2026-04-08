@@ -1,0 +1,148 @@
+# frozen_string_literal: true
+
+require 'spec_helper'
+
+describe 'BatchMessage attribute readers' do
+  it 'is readable' do
+    @mb_client = Mailgun::UnitClient.new('messages')
+    @mb_obj = Mailgun::BatchMessage.new(@mb_client, 'example.com')
+
+    expect(@mb_obj).to respond_to(:message_ids)
+    expect(@mb_obj).to respond_to(:message)
+    expect(@mb_obj).to respond_to(:counters)
+    expect(@mb_obj).to respond_to(:recipient_variables)
+    expect(@mb_obj).to respond_to(:domain)
+  end
+end
+
+describe 'The instantiation of Batch Message' do
+  before do
+    @mb_client = Mailgun::UnitClient.new('messages')
+    @mb_obj = Mailgun::BatchMessage.new(@mb_client, 'example.com')
+  end
+
+  it 'contains Message, which should be of type Hash and empty' do
+    expect(@mb_obj.message).to be_a(Hash)
+    expect(@mb_obj.message.length).to eq(0)
+  end
+
+  it 'contains recipient_variables, which should be of type Hash and empty' do
+    expect(@mb_obj.recipient_variables).to be_a(Hash)
+    expect(@mb_obj.recipient_variables.length).to eq(0)
+  end
+
+  it 'contains domain, which should be of type string and contain example.com' do
+    expect(@mb_obj.domain).to be_a(String)
+    expect(@mb_obj.domain).to eq('example.com')
+  end
+
+  it 'contains message_ids, which should be of type hash and empty' do
+    expect(@mb_obj.message_ids).to be_a(Hash)
+    expect(@mb_obj.message_ids.length).to eq(0)
+  end
+
+  it 'contains counters, which should be of type hash and contain several important counters' do
+    expect(@mb_obj.counters).to be_a(Hash)
+    expect(@mb_obj.counters).to include(:recipients)
+  end
+
+  it 'contains counters, which should be of type hash and contain several important counters' do
+    expect(@mb_obj.counters).to be_a(Hash)
+
+    expect(@mb_obj.counters).to include(:recipients)
+    expect(@mb_obj.counters[:recipients]).to include(:to)
+    expect(@mb_obj.counters[:recipients]).to include(:cc)
+    expect(@mb_obj.counters[:recipients]).to include(:bcc)
+
+    expect(@mb_obj.counters).to include(:attributes)
+    expect(@mb_obj.counters[:attributes]).to include(:attachment)
+    expect(@mb_obj.counters[:attributes]).to include(:campaign_id)
+    expect(@mb_obj.counters[:attributes]).to include(:custom_option)
+    expect(@mb_obj.counters[:attributes]).to include(:tag)
+  end
+end
+
+describe 'The method add_recipient' do
+  before do
+    @mb_client = Mailgun::UnitClient.new('messages')
+    @mb_obj = Mailgun::BatchMessage.new(@mb_client, 'example.com')
+    @address1   = 'jane@example.com'
+    @variables1 = { 'first' => 'Jane', 'last' => 'Doe', 'tracking' => 'ABC123' }
+    @address2   = 'bob@example.com'
+    @variables2 = { 'first' => 'Bob', 'last' => 'Doe', 'tracking' => 'DEF123' }
+    @address3   = 'sam@example.com'
+    @variables3 = { 'first' => 'Sam', 'last' => 'Doe', 'tracking' => 'GHI123' }
+  end
+
+  context 'when from is present' do
+    before do
+      @mb_obj.from('example@email.com')
+    end
+
+    it 'adds 1,000 recipients to the message body and validates counter is incremented then reset' do
+      recipient_type = :to
+      1000.times do
+        @mb_obj.add_recipient(recipient_type, @address1, @variables1)
+      end
+
+      expect(@mb_obj.counters[:recipients][recipient_type]).to eq(1000)
+
+      @mb_obj.add_recipient(recipient_type, @address1, @variables1)
+
+      expect(@mb_obj.counters[:recipients][recipient_type]).to eq(1)
+    end
+
+    it 'adds recipients to the message, calls finalize, and cleans up' do
+      recipient_type = :to
+      1000.times do
+        @mb_obj.add_recipient(recipient_type, @address1, @variables1)
+      end
+
+      expect(@mb_obj.counters[:recipients][recipient_type]).to eq(1000)
+      @mb_obj.finalize
+
+      expect(@mb_obj.recipient_variables).to eq({})
+      expect(@mb_obj.message['recipient-variables'].length).to eq(0)
+      expect(@mb_obj.message[:to].length).to eq(0)
+      expect(@mb_obj.counters[:recipients][recipient_type]).to eq(0)
+    end
+
+    it 'adds 5,005 recipients to the message body and validates we receive message_ids back' do
+      recipient_type = :to
+      5005.times do
+        @mb_obj.add_recipient(recipient_type, @address1, @variables1)
+      end
+      @mb_obj.finalize
+
+      expect(@mb_obj.message_ids.length).to eq(6)
+    end
+
+    it 'sets recipient-variables, for batch expansion' do
+      recipient_type = :to
+      @mb_obj.add_recipient(recipient_type, @address1, @variables1)
+
+      expect(@mb_obj.recipient_variables[@address1]).to eq(@variables1)
+    end
+
+    it 'sets multiple recipient-variables, for batch expansion' do
+      recipient_type = :to
+      @mb_obj.add_recipient(recipient_type, @address1, @variables1)
+      @mb_obj.add_recipient(recipient_type, @address2, @variables2)
+      @mb_obj.add_recipient(recipient_type, @address3, @variables3)
+
+      expect(@mb_obj.recipient_variables[@address1]).to eq(@variables1)
+      expect(@mb_obj.recipient_variables[@address2]).to eq(@variables2)
+      expect(@mb_obj.recipient_variables[@address3]).to eq(@variables3)
+    end
+  end
+
+  context 'when from is empty' do
+    it 'shows error message' do
+      recipient_type = :to
+      @mb_obj.add_recipient(recipient_type, @address1, @variables1)
+      @mb_obj.add_recipient(recipient_type, @address2, @variables2)
+      expect(@mb_client).to receive(:raise)
+      @mb_obj.finalize
+    end
+  end
+end
