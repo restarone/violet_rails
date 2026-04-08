@@ -1,0 +1,35 @@
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/stackprof-0.2.28/ext/stackprof
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/bin/ruby -I /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/lib/ruby/3.2.0 extconf.rb
+checking for rb_postponed_job_preregister()... no
+checking for rb_postponed_job_register_one()... yes
+checking for rb_profile_frames()... yes
+checking for rb_tracepoint_new()... yes
+checking for RUBY_INTERNAL_EVENT_NEWOBJ... yes
+creating Makefile
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/stackprof-0.2.28/ext/stackprof
+make DESTDIR\= sitearchdir\=./.gem.20260408-47331-cuud96 sitelibdir\=./.gem.20260408-47331-cuud96 clean
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/stackprof-0.2.28/ext/stackprof
+make DESTDIR\= sitearchdir\=./.gem.20260408-47331-cuud96 sitelibdir\=./.gem.20260408-47331-cuud96
+compiling stackprof.c
+In file included from stackprof.c:9:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/ruby.h:28:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic/char.h:29:
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rstring.h:465:24: warning: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Wdefault-const-init-field-unsafe]
+  465 |         struct RString retval;
+      |                        ^
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 warning generated.
+linking shared-object stackprof/stackprof.bundle
+ld: warning: ignoring duplicate libraries: '-lruby.3.2'
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/stackprof-0.2.28/ext/stackprof
+make DESTDIR\= sitearchdir\=./.gem.20260408-47331-cuud96 sitelibdir\=./.gem.20260408-47331-cuud96 install
+/usr/bin/install -c -m 0755 stackprof.bundle ./.gem.20260408-47331-cuud96/stackprof
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/stackprof-0.2.28/ext/stackprof
+make DESTDIR\= sitearchdir\=./.gem.20260408-47331-cuud96 sitelibdir\=./.gem.20260408-47331-cuud96 clean

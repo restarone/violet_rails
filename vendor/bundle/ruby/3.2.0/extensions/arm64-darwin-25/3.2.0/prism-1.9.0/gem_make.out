@@ -1,0 +1,84 @@
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/prism-1.9.0/ext/prism
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/bin/ruby -I /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/lib/ruby/3.2.0 extconf.rb
+checking for prism.h in /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/prism-1.9.0/include... yes
+checking for prism/extension.h in /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/prism-1.9.0/ext... yes
+checking for whether -fvisibility=hidden is accepted as CFLAGS... no
+creating Makefile
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/prism-1.9.0/ext/prism
+make DESTDIR\= sitearchdir\=./.gem.20260408-47331-533b9a sitelibdir\=./.gem.20260408-47331-533b9a clean
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/prism-1.9.0/ext/prism
+make DESTDIR\= sitearchdir\=./.gem.20260408-47331-533b9a sitelibdir\=./.gem.20260408-47331-533b9a
+compiling api_node.c
+In file included from prism/templates/ext/prism/api_node.c.erb:2:
+In file included from /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/prism-1.9.0/ext/prism/extension.h:6:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby.h:38:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/ruby.h:28:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic/char.h:29:
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rstring.h:465:24: warning: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Wdefault-const-init-field-unsafe]
+  465 |         struct RString retval;
+      |                        ^
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 warning generated.
+compiling api_pack.c
+In file included from api_pack.c:1:
+In file included from /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/prism-1.9.0/ext/prism/extension.h:6:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby.h:38:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/ruby.h:28:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic/char.h:29:
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rstring.h:465:24: warning: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Wdefault-const-init-field-unsafe]
+  465 |         struct RString retval;
+      |                        ^
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 warning generated.
+compiling extension.c
+In file included from extension.c:1:
+In file included from /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/prism-1.9.0/ext/prism/extension.h:6:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby.h:38:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/ruby.h:28:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic/char.h:29:
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rstring.h:465:24: warning: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Wdefault-const-init-field-unsafe]
+  465 |         struct RString retval;
+      |                        ^
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 warning generated.
+compiling ./../../src/diagnostic.c
+compiling ./../../src/encoding.c
+compiling ./../../src/node.c
+compiling ./../../src/options.c
+compiling ./../../src/pack.c
+compiling ./../../src/prettyprint.c
+compiling ./../../src/prism.c
+compiling ./../../src/regexp.c
+compiling ./../../src/serialize.c
+compiling ./../../src/static_literals.c
+compiling ./../../src/token_type.c
+compiling ./../../src/util/pm_buffer.c
+compiling ./../../src/util/pm_char.c
+compiling ./../../src/util/pm_constant_pool.c
+compiling ./../../src/util/pm_integer.c
+compiling ./../../src/util/pm_list.c
+compiling ./../../src/util/pm_memchr.c
+compiling ./../../src/util/pm_newline_list.c
+compiling ./../../src/util/pm_string.c
+compiling ./../../src/util/pm_strncasecmp.c
+compiling ./../../src/util/pm_strpbrk.c
+linking shared-object prism/prism.bundle
+ld: warning: ignoring duplicate libraries: '-lruby.3.2'
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/prism-1.9.0/ext/prism
+make DESTDIR\= sitearchdir\=./.gem.20260408-47331-533b9a sitelibdir\=./.gem.20260408-47331-533b9a install
+/usr/bin/install -c -m 0755 prism.bundle ./.gem.20260408-47331-533b9a/prism
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/prism-1.9.0/ext/prism
+make DESTDIR\= sitearchdir\=./.gem.20260408-47331-533b9a sitelibdir\=./.gem.20260408-47331-533b9a clean

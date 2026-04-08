@@ -1,3 +1,6 @@
+def next?
+  File.basename(__FILE__) == "Gemfile.next"
+end
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
@@ -7,13 +10,22 @@ if ENV['RUBY_BUILD'] == '3.0.0'
 elsif ENV['RUBY_BUILD'] == '2.7.8'
   # development/develop ruby version
   ruby '2.7.8'
+elsif next?
+  # Next Rails version requires Ruby >= 2.7.0
+  ruby '>= 2.7.0'
 else
   # production/stable ruby version
-  ruby '2.6.6'
+  ruby '~> 2.6.0'
 end
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails', branch: 'main'
-gem 'rails', '~> 6.1.5'
+if next?
+  gem 'rails', '~> 7.0.0'
+else
+  gem 'rails', '~> 6.1.5'
+end
+
+gem 'next_rails'
 # Use postgresql as the database for Active Record
 gem 'pg', '~> 1.1'
 # Use Puma as the app server

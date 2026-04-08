@@ -1,0 +1,22 @@
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/2.6.0/gems/puma-5.6.4/ext/puma_http11
+/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/bin/ruby -I /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0 -r ./siteconf20260408-72979-l2j7hl.rb extconf.rb
+checking for BIO_read() in -lcrypto... no
+checking for BIO_read() in -llibeay32... no
+** Puma will be compiled without SSL support
+creating Makefile
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/2.6.0/gems/puma-5.6.4/ext/puma_http11
+make "DESTDIR=" clean
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/2.6.0/gems/puma-5.6.4/ext/puma_http11
+make "DESTDIR="
+compiling http11_parser.c
+compiling mini_ssl.c
+compiling puma_http11.c
+linking shared-object puma/puma_http11.bundle
+ld: warning: search path '/AppleInternal/Library/BuildRoots/4~CB3uugBQxypsiyQCrI82QcTPBCns7_J7YMudMGY/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.Internal.sdk/usr/local/libressl-by-deployment-target/14.0/lib' not found
+ld: warning: search path '/AppleInternal/Library/BuildRoots/4~CB3uugBQxypsiyQCrI82QcTPBCns7_J7YMudMGY/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.Internal.sdk/usr/local/lib' not found
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/2.6.0/gems/puma-5.6.4/ext/puma_http11
+make "DESTDIR=" install
+/usr/bin/install -c -m 0755 puma_http11.bundle ./.gem.20260408-72979-1cln73w/puma

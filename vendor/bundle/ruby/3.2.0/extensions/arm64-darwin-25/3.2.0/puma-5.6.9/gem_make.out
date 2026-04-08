@@ -1,0 +1,69 @@
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/puma-5.6.9/ext/puma_http11
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/bin/ruby -I /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/lib/ruby/3.2.0 extconf.rb
+checking for BIO_read() in -lcrypto... yes
+checking for SSL_CTX_new() in -lssl... yes
+checking for openssl/bio.h... yes
+checking for DTLS_method() in openssl/ssl.h... yes
+checking for TLS_server_method() in openssl/ssl.h... yes
+checking for SSL_CTX_set_min_proto_version(NULL, 0) in openssl/ssl.h... yes
+checking for X509_STORE_up_ref()... yes
+checking for SSL_CTX_set_ecdh_auto(NULL, 0) in openssl/ssl.h... yes
+checking for SSL_CTX_set_dh_auto(NULL, 0) in openssl/ssl.h... yes
+checking for SSL_get1_peer_certificate() in openssl/ssl.h... yes
+checking for Random.bytes... yes
+creating Makefile
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/puma-5.6.9/ext/puma_http11
+make DESTDIR\= sitearchdir\=./.gem.20260408-47331-t8ek1f sitelibdir\=./.gem.20260408-47331-t8ek1f clean
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/puma-5.6.9/ext/puma_http11
+make DESTDIR\= sitearchdir\=./.gem.20260408-47331-t8ek1f sitelibdir\=./.gem.20260408-47331-t8ek1f
+compiling http11_parser.c
+In file included from ext/puma_http11/http11_parser.rl:6:
+In file included from ./http11_parser.h:11:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby.h:38:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/ruby.h:28:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic/char.h:29:
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rstring.h:465:24: warning: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Wdefault-const-init-field-unsafe]
+  465 |         struct RString retval;
+      |                        ^
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 warning generated.
+compiling mini_ssl.c
+In file included from mini_ssl.c:3:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby.h:38:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/ruby.h:28:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic/char.h:29:
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rstring.h:465:24: warning: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Wdefault-const-init-field-unsafe]
+  465 |         struct RString retval;
+      |                        ^
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 warning generated.
+compiling puma_http11.c
+In file included from puma_http11.c:9:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby.h:38:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/ruby.h:28:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic/char.h:29:
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rstring.h:465:24: warning: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Wdefault-const-init-field-unsafe]
+  465 |         struct RString retval;
+      |                        ^
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 warning generated.
+linking shared-object puma/puma_http11.bundle
+ld: warning: ignoring duplicate libraries: '-lruby.3.2'
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/puma-5.6.9/ext/puma_http11
+make DESTDIR\= sitearchdir\=./.gem.20260408-47331-t8ek1f sitelibdir\=./.gem.20260408-47331-t8ek1f install
+/usr/bin/install -c -m 0755 puma_http11.bundle ./.gem.20260408-47331-t8ek1f/puma
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/puma-5.6.9/ext/puma_http11
+make DESTDIR\= sitearchdir\=./.gem.20260408-47331-t8ek1f sitelibdir\=./.gem.20260408-47331-t8ek1f clean

@@ -1,0 +1,30 @@
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/2.6.0/gems/bcrypt_pbkdf-1.1.0/ext/mri
+/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/bin/ruby -I /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0 -r ./siteconf20260408-72979-1ao7btl.rb extconf.rb
+creating Makefile
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/2.6.0/gems/bcrypt_pbkdf-1.1.0/ext/mri
+make "DESTDIR=" clean
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/2.6.0/gems/bcrypt_pbkdf-1.1.0/ext/mri
+make "DESTDIR="
+compiling bcrypt_pbkdf.c
+bcrypt_pbkdf.c:81:40: warning: expression does not compute the number of elements in this array; element type is 'uint32_t' (aka 'unsigned int'), not 'uint64_t' (aka 'unsigned long long') [-Wsizeof-array-div]
+   81 |                 blf_enc(&state, cdata, sizeof(cdata) / sizeof(uint64_t));
+      |                                               ~~~~~  ^
+bcrypt_pbkdf.c:62:11: note: array 'cdata' declared here
+   62 |         uint32_t cdata[BCRYPT_WORDS];
+      |                  ^
+bcrypt_pbkdf.c:81:40: note: place parentheses around the 'sizeof(uint64_t)' expression to silence this warning
+   81 |                 blf_enc(&state, cdata, sizeof(cdata) / sizeof(uint64_t));
+      |                                                      ^
+1 warning generated.
+compiling bcrypt_pbkdf_ext.c
+compiling blowfish.c
+compiling explicit_bzero.c
+compiling hash_sha512.c
+linking shared-object bcrypt_pbkdf_ext.bundle
+ld: warning: search path '/AppleInternal/Library/BuildRoots/4~CB3uugBQxypsiyQCrI82QcTPBCns7_J7YMudMGY/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.Internal.sdk/usr/local/lib' not found
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/2.6.0/gems/bcrypt_pbkdf-1.1.0/ext/mri
+make "DESTDIR=" install
+/usr/bin/install -c -m 0755 bcrypt_pbkdf_ext.bundle ./.gem.20260408-72979-1rtjbpf

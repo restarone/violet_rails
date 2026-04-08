@@ -1,0 +1,61 @@
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/bigdecimal-4.1.1/ext/bigdecimal
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/bin/ruby -I /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/lib/ruby/3.2.0 extconf.rb
+checking for __builtin_clz()... yes
+checking for __builtin_clzl()... yes
+checking for __builtin_clzll()... yes
+checking for float.h... yes
+checking for math.h... yes
+checking for stdbool.h... yes
+checking for stdlib.h... yes
+checking for x86intrin.h... no
+checking for intrin.h... no
+checking for ruby/atomic.h... yes
+checking for ruby/internal/has/builtin.h... yes
+checking for ruby/internal/static_assert.h... yes
+checking for rb_complex_real() in ruby.h... yes
+checking for rb_complex_imag() in ruby.h... yes
+checking for rb_opts_exception_p() in ruby.h... yes
+checking for rb_category_warn() in ruby.h... yes
+checking for RB_WARN_CATEGORY_DEPRECATED in ruby.h... yes
+checking for RUBY_TYPED_EMBEDDABLE in ruby.h... no
+creating Makefile
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/bigdecimal-4.1.1/ext/bigdecimal
+make DESTDIR\= sitearchdir\=./.gem.20260408-47331-7o3uk2 sitelibdir\=./.gem.20260408-47331-7o3uk2 clean
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/bigdecimal-4.1.1/ext/bigdecimal
+make DESTDIR\= sitearchdir\=./.gem.20260408-47331-7o3uk2 sitelibdir\=./.gem.20260408-47331-7o3uk2
+compiling bigdecimal.c
+In file included from bigdecimal.c:11:
+In file included from ./bigdecimal.h:13:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/ruby.h:28:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic/char.h:29:
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rstring.h:465:24: warning: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Wdefault-const-init-field-unsafe]
+  465 |         struct RString retval;
+      |                        ^
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 warning generated.
+compiling missing.c
+In file included from missing.c:1:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/ruby.h:28:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic/char.h:29:
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rstring.h:465:24: warning: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Wdefault-const-init-field-unsafe]
+  465 |         struct RString retval;
+      |                        ^
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 warning generated.
+linking shared-object bigdecimal.bundle
+ld: warning: ignoring duplicate libraries: '-lruby.3.2'
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/bigdecimal-4.1.1/ext/bigdecimal
+make DESTDIR\= sitearchdir\=./.gem.20260408-47331-7o3uk2 sitelibdir\=./.gem.20260408-47331-7o3uk2 install
+/usr/bin/install -c -m 0755 bigdecimal.bundle ./.gem.20260408-47331-7o3uk2
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/3.2.0/gems/bigdecimal-4.1.1/ext/bigdecimal
+make DESTDIR\= sitearchdir\=./.gem.20260408-47331-7o3uk2 sitelibdir\=./.gem.20260408-47331-7o3uk2 clean

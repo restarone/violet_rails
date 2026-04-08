@@ -1,0 +1,9 @@
+<% module_namespacing_when_supported do -%>
+module Types
+  module BaseInterface
+    include GraphQL::Schema::Interface
+
+    field_class Types::BaseField
+  end
+end
+<% end -%>

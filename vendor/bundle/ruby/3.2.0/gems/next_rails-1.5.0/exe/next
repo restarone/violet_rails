@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+# Ruby wrapper around next.sh so it works with Rubygems
+exe_dir = File.expand_path(File.dirname(__FILE__))
+exec(File.join(exe_dir, 'next.sh'), *ARGV)

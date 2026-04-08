@@ -1,0 +1,63 @@
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  DisplayCopNames: true
+  DisplayStyleGuide: true
+  TargetRubyVersion: 2.5
+
+Lint/AmbiguousBlockAssociation:
+  Enabled: false
+Metrics/BlockLength:
+  Exclude:
+    - "sshkit.gemspec"
+    - "spec/**/*"
+    - "lib/**/*.rake"
+Style/BarePercentLiterals:
+  EnforcedStyle: percent_q
+Style/ClassAndModuleChildren:
+  Enabled: false
+Style/DoubleNegation:
+  Enabled: false
+Naming/FileName:
+  Exclude:
+    - "Dangerfile"
+Layout/IndentHeredoc:
+  Enabled: false
+Layout/SpaceAroundEqualsInParameterDefault:
+  EnforcedStyle: no_space
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+Style/TrivialAccessors:
+  AllowPredicates: true
+Style/PercentLiteralDelimiters:
+  Enabled: false
+Style/SingleLineBlockParams:
+  Enabled: false
+Style/ModuleFunction:
+  Enabled: false
+
+# Enable someday
+Style/Documentation:
+  Enabled: false
+
+# Needs refactors
+Metrics/PerceivedComplexity:
+  Enabled: false
+Metrics/CyclomaticComplexity:
+  Enabled: false
+Metrics/MethodLength:
+  Enabled: false
+Naming/PredicateName:
+  Enabled: false
+Metrics/LineLength:
+  Enabled: false
+Metrics/AbcSize:
+  Enabled: false
+Style/PerlBackrefs:
+  Enabled: false
+Metrics/ClassLength:
+  Enabled: false
+Metrics/ModuleLength:
+  Enabled: false
+Naming/AccessorMethodName:
+  Enabled: false

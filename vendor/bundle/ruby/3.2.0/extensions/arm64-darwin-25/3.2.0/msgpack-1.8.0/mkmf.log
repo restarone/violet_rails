@@ -1,0 +1,370 @@
+have_func: checking for rb_enc_interned_str() in ruby.h... -------------------- yes
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/lib "clang -o conftest -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/arm64-darwin25 -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/backward -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0 -I. -I/opt/homebrew/opt/gmp/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wextra-tokens -Wdeprecated-declarations -Wdivision-by-zero -Wdiv-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wundef  -fno-common -pipe conftest.c  -L. -L/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/lib -L. -fstack-protector-strong -L/opt/homebrew/opt/gmp/lib     -lruby.3.2  -lpthread  "
+In file included from conftest.c:1:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby.h:38:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/ruby.h:28:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic/char.h:29:
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rstring.h:465:24: warning: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Wdefault-const-init-field-unsafe]
+  465 |         struct RString retval;
+      |                        ^
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 warning generated.
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: int main(int argc, char **argv)
+4: {
+5:   return !!argv[argc];
+6: }
+/* end */
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/lib "clang -o conftest -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/arm64-darwin25 -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/backward -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0 -I. -I/opt/homebrew/opt/gmp/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wextra-tokens -Wdeprecated-declarations -Wdivision-by-zero -Wdiv-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wundef  -fno-common -pipe conftest.c  -L. -L/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/lib -L. -fstack-protector-strong -L/opt/homebrew/opt/gmp/lib     -lruby.3.2  -lpthread  "
+In file included from conftest.c:1:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby.h:38:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/ruby.h:28:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic/char.h:29:
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rstring.h:465:24: warning: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Wdefault-const-init-field-unsafe]
+  465 |         struct RString retval;
+      |                        ^
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+conftest.c:16:57: error: use of undeclared identifier 'rb_enc_interned_str'
+   16 | int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_enc_interned_str; return !p; }
+      |                                                         ^~~~~~~~~~~~~~~~~~~
+1 warning and 1 error generated.
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: #include <ruby.h>
+ 4: 
+ 5: /*top*/
+ 6: extern int t(void);
+ 7: int main(int argc, char **argv)
+ 8: {
+ 9:   if (argc > 1000000) {
+10:     int (* volatile tp)(void)=(int (*)(void))&t;
+11:     printf("%d", (*tp)());
+12:   }
+13: 
+14:   return !!argv[argc];
+15: }
+16: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_enc_interned_str; return !p; }
+/* end */
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/lib "clang -o conftest -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/arm64-darwin25 -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/backward -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0 -I. -I/opt/homebrew/opt/gmp/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wextra-tokens -Wdeprecated-declarations -Wdivision-by-zero -Wdiv-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wundef  -fno-common -pipe conftest.c  -L. -L/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/lib -L. -fstack-protector-strong -L/opt/homebrew/opt/gmp/lib     -lruby.3.2  -lpthread  "
+In file included from conftest.c:1:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby.h:38:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/ruby.h:28:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic/char.h:29:
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rstring.h:465:24: warning: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Wdefault-const-init-field-unsafe]
+  465 |         struct RString retval;
+      |                        ^
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 warning generated.
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: #include <ruby.h>
+ 4: 
+ 5: /*top*/
+ 6: extern int t(void);
+ 7: int main(int argc, char **argv)
+ 8: {
+ 9:   if (argc > 1000000) {
+10:     int (* volatile tp)(void)=(int (*)(void))&t;
+11:     printf("%d", (*tp)());
+12:   }
+13: 
+14:   return !!argv[argc];
+15: }
+16: extern void rb_enc_interned_str();
+17: int t(void) { rb_enc_interned_str(); return 0; }
+/* end */
+
+--------------------
+
+have_func: checking for rb_hash_new_capa() in ruby.h... -------------------- yes
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/lib "clang -o conftest -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/arm64-darwin25 -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/backward -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0 -I. -I/opt/homebrew/opt/gmp/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wextra-tokens -Wdeprecated-declarations -Wdivision-by-zero -Wdiv-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wundef  -fno-common -pipe conftest.c  -L. -L/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/lib -L. -fstack-protector-strong -L/opt/homebrew/opt/gmp/lib     -lruby.3.2  -lpthread  "
+In file included from conftest.c:1:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby.h:38:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/ruby.h:28:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic/char.h:29:
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rstring.h:465:24: warning: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Wdefault-const-init-field-unsafe]
+  465 |         struct RString retval;
+      |                        ^
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 warning generated.
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: #include <ruby.h>
+ 4: 
+ 5: /*top*/
+ 6: extern int t(void);
+ 7: int main(int argc, char **argv)
+ 8: {
+ 9:   if (argc > 1000000) {
+10:     int (* volatile tp)(void)=(int (*)(void))&t;
+11:     printf("%d", (*tp)());
+12:   }
+13: 
+14:   return !!argv[argc];
+15: }
+16: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_hash_new_capa; return !p; }
+/* end */
+
+--------------------
+
+have_func: checking for rb_proc_call_with_block() in ruby.h... -------------------- yes
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/lib "clang -o conftest -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/arm64-darwin25 -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/backward -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0 -I. -I/opt/homebrew/opt/gmp/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wextra-tokens -Wdeprecated-declarations -Wdivision-by-zero -Wdiv-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wundef  -fno-common -pipe conftest.c  -L. -L/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/lib -L. -fstack-protector-strong -L/opt/homebrew/opt/gmp/lib     -lruby.3.2  -lpthread  "
+In file included from conftest.c:1:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby.h:38:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/ruby.h:28:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic/char.h:29:
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rstring.h:465:24: warning: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Wdefault-const-init-field-unsafe]
+  465 |         struct RString retval;
+      |                        ^
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 warning generated.
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: #include <ruby.h>
+ 4: 
+ 5: /*top*/
+ 6: extern int t(void);
+ 7: int main(int argc, char **argv)
+ 8: {
+ 9:   if (argc > 1000000) {
+10:     int (* volatile tp)(void)=(int (*)(void))&t;
+11:     printf("%d", (*tp)());
+12:   }
+13: 
+14:   return !!argv[argc];
+15: }
+16: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_proc_call_with_block; return !p; }
+/* end */
+
+--------------------
+
+have_func: checking for rb_gc_mark_locations() in ruby.h... -------------------- yes
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/lib "clang -o conftest -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/arm64-darwin25 -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/backward -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0 -I. -I/opt/homebrew/opt/gmp/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wextra-tokens -Wdeprecated-declarations -Wdivision-by-zero -Wdiv-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wundef  -fno-common -pipe conftest.c  -L. -L/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/lib -L. -fstack-protector-strong -L/opt/homebrew/opt/gmp/lib     -lruby.3.2  -lpthread  "
+In file included from conftest.c:1:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby.h:38:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/ruby.h:28:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic/char.h:29:
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rstring.h:465:24: warning: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Wdefault-const-init-field-unsafe]
+  465 |         struct RString retval;
+      |                        ^
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 warning generated.
+checked program was:
+/* begin */
+ 1: #include "ruby.h"
+ 2: 
+ 3: #include <ruby.h>
+ 4: 
+ 5: /*top*/
+ 6: extern int t(void);
+ 7: int main(int argc, char **argv)
+ 8: {
+ 9:   if (argc > 1000000) {
+10:     int (* volatile tp)(void)=(int (*)(void))&t;
+11:     printf("%d", (*tp)());
+12:   }
+13: 
+14:   return !!argv[argc];
+15: }
+16: int t(void) { void ((*volatile p)()); p = (void ((*)()))rb_gc_mark_locations; return !p; }
+/* end */
+
+--------------------
+
+block in append_cflags: checking for whether -fvisibility=hidden is accepted as CFLAGS... -------------------- no
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/lib "clang -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/arm64-darwin25 -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/backward -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0 -I. -I/opt/homebrew/opt/gmp/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wextra-tokens -Wdeprecated-declarations -Wdivision-by-zero -Wdiv-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wundef  -fno-common -pipe  -fvisibility=hidden -Werror -c conftest.c"
+In file included from conftest.c:1:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby.h:38:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/ruby.h:28:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic/char.h:29:
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rstring.h:465:24: error: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Werror,-Wdefault-const-init-field-unsafe]
+  465 |         struct RString retval;
+      |                        ^
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 error generated.
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: int main(int argc, char **argv)
+4: {
+5:   return !!argv[argc];
+6: }
+/* end */
+
+--------------------
+
+block in append_cflags: checking for whether -I.. is accepted as CFLAGS... -------------------- no
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/lib "clang -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/arm64-darwin25 -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/backward -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0 -I. -I/opt/homebrew/opt/gmp/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wextra-tokens -Wdeprecated-declarations -Wdivision-by-zero -Wdiv-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wundef  -fno-common -pipe  -I.. -Werror -c conftest.c"
+In file included from conftest.c:1:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby.h:38:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/ruby.h:28:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic/char.h:29:
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rstring.h:465:24: error: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Werror,-Wdefault-const-init-field-unsafe]
+  465 |         struct RString retval;
+      |                        ^
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 error generated.
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: int main(int argc, char **argv)
+4: {
+5:   return !!argv[argc];
+6: }
+/* end */
+
+--------------------
+
+block in append_cflags: checking for whether -Wall is accepted as CFLAGS... -------------------- no
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/lib "clang -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/arm64-darwin25 -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/backward -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0 -I. -I/opt/homebrew/opt/gmp/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wextra-tokens -Wdeprecated-declarations -Wdivision-by-zero -Wdiv-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wundef  -fno-common -pipe  -Wall -Werror -c conftest.c"
+In file included from conftest.c:1:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby.h:38:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/ruby.h:28:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic/char.h:29:
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rstring.h:465:24: error: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Werror,-Wdefault-const-init-field-unsafe]
+  465 |         struct RString retval;
+      |                        ^
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 error generated.
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: int main(int argc, char **argv)
+4: {
+5:   return !!argv[argc];
+6: }
+/* end */
+
+--------------------
+
+block in append_cflags: checking for whether -std=gnu99 is accepted as CFLAGS... -------------------- no
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/lib "clang -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/arm64-darwin25 -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/backward -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0 -I. -I/opt/homebrew/opt/gmp/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wextra-tokens -Wdeprecated-declarations -Wdivision-by-zero -Wdiv-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wundef  -fno-common -pipe  -std=gnu99 -Werror -c conftest.c"
+In file included from conftest.c:1:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby.h:38:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/ruby.h:28:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic/char.h:29:
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rstring.h:465:24: error: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Werror,-Wdefault-const-init-field-unsafe]
+  465 |         struct RString retval;
+      |                        ^
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 error generated.
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: int main(int argc, char **argv)
+4: {
+5:   return !!argv[argc];
+6: }
+/* end */
+
+--------------------
+
+block in append_cflags: checking for whether -DHASH_ASET_DEDUPE=1 is accepted as CFLAGS... -------------------- no
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/lib "clang -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/arm64-darwin25 -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/backward -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0 -I. -I/opt/homebrew/opt/gmp/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wextra-tokens -Wdeprecated-declarations -Wdivision-by-zero -Wdiv-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wundef  -fno-common -pipe  -DHASH_ASET_DEDUPE=1 -Werror -c conftest.c"
+In file included from conftest.c:1:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby.h:38:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/ruby.h:28:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic/char.h:29:
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rstring.h:465:24: error: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Werror,-Wdefault-const-init-field-unsafe]
+  465 |         struct RString retval;
+      |                        ^
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 error generated.
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: int main(int argc, char **argv)
+4: {
+5:   return !!argv[argc];
+6: }
+/* end */
+
+--------------------
+
+block in append_cflags: checking for whether -DSTR_UMINUS_DEDUPE_FROZEN=1 is accepted as CFLAGS... -------------------- no
+
+DYLD_FALLBACK_LIBRARY_PATH=.:/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/lib "clang -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/arm64-darwin25 -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/backward -I/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0 -I. -I/opt/homebrew/opt/gmp/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE -D_DARWIN_UNLIMITED_SELECT -D_REENTRANT   -fdeclspec -O3 -fno-fast-math -ggdb3 -Wall -Wextra -Wextra-tokens -Wdeprecated-declarations -Wdivision-by-zero -Wdiv-by-zero -Wimplicit-function-declaration -Wimplicit-int -Wmisleading-indentation -Wpointer-arith -Wshorten-64-to-32 -Wwrite-strings -Wold-style-definition -Wmissing-noreturn -Wno-cast-function-type -Wno-constant-logical-operand -Wno-long-long -Wno-missing-field-initializers -Wno-overlength-strings -Wno-parentheses-equality -Wno-self-assign -Wno-tautological-compare -Wno-unused-parameter -Wno-unused-value -Wunused-variable -Wundef  -fno-common -pipe  -DSTR_UMINUS_DEDUPE_FROZEN=1 -Werror -c conftest.c"
+In file included from conftest.c:1:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby.h:38:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/ruby.h:28:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/arithmetic/char.h:29:
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rstring.h:465:24: error: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Werror,-Wdefault-const-init-field-unsafe]
+  465 |         struct RString retval;
+      |                        ^
+/Users/restaronesolutionsaiassistant/.rbenv/versions/3.2.0/include/ruby-3.2.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 error generated.
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: int main(int argc, char **argv)
+4: {
+5:   return !!argv[argc];
+6: }
+/* end */
+
+--------------------
+

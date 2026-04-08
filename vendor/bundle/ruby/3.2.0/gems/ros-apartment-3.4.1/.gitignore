@@ -1,0 +1,17 @@
+*.gem
+.bundle
+*.lock
+gemfiles/*.lock
+gemfiles/vendor
+pkg/*
+*.log
+.idea
+*.sw[pno]
+spec/config/database.yml
+spec/dummy/config/database.yml
+cookbooks
+tmp
+spec/dummy/db/*.sqlite3
+.DS_Store
+.claude/
+.mcp.json

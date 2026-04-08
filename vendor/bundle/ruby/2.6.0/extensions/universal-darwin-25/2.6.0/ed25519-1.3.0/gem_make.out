@@ -1,0 +1,171 @@
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/2.6.0/gems/ed25519-1.3.0/ext/ed25519_ref10
+/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/bin/ruby -I /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0 -r ./siteconf20260408-77058-1kkkz91.rb extconf.rb
+creating Makefile
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/2.6.0/gems/ed25519-1.3.0/ext/ed25519_ref10
+make "DESTDIR=" clean
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/2.6.0/gems/ed25519-1.3.0/ext/ed25519_ref10
+make "DESTDIR="
+compiling ed25519_ref10.c
+In file included from ed25519_ref10.c:1:
+In file included from /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby.h:33:
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/ruby.h:1779:53: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+ 1779 | void rb_define_virtual_variable(const char*,VALUE(*)(ANYARGS),void(*)(ANYARGS));
+      |                                                     ^       
+      |                                                             void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/ruby.h:1779:70: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+ 1779 | void rb_define_virtual_variable(const char*,VALUE(*)(ANYARGS),void(*)(ANYARGS));
+      |                                                                      ^       
+      |                                                                              void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/ruby.h:1780:59: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+ 1780 | void rb_define_hooked_variable(const char*,VALUE*,VALUE(*)(ANYARGS),void(*)(ANYARGS));
+      |                                                           ^       
+      |                                                                   void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/ruby.h:1780:76: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+ 1780 | void rb_define_hooked_variable(const char*,VALUE*,VALUE(*)(ANYARGS),void(*)(ANYARGS));
+      |                                                                            ^       
+      |                                                                                    void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/ruby.h:1786:49: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+ 1786 | void rb_define_method(VALUE,const char*,VALUE(*)(ANYARGS),int);
+      |                                                 ^       
+      |                                                         void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/ruby.h:1787:58: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+ 1787 | void rb_define_module_function(VALUE,const char*,VALUE(*)(ANYARGS),int);
+      |                                                          ^       
+      |                                                                  void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/ruby.h:1788:52: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+ 1788 | void rb_define_global_function(const char*,VALUE(*)(ANYARGS),int);
+      |                                                    ^       
+      |                                                            void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/ruby.h:1939:38: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+ 1939 | typedef VALUE (*rb_block_call_func_t)(ANYARGS);
+      |                                      ^       
+      |                                              void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/ruby.h:1950:48: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+ 1950 | VALUE rb_iterate(VALUE(*)(VALUE),VALUE,VALUE(*)(ANYARGS),VALUE);
+      |                                                ^       
+      |                                                        void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/ruby.h:1952:25: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+ 1952 | VALUE rb_rescue(VALUE(*)(ANYARGS),VALUE,VALUE(*)(ANYARGS),VALUE);
+      |                         ^       
+      |                                 void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/ruby.h:1952:49: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+ 1952 | VALUE rb_rescue(VALUE(*)(ANYARGS),VALUE,VALUE(*)(ANYARGS),VALUE);
+      |                                                 ^       
+      |                                                         void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/ruby.h:1953:26: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+ 1953 | VALUE rb_rescue2(VALUE(*)(ANYARGS),VALUE,VALUE(*)(ANYARGS),VALUE,...);
+      |                          ^       
+      |                                  void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/ruby.h:1953:50: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+ 1953 | VALUE rb_rescue2(VALUE(*)(ANYARGS),VALUE,VALUE(*)(ANYARGS),VALUE,...);
+      |                                                  ^       
+      |                                                          void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/ruby.h:1954:25: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+ 1954 | VALUE rb_ensure(VALUE(*)(ANYARGS),VALUE,VALUE(*)(ANYARGS),VALUE);
+      |                         ^       
+      |                                 void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/ruby.h:1954:49: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+ 1954 | VALUE rb_ensure(VALUE(*)(ANYARGS),VALUE,VALUE(*)(ANYARGS),VALUE);
+      |                                                 ^       
+      |                                                         void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/ruby.h:1955:36: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+ 1955 | VALUE rb_catch(const char*,VALUE(*)(ANYARGS),VALUE);
+      |                                    ^       
+      |                                            void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/ruby.h:1956:34: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+ 1956 | VALUE rb_catch_obj(VALUE,VALUE(*)(ANYARGS),VALUE);
+      |                                  ^       
+      |                                          void
+In file included from ed25519_ref10.c:1:
+In file included from /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby.h:33:
+In file included from /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/ruby.h:2111:
+In file included from /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/intern.h:35:
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/st.h:62:19: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+   62 |     int (*compare)(ANYARGS /*st_data_t, st_data_t*/); /* st_compare_func* */
+      |                   ^                                
+      |                                                    void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/st.h:63:23: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+   63 |     st_index_t (*hash)(ANYARGS /*st_data_t*/);        /* st_hash_func* */
+      |                       ^                     
+      |                                             void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/st.h:121:35: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+  121 | int st_foreach(st_table *, int (*)(ANYARGS), st_data_t);
+      |                                   ^       
+      |                                           void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/st.h:122:41: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+  122 | int st_foreach_check(st_table *, int (*)(ANYARGS), st_data_t, st_data_t);
+      |                                         ^       
+      |                                                 void
+In file included from ed25519_ref10.c:1:
+In file included from /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby.h:33:
+In file included from /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/ruby.h:2111:
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/intern.h:231:46: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+  231 | void rb_define_method_id(VALUE, ID, VALUE (*)(ANYARGS), int);
+      |                                              ^       
+      |                                                      void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/intern.h:233:62: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+  233 | void rb_define_protected_method(VALUE, const char*, VALUE (*)(ANYARGS), int);
+      |                                                              ^       
+      |                                                                      void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/intern.h:234:60: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+  234 | void rb_define_private_method(VALUE, const char*, VALUE (*)(ANYARGS), int);
+      |                                                            ^       
+      |                                                                    void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/intern.h:235:61: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+  235 | void rb_define_singleton_method(VALUE, const char*, VALUE(*)(ANYARGS), int);
+      |                                                             ^       
+      |                                                                     void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/intern.h:241:29: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+  241 | VALUE rb_fiber_new(VALUE (*)(ANYARGS), VALUE);
+      |                             ^       
+      |                                     void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/intern.h:448:28: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+  448 | VALUE rb_proc_new(VALUE (*)(ANYARGS/* VALUE yieldarg[, VALUE procarg] */), VALUE);
+      |                            ^                                            
+      |                                                                         void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/intern.h:477:33: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+  477 | VALUE rb_thread_create(VALUE (*)(ANYARGS), void*);
+      |                                 ^       
+      |                                         void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/intern.h:529:48: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+  529 | void st_foreach_safe(struct st_table *, int (*)(ANYARGS), st_data_t);
+      |                                                ^       
+      |                                                        void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/intern.h:531:36: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+  531 | void rb_hash_foreach(VALUE, int (*)(ANYARGS), VALUE);
+      |                                    ^       
+      |                                            void
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/intern.h:958:36: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+  958 | void rb_ivar_foreach(VALUE, int (*)(ANYARGS), st_data_t);
+      |                                    ^       
+      |                                            void
+In file included from ed25519_ref10.c:1:
+In file included from /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby.h:33:
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/ruby.h:2492:20: warning: 'diagnose_if' is a clang extension [-Wgcc-compat]
+ 2492 |     __attribute__((diagnose_if(rb_scan_args_count(fmt,varc)==0,"bad scan arg format","error")))
+      |                    ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/include/ruby-2.6.0/ruby/ruby.h:2493:20: warning: 'diagnose_if' is a clang extension [-Wgcc-compat]
+ 2493 |     __attribute__((diagnose_if(rb_scan_args_count(fmt,varc)!=varc,"variable argument length doesn't match","error")))
+      |                    ^
+ed25519_ref10.c:12:24: warning: a function declaration without a prototype is deprecated in all versions of C [-Wstrict-prototypes]
+   12 | void Init_ed25519_ref10()
+      |                        ^
+      |                         void
+34 warnings generated.
+compiling fe.c
+compiling ge.c
+compiling keypair.c
+compiling open.c
+compiling sc_muladd.c
+compiling sc_reduce.c
+compiling sha512.c
+compiling sign.c
+compiling verify.c
+linking shared-object ed25519_ref10.bundle
+ld: warning: search path '/AppleInternal/Library/BuildRoots/4~CB3uugBQxypsiyQCrI82QcTPBCns7_J7YMudMGY/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.Internal.sdk/usr/local/lib' not found
+
+current directory: /Users/restaronesolutionsaiassistant/Documents/violet_rails/vendor/bundle/ruby/2.6.0/gems/ed25519-1.3.0/ext/ed25519_ref10
+make "DESTDIR=" install
+/usr/bin/install -c -m 0755 ed25519_ref10.bundle ./.gem.20260408-77058-xo9bvc

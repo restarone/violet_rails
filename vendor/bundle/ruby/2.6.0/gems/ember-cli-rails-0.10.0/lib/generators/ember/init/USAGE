@@ -1,0 +1,8 @@
+Description:
+  Generates `ember.rb` initializer.
+
+Example:
+    rails generate ember:init
+
+    This will create:
+        config/initializers/ember.rb
