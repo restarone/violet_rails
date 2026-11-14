@@ -24,6 +24,13 @@ module JsonbSearch
 
       private
 
+      # Escape single quotes in attacker-supplied JSONB keys before they
+      # are interpolated into raw SQL. Values were escaped but keys were
+      # not, allowing SQL injection via the property name.
+      def esc_key(key)
+        key.to_s.gsub(39.chr, 39.chr * 2)
+      end
+
       def parse_params(query_params)
         queries = []
 
@@ -74,7 +81,7 @@ module JsonbSearch
           else
             term.each do |obj|
               # "column -> 'property' ->> 'nested property' = 'term'" 
-              query_string = generate_query(obj, "#{query_string} -> '#{key}'")
+              query_string = generate_query(obj, "#{query_string} -> '#{esc_key(key)}'")
             end
 
             return query_string
@@ -114,13 +121,13 @@ module JsonbSearch
         # A ' inside a string quoted with ' may be written as ''.
         # https://stackoverflow.com/questions/54144340/how-to-query-jsonb-fields-and-values-containing-single-quote-in-rails#comment95120456_54144340
         # https://dev.mysql.com/doc/refman/8.0/en/string-literals.html#character-escape-sequences
-        "lower(#{query} ->> '#{key}') #{operator || '='} lower('#{term.to_s.gsub("'", "''")}')"
+        "lower(#{query} ->> '#{esc_key(key)}') #{operator || '='} lower('#{term.to_s.gsub("'", "''")}')"
       end
 
       # "column -> 'property' @> '{/"search/": /"term/"}'" 
       def hash_query(key, term, option, query)
         operator = option == QUERY_OPTION[:PARTIAL] ? '@>' : '='
-        "#{query} -> '#{key}' #{operator} '#{term.to_json.gsub("'", "''")}'"
+        "#{query} -> '#{esc_key(key)}' #{operator} '#{term.to_json.gsub("'", "''")}'"
       end
 
       # "column -> 'property' ? '['term']'" 
@@ -134,15 +141,15 @@ module JsonbSearch
             items = items.map { |txt| "%#{txt}%" }
 
             items.each do |item|
-              query_array  << "lower(#{query} ->> '#{key}'::text) LIKE lower('#{item.to_s.gsub("'", "''")}')"
+              query_array  << "lower(#{query} ->> '#{esc_key(key)}'::text) LIKE lower('#{item.to_s.gsub("'", "''")}')"
             end
           end
 
           query_array.join(match == MATCH_OPTION[:ANY] ? ' OR ' : ' AND ')
         elsif option == QUERY_OPTION[:PARTIAL]
-          match == MATCH_OPTION[:ANY] ? term.map { |q| "#{query} -> '#{key}' ? '#{q}'" }.join(' OR ') : "#{query} -> '#{key}' @> '#{term.to_json.gsub("'", "''")}'"
+          match == MATCH_OPTION[:ANY] ? term.map { |q| "#{query} -> '#{esc_key(key)}' ? '#{q}'" }.join(' OR ') : "#{query} -> '#{esc_key(key)}' @> '#{term.to_json.gsub("'", "''")}'"
         else
-          "#{query} -> '#{key}' @> '#{term.to_json}' AND #{query} -> '#{key}' <@ '#{term.to_json.gsub("'", "''")}'"
+          "#{query} -> '#{esc_key(key)}' @> '#{term.to_json}' AND #{query} -> '#{esc_key(key)}' <@ '#{term.to_json.gsub("'", "''")}'"
         end
       end
     end
